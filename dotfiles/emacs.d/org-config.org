@@ -68,6 +68,12 @@ We're going to use this to write separate parts of our config to different secti
 ;; Capture-only storage; intentionally excluded from `org-agenda-files'.
 (defvar imalison:org-links-file
   (imalison:join-paths imalison:org-dir "links.org"))
+(defvar imalison:org-thoughts-file
+  (imalison:join-paths imalison:org-dir "thoughts.org"))
+(defvar imalison:org-read-file
+  (imalison:join-paths imalison:org-dir "read.org"))
+(defvar imalison:org-explore-file
+  (imalison:join-paths imalison:org-dir "explore.org"))
 (defvar imalison:org-vocabulary-file
   (imalison:join-paths imalison:org-dir "notes" "vocab.org"))
 (defvar imalison:shared-org-gtd-file
@@ -766,11 +772,24 @@ SCHEDULED: %^t
                  "* %?"))
 
   (add-to-list 'org-capture-templates
+               `("T" "Thought" entry (file ,imalison:org-thoughts-file)
+                 ,(format "%s%s" "* %?" imalison:created-property-string)))
+
+  (add-to-list 'org-capture-templates
+               `("r" "Read" entry (file ,imalison:org-read-file)
+                 ,(format "%s%s" "* %?" imalison:created-property-string)))
+
+  (add-to-list 'org-capture-templates
+               `("e" "Check This Out" entry (file ,imalison:org-explore-file)
+                 ,(format "%s%s" "* %?" imalison:created-property-string)))
+
+  (add-to-list 'org-capture-templates
                `("v" "Productive vocabulary" entry
                  (file ,imalison:org-vocabulary-file)
-                 "* %^{Word} :vocabulary:\n%^{Definition}\n\nExample: %^{Original sentence}\n\nSource: %a"
-                 :prepare-finalize
-                 imalison:org-fc-initialize-vocabulary-card)))
+                 "* %^{Word} :vocabulary:\nSource: %a"
+                 :immediate-finish t
+                 :prepare-finalize imalison:org-fc-initialize-vocabulary-card
+                 :after-finalize imalison:org-vocabulary-fill-captured)))
 #+end_src
 ** Babel
 #+begin_src emacs-lisp :tangle org-config-config.el
@@ -1237,8 +1256,23 @@ org-node and never touches SQLite at all.
   :after org
   :bind (("C-c 9" . org-fc-hydra/body)
          ("C-c v c" . imalison:org-capture-vocabulary)
-         ("C-c v r" . imalison:org-fc-review-vocabulary))
+         ("C-c v r" . imalison:org-fc-review-vocabulary)
+         ("C-c v f" . imalison:org-vocabulary-fill-pending))
   :preface
+  (defvar imalison:org-vocabulary-backends
+    '((claude "claude" "-p" "--model" "haiku")
+      (codex "codex" "exec" "--ephemeral" "--skip-git-repo-check"
+             "--sandbox" "read-only"))
+    "Agent CLIs that can look a word up, as (NAME . COMMAND).
+The prompt is appended to COMMAND as a single argument, and the JSON
+object the agent prints on stdout is used to fill in the card.")
+
+  (defvar imalison:org-vocabulary-backend 'claude
+    "Backend in `imalison:org-vocabulary-backends' used to look words up.")
+
+  (defvar imalison:org-vocabulary--captured-id nil
+    "ID of the vocabulary card captured by the in-flight capture.")
+
   (defun imalison:org-capture-vocabulary ()
     "Capture a productive-vocabulary card."
     (interactive)
@@ -1249,7 +1283,133 @@ org-node and never touches SQLite at all.
     (require 'org-fc-algo-fsrs)
     (require 'org-fc-type-vocab)
     (let ((org-fc-default-algo 'fsrs6))
-      (org-fc-type-vocab-init)))
+      (org-fc-type-vocab-init))
+    (save-excursion
+      (goto-char (point-min))
+      (org-entry-put (point) "VOCAB_FILL" "pending")
+      (setq imalison:org-vocabulary--captured-id (org-id-get-create))))
+
+  (defun imalison:org-vocabulary--find (id)
+    "Return a marker at the vocabulary card with ID, or nil."
+    (with-current-buffer (find-file-noselect imalison:org-vocabulary-file)
+      (org-with-wide-buffer
+       (let ((position (org-find-property "ID" id)))
+         (when position (copy-marker position))))))
+
+  (defun imalison:org-vocabulary-fill-captured ()
+    "Fill in the definition of the card the last capture created."
+    (let ((id imalison:org-vocabulary--captured-id))
+      (setq imalison:org-vocabulary--captured-id nil)
+      (when (and id (imalison:org-vocabulary--find id))
+        (imalison:org-vocabulary-fill-id id))))
+
+  (defun imalison:org-vocabulary--prompt (word context)
+    "Return the prompt asking an agent to define WORD, seen in CONTEXT."
+    (concat
+     (format "Fill in a productive-vocabulary flashcard for the English word: %s\n\n"
+             word)
+     "Reply with a single JSON object and nothing else, with exactly these keys:\n"
+     "  \"definition\": one concise sentence defining the word, written as a"
+     " dictionary gloss. Do not restate the word itself.\n"
+     "  \"example\": one natural sentence that uses the word correctly and"
+     " makes its meaning clear from context.\n\n"
+     "Write both values as complete sentences, capitalized and ending with a"
+     " period. If the word has several distinct senses, use the most common one."
+     (when context
+       (concat "\n\nThe word was encountered here; prefer the sense it has"
+               " in this context:\n" context))))
+
+  (defun imalison:org-vocabulary--parse (output)
+    "Return the JSON object OUTPUT contains, ignoring prose around it."
+    (let* ((start (string-search "{" output))
+           (end (cl-position ?} output :from-end t)))
+      (when (and start end (< start end))
+        (ignore-errors
+          (json-parse-string (substring output start (1+ end))
+                             :object-type 'alist)))))
+
+  (defun imalison:org-vocabulary-fill-id (id)
+    "Ask an agent to define the word of the vocabulary card ID."
+    (let* ((marker (or (imalison:org-vocabulary--find id)
+                       (error "No vocabulary card with id %s" id)))
+           (word (org-with-point-at marker (org-get-heading t t t t)))
+           (context (org-with-point-at marker
+                      (org-entry-get (point) "VOCAB_CONTEXT")))
+           (command (or (alist-get imalison:org-vocabulary-backend
+                                   imalison:org-vocabulary-backends)
+                        (error "No such vocabulary backend: %s"
+                               imalison:org-vocabulary-backend)))
+           ;; Run outside any project so the agent picks up no repository
+           ;; context, and keep stderr out of the JSON we parse.
+           (default-directory temporary-file-directory)
+           (errors (generate-new-buffer (format " *vocab %s stderr*" word)))
+           (process
+            (make-process
+             :name (format "vocab-define %s" word)
+             :buffer (generate-new-buffer (format " *vocab %s*" word))
+             :stderr errors
+             :noquery t
+             :connection-type 'pipe
+             :command (append command
+                              (list (imalison:org-vocabulary--prompt
+                                     word context)))
+             :sentinel
+             (lambda (process _event)
+               (unless (process-live-p process)
+                 (let ((output (with-current-buffer (process-buffer process)
+                                 (buffer-string)))
+                       (failure (with-current-buffer errors (buffer-string)))
+                       (succeeded (eq 0 (process-exit-status process))))
+                   (kill-buffer (process-buffer process))
+                   (kill-buffer errors)
+                   (imalison:org-vocabulary--fill-in
+                    id word (and succeeded output) failure)))))))
+      ;; The agent CLIs read a prompt from stdin when one is open.
+      (process-send-eof process)
+      (message "Looking up %s..." word)))
+
+  (defun imalison:org-vocabulary--fill-in (id word output failure)
+    "Fill the card ID for WORD in from OUTPUT, or report FAILURE."
+    (let ((parsed (and output (imalison:org-vocabulary--parse output)))
+          (marker (imalison:org-vocabulary--find id)))
+      (cond
+       ((not (and (stringp (alist-get 'definition parsed))
+                  (stringp (alist-get 'example parsed))))
+        (imalison:org-vocabulary--set-status id "failed")
+        (message "Could not look up %s: %s" word
+                 (string-trim (or output failure ""))))
+       (marker
+        (org-with-point-at marker
+          (org-entry-delete (point) "VOCAB_FILL")
+          (org-end-of-meta-data t)
+          (insert (format "%s\n\nExample: %s\n\n"
+                          (alist-get 'definition parsed)
+                          (alist-get 'example parsed)))
+          (save-buffer))
+        (message "Filled in the vocabulary card for %s" word)))))
+
+  (defun imalison:org-vocabulary--set-status (id status)
+    "Set the VOCAB_FILL property of the card ID to STATUS."
+    (let ((marker (imalison:org-vocabulary--find id)))
+      (when marker
+        (org-with-point-at marker
+          (org-entry-put (point) "VOCAB_FILL" status)
+          (save-buffer)))))
+
+  (defun imalison:org-vocabulary-fill-pending ()
+    "Look up every vocabulary card that has no definition yet."
+    (interactive)
+    (let ((ids (with-current-buffer
+                   (find-file-noselect imalison:org-vocabulary-file)
+                 (org-with-wide-buffer
+                  (delq nil
+                        (org-map-entries
+                         (lambda ()
+                           (when (org-entry-get (point) "VOCAB_FILL")
+                             (org-id-get-create)))))))))
+      (if (null ids)
+          (message "No vocabulary cards are waiting to be filled in")
+        (mapc #'imalison:org-vocabulary-fill-id ids))))
 
   (defun imalison:org-fc-review-vocabulary ()
     "Review due cards in `imalison:org-vocabulary-file'."
