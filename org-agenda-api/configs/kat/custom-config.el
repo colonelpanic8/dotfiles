@@ -31,6 +31,9 @@
   (setq imalison:org-calendar-file (imalison:join-paths imalison:org-dir "calendar.org"))
   (setq imalison:org-inbox-file (imalison:join-paths imalison:org-dir "inbox.org"))
   (setq imalison:org-links-file (imalison:join-paths imalison:org-dir "links.org"))
+  (setq imalison:org-thoughts-file (imalison:join-paths imalison:org-dir "thoughts.org"))
+  (setq imalison:org-read-file (imalison:join-paths imalison:org-dir "read.org"))
+  (setq imalison:org-explore-file (imalison:join-paths imalison:org-dir "explore.org"))
   (setq imalison:org-vocabulary-file
         (imalison:join-paths imalison:org-dir "notes" "vocab.org"))
 
