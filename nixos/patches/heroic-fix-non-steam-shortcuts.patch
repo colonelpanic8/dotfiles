@@ -1,13 +1,30 @@
 diff --git a/src/backend/shortcuts/nonesteamgame/nonesteamgame.ts b/src/backend/shortcuts/nonesteamgame/nonesteamgame.ts
-index 7d8889f0..7a1dc387 100644
+index 12aef8e4..d0a6bf4e 100644
 --- a/src/backend/shortcuts/nonesteamgame/nonesteamgame.ts
 +++ b/src/backend/shortcuts/nonesteamgame/nonesteamgame.ts
-@@ -255,7 +255,7 @@ async function addNonSteamGame(gameInfo: GameInfo) {
-     // add new Entry
-     const newEntry = {} as ShortcutEntry
-     newEntry.AppName = gameInfo.title
--    newEntry.Exe = `"${app.getPath('exe')}"`
-+    newEntry.Exe = `"heroic"`
-     newEntry.StartDir = `"${process.cwd()}"`
+@@ -264,18 +264,14 @@ async function addNonSteamGame(game: Game): Promise<boolean> {
  
-     if (isFlatpak) {
+     const ourExePath = app.getPath('exe')
+     newEntry.Exe = `"${ourExePath}"`
+-    if (isLinux && !ourExePath.toLowerCase().endsWith('heroic')) {
+-      // If we are on Linux and our executable path does not end with "heroic",
+-      // we are running on a distribution packaging Electron and Heroic
+-      // separately (e.g. Arch Linux). Launching our executable alone will only
+-      // launch Electron, it will not know what to do (running Heroic).
+-      // A proper workaround for this is not easy (we would have to pull out
+-      // launch-relevant parameters from our argv while also leaving temporary
+-      // parameters out). The best we can do here is search for an
+-      // `heroic` wrapper executable (which these types of packages make
+-      // available) and launch it
++    if (isLinux) {
++      // Prefer the `heroic` wrapper on PATH over our own absolute executable
++      // path. On distributions packaging Electron and Heroic separately our
++      // executable is plain Electron, which wouldn't know to run Heroic; and on
++      // Nix the absolute path changes with every update, which would leave
++      // previously-added Steam shortcuts pointing at a garbage-collected path.
+       const heroicWrapper = await searchForExecutableOnPath('heroic')
+-      if (heroicWrapper) newEntry.Exe = `"${heroicWrapper}"`
++      if (heroicWrapper) newEntry.Exe = `"heroic"`
+     }
+ 
+     newEntry.StartDir = `"${process.cwd()}"`
