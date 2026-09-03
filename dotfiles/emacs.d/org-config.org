@@ -142,6 +142,7 @@ We're going to use this to write separate parts of our config to different secti
 (org-edit-src-content-indentation 0)
 (org-enforce-todo-dependencies t)
 (org-export-headline-levels 3)
+(org-extend-today-until 3)
 (org-fold-catch-invisible-edits 'show)
 (org-goto-interface 'outline-path-completion)
 (org-goto-max-level 10)
@@ -162,6 +163,7 @@ We're going to use this to write separate parts of our config to different secti
 (org-startup-indented nil)
 (org-todo-repeat-to-state "TODO")
 (org-treat-insert-todo-heading-as-state-change t)
+(org-use-effective-time t)
 (org-refile-targets '((org-agenda-files . (:maxlevel . 2))
                       (org-agenda-files . (:level . 0))))
 (org-global-properties
