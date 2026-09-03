@@ -44,7 +44,9 @@
   };
   services.mullvad-vpn.enable = lib.mkForce false;
   myModules.nixified-ai.enable = true;
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # NVIDIA 595.71.05 predates Linux 7.2's DRM API changes. Keep this host on
+  # the maintained LTS kernel while the driver remains pinned below.
+  boot.kernelPackages = pkgs.linuxPackages_6_18;
 
   # MemTest86 2026-08-16 (/boot/MemTest86-Report-20260816-215525_934520.html):
   # 193 errors, every one a bit-31 flip, at five addresses inside a 25KB window
@@ -107,6 +109,11 @@
   boot.initrd.availableKernelModules = ["nvme" "xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod"];
 
   hardware.nvidia.modesetting.enable = true;
+
+  # The open module otherwise leaves this GPU at a 256 MiB BAR1 aperture and
+  # eventually exhausts its mapping VA space. The RTX 3070 Ti advertises BAR1
+  # sizes through 8 GiB, so let the driver select the largest size that fits.
+  hardware.nvidia.moduleParams.nvidia.NVreg_EnableResizableBar = 1;
 
   # Pin the NVIDIA driver to 595.71.05 on this host only. nixpkgs' production
   # driver moved 595.71.05 -> 595.80 (nixpkgs 9b366138, 2026-06-02), and 595.80
