@@ -2,8 +2,7 @@ diff --git a/src/backend/shortcuts/nonesteamgame/nonesteamgame.ts b/src/backend/
 index 12aef8e4..d0a6bf4e 100644
 --- a/src/backend/shortcuts/nonesteamgame/nonesteamgame.ts
 +++ b/src/backend/shortcuts/nonesteamgame/nonesteamgame.ts
-@@ -264,18 +264,14 @@ async function addNonSteamGame(game: Game): Promise<boolean> {
- 
+@@ -265,15 +265,11 @@ async function addNonSteamGame(game: Game): Promise<boolean> {
      const ourExePath = app.getPath('exe')
      newEntry.Exe = `"${ourExePath}"`
 -    if (isLinux && !ourExePath.toLowerCase().endsWith('heroic')) {
@@ -26,5 +25,3 @@ index 12aef8e4..d0a6bf4e 100644
 -      if (heroicWrapper) newEntry.Exe = `"${heroicWrapper}"`
 +      if (heroicWrapper) newEntry.Exe = `"heroic"`
      }
- 
-     newEntry.StartDir = `"${process.cwd()}"`
