@@ -74,18 +74,18 @@ in {
   programs.droidcam.enable = true;
 
   fileSystems."/" = {
-    device = "/dev/disk/by-uuid/64a7c1f5-727a-413c-81a2-cb108728cff6";
+    device = "/dev/disk/by-uuid/8f024ed1-116e-48cf-a229-1d6aaf978cad";
     fsType = "ext4";
   };
 
   fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/EE25-DC15";
+    device = "/dev/disk/by-uuid/A19C-7D42";
     fsType = "vfat";
   };
 
-  # Former system root; keep it read-only until its ext4 errors are repaired.
+  # Former Intel 660p system root; retain it read-only as a rollback copy.
   fileSystems."/mnt/old-nixos" = {
-    device = "/dev/disk/by-id/nvme-WD_BLACK_SN770_1TB_233216802763-part1";
+    device = "/dev/disk/by-id/nvme-INTEL_SSDPEKNW010T8_PHNH2114027E1P0B-part2";
     fsType = "ext4";
     options = [
       "ro"
