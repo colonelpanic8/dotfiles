@@ -1,6 +1,11 @@
 ;; Elpaca Installer -*- lexical-binding: t; -*-
 (defvar elpaca-installer-version 0.12)
 
+;; Nix's reproducible Emacs builds do not set `emacs-build-time'.  Elpaca uses
+;; that value to date built-in packages when the Emacs release is unknown.
+(unless (and (boundp 'emacs-build-time) emacs-build-time)
+  (setq emacs-build-time (current-time)))
+
 (defun elpaca-installer--state-root ()
   "Return a writable root for Elpaca state."
   (let* ((preferred user-emacs-directory)
@@ -97,7 +102,7 @@
       (when (file-directory-p build)
         (let* ((name (file-name-nondirectory (directory-file-name build)))
                (source (expand-file-name name elpaca-sources-directory))
-               (desired-source (when-let ((root (elpaca-installer--build-source-root build)))
+               (desired-source (when-let* ((root (elpaca-installer--build-source-root build)))
                                  (directory-file-name root)))
                (current-source (when (or (file-exists-p source)
                                          (file-symlink-p source))
@@ -149,7 +154,7 @@
        (default-directory repo))
   ;; Older elpaca checkouts can no longer bootstrap the current installer.
   ;; Reset only elpaca's own repo/build so startup can self-heal.
-  (when-let ((repo-version (elpaca-installer--repo-installer-version repo))
+  (when-let* ((repo-version (elpaca-installer--repo-installer-version repo))
              ((not (equal repo-version (format "%s" elpaca-installer-version)))))
     (when (file-directory-p build)
       (delete-directory build 'recursive))
