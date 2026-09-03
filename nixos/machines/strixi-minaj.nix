@@ -9,7 +9,7 @@
   builtInAudioDuplexProfile = "output:analog-stereo+input:analog-stereo";
   setBuiltInAudioDuplexProfile = pkgs.writeShellScript "set-built-in-audio-duplex-profile" ''
     attempts=0
-    while [ "$attempts" -lt 20 ]; do
+    while [ "$attempts" -lt 120 ]; do
       if ${pkgs.pulseaudio}/bin/pactl set-card-profile ${builtInAudioCard} ${builtInAudioDuplexProfile}; then
         exit 0
       fi
@@ -148,6 +148,17 @@ in {
         ];
         actions.update-props = {
           "device.profile" = builtInAudioDuplexProfile;
+        };
+      }
+      # Avoid pops from repeatedly power-cycling the codec and smart amps.
+      {
+        matches = [
+          {
+            "node.name" = "alsa_output.pci-0000_00_1f.3.analog-stereo";
+          }
+        ];
+        actions.update-props = {
+          "session.suspend-timeout-seconds" = 0;
         };
       }
     ];
