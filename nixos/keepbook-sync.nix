@@ -26,15 +26,35 @@
     meta = keepbookDioxusDesktopBase.meta;
   };
   keepbookDioxusExec = "${keepbookDioxusDesktop}/bin/keepbook-dioxus";
+  # Same override as nix-shared/system/essential.nix: upstream checks depend on
+  # TS artifacts that are not built in Nix.
+  keepbookCli = keepbookPackages.keepbook.overrideAttrs (_: {doCheck = false;});
+  keepbookExec = "${keepbookCli}/bin/keepbook";
 
   enabledModule = makeEnable config "myModules.keepbook-sync" false {
     environment.systemPackages = [keepbookDioxusDesktop];
 
     home-manager.users.${cfg.user} = {
+      systemd.user.services.keepbook-repositories-setup = {
+        Unit = {
+          Description = "Clone missing Keepbook data repositories";
+          After = ["gpg-agent-ssh.socket"];
+        };
+        Service = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          ExecStart = "${keepbookExec} repositories setup --app-config ${cfg.appConfigPath}";
+        };
+        Install = {
+          WantedBy = ["default.target"];
+        };
+      };
+
       systemd.user.services.keepbook-dioxus = {
         Unit = {
           Description = "Keepbook Dioxus desktop app";
-          After = ["graphical-session.target" "tray.target" "xsettingsd.service"];
+          After = ["graphical-session.target" "tray.target" "xsettingsd.service" "keepbook-repositories-setup.service"];
+          Wants = ["keepbook-repositories-setup.service"];
           PartOf = ["graphical-session.target"];
           Requires = ["tray.target"];
         };
@@ -64,6 +84,12 @@ in
           type = lib.types.str;
           default = "imalison";
           description = "User account to run the keepbook Dioxus desktop app.";
+        };
+
+        appConfigPath = lib.mkOption {
+          type = lib.types.str;
+          default = "/home/imalison/.config/keepbook/app.toml";
+          description = "Path to the declarative repository manifest keepbook clones missing data repositories from.";
         };
 
         configPath = lib.mkOption {

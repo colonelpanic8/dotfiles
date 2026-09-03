@@ -346,6 +346,23 @@ in {
     fi
   '';
 
+  # libgit2-based clients (keepbook, git-sync) only consult ~/.ssh/known_hosts,
+  # never the system file NixOS generates from programs.ssh.knownHosts, so SSH
+  # clones from them fail host key verification on a fresh machine. Copy any
+  # missing system entries into the user file.
+  home.activation.seedUserKnownHosts = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    system_known_hosts=/etc/ssh/ssh_known_hosts
+    user_known_hosts="$HOME/.ssh/known_hosts"
+    if [ -r "$system_known_hosts" ]; then
+      install -d -m700 "$HOME/.ssh"
+      touch "$user_known_hosts"
+      while IFS= read -r line; do
+        case "$line" in "" | \#*) continue ;; esac
+        grep -qxF "$line" "$user_known_hosts" || printf '%s\n' "$line" >> "$user_known_hosts"
+      done < "$system_known_hosts"
+    fi
+  '';
+
   services.gpg-agent = {
     enable = true;
     defaultCacheTtl = 8 * 60 * 60;
