@@ -356,6 +356,9 @@
 in
   specialArgs.makeEnable config "myModules.nixified-ai" false {
     imports = [
+      {
+        disabledModules = ["services/misc/comfyui.nix"];
+      }
       nixifiedAiComfyuiModule
     ];
 
