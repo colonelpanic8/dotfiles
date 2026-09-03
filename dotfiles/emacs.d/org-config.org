@@ -3,6 +3,7 @@
 * include-file-as-forms
 We're going to use this to write separate parts of our config to different sections that will then be provided to our use package statment
 #+begin_src emacs-lisp :tangle org-config.el
+;;; -*- lexical-binding: t; -*-
 (defun imalison:include-file-as-forms (filename)
   "Include the contents of FILENAME into the source as s-expressions."
   (with-temp-buffer
@@ -48,6 +49,7 @@ We're going to use this to write separate parts of our config to different secti
 :END:"))
 #+end_src
 #+begin_src emacs-lisp :tangle org-config-preface.el
+;;; -*- lexical-binding: t; -*-
 (defvar imalison:org-dir "~/org")
 (defvar imalison:shared-org-dir "~/org")
 (defvar imalison:org-whoami "Ivan Malison")
@@ -114,6 +116,7 @@ We're going to use this to write separate parts of our config to different secti
 #+end_src
 * Bindings
 #+begin_src emacs-lisp :tangle org-config-bind.el
+;;; -*- lexical-binding: t; -*-
 ("C-c c" . org-capture)
 :map org-mode-map
 (("C-e" . end-of-visual-line)
@@ -129,6 +132,7 @@ We're going to use this to write separate parts of our config to different secti
 #+end_src
 * Org Variable Customization
 #+begin_src emacs-lisp :tangle org-config-custom.el
+;;; -*- lexical-binding: t; -*-
 (org-agenda-log-mode-items '(closed state))
 (org-agenda-skip-deadline-if-done t)
 (org-agenda-skip-scheduled-if-done t)
@@ -181,6 +185,7 @@ We're going to use this to write separate parts of our config to different secti
 * Config
 ** Miscellaneous Functions
 #+begin_src emacs-lisp :tangle org-config-config.el
+;;; -*- lexical-binding: t; -*-
 (require 'cl-lib)
 (require 'org-habit)
 
