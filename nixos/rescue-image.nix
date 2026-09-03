@@ -213,7 +213,7 @@ in
 
     environment.systemPackages = with pkgs; [
       # Graphical rescue environment and the requested applications.
-      emacs30-pgtk
+      emacs-pgtk
       codexCli
       codexDesktop
       inputs.claude-code-nix.packages.${system}.default

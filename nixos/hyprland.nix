@@ -13,16 +13,30 @@
   # GCC 15 ICEs while compiling Hyprland 0.55's ConfigManager. GCC 16 builds
   # the unmodified source, avoiding the old Clang-only source compatibility patch.
   hyprlandStdenv = pkgs.gcc16Stdenv;
-  baseHyprlandPackage = hyprlandInput.packages.${system}.hyprland.override {
-    stdenv = hyprlandStdenv;
-    hyprland-guiutils = pkgs.hyprland-guiutils.override {
+  hyprlockPackage = inputs.hyprlock.packages.${system}.default;
+  xdgDesktopPortalHyprlandPackage = inputs.xdg-desktop-portal-hyprland.packages.${system}.default;
+  baseHyprlandPackage =
+    (hyprlandInput.packages.${system}.hyprland.override {
       stdenv = hyprlandStdenv;
-    };
-  };
+      hyprland-guiutils = hyprlandInput.inputs.hyprland-guiutils.packages.${system}.default.override {
+        stdenv = hyprlandStdenv;
+      };
+    }).overrideAttrs (old: {
+      # The 0.56.2 release branch rejects glaze 8 even though main accepts it,
+      # while the release's own pinned nixpkgs already packages glaze 8.
+      postPatch =
+        (old.postPatch or "")
+        + ''
+          substituteInPlace CMakeLists.txt \
+            --replace-fail 'find_package(glaze 7...<8 QUIET)' 'find_package(glaze QUIET)'
+        '';
+    });
   hyprlandGcc16Overlay = final: prev: {
     hyprland = baseHyprlandPackage;
     hyprland-unwrapped = final.hyprland.override {wrapRuntimeDeps = false;};
     hyprland-with-tests = final.hyprland.override {withTests = true;};
+    hyprlock = hyprlockPackage;
+    xdg-desktop-portal-hyprland = xdgDesktopPortalHyprlandPackage;
   };
   hyprlandPluginsForBase = pkgs.callPackage "${pkgs.path}/pkgs/applications/window-managers/hyprwm/hyprland-plugins" {
     hyprland = baseHyprlandPackage;
@@ -483,6 +497,7 @@
       enable = true;
       # Keep Hyprland and plugins on a matched flake input for ABI compatibility.
       package = hyprlandPackage;
+      portalPackage = xdgDesktopPortalHyprlandPackage;
       # Let UWSM manage the Hyprland session targets
       withUWSM = true;
     };
@@ -638,7 +653,7 @@
         hyprpaper # Wallpaper
         neowall # Shader wallpaper
         hypridle # Idle daemon
-        hyprlock # Screen locker
+        hyprlockPackage # Screen locker
         hyprcursor # Cursor themes
         wl-clipboard # Clipboard for Wayland
         wtype # Wayland input typing

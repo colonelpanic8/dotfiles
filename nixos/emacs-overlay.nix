@@ -1,14 +1,14 @@
 final: prev: {
   # Keep pkgs.emacs as a real Emacs package (used by other derivations / emacsPackages),
   # but provide an "auto" wrapper for interactive use that selects the right GUI backend.
-  emacs = prev."emacs30-pgtk".override {
+  emacs = prev.emacs-pgtk.override {
     withNativeCompilation = true;
     withTreeSitter = true;
   };
 
   emacs-wayland = final.emacs;
 
-  emacs-x11 = prev.emacs30.override {
+  emacs-x11 = prev.emacs.override {
     withNativeCompilation = true;
     withTreeSitter = true;
   };

@@ -160,3 +160,9 @@ Examples of what's stored:
   - `./project-guides/subtr-actor-rocket-sense-rlru.md`
   - `./project-guides/t3code-assembly.md`
   - `./project-guides/paseo-assembly.md`
+
+## Browser Automation
+
+- Prefer using chrome plugins and skills for tasks that can be completed
+  entirely in a browser. Use computer-use tools when the task requires broader
+  desktop interaction or the Chrome plugin cannot complete it.

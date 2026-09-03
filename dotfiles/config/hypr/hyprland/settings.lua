@@ -325,6 +325,10 @@ function M.setup(ctx)
           -- inactive tiles with col.inactive_border; this is the selection
           -- highlight and it follows hyprtasking:move. Keep it clearly visible.
           border_size = 3,
+          -- Swap the stock bindings: left click enters the hovered workspace,
+          -- right click drags windows between tiles.
+          select_button = 0x110, -- BTN_LEFT
+          drag_button = 0x111, -- BTN_RIGHT
           exit_on_hovered = false,
           close_overview_on_reload = false,
           grid = {
@@ -444,6 +448,26 @@ function M.setup(ctx)
         suppress_event = "activatefocus",
       })
     end
+
+    -- Browser automation performs synthetic clicks in the background. Block
+    -- Chrome activation requests without preventing deliberate manual focus.
+    hl.window_rule({
+      name = "chrome-no-activate-focus",
+      match = { class = "^(google-chrome)$" },
+      focus_on_activate = false,
+      suppress_event = "activatefocus",
+    })
+    -- Agent-created Chrome windows start at about:blank. Keep those background
+    -- windows from taking initial focus without changing normal Chrome launch
+    -- behavior.
+    hl.window_rule({
+      name = "agent-controlled-chrome-no-initial-focus",
+      match = {
+        class = "^(google-chrome)$",
+        initial_title = "^(about:blank - Google Chrome)$",
+      },
+      no_initial_focus = true,
+    })
 
     for index, match in ipairs({
       { class = "^(flameshot)$" },

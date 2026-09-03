@@ -45,6 +45,7 @@ final: prev: {
         hash = "sha256-d7JUcmKPZzSE3/nsHAqhc0HDe/YTYoK5Rok3Bx7wHyA=";
       })
     ];
+    patchFlags = (oldAttrs.patchFlags or []) ++ [ "-p2" ];
   });
 
   heroic-unwrapped = prev.heroic-unwrapped.overrideAttrs (oldAttrs: {

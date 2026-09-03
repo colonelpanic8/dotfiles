@@ -21,7 +21,7 @@
       patches = [./patches/heroic-fix-non-steam-shortcuts.patch];
       pnpm = pkgs.pnpm_10;
       fetcherVersion = 3;
-      hash = "sha256-t0uj9fYKcwqovQu7O5PHla8KoQN8iymp1oC9FkuAG3g=";
+      hash = "sha256-NrglT9vtDMAYXmZ4G3vifvLXu1yS6xbp+cqE6B6vQFc=";
     };
   });
   heroicWithEpicAccountSwitching = pkgs.heroic.override {

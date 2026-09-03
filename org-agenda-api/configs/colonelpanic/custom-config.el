@@ -39,6 +39,11 @@
   (setq imalison:org-calendar-file (imalison:join-paths imalison:org-dir "calendar.org"))
   (setq imalison:org-inbox-file (imalison:join-paths imalison:org-dir "inbox.org"))
   (setq imalison:org-links-file (imalison:join-paths imalison:org-dir "links.org"))
+  (setq imalison:org-thoughts-file (imalison:join-paths imalison:org-dir "thoughts.org"))
+  (setq imalison:org-read-file (imalison:join-paths imalison:org-dir "read.org"))
+  (setq imalison:org-explore-file (imalison:join-paths imalison:org-dir "explore.org"))
+  (setq imalison:org-vocabulary-file
+        (imalison:join-paths imalison:org-dir "notes" "vocab.org"))
 
   ;; Shared paths are nil in container (no shared org dir)
   (setq imalison:shared-org-gtd-file nil)
@@ -173,12 +178,17 @@ Returns nil for non-entry templates or templates that can't be converted."
                  (eq type 'entry))
         (let* ((template-string (imalison:extract-template-string template-spec))
                (prompts (imalison:extract-prompts-from-template template-string))
+               (api-prompts
+                (if (and (string-match-p "%\\?" template-string)
+                         (not (assoc "Title" prompts)))
+                    (cons '("Title" :type string :required t) prompts)
+                  prompts))
                ;; Create a unique API key from the hotkey
                (api-key (concat "capture-" key)))
           (list api-key
                 :name description
                 :template template-spec
-                :prompts prompts))))))
+                :prompts api-prompts))))))
 
 (defun imalison:convert-all-capture-templates ()
   "Convert all org-capture-templates to org-agenda-api-capture-templates format."
