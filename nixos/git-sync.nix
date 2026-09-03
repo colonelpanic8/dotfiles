@@ -146,6 +146,7 @@
     nativeBuildInputs = [pkgs.makeWrapper];
     postBuild = ''
       wrapProgram "$out/bin/gmcli-viewer" \
+        --set GMCLI_TELEPHONY_ARCHIVE_DIR ${lib.escapeShellArg gmcliTelephonyFullOutput} \
         --set GMCLI_ARCHIVE_SYNC_COMMAND ${lib.escapeShellArg refreshGmcliArchive}
     '';
   };
