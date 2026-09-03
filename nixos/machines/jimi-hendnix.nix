@@ -4,7 +4,14 @@
   pkgs,
   inputs,
   ...
-}: {
+}: let
+  wayvncShare = pkgs.writeShellScript "wayvnc-share" ''
+    set -euo pipefail
+
+    tailscale_ip="$(${config.services.tailscale.package}/bin/tailscale ip -4)"
+    exec ${pkgs.wayvnc}/bin/wayvnc --log-level=info "$tailscale_ip" 5900
+  '';
+in {
   imports = [
     ../configuration.nix
   ];
@@ -26,6 +33,21 @@
   myModules.kat.enable = true;
   myModules.nvidia.enable = true;
   myModules.hyprland.ultrawideRefreshRate = 99.98;
+  environment.systemPackages = [pkgs.wayvnc];
+
+  # Share the active Hyprland desktop only on this host's Tailscale address.
+  systemd.user.services.wayvnc-share = {
+    description = "Share the active Hyprland session over Tailscale VNC";
+    wantedBy = ["graphical-session.target"];
+    partOf = ["graphical-session.target"];
+    after = ["graphical-session.target"];
+    serviceConfig = {
+      ExecStart = "${wayvncShare}";
+      Restart = "on-failure";
+      RestartSec = 5;
+    };
+  };
+
   myModules.railbird-k3s = {
     enable = false;
     serverAddr = "https://dev.railbird.ai:6443";
