@@ -1055,7 +1055,17 @@ than by restricting =org-mem-watch-dirs= (the watch dirs also drive backlinks).
    ;; them, so no backlink is lost by this.
    (org-mem-suffixes '(".org")))
   :config
-  (org-mem-updater-mode +1))
+  (progn
+    ;; `org-node-cache-mode' checks the cache immediately, while the initial
+    ;; org-mem scan is asynchronous.  Avoid reporting that transient empty
+    ;; state, but preserve the warning when a scan is not actually running.
+    (defun imalison:org-mem-tip-if-empty-when-ready (original &rest args)
+      (unless (and (hash-table-empty-p org-mem--truename<>metadata)
+                   (el-job-ng-busy-p 'org-mem))
+        (apply original args)))
+    (advice-add 'org-mem-tip-if-empty :around
+                #'imalison:org-mem-tip-if-empty-when-ready)
+    (org-mem-updater-mode +1)))
 
 (use-package org-node
   :after org-mem
