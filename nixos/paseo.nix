@@ -44,10 +44,61 @@ makeEnable config "myModules.paseo" false {
       # found inactive while multi-user.target is up.
       upheldBy = ["multi-user.target"];
       preStart = let
-        ensurePaseoMcpInjection = import ../nix-shared/ensure-paseo-mcp-injection.nix {inherit pkgs;};
+        ensurePaseoDaemonSettings = import ../nix-shared/ensure-paseo-daemon-settings.nix {
+          inherit pkgs;
+          settings = {
+            daemon.mcp.injectIntoAgents = true;
+
+            # Live Voice reads these files fresh at the start of every call and
+            # injects them as context, so the voice chief of staff knows how the
+            # org repo is laid out and what is currently going on without being
+            # told each time. Keep the list short: each file is capped at ~12KiB
+            # and the set at ~32KiB, and everything here competes with the agent
+            # and workspace snapshots for the same startup budget. Live task
+            # state is not here on purpose -- gtd.org alone is 100KiB+ and would
+            # be truncated. Ask the agenda through a tool or a delegated session
+            # instead.
+            liveVoice = {
+              defaultContextProfile = "life";
+              contextProfiles = [
+                {
+                  id = "life";
+                  label = "Life";
+                  files = [
+                    "~/org/AGENTS.md"
+                    "~/org/agents/profile.org"
+                    "~/org/planning/context.org"
+                  ];
+                  instructions = ''
+                    You are Ivan's chief of staff for life logistics as well as
+                    code. The files above describe how his org-mode GTD system
+                    is organized, how he works, and what is currently going on.
+                    Treat them as background, not as a script to read back.
+
+                    Anything he mentions wanting to do, remember, or follow up
+                    on is a capture: route it into his inbox rather than holding
+                    it in the conversation. Route real work to sessions that can
+                    reach the files -- you are in a plain directory and should
+                    not try to read or edit org files yourself.
+                  '';
+                }
+                {
+                  id = "work";
+                  label = "Work";
+                  files = [];
+                  instructions = ''
+                    Keep this call on the technical work being discussed. Do not
+                    bring up personal tasks, agenda items, or life logistics
+                    unless Ivan raises them.
+                  '';
+                }
+              ];
+            };
+          };
+        };
       in
         lib.mkAfter ''
-          ${ensurePaseoMcpInjection} ${lib.escapeShellArg "${config.services.paseo.dataDir}/config.json"}
+          ${ensurePaseoDaemonSettings} ${lib.escapeShellArg "${config.services.paseo.dataDir}/config.json"}
         '';
     }
     (lib.mkIf config.myModules.tailscale.enable {
