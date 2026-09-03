@@ -20,6 +20,7 @@ SOCKET=nixos-switch
 SESSION=switch
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/nixos-switch"
 LOG="$STATE_DIR/switch.log"
+STATUS="$STATE_DIR/switch.status"
 TMUX=/run/current-system/sw/bin/tmux
 
 if ! mkdir -p "$STATE_DIR" || ! touch "$LOG"; then
@@ -30,7 +31,7 @@ if ! mkdir -p "$STATE_DIR" || ! touch "$LOG"; then
 fi
 
 attach_or_tail() {
-	if [ -t 1 ]; then
+	if [ -t 1 ] && [ -n "${TERM:-}" ] && [ "$TERM" != dumb ]; then
 		exec "$TMUX" -L "$SOCKET" attach -t "$SESSION"
 	else
 		echo "Following $LOG (attach with: tmux -L $SOCKET attach -t $SESSION)"
@@ -38,13 +39,30 @@ attach_or_tail() {
 		# keeps the pane itself around for later inspection.
 		local pane_pid
 		pane_pid=$("$TMUX" -L "$SOCKET" display-message -p -t "$SESSION" '#{pane_pid}')
-		exec tail -f --pid="$pane_pid" "$LOG"
+		tail -f --pid="$pane_pid" "$LOG" || true
+		if [ -r "$STATUS" ]; then
+			local switch_status
+			switch_status=$(<"$STATUS")
+			if [[ "$switch_status" = <-> ]]; then
+				exit "$switch_status"
+			fi
+		fi
+		echo "Switch ended without a valid status in $STATUS." >&2
+		exit 1
 	fi
 }
 
 if "$TMUX" -L "$SOCKET" has-session -t "$SESSION" 2>/dev/null; then
-	echo "A switch session already exists on socket '$SOCKET'."
-	attach_or_tail
+	pane_dead=$(
+		"$TMUX" -L "$SOCKET" display-message -p -t "$SESSION" '#{pane_dead}'
+	)
+	if [ "$pane_dead" = 1 ]; then
+		echo "Removing completed switch session on socket '$SOCKET'."
+		"$TMUX" -L "$SOCKET" kill-session -t "$SESSION"
+	else
+		echo "A switch is already running on socket '$SOCKET'."
+		attach_or_tail
+	fi
 fi
 
 # Quote the switch arguments for re-use inside the tmux command string.
@@ -53,7 +71,9 @@ for arg in "$@"; do
 	args="$args ${(q)arg}"
 done
 
-inner="cd /srv/dotfiles/nixos && just switch$args 2>&1 | tee ${(q)LOG}; echo \"[safe_switch] exit \$pipestatus[1]\" | tee -a ${(q)LOG}"
+truncate -s 0 "$LOG"
+rm -f "$STATUS"
+inner="cd /srv/dotfiles/nixos || exit 1; just switch$args 2>&1 | tee ${(q)LOG}; switch_status=\$pipestatus[1]; echo \"[safe_switch] exit \$switch_status\" | tee -a ${(q)LOG}; print -r -- \$switch_status > ${(q)STATUS}; exit \$switch_status"
 
 # systemd-run --user guarantees the tmux server (spawned on first use of this
 # socket) lands in the user manager's cgroup, not the caller's. If the server
