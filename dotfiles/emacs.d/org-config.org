@@ -1311,10 +1311,15 @@ object the agent prints on stdout is used to fill in the card.")
      "Reply with a single JSON object and nothing else, with exactly these keys:\n"
      "  \"definition\": one concise sentence defining the word, written as a"
      " dictionary gloss. Do not restate the word itself.\n"
+     "  \"closest\": the single most ordinary everyday word that comes"
+     " closest to the same meaning, as one lowercase word with no punctuation."
+     " Pick the plain word someone would otherwise reach for; it should be"
+     " close enough to be worth replacing, not an exact synonym.\n"
      "  \"example\": one natural sentence that uses the word correctly and"
      " makes its meaning clear from context.\n\n"
-     "Write both values as complete sentences, capitalized and ending with a"
-     " period. If the word has several distinct senses, use the most common one."
+     "Write the definition and example as complete sentences, capitalized and"
+     " ending with a period. If the word has several distinct senses, use the"
+     " most common one."
      (when context
        (concat "\n\nThe word was encountered here; prefer the sense it has"
                " in this context:\n" context))))
@@ -1374,6 +1379,7 @@ object the agent prints on stdout is used to fill in the card.")
           (marker (imalison:org-vocabulary--find id)))
       (cond
        ((not (and (stringp (alist-get 'definition parsed))
+                  (stringp (alist-get 'closest parsed))
                   (stringp (alist-get 'example parsed))))
         (imalison:org-vocabulary--set-status id "failed")
         (message "Could not look up %s: %s" word
@@ -1382,8 +1388,9 @@ object the agent prints on stdout is used to fill in the card.")
         (org-with-point-at marker
           (org-entry-delete (point) "VOCAB_FILL")
           (org-end-of-meta-data t)
-          (insert (format "%s\n\nExample: %s\n\n"
+          (insert (format "%s\n\nClosest: %s\n\nExample: %s\n\n"
                           (alist-get 'definition parsed)
+                          (alist-get 'closest parsed)
                           (alist-get 'example parsed)))
           (save-buffer))
         (message "Filled in the vocabulary card for %s" word)))))
