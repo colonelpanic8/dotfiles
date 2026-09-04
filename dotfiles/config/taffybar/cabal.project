@@ -1,6 +1,7 @@
 packages:
   .
   taffybar/
+  taffybar/packages/xdg-desktop-entry
   taffybar/packages/gtk-scaling-image
   taffybar/packages/gtk-sni-tray
   taffybar/packages/gtk-strut
