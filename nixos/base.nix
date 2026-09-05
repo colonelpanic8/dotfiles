@@ -47,7 +47,7 @@ makeEnable config "myModules.base" true {
   };
   networking.resolvconf.enable = false;
   services.resolved.enable = true;
-  services.mullvad-vpn.enable = true;
+  services.mullvad-vpn.enable = false;
 
   # Audio
 

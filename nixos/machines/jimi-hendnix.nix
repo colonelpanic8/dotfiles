@@ -73,19 +73,22 @@ in {
   # This also enables v4l2loopback
   programs.droidcam.enable = true;
 
+  # The SN770 migration never completed: its ESP still carries the UUID cloned
+  # from the SATA rescue disk, and its root holds a stale store copy. Boot from
+  # the Intel 660p until the migration is redone offline.
   fileSystems."/" = {
-    device = "/dev/disk/by-uuid/8f024ed1-116e-48cf-a229-1d6aaf978cad";
+    device = "/dev/disk/by-uuid/64a7c1f5-727a-413c-81a2-cb108728cff6";
     fsType = "ext4";
   };
 
   fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/A19C-7D42";
+    device = "/dev/disk/by-uuid/EE25-DC15";
     fsType = "vfat";
   };
 
-  # Former Intel 660p system root; retain it read-only as a rollback copy.
-  fileSystems."/mnt/old-nixos" = {
-    device = "/dev/disk/by-id/nvme-INTEL_SSDPEKNW010T8_PHNH2114027E1P0B-part2";
+  # Partial SN770 migration target; keep it inspectable but never required.
+  fileSystems."/mnt/sn770-nixos" = {
+    device = "/dev/disk/by-uuid/8f024ed1-116e-48cf-a229-1d6aaf978cad";
     fsType = "ext4";
     options = [
       "ro"

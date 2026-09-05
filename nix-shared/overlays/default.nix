@@ -186,7 +186,9 @@ final: prev: {
     };
   });
 
-  rofi-pass = prev.rofi-pass.overrideAttrs (_: {
+  # rofi-pass was removed from nixpkgs; build our fork directly.
+  rofi-pass = prev.stdenv.mkDerivation {
+    pname = "rofi-pass";
     version = "git-0fb508a";
     src = prev.fetchFromGitHub {
       owner = "colonelpanic8";
@@ -194,6 +196,15 @@ final: prev: {
       rev = "0fb508a93ab5f653b63d68ce569e79c8bb27e87b";
       sha256 = "sha256-49kdaqCp6O4RrZMbAKYJKDJaAzHBUqYZT2O7OjtQ8W0=";
     };
+    nativeBuildInputs = [ prev.makeWrapper ];
+    dontBuild = true;
+    installPhase = ''
+      runHook preInstall
+      install -Dm755 rofi-pass $out/bin/rofi-pass
+      install -Dm755 addpass $out/bin/addpass
+      install -Dm644 config.example $out/share/doc/rofi-pass/config.example
+      runHook postInstall
+    '';
     fixupPhase = ''
       runHook preFixup
 
@@ -220,7 +231,7 @@ final: prev: {
 
       runHook postFixup
     '';
-  });
+  };
 
   wyoming-satellite = prev.wyoming-satellite.overridePythonAttrs (oldAttrs: {
     src = prev.fetchFromGitHub {
