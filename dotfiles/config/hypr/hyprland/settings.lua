@@ -87,7 +87,7 @@ function M.setup(ctx)
   if enable_hyprwinview and not verify_config then
     hl.plugin.load("/run/current-system/sw/lib/libhyprwinview.so")
   end
-  if enable_hyprtasking and not verify_config then
+  if enable_hyprtasking and not enable_hyprwinview and not verify_config then
     hl.plugin.load("/run/current-system/sw/lib/libhyprtasking.so")
   end
   if enable_hyprexpo and not enable_hyprtasking and not verify_config then

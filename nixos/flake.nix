@@ -207,7 +207,7 @@
     };
 
     hyprwinview = {
-      url = "github:colonelpanic8/hyprwinview/26f4a0191aa147eb47a91a9d8053fbd9bf428a24";
+      url = "github:colonelpanic8/hyprwinview/25d608ae01748621c11444f36d0232492bb97833";
       inputs.hyprland.follows = "hyprland";
     };
 

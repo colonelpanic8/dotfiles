@@ -242,12 +242,12 @@
   hyprexpo = inputs.hyprexpo.packages.${system}.hyprexpo;
   hyprwinview = hyprlandPluginsForBase.mkHyprlandPlugin {
     pluginName = "hyprwinview";
-    version = "0.1.0";
+    version = "0.2.0";
     src = inputs.hyprwinview;
     inherit (baseHyprlandPackage) nativeBuildInputs;
     buildInputs = [pkgs.librsvg];
     meta = {
-      description = "A window overview plugin for Hyprland";
+      description = "Window and workspace overviews for Hyprland";
       homepage = "https://github.com/colonelpanic8/hyprwinview";
       license = lib.licenses.bsd3;
       platforms = lib.platforms.linux;
