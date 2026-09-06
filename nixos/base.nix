@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   pkgs,
   makeEnable,
   realUsers,
@@ -48,6 +49,37 @@ makeEnable config "myModules.base" true {
   networking.resolvconf.enable = false;
   services.resolved.enable = true;
   services.mullvad-vpn.enable = false;
+
+  # Mullvad's kill-switch outlives the daemon. With lockdown mode on, the daemon
+  # applies a "Blocked. Blocking LAN" nftables policy at startup, and if it then
+  # cannot resolve its own API it never leaves that state -- the block prevents
+  # the DNS the daemon needs to lift the block. Past its start limit systemd
+  # stops restarting it and the `mullvad` table is stranded, dropping all
+  # traffic including LAN. It presents as broken DNS. Re-assert lockdown off
+  # every time the daemon starts.
+  systemd.services.mullvad-disable-lockdown = lib.mkIf config.services.mullvad-vpn.enable {
+    description = "Force Mullvad lockdown mode off";
+    after = ["mullvad-daemon.service"];
+    requires = ["mullvad-daemon.service"];
+    partOf = ["mullvad-daemon.service"];
+    wantedBy = ["mullvad-daemon.service"];
+    path = [pkgs.coreutils config.services.mullvad-vpn.package];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    # The daemon's management socket is not up the instant the unit starts.
+    script = ''
+      for _ in $(seq 1 60); do
+        if mullvad lockdown-mode set off >/dev/null 2>&1; then
+          exit 0
+        fi
+        sleep 2
+      done
+      echo "timed out waiting for the mullvad management interface" >&2
+      exit 1
+    '';
+  };
 
   # Audio
 
