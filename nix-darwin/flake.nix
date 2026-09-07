@@ -154,7 +154,8 @@
       ...
     }: let
       essentialPkgs = (import ../nix-shared/system/essential.nix {inherit pkgs lib inputs;}).environment.systemPackages;
-      paseoHome = "${homeForUser primaryUser}/.paseo";
+      paseoUser = targetPrimaryUser;
+      paseoHome = "${homeForUser paseoUser}/.paseo";
       paseoPackage = inputs.paseo.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
         postInstall =
           (old.postInstall or "")
@@ -232,7 +233,7 @@
         };
         secrets.paseo-password-environment = {
           file = ../nixos/secrets/paseo-password-environment.age;
-          owner = primaryUser;
+          owner = paseoUser;
           mode = "0400";
         };
       };
@@ -324,21 +325,21 @@
       launchd.daemons.paseo = {
         serviceConfig = {
           ProgramArguments = ["${paseoDaemon}"];
-          UserName = primaryUser;
+          UserName = paseoUser;
           GroupName = "staff";
-          WorkingDirectory = homeForUser primaryUser;
+          WorkingDirectory = homeForUser paseoUser;
           EnvironmentVariables = {
-            HOME = homeForUser primaryUser;
-            USER = primaryUser;
-            LOGNAME = primaryUser;
+            HOME = homeForUser paseoUser;
+            USER = paseoUser;
+            LOGNAME = paseoUser;
             SHELL = "/bin/zsh";
             NODE_ENV = "production";
             PASEO_HOME = paseoHome;
             PASEO_HOSTNAMES = config.networking.hostName;
             PATH = lib.concatStringsSep ":" [
-              "${homeForUser primaryUser}/.nix-profile/bin"
-              "${homeForUser primaryUser}/.local/state/nix/profile/bin"
-              "/etc/profiles/per-user/${primaryUser}/bin"
+              "${homeForUser paseoUser}/.nix-profile/bin"
+              "${homeForUser paseoUser}/.local/state/nix/profile/bin"
+              "/etc/profiles/per-user/${paseoUser}/bin"
               "/run/current-system/sw/bin"
               "/nix/var/nix/profiles/default/bin"
               "/opt/homebrew/bin"
@@ -351,8 +352,8 @@
           KeepAlive = true;
           ProcessType = "Background";
           ThrottleInterval = 10;
-          StandardOutPath = "${homeForUser primaryUser}/Library/Logs/paseo-daemon.log";
-          StandardErrorPath = "${homeForUser primaryUser}/Library/Logs/paseo-daemon.err.log";
+          StandardOutPath = "${homeForUser paseoUser}/Library/Logs/paseo-daemon.log";
+          StandardErrorPath = "${homeForUser paseoUser}/Library/Logs/paseo-daemon.err.log";
         };
       };
 
