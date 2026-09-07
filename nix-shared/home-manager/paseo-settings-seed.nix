@@ -8,10 +8,11 @@
     version = 1;
 
     app.keyboardShortcutOverrides = {
-      "command-center.shortcut:models:claude:claude-fable-5" = "F13";
-      "command-center.shortcut:models:claude:claude-opus-5" = "F14";
+      "command-center.shortcut:models:claude:claude-fable-5-1" = "F13";
+      "command-center.shortcut:models:codex:gpt-6-astra" = "F14";
       "command-center.shortcut:models:codex:gpt-5.6-sol" = "F15";
       "command-center.shortcut:models:codex:gpt-5.6-luna" = "F16";
+      "command-center.shortcut:models:claude:claude-opus-5" = "F20";
       "command-center.shortcut:thinking:low" = "F17";
       "command-center.shortcut:thinking:medium" = "F18";
       "command-center.shortcut:thinking:high" = "F19";

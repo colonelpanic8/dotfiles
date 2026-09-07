@@ -48,6 +48,38 @@ makeEnable config "myModules.paseo" false {
           inherit pkgs;
           settings = {
             daemon.mcp.injectIntoAgents = true;
+            daemon.agentProfiles = [
+              {
+                id = "legacy_favorite:claude:claude-fable-5-1";
+                name = "Fable 5.1";
+                provider = "claude";
+                model = "claude-fable-5-1";
+              }
+              {
+                id = "legacy_favorite:codex:gpt-6-astra";
+                name = "GPT-6-Astra";
+                provider = "codex";
+                model = "gpt-6-astra";
+              }
+              {
+                id = "legacy_favorite:codex:gpt-5.6-sol";
+                name = "GPT-5.6-Sol";
+                provider = "codex";
+                model = "gpt-5.6-sol";
+              }
+              {
+                id = "legacy_favorite:codex:gpt-5.6-luna";
+                name = "GPT-5.6-Luna";
+                provider = "codex";
+                model = "gpt-5.6-luna";
+              }
+              {
+                id = "legacy_favorite:claude:claude-opus-5";
+                name = "Opus 5";
+                provider = "claude";
+                model = "claude-opus-5";
+              }
+            ];
 
             # Live Voice reads these files fresh at the start of every call and
             # injects them as context, so the voice chief of staff knows how the
