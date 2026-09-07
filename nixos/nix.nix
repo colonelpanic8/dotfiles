@@ -20,6 +20,7 @@
   config = {
     home-manager.users = lib.genAttrs realUsers (_: {});
     home-manager.extraSpecialArgs = {
+      inherit (config.myModules) primaryUser;
       nixos = {
         inherit specialArgs config;
       };

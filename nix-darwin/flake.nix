@@ -602,7 +602,7 @@
         useUserPackages = true;
         backupFileExtension = "hm-backup";
         extraSpecialArgs = {
-          inherit inputs libDir;
+          inherit inputs libDir primaryUser;
         };
         sharedModules = sharedHomeModules;
         users = lib.genAttrs enabledHomeUsers (_: {});

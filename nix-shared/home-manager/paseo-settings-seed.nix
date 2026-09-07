@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  primaryUser,
   ...
 }: let
   settingsSeed = {
@@ -29,7 +30,7 @@
 
   settingsSeedJson = builtins.toJSON settingsSeed;
 in
-  lib.mkIf (config.home.username == "imalison") (lib.mkMerge [
+  lib.mkIf (config.home.username == primaryUser) (lib.mkMerge [
     (lib.mkIf pkgs.stdenv.isLinux {
       xdg.configFile."paseo/settings-seed.json".text = settingsSeedJson;
     })

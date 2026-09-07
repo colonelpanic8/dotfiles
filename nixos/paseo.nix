@@ -11,7 +11,7 @@ makeEnable config "myModules.paseo" false {
 
   services.paseo = {
     enable = true;
-    user = "imalison";
+    user = config.myModules.primaryUser;
     group = "users";
     listenAddress = "0.0.0.0";
     port = 6767;
@@ -139,7 +139,7 @@ makeEnable config "myModules.paseo" false {
     })
   ];
 
-  home-manager.users.imalison.imports = [
+  home-manager.users.${config.myModules.primaryUser}.imports = [
     ../nix-shared/home-manager/paseo-settings-seed.nix
   ];
 }

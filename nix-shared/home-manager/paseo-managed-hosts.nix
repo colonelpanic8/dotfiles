@@ -70,30 +70,29 @@
     mv "$temporary" "$registry_path"
     trap - EXIT
   '';
-in
-  lib.mkIf (lib.elem config.home.username ["imalison" "kat"]) {
-    age.secrets.paseo-password-environment.file = ../../nixos/secrets/paseo-password-environment.age;
+in {
+  age.secrets.paseo-password-environment.file = ../../nixos/secrets/paseo-password-environment.age;
 
-    systemd.user.services.paseo-managed-hosts = lib.mkIf pkgs.stdenv.isLinux {
-      Unit = {
-        Description = "Render the agenix-backed Paseo fleet registry";
-        After = ["agenix.service"];
-      };
-      Install.WantedBy = ["default.target"];
-      Service = {
-        Type = "oneshot";
-        ExecStart = "${renderRegistry}";
-      };
+  systemd.user.services.paseo-managed-hosts = lib.mkIf pkgs.stdenv.isLinux {
+    Unit = {
+      Description = "Render the agenix-backed Paseo fleet registry";
+      After = ["agenix.service"];
     };
+    Install.WantedBy = ["default.target"];
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${renderRegistry}";
+    };
+  };
 
-    launchd.agents.paseo-managed-hosts = lib.mkIf pkgs.stdenv.isDarwin {
-      enable = true;
-      domain = "user";
-      config = {
-        ProgramArguments = ["${renderRegistry}"];
-        RunAtLoad = true;
-        StandardOutPath = "${config.home.homeDirectory}/Library/Logs/paseo-managed-hosts.log";
-        StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/paseo-managed-hosts.err.log";
-      };
+  launchd.agents.paseo-managed-hosts = lib.mkIf pkgs.stdenv.isDarwin {
+    enable = true;
+    domain = "user";
+    config = {
+      ProgramArguments = ["${renderRegistry}"];
+      RunAtLoad = true;
+      StandardOutPath = "${config.home.homeDirectory}/Library/Logs/paseo-managed-hosts.log";
+      StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/paseo-managed-hosts.err.log";
     };
-  }
+  };
+}
