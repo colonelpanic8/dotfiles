@@ -550,10 +550,12 @@
           "https://cache.nixos.org"
           "https://codex-cli.cachix.org"
           "https://claude-code.cachix.org"
+          "https://paseo-colonelpanic8.cachix.org"
         ];
         trusted-public-keys = [
           "codex-cli.cachix.org-1:1Br3H1hHoRYG22n//cGKJOk3cQXgYobUel6O8DgSing="
           "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="
+          "paseo-colonelpanic8.cachix.org-1:fxfDiskEv5JT+xX3CbXBUAWblc+234mDeodXDi7eY1k="
         ];
       };
       nix.gc = {
