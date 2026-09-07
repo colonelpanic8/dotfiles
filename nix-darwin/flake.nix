@@ -155,8 +155,22 @@
     }: let
       essentialPkgs = (import ../nix-shared/system/essential.nix {inherit pkgs lib inputs;}).environment.systemPackages;
       paseoHome = "${homeForUser primaryUser}/.paseo";
-      paseoPackage = inputs.paseo.packages.${pkgs.stdenv.hostPlatform.system}.default;
-      paseoDesktopPackage = inputs.paseo.packages.${pkgs.stdenv.hostPlatform.system}.desktop;
+      paseoPackage = inputs.paseo.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
+        postInstall =
+          (old.postInstall or "")
+          + ''
+            # Runtime tracing misses node-pty's dynamically loaded native files.
+            for path in {node_modules,packages/server/node_modules}/node-pty/{build/Release,prebuilds/darwin-arm64}/{pty.node,spawn-helper}; do
+              [ -f "$path" ] || continue
+              mkdir -p "$out/lib/paseo/$(dirname "$path")"
+              cp -p "$path" "$out/lib/paseo/$path"
+            done
+            node -e "require('$out/lib/paseo/packages/server/node_modules/node-pty')"
+          '';
+      });
+      paseoDesktopPackage = inputs.paseo.packages.${pkgs.stdenv.hostPlatform.system}.desktop.override {
+        paseo = paseoPackage;
+      };
       ensurePaseoMcpInjection = import ../nix-shared/ensure-paseo-mcp-injection.nix {inherit pkgs;};
       paseoDaemon = pkgs.writeShellScript "paseo-daemon" ''
         set -eu
