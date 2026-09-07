@@ -147,6 +147,17 @@ timeout 30s du -xh --max-depth=1 "$HOME/.local/share" 2>/dev/null | sort -h
 
 Machine-specific heavy hitters seen in practice:
 
+- 2026-09-06 `mac-demarco-mini`: `~/Library/Logs/git-sync-rs.log` reached
+  30.5 GiB and exhausted the shared APFS container, crashing Paseo with
+  `ENOSPC`. The watcher repeatedly failed on missing Claude `plans` and
+  `tasks` directories. Stop the watcher before archiving its log; streaming
+  `gzip -1 -c` over SSH to another host preserved the entire log in 403 MiB.
+  Verify the decompressed byte count and SHA-256 against the source before
+  removing it. At 106 MiB free, both shell redirection and `truncate -s 0`
+  failed with `ENOSPC`; unlinking the verified, archived log succeeded and
+  recovered about 31 GiB. Restore the missing watch directories before
+  restarting the watcher. The Linux `safe_ncdu` helper currently fails on
+  this Mac because `findmnt` is unavailable; record that coverage gap.
 - 2026-07-24 `ryzen-shine` online partition reclaim: GPT partition numbers
   were not in physical order. `/boot` (`nvme0n1p3`) and root
   (`nvme0n1p4`) physically preceded the obsolete Microsoft-reserved
