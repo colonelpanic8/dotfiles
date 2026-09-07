@@ -56,7 +56,7 @@
   exportGmcliTelephonyArchive = pkgs.writeShellScript "export-gmcli-telephony-archive" ''
     set -euo pipefail
     ${gmcliPackage}/bin/gmcli android export-telephony \
-      --adb ${pkgs.android-tools}/bin/adb \
+      --adb ${pkgs.androidenv.androidPkgs.platform-tools}/bin/adb \
       --out ${lib.escapeShellArg gmcliTelephonyOutput} \
       --force --include-part-data=false
     ${gmcliPackage}/bin/gmcli android verify-telephony --dir ${lib.escapeShellArg gmcliTelephonyOutput}
@@ -64,7 +64,7 @@
   exportGmcliTelephonyFullArchive = pkgs.writeShellScript "export-gmcli-telephony-full-archive" ''
     set -euo pipefail
     ${gmcliPackage}/bin/gmcli android export-telephony \
-      --adb ${pkgs.android-tools}/bin/adb \
+      --adb ${pkgs.androidenv.androidPkgs.platform-tools}/bin/adb \
       --out ${lib.escapeShellArg gmcliTelephonyFullOutput} \
       --force --include-part-data=true
     ${gmcliPackage}/bin/gmcli android verify-telephony --dir ${lib.escapeShellArg gmcliTelephonyFullOutput}
