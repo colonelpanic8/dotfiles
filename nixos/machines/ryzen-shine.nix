@@ -44,9 +44,7 @@
   };
   services.mullvad-vpn.enable = lib.mkForce false;
   myModules.nixified-ai.enable = true;
-  # NVIDIA 595.71.05 predates Linux 7.2's DRM API changes. Keep this host on
-  # the maintained LTS kernel while the driver remains pinned below.
-  boot.kernelPackages = pkgs.linuxPackages_6_18;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # MemTest86 2026-08-16 (/boot/MemTest86-Report-20260816-215525_934520.html):
   # 193 errors, every one a bit-31 flip, at five addresses inside a 25KB window
@@ -111,26 +109,33 @@
   hardware.nvidia.modesetting.enable = true;
 
   # The open module otherwise leaves this GPU at a 256 MiB BAR1 aperture and
-  # eventually exhausts its mapping VA space. The RTX 3070 Ti advertises BAR1
-  # sizes through 8 GiB, so let the driver select the largest size that fits.
+  # eventually exhausts its mapping VA space. When that happens, BAR1 VA runs
+  # out under Hyprland plus Chrome on the 3440x1440 panel, nvidia-drm can no
+  # longer map the framebuffer ("dmaAllocMapping_GM107: can't alloc VA space",
+  # NV_ERR_NO_MEMORY out of kern_bus_gm107.c:3141 on pBar1VaInfo), the atomic
+  # modeset fails -EAGAIN, the display engine wedges (Xid 16, Head 3), and the
+  # GPU lands in NV_ERR_RESET_REQUIRED needing a reboot. Seen 2026-08-29
+  # onward; 2026-09-07 wedged nine minutes into the boot.
+  #
+  # This parameter is INERT until "Above 4G Decoding" is enabled in the BIOS
+  # (Advanced -> PCI Subsystem Settings, alongside Re-Size BAR Support; needs
+  # CSM disabled under Boot). Without it the firmware hands the kernel no MMIO
+  # window above 4 GiB -- every root bus window sits below 0x100000000 -- so
+  # the driver's resize attempts from 8 GiB down to 512 MiB all fail with
+  # "can't assign; no space" and BAR1 falls back to 256 MiB regardless.
+  # Verify after changing the BIOS:
+  #   journalctl -k -b | grep 'nvidia.*BAR 1'  # want "assigned", not "failed"
+  #   lspci -v -s 0a:00.0 | grep prefetchable  # want an 8G prefetchable region
   hardware.nvidia.moduleParams.nvidia.NVreg_EnableResizableBar = 1;
 
-  # Pin the NVIDIA driver to 595.71.05 on this host only. nixpkgs' production
-  # driver moved 595.71.05 -> 595.80 (nixpkgs 9b366138, 2026-06-02), and 595.80
-  # introduced a GSP-firmware regression on this RTX 3070 Ti (GA104): random hard
-  # freezes with "GSP RM heartbeat timed out" / Xid 119 GSP RPC timeouts (see
-  # boots from 2026-06-08 onward). 595.71.05 ran cleanly for 4.5d before the bump,
-  # and the open module can't disable GSP, so we pin the last-good build directly.
-  # Hashes lifted from the parent of the nixpkgs bump commit. Revisit once a newer
-  # driver branch (e.g. the 610.x new_feature branch) is confirmed stable here.
-  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
-    version = "595.71.05";
-    sha256_64bit = "sha256-NiA7iWC35JyKQva6H1hjzeNKBek9KyS3mK8G3YRva4I=";
-    sha256_aarch64 = "sha256-XzKloS00dFKTd4ATWkTIhm9eG/OzR/Sim6MboNZWPu8=";
-    openSha256 = "sha256-Lfz71QWKM6x/jD2B22SWpUi7/og30HRlXg1kL3EWzEw=";
-    settingsSha256 = "sha256-mXnf3jyvznfB3OfKd657rxv0rYHQb/dX/Riw/+N9EKU=";
-    persistencedSha256 = "sha256-Z/6IvEEa/XfZ5F5qoSIPvXJLGtscYVqjFxHZaN/M2Ts=";
-  };
+  # 595.80 introduced a GSP-firmware regression on this RTX 3070 Ti (GA104):
+  # random hard freezes with "GSP RM heartbeat timed out" / Xid 119 GSP RPC
+  # timeouts (boots from 2026-06-08 onward). This host ran pinned to 595.71.05
+  # until 2026-09-08; that pin also held the kernel back on 6.18, since the
+  # driver predates Linux 7.2's DRM API changes. Moved to the new_feature
+  # branch instead, which the old pin's comment named as the thing to try.
+  # If the freezes return, that is the regression following us up a branch.
+  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.new_feature;
 
   hardware.graphics.enable32Bit = true;
 
