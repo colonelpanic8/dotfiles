@@ -447,6 +447,7 @@
         spotify
         spotifyWaylandPatch
         tor-browser
+        ytmdesktop
         xComPwa
         zulip
       ]);
