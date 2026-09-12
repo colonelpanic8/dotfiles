@@ -48,6 +48,7 @@ makeEnable config "myModules.paseo" false {
           inherit pkgs;
           settings = {
             daemon.mcp.injectIntoAgents = true;
+            agents.providers.opencode.enabled = true;
             daemon.agentProfiles = [
               {
                 id = "legacy_favorite:claude:claude-fable-5-1";
@@ -78,6 +79,13 @@ makeEnable config "myModules.paseo" false {
                 name = "Opus 5";
                 provider = "claude";
                 model = "claude-opus-5";
+              }
+              {
+                id = "legacy_favorite:opencode:muse-spark-1.3-contributor-free";
+                name = "Muse Spark 1.3 Free";
+                provider = "opencode";
+                model = "opencode/muse-spark-1.3-contributor-free";
+                modeId = "build";
               }
             ];
 
