@@ -176,6 +176,15 @@
         -e "s#^Exec=.*spotify\\( .*\\)\\?\$#Exec=$out/bin/spotify\\1#" \
         "$out/share/applications/spotify.desktop"
     '');
+  ytmdesktopWaylandPatch = lib.hiPrio (pkgs.runCommand "${pkgs.ytmdesktop.name}-wayland-patch" {
+      nativeBuildInputs = [pkgs.makeWrapper];
+    } ''
+      mkdir -p "$out/bin" "$out/share/applications"
+      makeWrapper ${pkgs.ytmdesktop}/bin/ytmdesktop "$out/bin/ytmdesktop" \
+        --set NIXOS_OZONE_WL 1 \
+        --add-flags '--password-store=gnome-libsecret'
+      cp ${pkgs.ytmdesktop}/share/applications/ytmdesktop.desktop "$out/share/applications/ytmdesktop.desktop"
+    '');
   vlc4Unwrapped = pkgs.callPackage ./packages/vlc4 {};
   vlc4 = pkgs.symlinkJoin {
     name = "${vlc4Unwrapped.name}-wayland";
@@ -447,7 +456,7 @@
         spotify
         spotifyWaylandPatch
         tor-browser
-        ytmdesktop
+        ytmdesktopWaylandPatch
         xComPwa
         zulip
       ]);
