@@ -7,10 +7,6 @@
 }: let
   gitSyncServicePath = lib.makeBinPath [pkgs.coreutils pkgs.git pkgs.openssh];
   gitSyncToml = pkgs.formats.toml {};
-  # Claude Code history sync is rolled out machine-by-machine; each new machine
-  # needs its existing history merged into the repo first.
-  claudeHistoryHosts = ["ryzen-shine" "railbird-sf" "jay-lenovo" "strixi-minaj"];
-  syncClaudeHistory = builtins.elem config.networking.hostName claudeHistoryHosts;
   gmcliPackage = inputs.gmcli.packages.${pkgs.stdenv.hostPlatform.system}.default;
   gmcliViewerBase = inputs.gmcli.packages.${pkgs.stdenv.hostPlatform.system}.gmcli-viewer;
   gmcliCookiePython = pkgs.python3.withPackages (ps: [ps.browser-cookie3]);
@@ -173,42 +169,29 @@ in {
         min_interval = 1.0;
         initial_sync = true;
       };
-      repositories =
-        [
-          {
-            name = "org";
-            path = config.home.homeDirectory + "/org";
-            uri = "git@github.com:IvanMalison/org.git";
-            watch = true;
-            interval = 30;
-          }
-          {
-            name = "password-store";
-            path = config.home.homeDirectory + "/.password-store";
-            uri = "git@github.com:IvanMalison/.password-store.git";
-            watch = true;
-          }
-          {
-            name = "gmcli-archive";
-            path = gmcliArchiveRoot;
-            uri = "git@github.com:colonelpanic8/gmcli-archive.git";
-            watch = true;
-            interval = 300;
-            min_interval = 30.0;
-          }
-        ]
-        ++ lib.optionals syncClaudeHistory [
-          {
-            name = "claude-history";
-            path = config.home.homeDirectory + "/.claude";
-            uri = "git@github.com:colonelpanic8/claude-history.git";
-            watch = true;
-            interval = 600;
-            min_interval = 300.0;
-            initial_sync = false;
-            watch_paths = ["projects" "history.jsonl" "plans" "tasks"];
-          }
-        ];
+      repositories = [
+        {
+          name = "org";
+          path = config.home.homeDirectory + "/org";
+          uri = "git@github.com:IvanMalison/org.git";
+          watch = true;
+          interval = 30;
+        }
+        {
+          name = "password-store";
+          path = config.home.homeDirectory + "/.password-store";
+          uri = "git@github.com:IvanMalison/.password-store.git";
+          watch = true;
+        }
+        {
+          name = "gmcli-archive";
+          path = gmcliArchiveRoot;
+          uri = "git@github.com:colonelpanic8/gmcli-archive.git";
+          watch = true;
+          interval = 300;
+          min_interval = 30.0;
+        }
+      ];
     };
   in {
     systemd.user.services = {

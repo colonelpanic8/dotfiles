@@ -30,16 +30,6 @@
         uri = "git@github.com:colonelpanic8/.password-store.git";
         watch = true;
       }
-      {
-        name = "claude-history";
-        path = "${config.home.homeDirectory}/.claude";
-        uri = "git@github.com:colonelpanic8/claude-history.git";
-        watch = true;
-        interval = 600;
-        min_interval = 300.0;
-        watch_paths = ["projects" "history.jsonl" "plans" "tasks"];
-      }
-      # Codex runtime state is intentionally not synchronized.
     ];
   };
 in {
