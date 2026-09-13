@@ -48,6 +48,12 @@ makeEnable config "myModules.paseo" false {
           inherit pkgs;
           settings = {
             daemon.mcp.injectIntoAgents = true;
+            # Self-hosted ntfy on jimi-hendnix (myModules.ntfy); the F-Droid
+            # app build cannot use Expo push.
+            daemon.push.ntfy = {
+              serverUrl = "http://jimi-hendnix:2586";
+              topic = "paseo-8ff72564";
+            };
             agents.providers.opencode.enabled = true;
             daemon.agentProfiles = [
               {
