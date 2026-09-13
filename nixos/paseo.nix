@@ -46,7 +46,7 @@ makeEnable config "myModules.paseo" false {
       preStart = let
         ensurePaseoDaemonSettings = import ../nix-shared/ensure-paseo-daemon-settings.nix {
           inherit pkgs;
-          settings = {
+          settings = lib.recursiveUpdate {
             daemon.mcp.injectIntoAgents = true;
             # Self-hosted ntfy on jimi-hendnix (myModules.ntfy); the F-Droid
             # app build cannot use Expo push.
@@ -144,7 +144,9 @@ makeEnable config "myModules.paseo" false {
                 }
               ];
             };
-          };
+            # Declarative plugins as Nix store directory sources; declared
+            # keys win, everything else in config.json survives.
+          } (import ../nix-shared/paseo-plugins.nix {inherit pkgs;}).daemonSettings;
         };
       in
         lib.mkAfter ''
