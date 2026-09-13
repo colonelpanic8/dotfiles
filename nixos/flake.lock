@@ -2227,11 +2227,11 @@
         "nixpkgs": "nixpkgs_11"
       },
       "locked": {
-        "lastModified": 1789254174,
-        "narHash": "sha256-JrvxBdFF2C+JaKSSvmBR1GsCe8qJ4F22foYuDcIvqhg=",
+        "lastModified": 1789264807,
+        "narHash": "sha256-zgyvHo+UjPg+27hEcFWUZM6uYKp6WhPLJ1Dacb+YE4o=",
         "owner": "colonelpanic8",
         "repo": "paseo",
-        "rev": "450d12158ff5dba87f3b496c9b72f8bda6470f0f",
+        "rev": "820a2d9093b5430174093cf834cf94bea0d26eae",
         "type": "github"
       },
       "original": {
