@@ -64,6 +64,11 @@
       };
     };
 
+    google-messages-bridge = {
+      url = "github:colonelpanic8/google-messages-multidevice-bridge";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     git-sync-rs = {
       url = "github:colonelpanic8/git-sync-rs";
       inputs = {

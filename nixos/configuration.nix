@@ -31,6 +31,7 @@
     ./github-agent-runner.nix
     ./gitea-runner.nix
     ./gitea.nix
+    ./google-messages.nix
     ./gnome.nix
     ./home-assistant.nix
     ./hermes-agent.nix

@@ -34,4 +34,5 @@ in {
   "tailscale-authkey.age".publicKeys = keys.sshClientKeys;
   "paseo-password-environment.age".publicKeys = keys.agenixKeys;
   "hermes-environment.age".publicKeys = keys.agenixKeys;
+  "google-messages-bridge-api-token.age".publicKeys = keys.agenixKeys;
 }

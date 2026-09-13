@@ -51,8 +51,10 @@ function M.setup(ctx)
       class = "Slack",
     },
     messages = {
-      command = "google-chrome-stable --profile-directory=Default --app=https://messages.google.com/web/conversations",
-      class = "chrome-messages.google.com",
+      -- Bridge desktop client (Tauri); replaces the messages.google.com
+      -- Chrome app now that the client is preseeded via Nix.
+      command = "google-messages-desktop",
+      class = "google-messages-desktop",
     },
     localsend = {
       command = "localsend_scratchpad",

@@ -785,6 +785,26 @@
         "type": "github"
       }
     },
+    "google-messages-bridge": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1789335959,
+        "narHash": "sha256-bdMiU3P/gPzRrQjAOCsR82xz6MnfzVDTn1wlo+bhIO0=",
+        "owner": "colonelpanic8",
+        "repo": "google-messages-multidevice-bridge",
+        "rev": "8b2767fc58e21394a502621e371d567165ac10de",
+        "type": "github"
+      },
+      "original": {
+        "owner": "colonelpanic8",
+        "repo": "google-messages-multidevice-bridge",
+        "type": "github"
+      }
+    },
     "grub2-themes": {
       "inputs": {
         "nixpkgs": [
@@ -2484,6 +2504,7 @@
         "git-ignore-nix": "git-ignore-nix",
         "git-sync-rs": "git-sync-rs",
         "gmcli": "gmcli",
+        "google-messages-bridge": "google-messages-bridge",
         "grub2-themes": "grub2-themes",
         "hermes-agent": "hermes-agent",
         "heroic-games-launcher": "heroic-games-launcher",
