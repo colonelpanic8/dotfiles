@@ -31,6 +31,7 @@ in {
   myModules.gitea-runner.enable = false;
   myModules.vscode.enable = true;
   myModules.kat.enable = true;
+  myModules.ntfy.enable = true;
   myModules.nvidia.enable = true;
   myModules.hyprland.ultrawideRefreshRate = 99.98;
   environment.systemPackages = [pkgs.wayvnc];

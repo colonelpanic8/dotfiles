@@ -45,6 +45,7 @@
     ./laptop.nix
     ./nix.nix
     ./notifications-tray-icon.nix
+    ./ntfy.nix
     ./nvidia.nix
     ./options.nix
     ./paseo.nix
