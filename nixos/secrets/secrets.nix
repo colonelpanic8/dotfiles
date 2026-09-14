@@ -35,4 +35,5 @@ in {
   "paseo-password-environment.age".publicKeys = keys.agenixKeys;
   "hermes-environment.age".publicKeys = keys.agenixKeys;
   "google-messages-bridge-api-token.age".publicKeys = keys.agenixKeys;
+  "google-messages-bridge-storage-key.age".publicKeys = keys.agenixKeys;
 }
