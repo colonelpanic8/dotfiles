@@ -9,126 +9,20 @@
   gitSyncToml = pkgs.formats.toml {};
   gmcliPackage = inputs.gmcli.packages.${pkgs.stdenv.hostPlatform.system}.default;
   gmcliViewerBase = inputs.gmcli.packages.${pkgs.stdenv.hostPlatform.system}.gmcli-viewer;
-  gmcliCookiePython = pkgs.python3.withPackages (ps: [ps.browser-cookie3]);
   gmcliArchiveRoot = "/home/imalison/Backups/gmcli/git-sync";
   gmcliArchiveBaseline = "${gmcliArchiveRoot}/archive";
-  gmcliLiveStore = "/home/imalison/.local/state/gmcli/devices/67091FDDJ0007B";
-  gmcliLive = "${gmcliPackage}/bin/gmcli --store ${lib.escapeShellArg gmcliLiveStore}";
   gmcliArchiveOutput = "${gmcliArchiveRoot}/sources/67091FDDJ0007B/archive";
   gmcliPixelTelephony = "/home/imalison/Backups/gmcli/devices/67091FDDJ0007B/2026-09-06-telephony";
   gmcliTelephonyFullOutput = "/home/imalison/Backups/gmcli/android-telephony-full";
   gmcliTelephonySnapshots = "/home/imalison/Backups/gmcli/devices";
   gmcliBackupLock = "/home/imalison/.local/state/gmcli/backup.lock";
   gmcliBackupLockDirectory = builtins.dirOf gmcliBackupLock;
-  gmcliSession = "${gmcliLiveStore}/session.json";
-  gmcliChromeCookieDB = "/home/imalison/.config/google-chrome/Default/Cookies";
-  refreshGmcliCookies = pkgs.writeShellScript "refresh-gmcli-cookies" ''
-        set -euo pipefail
-        umask 077
-        ${gmcliCookiePython}/bin/python -c '
-    import browser_cookie3
-    import json
-    import sys
-
-    cookies = browser_cookie3.chrome(
-        cookie_file=${builtins.toJSON gmcliChromeCookieDB},
-        domain_name=".google.com",
-    )
-    # libgm stores cookies as a name/value map, so including cookies from
-    # accounts.google.com, mail.google.com, etc. can overwrite the cookie for
-    # messages.google.com and make Google redirect to CookieMismatch.
-    messages_domains = {".google.com", "messages.google.com"}
-    json.dump(
-        {
-            cookie.name: cookie.value
-            for cookie in cookies
-            if cookie.domain in messages_domains
-        },
-        sys.stdout,
-    )
-    ' | ${gmcliLive} auth refresh-cookies --cookies-file -
-  '';
-  exportGmcliArchive = pkgs.writeShellScript "export-gmcli-archive" ''
-    set -euo pipefail
-    ${gmcliLive} export jsonl --out ${lib.escapeShellArg gmcliArchiveOutput} --force
-    ${gmcliLive} export verify --dir ${lib.escapeShellArg gmcliArchiveOutput}
-  '';
-  exportGmcliTelephonyArchive = pkgs.writeShellScript "export-gmcli-telephony-archive" ''
-    set -euo pipefail
-    ${gmcliPackage}/bin/gmcli android export-telephony \
-      --adb ${pkgs.androidenv.androidPkgs.platform-tools}/bin/adb \
-      --snapshot-root ${lib.escapeShellArg gmcliTelephonySnapshots} \
-      --include-part-data=false
-  '';
   exportGmcliTelephonyFullArchive = pkgs.writeShellScript "export-gmcli-telephony-full-archive" ''
     set -euo pipefail
     ${gmcliPackage}/bin/gmcli android export-telephony \
       --adb ${pkgs.androidenv.androidPkgs.platform-tools}/bin/adb \
       --snapshot-root ${lib.escapeShellArg gmcliTelephonySnapshots} \
       --include-part-data=true
-  '';
-  refreshGmcliArchiveUnlocked = pkgs.writeShellScript "refresh-gmcli-archive-unlocked" ''
-    set -uo pipefail
-    status=0
-    ${refreshGmcliCookies} || exit 1
-    # Never replace a healthy archive with an empty export after authentication
-    # or transport failure. A successful sync is the prerequisite for export.
-    if ! ${gmcliLive} sync --include-spam=false --include-archive=false; then
-      echo "gmcli sync failed; preserving the existing archive" >&2
-      exit 1
-    fi
-    ${exportGmcliArchive} || status=1
-    exit "$status"
-  '';
-  backfillGmcliArchiveUnlocked = pkgs.writeShellScript "backfill-gmcli-archive-unlocked" ''
-    set -uo pipefail
-    status=0
-    ${refreshGmcliCookies} || exit 1
-    if ! ${gmcliLive} sync; then
-      echo "gmcli sync failed; preserving the existing archive" >&2
-      exit 1
-    fi
-    exhausted=0
-    pass=1
-    while ((pass <= 20)); do
-      echo "Starting gmcli deep-history pass $pass/20"
-      result="$(${gmcliLive} --json history backfill-all --requests 20 --count 100)"
-      backfill_status=$?
-      metrics="$(${pkgs.jq}/bin/jq -er '[.messages_added, .failed, .needs_more] | @tsv' <<<"$result")" || {
-        echo "Unable to read coverage metrics from backfill result" >&2
-        status=1
-        break
-      }
-      IFS=$'\t' read -r added failed needs_more <<<"$metrics"
-      echo "Deep-history pass $pass added $added message(s); $needs_more conversation(s) need more"
-      if ((failed > 0)); then
-        echo "Deep-history pass failed for $failed conversation(s)" >&2
-        status=1
-        break
-      fi
-      if ((backfill_status != 0 && needs_more == 0)); then
-        echo "Deep-history command failed without resumable work" >&2
-        status=1
-        break
-      fi
-      if ((needs_more == 0)); then
-        exhausted=1
-        break
-      fi
-      ((pass++))
-    done
-    if ((status == 0 && exhausted == 0)); then
-      echo "Deep-history backfill hit the 20-pass safety cap before exhaustion" >&2
-      status=1
-    fi
-    if ((status == 0)); then
-      ${gmcliLive} coverage verify || status=1
-    fi
-    if ((status == 0)); then
-      ${exportGmcliArchive} || status=1
-    fi
-    ${exportGmcliTelephonyArchive} || status=1
-    exit "$status"
   '';
   withGmcliBackupLock = name: command:
     pkgs.writeShellScript name ''
@@ -141,7 +35,6 @@
       fi
       exec ${command}
     '';
-  refreshGmcliArchive = withGmcliBackupLock "refresh-gmcli-archive" refreshGmcliArchiveUnlocked;
   gmcliViewer = pkgs.symlinkJoin {
     name = "gmcli-viewer-with-managed-sync";
     paths = [gmcliViewerBase];
@@ -151,11 +44,9 @@
         --set GMCLI_ARCHIVE_DIR ${lib.escapeShellArg gmcliArchiveBaseline} \
         --set GMCLI_ADDITIONAL_RELAY_DIRS ${lib.escapeShellArg gmcliArchiveOutput} \
         --set GMCLI_ADDITIONAL_TELEPHONY_DIRS ${lib.escapeShellArg gmcliPixelTelephony} \
-        --set GMCLI_TELEPHONY_ARCHIVE_DIR ${lib.escapeShellArg gmcliTelephonyFullOutput} \
-        --set GMCLI_ARCHIVE_SYNC_COMMAND ${lib.escapeShellArg refreshGmcliArchive}
+        --set GMCLI_TELEPHONY_ARCHIVE_DIR ${lib.escapeShellArg gmcliTelephonyFullOutput}
     '';
   };
-  backfillGmcliArchive = withGmcliBackupLock "backfill-gmcli-archive" backfillGmcliArchiveUnlocked;
   backupGmcliTelephonyFull = withGmcliBackupLock "backup-gmcli-telephony-full" exportGmcliTelephonyFullArchive;
 in {
   environment.systemPackages = [gmcliViewer];
@@ -209,28 +100,6 @@ in {
           RestartSec = 5;
         };
       };
-      gmcli-archive-refresh = {
-        Unit = {
-          Description = "Sync Google Messages and refresh the JSONL archive";
-          ConditionPathExists = gmcliSession;
-        };
-        Service = {
-          Type = "oneshot";
-          ExecStart = refreshGmcliArchive;
-          TimeoutStartSec = "20min";
-        };
-      };
-      gmcli-archive-backfill = {
-        Unit = {
-          Description = "Deep-backfill Google Messages and refresh the JSONL archive";
-          ConditionPathExists = gmcliSession;
-        };
-        Service = {
-          Type = "oneshot";
-          ExecStart = backfillGmcliArchive;
-          TimeoutStartSec = "3h";
-        };
-      };
       gmcli-telephony-full-backup = {
         Unit.Description = "Back up complete Android SMS/MMS history and media";
         Service = {
@@ -239,26 +108,6 @@ in {
           TimeoutStartSec = "3h";
         };
       };
-    };
-
-    systemd.user.timers.gmcli-archive-refresh = {
-      Unit.Description = "Hourly Google Messages JSONL backup";
-      Timer = {
-        OnCalendar = "hourly";
-        Persistent = true;
-        RandomizedDelaySec = "5min";
-      };
-      Install.WantedBy = ["timers.target"];
-    };
-
-    systemd.user.timers.gmcli-archive-backfill = {
-      Unit.Description = "Daily deep Google Messages history backfill";
-      Timer = {
-        OnCalendar = "*-*-* 04:00:00";
-        Persistent = true;
-        RandomizedDelaySec = "2h";
-      };
-      Install.WantedBy = ["timers.target"];
     };
 
     systemd.user.timers.gmcli-telephony-full-backup = {
