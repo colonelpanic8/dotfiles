@@ -74,7 +74,7 @@ for running agents.
 - The trap is the repo that has no such `AGENTS.md`: the *fork* the assembled
   branch is pushed to, such as `colonelpanic8/rmk` (used by `glove80-rmk`).
   There the warning above is all you get.
-- Known stacks: `~/Projects/paseo-assembly` (see `./project-guides/paseo-assembly.md`),
+- Known stacks: `~/projects/paseo-assembly` (see `./project-guides/paseo-assembly.md`),
   `~/Projects/t3code-assembly` (see `./project-guides/t3code-assembly.md`),
   `~/Projects/rmk-assembly`.
 
