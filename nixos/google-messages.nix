@@ -25,10 +25,24 @@ let
     builtins.readFile "${inputs.google-messages-bridge}/internal/api/pairinghelper/manifest.json"
   );
   pairingHelperId = "epobdoolljeefagfcdolcadallpopeon";
-  pairingHelperExternal = pkgs.writeText "google-messages-pairing-helper-external.json" (
+  pairingHelperUpdateManifest = pkgs.writeText "google-messages-pairing-helper-updates.xml" ''
+    <?xml version="1.0" encoding="UTF-8"?>
+    <gupdate xmlns="http://www.google.com/update2/response" protocol="2.0">
+      <app appid="${pairingHelperId}">
+        <updatecheck codebase="file://${./assets/google-messages-pairing-helper.crx}" version="${pairingHelperManifest.version}" />
+      </app>
+    </gupdate>
+  '';
+  pairingHelperPolicy = pkgs.writeText "google-messages-pairing-helper-policy.json" (
     builtins.toJSON {
-      external_crx = "${./assets/google-messages-pairing-helper.crx}";
-      external_version = pairingHelperManifest.version;
+      ExtensionInstallForcelist = [
+        "${pairingHelperId};file://${pairingHelperUpdateManifest}"
+      ];
+      ExtensionSettings.${pairingHelperId} = {
+        installation_mode = "force_installed";
+        override_update_url = true;
+        update_url = "file://${pairingHelperUpdateManifest}";
+      };
     }
   );
 in
@@ -74,10 +88,15 @@ makeEnable config "myModules.googleMessages" true {
 
   };
 
-  system.activationScripts.googleMessagesPairingHelper = lib.mkIf isBridgeHost {
+  environment.etc."opt/chrome/policies/managed/google-messages-pairing-helper.json" =
+    lib.mkIf isBridgeHost
+      {
+        source = pairingHelperPolicy;
+      };
+
+  system.activationScripts.googleMessagesPairingHelperCleanup = lib.mkIf isBridgeHost {
     text = ''
-      install -d -m 0755 /opt/google/chrome/extensions
-      install -m 0644 ${pairingHelperExternal} /opt/google/chrome/extensions/${pairingHelperId}.json
+      rm -f /opt/google/chrome/extensions/${pairingHelperId}.json
     '';
   };
 
