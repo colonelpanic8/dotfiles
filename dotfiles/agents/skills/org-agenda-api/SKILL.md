@@ -43,8 +43,10 @@ Get all TODO items from agenda files.
 
 Query params:
 - `refresh`: `true` to git pull first
+- `q`: case-insensitive substring search across title, tags, todo state, and category; exact title matches rank before title-prefix matches
+- `limit`: positive integer cap applied after filtering and ranking
 
-Response includes `defaults` (with `notifyBefore`), `todos` array, and optionally `gitRefresh`.
+Response includes `defaults` (with `notifyBefore`), `todos` array, and optionally `gitRefresh`. When `q` or `limit` is supplied, `total` gives the matching count before the limit.
 
 ### GET /metadata
 Get all app metadata in a single request. Returns:
@@ -123,11 +125,14 @@ Body (use any combination to identify the item):
   "file": "/path/to/file.org",
   "pos": 12345,
   "title": "Task title",
-  "state": "DONE"
+  "state": "DONE",
+  "strict": true
 }
 ```
 
 Lookup order: id -> file+pos+title -> file+title -> title only
+
+`strict` defaults to `false`. When true, `id` is authoritative; without an id, `file` + `pos` + exact `title` must match, with no fallback. Strict lookup conflicts return HTTP 409. `/update` supports the same strict lookup behavior.
 
 ### POST /update
 Update a TODO's scheduled date, deadline, priority, tags, or properties.
