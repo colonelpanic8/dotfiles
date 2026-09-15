@@ -25,6 +25,12 @@ let
     builtins.readFile "${inputs.google-messages-bridge}/internal/api/pairinghelper/manifest.json"
   );
   pairingHelperId = "epobdoolljeefagfcdolcadallpopeon";
+  pairingHelperExternal = pkgs.writeText "google-messages-pairing-helper-external.json" (
+    builtins.toJSON {
+      external_crx = "${./assets/google-messages-pairing-helper.crx}";
+      external_version = pairingHelperManifest.version;
+    }
+  );
 in
 makeEnable config "myModules.googleMessages" true {
   imports = [ inputs.google-messages-bridge.nixosModules.default ];
@@ -66,12 +72,13 @@ makeEnable config "myModules.googleMessages" true {
       apiTokenFile = config.age.secrets.google-messages-bridge-api-token.path;
     };
 
-    xdg.configFile."google-chrome/External Extensions/${pairingHelperId}.json" = lib.mkIf isBridgeHost {
-      text = builtins.toJSON {
-        external_crx = "${./assets/google-messages-pairing-helper.crx}";
-        external_version = pairingHelperManifest.version;
-      };
-    };
+  };
+
+  system.activationScripts.googleMessagesPairingHelper = lib.mkIf isBridgeHost {
+    text = ''
+      install -d -m 0755 /opt/google/chrome/extensions
+      install -m 0644 ${pairingHelperExternal} /opt/google/chrome/extensions/${pairingHelperId}.json
+    '';
   };
 
   # Serve config is node-wide state owned by root, and re-applying it is
