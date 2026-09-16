@@ -112,6 +112,15 @@
       };
     };
 
+    mova = {
+      url = "github:colonelpanic8/mova";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+        org-agenda-api.follows = "org-agenda-api";
+      };
+    };
+
     lastfm-edit = {
       url = "github:colonelpanic8/lastfm-edit";
       inputs = {

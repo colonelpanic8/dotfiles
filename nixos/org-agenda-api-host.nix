@@ -84,6 +84,25 @@ in {
       default = "America/Los_Angeles";
       description = "Timezone for the container";
     };
+
+    webClient = mkOption {
+      type = types.nullOr types.path;
+      default = null;
+      description = ''
+        Static web client (e.g. mova's web export) to serve from the same
+        virtual hosts as the API, under `webClientPath`. The export bakes that
+        prefix into its asset URLs, so the two have to agree.
+      '';
+    };
+
+    webClientPath = mkOption {
+      type = types.str;
+      default = "/app";
+      description = ''
+        Path prefix the static web client is served under. Kept off `/` so
+        every API route on these hosts keeps reaching the container.
+      '';
+    };
   };
 
   config = mkIf cfg.enable {
@@ -105,19 +124,36 @@ in {
       recommendedGzipSettings = true;
 
       virtualHosts = let
+        webClientPrefix = removeSuffix "/" cfg.webClientPath;
         mkVirtualHost = domain: {
           name = domain;
           value = {
             enableACME = true;
             forceSSL = true;
-            locations."/" = {
-              proxyPass = "http://127.0.0.1:${toString containerPort}";
-              proxyWebsockets = true;
-              extraConfig = ''
-                proxy_read_timeout 300s;
-                proxy_connect_timeout 75s;
-              '';
-            };
+            locations =
+              {
+                "/" = {
+                  proxyPass = "http://127.0.0.1:${toString containerPort}";
+                  proxyWebsockets = true;
+                  extraConfig = ''
+                    proxy_read_timeout 300s;
+                    proxy_connect_timeout 75s;
+                  '';
+                };
+              }
+              // optionalAttrs (cfg.webClient != null) {
+                # Expo's static export writes one .html per route, so a bare
+                # route URL resolves through $uri.html before falling back to
+                # the client-side router at index.html.
+                "${webClientPrefix}/" = {
+                  alias = "${cfg.webClient}/";
+                  index = "index.html";
+                  tryFiles = "$uri $uri.html $uri/index.html ${webClientPrefix}/index.html";
+                };
+                "= ${webClientPrefix}" = {
+                  return = "301 ${webClientPrefix}/";
+                };
+              };
           };
         };
         allDomains = ["org-agenda-api.${cfg.domain}"] ++ cfg.extraDomains;

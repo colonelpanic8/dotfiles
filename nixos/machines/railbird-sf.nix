@@ -6,7 +6,13 @@
   orgAgendaApiContainer ? null,
   orgAgendaApiImageName ? "localhost/org-agenda-api:colonelpanic-3a33f61-6a4ec8d",
   ...
-}: {
+}: let
+  # Mova's web client, served beside the API on the same hosts. A static export
+  # bakes its asset URLs at build time, so the package and nginx have to agree
+  # on the prefix.
+  movaWebPath = "/app";
+  movaWeb = inputs.mova.packages.${pkgs.stdenv.hostPlatform.system}.web.override {baseUrl = movaWebPath;};
+in {
   imports = [
     ../configuration.nix
     inputs.agenix.nixosModules.default
@@ -44,6 +50,8 @@
     containerImageFile = orgAgendaApiContainer;
     secretsFile = config.age.secrets.org-api-auth-password.path;
     sshKeyFile = config.age.secrets.org-api-ssh-key.path;
+    webClient = movaWeb;
+    webClientPath = movaWebPath;
   };
 
   hardware.enableRedistributableFirmware = true;
