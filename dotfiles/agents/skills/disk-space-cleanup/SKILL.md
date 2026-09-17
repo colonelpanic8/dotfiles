@@ -71,6 +71,11 @@ yarn cache clean
 npm cache clean --force
 ```
 
+On current npm versions, `npm cache clean --force` leaves the separate
+`~/.npm/_npx` package cache intact. When it is in scope and has no open files,
+enumerate it with `npm cache npx ls` and remove the explicit listed keys with
+`npm cache npx rm <key>...`; do not delete the directory directly.
+
 ## Step 3: Rust Build Artifact Cleanup
 
 Do not start with a blind `find ~ -name target` or with hard-coded roots that may miss worktrees. Inventory explicit `target/` directories first using the bundled helper and the machine-specific root list in `references/rust-target-roots.txt`.
