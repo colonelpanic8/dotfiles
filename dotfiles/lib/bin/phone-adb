@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+# Get (and keep) an adb connection to the phone with as little manual fiddling
+# as possible.
+#
+#   phone-adb            connect, preferring the tailscale address
+#   phone-adb pair       run `adb pair` against the mDNS-advertised pairing service
+#   phone-adb status     show what adb currently sees
+#
+# Android's "Wireless debugging" screen hands out a fresh random port every time
+# it is toggled, and the mDNS advertisement it uses to make that port
+# discoverable only travels over the LAN. So once we have any connection at all
+# we flip adbd into plain `tcpip 5555` mode, which survives wifi changes and is
+# reachable over tailscale from anywhere until the phone reboots.
+
+set -euo pipefail
+
+PHONE_HOST="${PHONE_ADB_HOST:-pixel-11-pro-fold}"
+FIXED_PORT="${PHONE_ADB_PORT:-5555}"
+export ADB_MDNS_OPENSCREEN="${ADB_MDNS_OPENSCREEN:-1}"
+
+log() { printf '%s\n' "$*" >&2; }
+
+phone_ip() {
+    if [[ "$PHONE_HOST" =~ ^[0-9.]+$ ]]; then
+        printf '%s\n' "$PHONE_HOST"
+        return
+    fi
+    tailscale ip -4 "$PHONE_HOST" 2>/dev/null | head -1
+}
+
+# The phone advertises its current adb port over mDNS, but the address it
+# advertises is its LAN address, which plenty of access points firewall off from
+# other clients. Take only the port and reach it over tailscale, falling back to
+# the advertised address.
+mdns_endpoints() {
+    local service="$1" advertised port ip
+    advertised=$(adb mdns services 2>/dev/null | awk -v s="$service" '$2 == s {print $3; exit}')
+    if [[ -z "$advertised" ]] && command -v avahi-browse >/dev/null 2>&1; then
+        advertised=$(avahi-browse -rpt "$service" 2>/dev/null |
+            awk -F';' -v s="$service" '$1 == "=" && $3 == "IPv4" && $5 == s {print $8 ":" $9; exit}')
+    fi
+    [[ -z "$advertised" ]] && return
+    port="${advertised##*:}"
+    ip=$(phone_ip)
+    [[ -n "$ip" ]] && printf '%s\n' "$ip:$port"
+    printf '%s\n' "$advertised"
+}
+
+connected_serial() {
+    adb devices | awk 'NR > 1 && $2 == "device" {print $1; exit}'
+}
+
+pin_to_fixed_port() {
+    local serial="$1" ip="$2"
+    [[ "$serial" == "$ip:$FIXED_PORT" ]] && return 0
+    log "Pinning adbd to $FIXED_PORT via $serial"
+    adb -s "$serial" tcpip "$FIXED_PORT" >/dev/null
+    for _ in $(seq 10); do
+        sleep 1
+        if adb connect "$ip:$FIXED_PORT" 2>&1 | grep -q '^connected'; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+cmd_connect() {
+    local ip endpoint serial
+    ip=$(phone_ip)
+    if [[ -z "$ip" ]]; then
+        log "Could not resolve $PHONE_HOST on the tailnet."
+        exit 1
+    fi
+
+    if adb connect "$ip:$FIXED_PORT" 2>&1 | grep -qE '^(connected|already connected)'; then
+        log "Connected to $ip:$FIXED_PORT"
+        exit 0
+    fi
+
+    log "Nothing on $ip:$FIXED_PORT; looking for Wireless debugging over mDNS..."
+    while read -r endpoint; do
+        [[ -z "$endpoint" ]] && continue
+        adb connect "$endpoint" >&2 && break || true
+    done < <(mdns_endpoints _adb-tls-connect._tcp)
+
+    serial=$(connected_serial)
+    if [[ -z "$serial" ]]; then
+        log ""
+        log "No device yet. Bootstrap once, then this command works on its own:"
+        log "  - plug in over USB, or"
+        log "  - enable Wireless debugging on the same wifi and run: phone-adb pair"
+        exit 1
+    fi
+
+    pin_to_fixed_port "$serial" "$ip" && log "Connected to $ip:$FIXED_PORT"
+}
+
+cmd_pair() {
+    local endpoint endpoints=()
+    if [[ -n "${1:-}" ]]; then
+        endpoints=("$1")
+    else
+        mapfile -t endpoints < <(mdns_endpoints _adb-tls-pairing._tcp)
+    fi
+    if [[ ${#endpoints[@]} -eq 0 ]]; then
+        log "No pairing service advertised. On the phone open Wireless debugging >"
+        log "\"Pair device with pairing code\", and keep that dialog open."
+        exit 1
+    fi
+    for endpoint in "${endpoints[@]}"; do
+        if adb pair "$endpoint"; then
+            cmd_connect
+            return
+        fi
+    done
+    exit 1
+}
+
+case "${1:-connect}" in
+    connect) cmd_connect ;;
+    pair) shift; cmd_pair "$@" ;;
+    status) adb devices -l; adb mdns services ;;
+    *) log "usage: phone-adb [connect|pair [host:port]|status]"; exit 2 ;;
+esac
