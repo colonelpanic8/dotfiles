@@ -63,6 +63,46 @@
     timerConfig.OnCalendar = "*-*-* 04:30:00";
   };
 
+  systemd.services.dawarich-overture-names = {
+    description = "Name Dawarich places from Overture Maps";
+    requires = [ "dawarich-web.service" ];
+    after = [ "dawarich-web.service" ];
+    environment = config.systemd.services.dawarich-web.environment // {
+      PGHOST = "/run/postgresql";
+    };
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${
+        pkgs.writeShellApplication {
+          name = "dawarich-overture-names";
+          runtimeInputs = [
+            config.services.dawarich.package
+            config.services.postgresql.package
+            config.systemd.package
+            pkgs.curl
+            pkgs.duckdb
+          ];
+          text = builtins.readFile ./dawarich-overture/run.sh;
+        }
+      }/bin/dawarich-overture-names ivanmalison@gmail.com ${./dawarich-overture}";
+      User = config.services.dawarich.user;
+      Group = config.services.dawarich.group;
+      SupplementaryGroups = [ "redis-dawarich" ];
+      WorkingDirectory = config.services.dawarich.package;
+      StateDirectory = "dawarich";
+      CacheDirectory = "dawarich-overture";
+      LoadCredential = [ "SECRET_KEY_BASE:${config.age.secrets.dawarich-secret-key-base.path}" ];
+      PrivateTmp = true;
+      ProtectHome = true;
+      ProtectSystem = "strict";
+      TimeoutStartSec = "2h";
+    };
+  };
+  systemd.timers.dawarich-overture-names = {
+    wantedBy = [ "timers.target" ];
+    timerConfig.OnCalendar = "*-*-* 04:00:00";
+  };
+
   systemd.services.dawarich-serve = {
     description = "Tailscale HTTPS for Dawarich";
     after = [

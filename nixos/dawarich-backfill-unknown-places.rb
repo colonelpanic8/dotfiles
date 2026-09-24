@@ -4,7 +4,9 @@ raise ArgumentError, 'limit must be between 1 and 100' unless (1..100).cover?(li
 user = User.find_by!(email: 'ivanmalison@gmail.com')
 cursor_file = '/var/lib/dawarich/unknown-places-backfill-cursor'
 cursor = File.exist?(cursor_file) ? Integer(File.read(cursor_file).strip) : 0
-unknown = user.places.where('LOWER(name) = ?', 'unknown').where(name_locked_at: nil)
+generic_names = ['Unknown', 'Searched Address', 'Frequent place', 'Aliased Location']
+generic_visit_names = [*generic_names, 'Unknown Location']
+unknown = user.places.where(name: generic_names).where(name_locked_at: nil)
 batch = unknown.where('id > ?', cursor).order(:id).limit(limit).to_a
 if batch.empty?
   cursor = 0
@@ -13,7 +15,10 @@ end
 
 counts = Hash.new(0)
 quiet_output = File.open(File::NULL, 'wb')
+consecutive_errors = 0
 batch.each do |place|
+  break if consecutive_errors >= 5
+
   cursor = place.id
   begin
     original_stdout = $stdout
@@ -25,6 +30,7 @@ batch.each do |place|
     ensure
       $stdout = original_stdout
     end
+    consecutive_errors = 0
     unless result
       counts[:no_result] += 1
       next
@@ -46,7 +52,7 @@ batch.each do |place|
     end
 
     place.with_lock do
-      next unless place.name.casecmp?('Unknown') && !place.name_locked?
+      next unless generic_names.include?(place.name) && !place.name_locked?
 
       place.machine_named = true
       place.update!(
@@ -55,10 +61,11 @@ batch.each do |place|
         country: properties['country'].presence || place.country,
         geodata: place.geodata.merge(result.data)
       )
-      counts[:visits_renamed] += place.visits.where(name: 'Unknown').update_all(name: place.name)
+      counts[:visits_renamed] += place.visits.where(name: generic_visit_names).update_all(name: place.name)
       counts[:places_renamed] += 1
     end
-  rescue Geocoder::Error, Timeout::Error, SocketError => e
+  rescue Geocoder::Error, Timeout::Error, SocketError, SystemCallError => e
+    consecutive_errors += 1
     counts[:provider_errors] += 1
     Rails.logger.warn("Unknown-place backfill skipped place #{place.id}: #{e.class}")
   end
