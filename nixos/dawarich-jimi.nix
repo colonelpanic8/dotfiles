@@ -24,6 +24,19 @@
     after = ["tailscaled.service"];
   };
 
+  systemd.services.dawarich-serve = {
+    description = "Tailscale HTTPS for Dawarich";
+    after = ["tailscaled.service" "dawarich-web.service"];
+    wants = ["tailscaled.service" "dawarich-web.service"];
+    wantedBy = ["multi-user.target"];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      TimeoutStartSec = "60s";
+      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --bg --https=443 --set-path=/ http://100.114.206.79:47863";
+    };
+  };
+
   # Keep reference-data seeds without creating upstream's default demo account.
   systemd.services.dawarich-init-db.script = lib.mkForce ''
     export SECRET_KEY_BASE="$(systemd-creds cat SECRET_KEY_BASE)"
