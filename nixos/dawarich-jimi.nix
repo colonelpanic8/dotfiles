@@ -55,7 +55,7 @@
       PrivateTmp = true;
       ProtectHome = true;
       ProtectSystem = "strict";
-      RuntimeMaxSec = "30min";
+      TimeoutStartSec = "30min";
     };
   };
   systemd.timers.dawarich-backfill-unknown-places = {
