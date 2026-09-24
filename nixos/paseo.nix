@@ -11,6 +11,10 @@ makeEnable config "myModules.paseo" false {
 
   services.paseo = {
     enable = true;
+    # The web bundle can exceed Node's default 2 GiB heap limit.
+    package = inputs.paseo.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (_: {
+      NODE_OPTIONS = "--max-old-space-size=4096";
+    });
     user = config.myModules.primaryUser;
     group = "users";
     listenAddress = "0.0.0.0";
