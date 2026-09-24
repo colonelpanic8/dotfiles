@@ -1,5 +1,6 @@
 email=$1
 share=$2
+app=$PWD
 cd "$CACHE_DIRECTORY"
 export HOME=$CACHE_DIRECTORY
 rm -f work.db work.db.wal ./*.tsv decisions.json
@@ -47,4 +48,5 @@ duckdb work.db -f "$share/match.sql"
 
 SECRET_KEY_BASE="$(systemd-creds cat SECRET_KEY_BASE)"
 export SECRET_KEY_BASE
+cd "$app"
 rails runner "$share/apply.rb" "$email" "$CACHE_DIRECTORY/decisions.json" "$release"
