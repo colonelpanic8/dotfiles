@@ -1,12 +1,19 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: {
   age.secrets.dawarich-secret-key-base.file = ./secrets/dawarich-secret-key-base.age;
 
   services.dawarich = {
     enable = true;
+    # The public Photon endpoint is unsuitable for a bulk sweep of imported points.
+    package = pkgs.dawarich.overrideAttrs (old: {
+      postPatch = (old.postPatch or "") + ''
+        sed -i '/^nightly_reverse_geocoding_job:/,/^$/d' config/schedule.yml
+      '';
+    });
     configureNginx = false;
     localDomain = "jimi-hendnix";
     webPort = 47863;
