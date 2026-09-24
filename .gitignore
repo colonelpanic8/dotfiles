@@ -53,6 +53,8 @@ gotools
 /nixos/action-cache-dir/
 /dotfiles/config/taffybar/dbus-menu/
 /dotfiles/agents/state/
+/dotfiles/agents/skills/synced/
+/dotfiles/agents/skills/.trash/
 
 # On nix-darwin, ~/.claude resolves into dotfiles/claude (HM out-of-store
 # symlink), so the claude-history repo and live Claude Code state are nested
