@@ -12,7 +12,7 @@ if batch.empty?
 end
 
 counts = Hash.new(0)
-quiet_output = File.open(File::NULL, 'w')
+quiet_output = File.open(File::NULL, 'wb')
 batch.each do |place|
   cursor = place.id
   begin
