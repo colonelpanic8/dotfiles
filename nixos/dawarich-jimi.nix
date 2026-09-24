@@ -3,7 +3,8 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   age.secrets.dawarich-secret-key-base.file = ./secrets/dawarich-secret-key-base.age;
 
   services.dawarich = {
@@ -27,17 +28,52 @@
     };
   };
 
-  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [47863];
+  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 47863 ];
   systemd.services.dawarich-web = {
-    wants = ["tailscaled.service"];
-    after = ["tailscaled.service"];
+    wants = [ "tailscaled.service" ];
+    after = [ "tailscaled.service" ];
+  };
+
+  systemd.services.dawarich-backfill-unknown-places = {
+    description = "Name imported Dawarich places through Photon";
+    requires = [ "dawarich-web.service" ];
+    after = [ "dawarich-web.service" ];
+    environment = config.systemd.services.dawarich-web.environment;
+    script = ''
+      export SECRET_KEY_BASE="$(${lib.getExe' config.systemd.package "systemd-creds"} cat SECRET_KEY_BASE)"
+      ${lib.getExe' config.services.dawarich.package "rails"} runner ${./dawarich-backfill-unknown-places.rb} 100
+    '';
+    serviceConfig = {
+      Type = "oneshot";
+      User = config.services.dawarich.user;
+      Group = config.services.dawarich.group;
+      SupplementaryGroups = [ "redis-dawarich" ];
+      WorkingDirectory = config.services.dawarich.package;
+      StateDirectory = "dawarich";
+      CacheDirectory = "dawarich";
+      LoadCredential = [ "SECRET_KEY_BASE:${config.age.secrets.dawarich-secret-key-base.path}" ];
+      PrivateTmp = true;
+      ProtectHome = true;
+      ProtectSystem = "strict";
+      RuntimeMaxSec = "30min";
+    };
+  };
+  systemd.timers.dawarich-backfill-unknown-places = {
+    wantedBy = [ "timers.target" ];
+    timerConfig.OnCalendar = "*-*-* 04:30:00";
   };
 
   systemd.services.dawarich-serve = {
     description = "Tailscale HTTPS for Dawarich";
-    after = ["tailscaled.service" "dawarich-web.service"];
-    wants = ["tailscaled.service" "dawarich-web.service"];
-    wantedBy = ["multi-user.target"];
+    after = [
+      "tailscaled.service"
+      "dawarich-web.service"
+    ];
+    wants = [
+      "tailscaled.service"
+      "dawarich-web.service"
+    ];
+    wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
