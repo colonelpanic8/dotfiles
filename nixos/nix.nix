@@ -114,7 +114,14 @@
         # (import ./nvidia-container-toolkit-overlay.nix)
         (import ./emacs-overlay.nix)
         (import ../nix-shared/overlays)
-        inputs.t3code-integration.overlays.client
+        (final: _prev: {
+          t3code =
+            (import "${inputs.t3code-integration}/nix/package.nix" {
+              buildCommit = inputs.t3code-integration.rev or "";
+              pkgs = final;
+              self = inputs.t3code-integration;
+            }).client;
+        })
         inputs.google-messages-bridge.overlays.default
         (final: prev: let
           unwrapped = prev.t3code.unwrapped;

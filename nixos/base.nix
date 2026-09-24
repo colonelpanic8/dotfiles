@@ -12,6 +12,7 @@ makeEnable config "myModules.base" true {
     "electron-19.1.9"
     "electron-32.3.3"
     "electron-39.8.10"
+    "electron-41.10.6"
     "etcher"
     "nix-2.16.2"
     "openssl-1.0.2u"
@@ -138,7 +139,7 @@ makeEnable config "myModules.base" true {
   hardware.keyboard.zsa.enable = true;
 
   # For supporting gnome stuff
-  services.dbus.packages = [pkgs.gcr];
+  services.dbus.packages = [pkgs.gcr_3];
   # User dbus-broker reloads can time out while the broker stays healthy and
   # notices service-file changes itself, which makes `nixos-rebuild switch`
   # report a failed user activation.

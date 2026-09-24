@@ -35,6 +35,15 @@
     hyprland = baseHyprlandPackage;
     hyprland-unwrapped = final.hyprland.override {wrapRuntimeDeps = false;};
     hyprland-with-tests = final.hyprland.override {withTests = true;};
+    hyprtoolkit = prev.hyprtoolkit.overrideAttrs (_: {
+      version = "0.5.4";
+      src = prev.fetchFromGitHub {
+        owner = "hyprwm";
+        repo = "hyprtoolkit";
+        tag = "v0.5.4";
+        hash = "sha256-gJSBj4Pd4e9nERAKo/qiHqDMpS2hBfyOI0uGCbbiML4=";
+      };
+    });
     hyprlock = hyprlockPackage;
     xdg-desktop-portal-hyprland = xdgDesktopPortalHyprlandPackage;
   };
