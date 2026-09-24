@@ -1,0 +1,34 @@
+{
+  config,
+  lib,
+  ...
+}: {
+  age.secrets.dawarich-secret-key-base.file = ./secrets/dawarich-secret-key-base.age;
+
+  services.dawarich = {
+    enable = true;
+    configureNginx = false;
+    localDomain = "jimi-hendnix";
+    webPort = 47863;
+    secretKeyBaseFile = config.age.secrets.dawarich-secret-key-base.path;
+    environment = {
+      BINDING = "100.114.206.79";
+      APPLICATION_HOSTS = "jimi-hendnix,jimi-hendnix.taileb3aad.ts.net,100.114.206.79";
+      ALLOW_EMAIL_PASSWORD_REGISTRATION = "false";
+    };
+  };
+
+  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [47863];
+  systemd.services.dawarich-web = {
+    wants = ["tailscaled.service"];
+    after = ["tailscaled.service"];
+  };
+
+  # Keep reference-data seeds without creating upstream's default demo account.
+  systemd.services.dawarich-init-db.script = lib.mkForce ''
+    export SECRET_KEY_BASE="$(systemd-creds cat SECRET_KEY_BASE)"
+    rails db:migrate
+    rake data:migrate
+    rails runner 'User.define_singleton_method(:none?) { false }; load Rails.root.join("db/seeds.rb")'
+  '';
+}

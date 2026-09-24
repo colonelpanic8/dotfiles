@@ -1,6 +1,7 @@
 let
   keys = import ../keys.nix;
 in {
+  "dawarich-secret-key-base.age".publicKeys = keys.agenixKeys;
   "gpg-keys.age".publicKeys = keys.agenixKeys;
   "gpg-passphrase.age".publicKeys = keys.agenixKeys;
   "gws-client-secret.json.age".publicKeys = keys.agenixKeys;

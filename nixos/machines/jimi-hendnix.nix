@@ -14,6 +14,7 @@
 in {
   imports = [
     ../configuration.nix
+    ../dawarich-jimi.nix
   ];
 
   services.macos-ventura = {
