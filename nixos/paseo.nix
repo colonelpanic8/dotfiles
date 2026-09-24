@@ -50,107 +50,72 @@ makeEnable config "myModules.paseo" false {
       preStart = let
         ensurePaseoDaemonSettings = import ../nix-shared/ensure-paseo-daemon-settings.nix {
           inherit pkgs;
-          settings = lib.recursiveUpdate {
-            daemon.mcp.injectIntoAgents = true;
-            # Self-hosted ntfy on jimi-hendnix (myModules.ntfy); the F-Droid
-            # app build cannot use Expo push.
-            daemon.push = {
-              ntfy = {
-                serverUrl = "http://jimi-hendnix:2586";
-                topic = "paseo-8ff72564";
+          settings =
+            lib.recursiveUpdate {
+              daemon.mcp.injectIntoAgents = true;
+              # Self-hosted ntfy on jimi-hendnix (myModules.ntfy); the F-Droid
+              # app build cannot use Expo push.
+              daemon.push = {
+                ntfy = {
+                  serverUrl = "http://jimi-hendnix:2586";
+                  topic = "paseo-8ff72564";
+                };
+                # Count as away 30s after the last input, rather than 3 minutes.
+                presenceThresholdMs = 30000;
               };
-              # Count as away 30s after the last input, rather than 3 minutes.
-              presenceThresholdMs = 30000;
-            };
-            agents.providers.opencode.enabled = true;
-            daemon.agentProfiles = [
-              {
-                id = "legacy_favorite:claude:claude-fable-5-1";
-                name = "Fable 5.1";
-                provider = "claude";
-                model = "claude-fable-5-1";
-              }
-              {
-                id = "legacy_favorite:codex:gpt-6-astra";
-                name = "GPT-6-Astra";
-                provider = "codex";
-                model = "gpt-6-astra";
-              }
-              {
-                id = "legacy_favorite:codex:gpt-5.6-sol";
-                name = "GPT-5.6-Sol";
-                provider = "codex";
-                model = "gpt-5.6-sol";
-              }
-              {
-                id = "legacy_favorite:codex:gpt-5.6-luna";
-                name = "GPT-5.6-Luna";
-                provider = "codex";
-                model = "gpt-5.6-luna";
-              }
-              {
-                id = "legacy_favorite:claude:claude-opus-5";
-                name = "Opus 5";
-                provider = "claude";
-                model = "claude-opus-5";
-              }
-              {
-                id = "legacy_favorite:opencode:muse-spark-1.3-contributor-free";
-                name = "Muse Spark 1.3 Free";
-                provider = "opencode";
-                model = "opencode/muse-spark-1.3-contributor-free";
-                modeId = "build";
-              }
-            ];
+              agents.providers.opencode.enabled = true;
+              agents.providers.codex.command = ["${pkgs.codex}/bin/codex"];
+              daemon.agentProfiles = (import ../nix-shared/paseo-favorites.nix).agentProfiles;
 
-            # Live Voice reads these files fresh at the start of every call and
-            # injects them as context, so the voice chief of staff knows how the
-            # org repo is laid out and what is currently going on without being
-            # told each time. Keep the list short: each file is capped at ~12KiB
-            # and the set at ~32KiB, and everything here competes with the agent
-            # and workspace snapshots for the same startup budget. Live task
-            # state is not here on purpose -- gtd.org alone is 100KiB+ and would
-            # be truncated. Ask the agenda through a tool or a delegated session
-            # instead.
-            liveVoice = {
-              defaultContextProfile = "life";
-              contextProfiles = [
-                {
-                  id = "life";
-                  label = "Life";
-                  files = [
-                    "~/org/AGENTS.md"
-                    "~/org/agents/profile.org"
-                    "~/org/planning/context.org"
-                  ];
-                  instructions = ''
-                    You are Ivan's chief of staff for life logistics as well as
-                    code. The files above describe how his org-mode GTD system
-                    is organized, how he works, and what is currently going on.
-                    Treat them as background, not as a script to read back.
+              # Live Voice reads these files fresh at the start of every call and
+              # injects them as context, so the voice chief of staff knows how the
+              # org repo is laid out and what is currently going on without being
+              # told each time. Keep the list short: each file is capped at ~12KiB
+              # and the set at ~32KiB, and everything here competes with the agent
+              # and workspace snapshots for the same startup budget. Live task
+              # state is not here on purpose -- gtd.org alone is 100KiB+ and would
+              # be truncated. Ask the agenda through a tool or a delegated session
+              # instead.
+              liveVoice = {
+                defaultContextProfile = "life";
+                contextProfiles = [
+                  {
+                    id = "life";
+                    label = "Life";
+                    files = [
+                      "~/org/AGENTS.md"
+                      "~/org/agents/profile.org"
+                      "~/org/planning/context.org"
+                    ];
+                    instructions = ''
+                      You are Ivan's chief of staff for life logistics as well as
+                      code. The files above describe how his org-mode GTD system
+                      is organized, how he works, and what is currently going on.
+                      Treat them as background, not as a script to read back.
 
-                    Anything he mentions wanting to do, remember, or follow up
-                    on is a capture: route it into his inbox rather than holding
-                    it in the conversation. Route real work to sessions that can
-                    reach the files -- you are in a plain directory and should
-                    not try to read or edit org files yourself.
-                  '';
-                }
-                {
-                  id = "work";
-                  label = "Work";
-                  files = [];
-                  instructions = ''
-                    Keep this call on the technical work being discussed. Do not
-                    bring up personal tasks, agenda items, or life logistics
-                    unless Ivan raises them.
-                  '';
-                }
-              ];
-            };
-            # Declarative plugins as Nix store directory sources; declared
-            # keys win, everything else in config.json survives.
-          } (import ../nix-shared/paseo-plugins.nix {inherit pkgs;}).daemonSettings;
+                      Anything he mentions wanting to do, remember, or follow up
+                      on is a capture: route it into his inbox rather than holding
+                      it in the conversation. Route real work to sessions that can
+                      reach the files -- you are in a plain directory and should
+                      not try to read or edit org files yourself.
+                    '';
+                  }
+                  {
+                    id = "work";
+                    label = "Work";
+                    files = [];
+                    instructions = ''
+                      Keep this call on the technical work being discussed. Do not
+                      bring up personal tasks, agenda items, or life logistics
+                      unless Ivan raises them.
+                    '';
+                  }
+                ];
+              };
+              # Declarative plugins as Nix store directory sources; declared
+              # keys win, everything else in config.json survives.
+            }
+            (import ../nix-shared/paseo-plugins.nix {inherit pkgs;}).daemonSettings;
         };
       in
         lib.mkAfter ''
