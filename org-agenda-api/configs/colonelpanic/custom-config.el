@@ -45,6 +45,10 @@
   (setq imalison:org-vocabulary-file
         (imalison:join-paths imalison:org-dir "notes" "vocab.org"))
 
+  ;; Shared agent memory served by the /memory endpoints
+  (setq org-agenda-api-memory-file
+        (imalison:join-paths imalison:org-dir "agents" "memory.org"))
+
   ;; Shared paths are nil in container (no shared org dir)
   (setq imalison:shared-org-gtd-file nil)
   (setq imalison:shared-habits-file nil)
