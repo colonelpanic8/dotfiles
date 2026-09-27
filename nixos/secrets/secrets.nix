@@ -37,4 +37,6 @@ in {
   "hermes-environment.age".publicKeys = keys.agenixKeys;
   "google-messages-bridge-api-token.age".publicKeys = keys.agenixKeys;
   "google-messages-bridge-storage-key.age".publicKeys = keys.agenixKeys;
+  "whatsapp-bridge-api-token.age".publicKeys = keys.agenixKeys;
+  "whatsapp-bridge-storage-key.age".publicKeys = keys.agenixKeys;
 }

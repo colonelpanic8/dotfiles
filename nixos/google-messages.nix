@@ -21,6 +21,11 @@ let
   # Loopback only; Tailscale Serve terminates TLS and proxies in.
   bridgePort = 45012;
   servePort = 8443;
+  # A second instance of the same bridge binary carries the WhatsApp linked
+  # device. It owns its own database, secrets, port, and HTTPS origin, so the
+  # two networks never share a lock or a token.
+  whatsappPort = 45013;
+  whatsappServePort = 8444;
   pairingHelperManifest = builtins.fromJSON (
     builtins.readFile "${inputs.google-messages-bridge}/internal/api/pairinghelper/manifest.json"
   );
@@ -65,6 +70,20 @@ makeEnable config "myModules.googleMessages" true {
     mode = "0400";
   };
 
+  age.secrets.whatsapp-bridge-api-token = lib.mkIf isBridgeHost {
+    file = ./secrets/whatsapp-bridge-api-token.age;
+    owner = "imalison";
+    group = "users";
+    mode = "0400";
+  };
+
+  age.secrets.whatsapp-bridge-storage-key = lib.mkIf isBridgeHost {
+    file = ./secrets/whatsapp-bridge-storage-key.age;
+    owner = "imalison";
+    group = "users";
+    mode = "0400";
+  };
+
   services.google-messages-multidevice-bridge.client = {
     enable = true;
     bridgeUrl = "https://${bridgeHost}.taileb3aad.ts.net:${toString servePort}";
@@ -84,6 +103,14 @@ makeEnable config "myModules.googleMessages" true {
       listen = "127.0.0.1:${toString bridgePort}";
       storageKeyFile = config.age.secrets.google-messages-bridge-storage-key.path;
       apiTokenFile = config.age.secrets.google-messages-bridge-api-token.path;
+      instances.whatsapp = {
+        enable = true;
+        package = pkgs.google-messages-multidevice-bridge;
+        network = "whatsapp";
+        listen = "127.0.0.1:${toString whatsappPort}";
+        storageKeyFile = config.age.secrets.whatsapp-bridge-storage-key.path;
+        apiTokenFile = config.age.secrets.whatsapp-bridge-api-token.path;
+      };
     };
 
   };
@@ -111,6 +138,18 @@ makeEnable config "myModules.googleMessages" true {
       Type = "oneshot";
       RemainAfterExit = true;
       ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --bg --https=${toString servePort} --set-path=/ http://127.0.0.1:${toString bridgePort}";
+    };
+  };
+
+  systemd.services.whatsapp-bridge-serve = lib.mkIf isBridgeHost {
+    description = "Tailscale Serve mapping for the WhatsApp bridge";
+    after = [ "tailscaled.service" ];
+    wants = [ "tailscaled.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --bg --https=${toString whatsappServePort} --set-path=/ http://127.0.0.1:${toString whatsappPort}";
     };
   };
 }
