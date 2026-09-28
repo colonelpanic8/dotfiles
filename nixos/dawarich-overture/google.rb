@@ -17,8 +17,17 @@ places_request = lambda do |request, field_mask|
   request['X-Goog-Api-Key'] = api_key
   request['X-Goog-FieldMask'] = field_mask
   request['Content-Type'] = 'application/json'
-  response = Net::HTTP.start('places.googleapis.com', 443, use_ssl: true, open_timeout: 10, read_timeout: 20) do |http|
-    http.request(request)
+  attempts = 0
+  begin
+    response = Net::HTTP.start('places.googleapis.com', 443, use_ssl: true, open_timeout: 10, read_timeout: 20) do |http|
+      http.request(request)
+    end
+  rescue Net::OpenTimeout, Net::ReadTimeout
+    attempts += 1
+    raise if attempts > 2
+
+    sleep 5 * attempts
+    retry
   end
   code = response.code.to_i
   raise QuotaStop, "HTTP #{code}" if code == 429 || code >= 500 || code == 403
