@@ -103,6 +103,45 @@
     timerConfig.OnCalendar = "*-*-* 04:00:00";
   };
 
+  age.secrets.google-places-api-key = {
+    file = ./secrets/google-places-api-key.age;
+    owner = config.services.dawarich.user;
+  };
+  systemd.services.dawarich-google-places = {
+    description = "Name Dawarich places through Google Places";
+    requires = [ "dawarich-web.service" ];
+    after = [
+      "dawarich-web.service"
+      "dawarich-overture-names.service"
+    ];
+    environment = config.systemd.services.dawarich-web.environment;
+    script = ''
+      export SECRET_KEY_BASE="$(${lib.getExe' config.systemd.package "systemd-creds"} cat SECRET_KEY_BASE)"
+      ${lib.getExe' config.services.dawarich.package "rails"} runner ${./dawarich-overture/google.rb} \
+        ivanmalison@gmail.com "$CREDENTIALS_DIRECTORY/GOOGLE_PLACES_API_KEY" 500 50
+    '';
+    serviceConfig = {
+      Type = "oneshot";
+      User = config.services.dawarich.user;
+      Group = config.services.dawarich.group;
+      SupplementaryGroups = [ "redis-dawarich" ];
+      WorkingDirectory = config.services.dawarich.package;
+      StateDirectory = "dawarich";
+      LoadCredential = [
+        "SECRET_KEY_BASE:${config.age.secrets.dawarich-secret-key-base.path}"
+        "GOOGLE_PLACES_API_KEY:${config.age.secrets.google-places-api-key.path}"
+      ];
+      PrivateTmp = true;
+      ProtectHome = true;
+      ProtectSystem = "strict";
+      TimeoutStartSec = "1h";
+    };
+  };
+  systemd.timers.dawarich-google-places = {
+    wantedBy = [ "timers.target" ];
+    timerConfig.OnCalendar = "*-*-* 04:15:00";
+  };
+
   systemd.services.dawarich-serve = {
     description = "Tailscale HTTPS for Dawarich";
     after = [
