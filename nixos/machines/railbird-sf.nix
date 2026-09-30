@@ -107,6 +107,9 @@ in {
   users.users.dean.linger = true;
   home-manager.users.dean.services.t3code = {
     enable = true;
+    # The module's default package is built by the t3code flake's own nixpkgs
+    # instance, which lacks this system's permittedInsecurePackages (electron).
+    package = pkgs.t3code;
     repositoryRoot = "/home/dean/dotfiles";
     port = 3775;
     tailscaleServe.port = 8444;
