@@ -16,5 +16,8 @@
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
-  "tui": "fullscreen"
+  "tui": "fullscreen",
+  "env": {
+    "CLAUDE_CODE_ENABLE_CFC": "1"
+  }
 }
