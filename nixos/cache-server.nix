@@ -31,6 +31,9 @@ in {
       enable = true;
       secretKeyFile = config.age.secrets."cache-priv-key.pem".path;
       port = cfg.port;
+      # starman defaults to 5 workers; nix clients open many keep-alive
+      # connections each, so one slow remote rebuild starves the whole fleet.
+      extraParams = "--workers 16";
     };
   };
 }
