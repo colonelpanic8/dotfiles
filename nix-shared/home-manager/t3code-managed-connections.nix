@@ -8,14 +8,13 @@
     "jay-lenovo"
     "jimi-hendnix"
     "mac-demarco-mini"
-    "railbird-sf"
     "ryzen-shine"
     "strixi-minaj"
   ];
   magicDnsSuffix = "taileb3aad.ts.net";
   connections =
     map (host: let
-      authority = "${host}.${magicDnsSuffix}${lib.optionalString (host == "railbird-sf") ":8443"}";
+      authority = "${host}.${magicDnsSuffix}";
     in {
       environmentId = "fleet:${host}";
       label = host;
