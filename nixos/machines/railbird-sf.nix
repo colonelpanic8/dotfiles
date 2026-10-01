@@ -96,42 +96,8 @@ in {
   myModules.code.enable = true;
   myModules.claudeRemoteControl.enable = true;
   myModules.t3codeServer.enable = false;
-  # Dean's own headless T3 Code server on this host, separate from imalison's
-  # (disabled above): distinct loopback/Tailscale-Serve ports, and lingering
-  # so his systemd --user instance (and its default.target-gated service)
-  # comes up at boot even though he never logs in graphically here.
-  users.users.dean.linger = true;
-  # t3codeServer normally imports this module for every user.
-  home-manager.users.dean.imports = [inputs.t3code-integration.homeManagerModules.t3code-server];
-  home-manager.users.dean.services.t3code = {
-    enable = true;
-    # The module's default package is built by the t3code flake's own nixpkgs
-    # instance, which lacks this system's permittedInsecurePackages (electron).
-    package = pkgs.t3code;
-    repositoryRoot = "/home/dean/dotfiles";
-    port = 3775;
-    tailscaleServe.port = 8444;
-    systemdTarget = "default.target";
-    # Tailscale Serve is node-wide state, and this node's operator is imalison,
-    # so dean's unprivileged service cannot configure it. Root provisions his
-    # mapping below instead.
-    tailscaleServe.enable = false;
-  };
-
-  # The privileged half of dean's Tailscale Serve mapping. Serve config is
-  # persistent in tailscaled, but re-applying is idempotent and repairs the
-  # mapping if the node's state is ever reset.
-  systemd.services.t3code-serve-dean = {
-    description = "Tailscale Serve mapping for dean's headless T3 Code server";
-    after = ["tailscaled.service"];
-    wants = ["tailscaled.service"];
-    wantedBy = ["multi-user.target"];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --bg --https=8444 --set-path=/ http://127.0.0.1:3775";
-    };
-  };
+  # Dean only lingered here to run a headless T3 Code server.
+  users.users.dean.linger = false;
   myModules.syncthing.enable = true;
   myModules.fonts.enable = true;
   myModules.plasma.enable = true;
