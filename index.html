@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2026-10-01 Thu 02:53 -->
+<!-- 2026-10-01 Thu 05:09 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -4650,13 +4650,13 @@ Works in the same way as os.path.join in python
 <div class="outline-text-3" id="text-5-2">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp" id="orgsrcblock2">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:projects-directory</span>
-  (imalison:join-paths (substitute-in-file-name <span class="org-string">"$HOME"</span>) <span class="org-string">"Projects"</span>))
+  (imalison:join-paths (substitute-in-file-name <span class="org-string">"$HOME"</span>) <span class="org-string">"projects"</span>))
 </pre>
 </div>
 
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:projects-directory</span>
-  (imalison:join-paths (substitute-in-file-name <span class="org-string">"$HOME"</span>) <span class="org-string">"Projects"</span>))
+  (imalison:join-paths (substitute-in-file-name <span class="org-string">"$HOME"</span>) <span class="org-string">"projects"</span>))
 </pre>
 </div>
 
@@ -4668,7 +4668,7 @@ Works in the same way as os.path.join in python
     result))
 
 (<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:projects-directory</span>
-  (imalison:join-paths (substitute-in-file-name <span class="org-string">"$HOME"</span>) <span class="org-string">"Projects"</span>))
+  (imalison:join-paths (substitute-in-file-name <span class="org-string">"$HOME"</span>) <span class="org-string">"projects"</span>))
 
 <span class="org-comment-delimiter">;; </span><span class="org-comment">For org-config-bootstrap: frame-mode not needed in server/container context
 </span>(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:use-frame-mode</span> nil)
@@ -8700,7 +8700,7 @@ My org-mode configuration now lives in its own file org-config.org.
        ))
 
     (dir-locals-set-directory-class
-     <span class="org-string">"/home/imalison/Projects/nixpkgs"</span> 'huge-git-repository)
+     <span class="org-string">"/home/imalison/projects/nixpkgs"</span> 'huge-git-repository)
 
     (add-to-list 'org-show-context-detail '(magit-goto . lineage))
     (advice-add 'magit-diff-visit-file <span class="org-builtin">:after</span> 'imalison:after-magit-visit-file)
