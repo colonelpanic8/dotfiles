@@ -95,16 +95,14 @@ in {
   myModules.desktop.enable = true;
   myModules.code.enable = true;
   myModules.claudeRemoteControl.enable = true;
-  myModules.t3codeServer = {
-    tailscaleServePort = 8443;
-    # This host's lingering user manager runs without a local graphical login.
-    startTarget = "default.target";
-  };
-  # Dean's own headless T3 Code server on this host, entirely separate from
-  # imalison's above: distinct loopback/Tailscale-Serve ports, and lingering
+  myModules.t3codeServer.enable = false;
+  # Dean's own headless T3 Code server on this host, separate from imalison's
+  # (disabled above): distinct loopback/Tailscale-Serve ports, and lingering
   # so his systemd --user instance (and its default.target-gated service)
   # comes up at boot even though he never logs in graphically here.
   users.users.dean.linger = true;
+  # t3codeServer normally imports this module for every user.
+  home-manager.users.dean.imports = [inputs.t3code-integration.homeManagerModules.t3code-server];
   home-manager.users.dean.services.t3code = {
     enable = true;
     # The module's default package is built by the t3code flake's own nixpkgs
