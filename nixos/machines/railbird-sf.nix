@@ -95,7 +95,7 @@ in {
   myModules.desktop.enable = true;
   myModules.code.enable = true;
   myModules.claudeRemoteControl.enable = true;
-  myModules.t3codeServer.enable = false;
+  myModules.t3code.enable = false;
   # Dean only lingered here to run a headless T3 Code server.
   users.users.dean.linger = false;
   myModules.syncthing.enable = true;

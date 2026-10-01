@@ -1,14 +1,19 @@
 {
+  config,
   inputs,
+  lib,
   pkgs,
   ...
-}: {
+}: let
+  t3codeEnabled = config.myModules.t3code.enable;
+in {
   home-manager.users.imalison = {config, ...}: {
-    imports = [
-      inputs.agenix.homeManagerModules.default
-      ../nix-shared/home-manager/paseo-managed-hosts.nix
-      ../nix-shared/home-manager/t3code-managed-connections.nix
-    ];
+    imports =
+      [
+        inputs.agenix.homeManagerModules.default
+        ../nix-shared/home-manager/paseo-managed-hosts.nix
+      ]
+      ++ lib.optional t3codeEnabled ../nix-shared/home-manager/t3code-managed-connections.nix;
     age.identityPaths = ["${config.home.homeDirectory}/.ssh/id_ed25519"];
     home.packages = [
       inputs.agenix.packages."${pkgs.stdenv.hostPlatform.system}".default
