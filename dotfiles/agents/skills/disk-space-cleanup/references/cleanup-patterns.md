@@ -7,7 +7,7 @@ Use only after a current assessment confirms the path is significant.
 - Stale Cargo-backed targets in top-level projects, `.worktrees/*/target`, and `.claude/worktrees/*/target` have repeatedly reclaimed 25–100+ GiB.
 - Preserve targets used by active builds. Concurrent agents may recreate deleted outputs immediately.
 - `hypr-workspace-history/target` has been a removable Rust-style cache without a nearby `Cargo.toml`, so the guarded helper rejects it; inspect manually.
-- Preserve `~/Projects/Hyprland/src/layout/target`, which is source code rather than build output.
+- Preserve `~/projects/Hyprland/src/layout/target`, which is source code rather than build output.
 - Clean registered git worktrees only after preserving dirty ones. Stale nixpkgs worktree `result` symlinks may pin Nix closures.
 
 ## Nix Roots and Store Optimization

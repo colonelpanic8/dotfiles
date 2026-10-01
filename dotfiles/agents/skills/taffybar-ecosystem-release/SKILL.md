@@ -32,11 +32,11 @@ taffybar
 | Package | GitHub | Local Checkout |
 |---------|--------|---------------|
 | taffybar | taffybar/taffybar | `~/.config/taffybar/taffybar/` |
-| gtk-sni-tray | taffybar/gtk-sni-tray | `~/Projects/gtk-sni-tray/` |
-| gtk-strut | taffybar/gtk-strut | `~/Projects/gtk-strut/` |
-| status-notifier-item | taffybar/status-notifier-item | `~/Projects/status-notifier-item/` |
-| dbus-menu | taffybar/dbus-menu | `~/Projects/dbus-menu/` |
-| dbus-hslogger | IvanMalison/dbus-hslogger | `~/Projects/dbus-hslogger/` |
+| gtk-sni-tray | taffybar/gtk-sni-tray | `~/projects/gtk-sni-tray/` |
+| gtk-strut | taffybar/gtk-strut | `~/projects/gtk-strut/` |
+| status-notifier-item | taffybar/status-notifier-item | `~/projects/status-notifier-item/` |
+| dbus-menu | taffybar/dbus-menu | `~/projects/dbus-menu/` |
+| dbus-hslogger | IvanMalison/dbus-hslogger | `~/projects/dbus-hslogger/` |
 
 ## Releasing a Package
 
@@ -70,7 +70,7 @@ Then release those packages too if needed (repeat from step 1).
 Each package's `flake.nix` references its ecosystem dependencies as inputs (typically `flake = false` pointing at GitHub). After pushing changes, update the flake.lock in any repo that directly references the changed package:
 
 ```bash
-cd ~/Projects/gtk-sni-tray       # if it depends on what changed
+cd ~/projects/gtk-sni-tray       # if it depends on what changed
 nix flake update gtk-strut
 ```
 

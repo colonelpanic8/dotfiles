@@ -8,7 +8,7 @@ function clone_project {
   local initial_query=""
   local repository=""
   local project_name=""
-  local projects_dir="${PROJECTS_DIR:-$HOME/Projects}"
+  local projects_dir="${PROJECTS_DIR:-$HOME/projects}"
   local min_query_length="${GITHUB_CLONE_MIN_QUERY_LENGTH:-3}"
   local debounce="${GITHUB_CLONE_DEBOUNCE:-0.4}"
   local search_limit="${GITHUB_CLONE_SEARCH_LIMIT:-50}"
@@ -23,7 +23,7 @@ Usage: clone-project [--search [QUERY]]
        clone-project REPOSITORY [DIRECTORY]
 
 With no arguments, interactively search GitHub and clone the selected
-repository into ~/Projects. With --user, first choose a user or organization
+repository into ~/projects. With --user, first choose a user or organization
 and then choose one of its repositories. --search accepts an optional initial
 repository query.
 
@@ -40,7 +40,7 @@ Environment:
   GITHUB_CLONE_DEBOUNCE          Seconds to wait after typing (default: 0.4)
   GITHUB_CLONE_SEARCH_LIMIT      Live-search result count (default: 50)
   GITHUB_CLONE_OWNER_REPO_LIMIT  Repositories loaded for an owner (default: 1000)
-  PROJECTS_DIR                   Clone destination root (default: ~/Projects)
+  PROJECTS_DIR                   Clone destination root (default: ~/projects)
 EOF
   }
 

@@ -1,7 +1,7 @@
 # One absolute path per line. Comments are allowed.
 # Keep this list machine-specific and update it when Rust repos move.
 
-/home/imalison/Projects
+/home/imalison/projects
 /home/imalison/org
 /home/imalison/.codex/worktrees
 /srv/dotfiles

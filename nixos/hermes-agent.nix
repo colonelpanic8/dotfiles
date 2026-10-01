@@ -21,7 +21,7 @@ makeEnable config "myModules.hermesAgent" false {
     group = "users";
     createUser = false;
     stateDir = "/home/imalison/.local/share/hermes";
-    workingDirectory = "/home/imalison/Projects";
+    workingDirectory = "/home/imalison/projects";
     addToSystemPackages = true;
 
     settings = {

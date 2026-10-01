@@ -21,8 +21,8 @@
   # returns false for every absolute path and would silently drop every session.
   directories = [
     "/srv/dotfiles"
-    "/home/imalison/Projects/subtr-actor"
-    "/home/imalison/Projects/rocket-sense"
+    "/home/imalison/projects/subtr-actor"
+    "/home/imalison/projects/rocket-sense"
     "/home/imalison/code/mova"
   ];
 

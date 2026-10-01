@@ -68,8 +68,8 @@ for running agents.
   branch is pushed to, such as `colonelpanic8/rmk` (used by `glove80-rmk`).
   There the warning above is all you get.
 - Known stacks: `~/projects/paseo-assembly` (see `./project-guides/paseo-assembly.md`),
-  `~/Projects/t3code-assembly` (see `./project-guides/t3code-assembly.md`),
-  `~/Projects/rmk-assembly`.
+  `~/projects/t3code-assembly` (see `./project-guides/t3code-assembly.md`),
+  `~/projects/rmk-assembly`.
 
 ## GitHub pull requests
 - Default to creating pull requests as ready for review, not drafts.

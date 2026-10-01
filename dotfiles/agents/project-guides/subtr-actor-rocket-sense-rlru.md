@@ -30,11 +30,11 @@
 - `./project-links/rlru` -> primary `rlru` repo.
 
 ## Discovery hints
-- Start from `~/Projects`.
+- Start from `~/projects`.
 - Common local paths are:
-  - `~/Projects/subtr-actor`
-  - `~/Projects/rocket-sense`
-  - `~/Projects/rlru`
+  - `~/projects/subtr-actor`
+  - `~/projects/rocket-sense`
+  - `~/projects/rlru`
 - `rocket-sense` may vendor `subtr-actor` under `vendor/subtr-actor`; prefer the standalone `subtr-actor` checkout for source-of-truth replay-domain changes unless the user specifically asks about the vendored copy.
 
 ## Read-first docs

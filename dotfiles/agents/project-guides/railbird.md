@@ -19,9 +19,9 @@
 - `./project-links/railbird-mobile` -> railbird mobile app repo.
 
 ## Discovery hints
-- Start from `~/Projects`.
-- Common backend location is `~/Projects/railbird`.
-- Mobile repo often also lives under `~/Projects`, but name/path may vary by machine.
+- Start from `~/projects`.
+- Common backend location is `~/projects/railbird`.
+- Mobile repo often also lives under `~/projects`, but name/path may vary by machine.
 
 ## Read-first docs
 - `./project-links/railbird/README.md`

@@ -58,7 +58,7 @@ Require one-filesystem coverage:
 
 - Always scan `/` with `/run/wrappers/bin/sudo -n env HOME=/home/imalison`; never substitute an unprivileged root scan. On NixOS, use the setuid wrapper explicitly because a non-setuid `sudo` store binary may appear earlier on `PATH`.
 - Scan separately mounted `/home` and `/nix/store` independently.
-- Add a focused root such as `~/Projects` when the first snapshot identifies it as dominant.
+- Add a focused root such as `~/projects` when the first snapshot identifies it as dominant.
 - Treat a failed privileged root scan as an explicit coverage gap; do not silently fall back to an unprivileged scan.
 
 Inspect exclusions before a long scan:
@@ -92,7 +92,7 @@ Query the same export at multiple depths:
 ```bash
 safe_ncdu top /srv/disk-space-assessments/latest-root.json.zst 30
 safe_ncdu top /srv/disk-space-assessments/latest-root.json.zst 30 /home/imalison
-safe_ncdu top /srv/disk-space-assessments/latest-home.json.zst 30 /imalison/Projects
+safe_ncdu top /srv/disk-space-assessments/latest-home.json.zst 30 /imalison/projects
 safe_ncdu open /srv/disk-space-assessments/latest-root.json.zst
 ```
 

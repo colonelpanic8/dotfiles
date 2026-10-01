@@ -29,7 +29,7 @@ Options:
 
 Examples:
   hypr_plugin_dev_session
-  hypr_plugin_dev_session --repo ~/Projects/my-plugin --attr .#default
+  hypr_plugin_dev_session --repo ~/projects/my-plugin --attr .#default
   hypr_plugin_dev_session --plugin "$PWD/result/lib/my-plugin.so"
   hypr_plugin_dev_session --user-config --no-load
 EOF

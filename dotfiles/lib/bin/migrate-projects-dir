@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# Consolidate ~/Projects into ~/projects, leaving ~/Projects as a compat symlink.
+set -euo pipefail
+
+upper="$HOME/Projects"
+lower="$HOME/projects"
+
+if [[ "$(uname -s)" == Darwin ]]; then
+  echo "Skipping on Darwin (case-insensitive filesystem)."
+  exit 0
+fi
+
+if [[ -L "$upper" ]]; then
+  echo "$upper is already a symlink -> $(readlink "$upper")"
+  exit 0
+fi
+
+if [[ ! -e "$upper" ]]; then
+  if [[ -d "$lower" ]]; then
+    ln -s projects "$upper"
+    echo "Created $upper -> projects"
+  else
+    echo "Neither $upper nor $lower exists; nothing to do."
+  fi
+  exit 0
+fi
+
+if [[ -d "$lower" && ! -L "$lower" ]]; then
+  shopt -s dotglob nullglob
+  collisions=()
+  for entry in "$lower"/*; do
+    name="$(basename "$entry")"
+    [[ -e "$upper/$name" || -L "$upper/$name" ]] && collisions+=("$name")
+  done
+  if ((${#collisions[@]})); then
+    echo "Both $upper and $lower contain: ${collisions[*]}" >&2
+    echo "Rename or remove one copy of each, then rerun." >&2
+    exit 1
+  fi
+  for entry in "$lower"/*; do
+    mv "$entry" "$upper/"
+  done
+  rmdir "$lower"
+elif [[ -e "$lower" || -L "$lower" ]]; then
+  echo "$lower exists but is not a directory; refusing to continue." >&2
+  exit 1
+fi
+
+mv "$upper" "$lower"
+ln -s projects "$upper"
+echo "Moved $upper to $lower and created $upper -> projects"

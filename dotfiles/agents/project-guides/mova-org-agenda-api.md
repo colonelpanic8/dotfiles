@@ -17,8 +17,8 @@
 - `./project-links/mova-dev` -> mova constellation root.
 
 ## Discovery hints
-- Check likely roots first, especially `~/Projects`.
-- Common local path is `~/Projects/mova-dev`, but do not assume it exists.
+- Check likely roots first, especially `~/projects`.
+- Common local path is `~/projects/mova-dev`, but do not assume it exists.
 - If the symlink is missing or stale, search by directory name first, then by repo names.
 
 ## Read-first docs

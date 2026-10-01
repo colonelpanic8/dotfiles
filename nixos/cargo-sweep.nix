@@ -9,7 +9,7 @@
     runtimeInputs = [pkgs.cargo-sweep pkgs.findutils];
     text = ''
       build_root="$HOME/.cargo/build"
-      for root in "$HOME/Projects" "$HOME/org" "${dotfilesRoot}" "$build_root"; do
+      for root in "$HOME/projects" "$HOME/org" "${dotfilesRoot}" "$build_root"; do
         if [[ -d "$root" ]]; then
           cargo-sweep sweep -r --hidden --time 2 "$root"
         fi

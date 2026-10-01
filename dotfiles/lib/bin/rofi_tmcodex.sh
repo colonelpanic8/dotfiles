@@ -32,7 +32,7 @@ emit_candidates() {
   for d in \
     "$dotfiles_root" \
     "$dotfiles_root/nixos" \
-    "$HOME/Projects" \
+    "$HOME/projects" \
     "$HOME/config" \
     "$HOME/org"
   do
@@ -44,7 +44,7 @@ emit_candidates() {
 
   # 4) Shallow git repo discovery under a few likely roots.
   if command -v fd >/dev/null 2>&1; then
-    for root in "$HOME/Projects" "$dotfiles_root" "$HOME/config" "$HOME/org"; do
+    for root in "$HOME/projects" "$dotfiles_root" "$HOME/config" "$HOME/org"; do
       [[ -d "$root" ]] || continue
       # Find ".git" directories; print their parent (repo root).
       # Keep it shallow for speed.
