@@ -248,14 +248,6 @@ in {
     };
   };
 
-  services.nginx.virtualHosts."rbsf.tplinkdns.com" = {
-    useACMEHost = "rocket-sense.duckdns.org";
-    forceSSL = true;
-    globalRedirect = "rocket-sense.duckdns.org";
-  };
-
-  security.acme.certs."rocket-sense.duckdns.org".extraDomainNames = ["rbsf.tplinkdns.com"];
-
   # Dynamic-DNS updater: keep rocket-sense.duckdns.org pointed at this node's
   # current public IP. The residential WAN IP changes (e.g. after an ISP
   # outage/failover), and without this the public hostname goes stale and the

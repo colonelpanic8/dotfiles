@@ -15,7 +15,7 @@ in {
 
     domain = mkOption {
       type = types.str;
-      default = "rbsf.tplinkdns.com";
+      default = "rocket-sense.duckdns.org";
       description = "Base domain name (service will be at org-agenda-api.<domain>)";
     };
 
