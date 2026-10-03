@@ -9,6 +9,12 @@
   cfg = config.myModules.t3codeServer;
   environmentId = "fleet:${config.networking.hostName}";
   enabledModule = makeEnable config "myModules.t3codeServer" false {
+    assertions = [
+      {
+        assertion = config.myModules.t3code.enable;
+        message = "myModules.t3codeServer needs myModules.t3code for its managed-access token.";
+      }
+    ];
     users.users.imalison.linger = true;
     home-manager.sharedModules = [inputs.t3code-integration.homeManagerModules.t3code-server];
     home-manager.users.imalison = {config, ...}: {

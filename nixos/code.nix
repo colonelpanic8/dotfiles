@@ -23,11 +23,11 @@
   claudeDesktopFhs = pkgs.callPackage "${claudeDesktopSource}/nix/fhs.nix" {
     claude-desktop = claudeDesktop;
   };
-in
-  makeEnable config "myModules.code" true {
+  t3codeEnabled = config.myModules.t3code.enable;
+  enabledModule = makeEnable config "myModules.code" true {
     # Code-capable hosts run the persistent backend used by the client-only
     # T3 Code desktop wrapper. Individual hosts can still opt out explicitly.
-    myModules.t3codeServer.enable = lib.mkDefault true;
+    myModules.t3codeServer.enable = lib.mkDefault t3codeEnabled;
 
     # The Paseo daemon is the same kind of always-on agent backend, and the
     # desktop client below is useless without one to pair with.
@@ -64,7 +64,7 @@ in
     ];
 
     home-manager.users.imalison = lib.mkIf config.myModules.desktop.enable {
-      imports = [../nix-shared/home-manager/t3code-keybindings.nix];
+      imports = lib.optional t3codeEnabled ../nix-shared/home-manager/t3code-keybindings.nix;
 
       programs.codex = {
         enable = true;
@@ -106,8 +106,9 @@ in
         inputs.lastfm-edit.packages.${pkgs.stdenv.hostPlatform.system}.scrobble-scrubber-app
         opencode
         inputs.paseo.packages.${pkgs.stdenv.hostPlatform.system}.desktop
-        t3code
-
+      ]
+      ++ lib.optional t3codeEnabled t3code
+      ++ [
         # MCP
         github-mcp-server
         gitea-mcp-server
@@ -194,4 +195,15 @@ in
           ]
         else []
       );
+  };
+in
+  enabledModule
+  // {
+    options = lib.recursiveUpdate enabledModule.options {
+      myModules.t3code.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Install the T3 Code client and its fleet registry, and run the server by default.";
+      };
+    };
   }
