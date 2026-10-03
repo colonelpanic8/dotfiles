@@ -9,7 +9,7 @@
     ../configuration.nix
   ];
   services.xserver.enable = true;
-  environment.systemPackages = with pkgs; [sublime];
+  environment.systemPackages = with pkgs; [sublime3];
   myModules.desktop.enable = false;
   myModules.plasma.enable = false;
   imalison.nixOverlay.enable = false;

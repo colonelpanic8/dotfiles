@@ -45,7 +45,7 @@
 
   services.openthread-border-router = {
     enable = true;
-    backboneInterface = "wpan0";
+    backboneInterfaces = ["wpan0"];
     logLevel = "debug";
     radio = {
       device = "/dev/serial/by-id/usb-Nabu_Casa_Home_Assistant_Connect_ZBT-1_0cd053abfa38ef119c66e1d154516304-if00-port0";
@@ -70,12 +70,12 @@
         rev = "6e8676be6142bb541fa68048c77f2fc56a21c7b1";
         hash = "sha256-QwPKn2R4mflTKMyr1k4xF04t0PJIlzNCOdXEiQwX5wk=";
       };
-    in [
-      "--bluetooth-adapter=0"
-      "--paa-root-cert-dir=${cert-dir}/credentials/production/paa-root-certs"
-      "--enable-test-net-dcl"
-      "--ota-provider-dir=/var/lib/matter-server/ota-provider"
-    ];
+    in {
+      bluetooth-adapter = 0;
+      paa-root-cert-dir = "${cert-dir}/credentials/production/paa-root-certs";
+      enable-test-net-dcl = true;
+      ota-provider-dir = "/var/lib/matter-server/ota-provider";
+    };
   };
 
   age.secrets.google-service-account = {

@@ -10,7 +10,7 @@
   ];
   services.xserver.enable = true;
   environment.systemPackages = with pkgs; [
-    sublime
+    sublime3
     vlc
   ];
   myModules.desktop.enable = false;
