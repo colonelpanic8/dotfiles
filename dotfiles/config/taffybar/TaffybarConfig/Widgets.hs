@@ -134,7 +134,8 @@ workspacesWidget =
                   HyprlandWorkspaces.specialWorkspaceWindowsToMinimized
               },
           Workspaces.labelSetter = workspaceLabelSetter,
-          Workspaces.showWorkspaceFn = workspaceShowPredicate
+          Workspaces.showWorkspaceFn = workspaceShowPredicate,
+          Workspaces.widgetBuilder = Workspaces.labelOverlayWidgetBuilder
         }
 
 clockWidget :: TaffyIO Gtk.Widget
