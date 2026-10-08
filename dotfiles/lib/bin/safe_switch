@@ -1,13 +1,13 @@
 #!/usr/bin/env zsh
 # Run `just switch` for /srv/dotfiles/nixos detached from the caller.
 #
-# Rebuilds restart paseo.service when the paseo unit changed. When the caller
-# is a Paseo-hosted agent or terminal, it lives in paseo.service's own cgroup,
-# so the stop phase of the switch kills the caller — and with it a directly
-# attached switch, stranding the activation half-finished. This script runs
-# the switch inside a tmux session on a dedicated socket whose server is
-# started through `systemd-run --user`, which places it in the user manager's
-# cgroup where a paseo restart cannot reach it.
+# Rebuilds restart paseo.service and t3code-headless.service when their units
+# changed. Agents and terminals hosted by either live in that service's own
+# cgroup, so the stop phase of the switch kills the caller — and with it a
+# directly attached switch, stranding the activation half-finished. This
+# script runs the switch inside a tmux session on a dedicated socket whose
+# server is started through `systemd-run --user`, which places it in the user
+# manager's cgroup where such a restart cannot reach it.
 #
 # Retrieve a running (or finished) switch with:
 #   tmux -L nixos-switch attach -t switch
