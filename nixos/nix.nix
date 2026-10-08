@@ -65,7 +65,6 @@
         keep-derivations = true;
         substituters = [
           "https://cache.nixos.org"
-          "https://cuda-maintainers.cachix.org"
           "https://ai.cachix.org"
           "https://cache.nixos-cuda.org"
           "https://nix-community.cachix.org"
@@ -78,7 +77,6 @@
         ];
         trusted-substituters = [
           "https://cache.nixos.org"
-          "https://cuda-maintainers.cachix.org"
           "https://ai.cachix.org"
           "https://cache.nixos-cuda.org"
           "https://nix-community.cachix.org"
@@ -90,7 +88,6 @@
           "https://paseo-colonelpanic8.cachix.org"
         ];
         trusted-public-keys = [
-          "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
           "ai.cachix.org-1:N9dzRK+alWwoKXQlnn0H6aUx0lU/mspIoz8hMvGvbbc="
           "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
           "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
