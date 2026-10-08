@@ -28,7 +28,10 @@ in {
       Type = "oneshot";
       RemainAfterExit = true;
       TimeoutStartSec = "60s";
+      ExecStartPre = "${config.services.tailscale.package}/bin/tailscale wait --timeout=45s";
       ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --bg --https=${toString httpsPort} --set-path=/ http://127.0.0.1:${toString backendPort}";
+      Restart = "on-failure";
+      RestartSec = "5s";
     };
   };
 }
