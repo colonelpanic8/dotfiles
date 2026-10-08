@@ -211,7 +211,7 @@
   ;; source directory under ~/.emacs.d/straight/repos/org.
   (org :type git :host github
        :repo ("colonelpanic8/org-mode" . "org")
-       :branch "my-main-2025"
+       :branch "my-main-oct-2026"
        :depth full
        :files (:defaults "lisp/*.el" ("etc/styles/" "etc/styles/*"))
        :wait t))
