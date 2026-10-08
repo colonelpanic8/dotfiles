@@ -351,6 +351,10 @@
       url = "github:ilysenko/codex-desktop-linux/main";
     };
 
+    eva = {
+      url = "github:colonelpanic8/eva/ba58433fc834f0e1b4175f8a0eac3fc541369224";
+    };
+
     paseo = {
       url = "github:colonelpanic8/paseo/assembled";
     };

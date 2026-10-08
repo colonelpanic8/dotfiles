@@ -220,6 +220,7 @@
     services.greenclip.enable = true;
     imports = [
       ./fonts.nix
+      ./eva.nix
       ./hyprland.nix
       ./keyd.nix
       ./mova-capture.nix
