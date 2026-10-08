@@ -75,6 +75,12 @@ for running agents.
 - Default to creating pull requests as ready for review, not drafts.
 - Do not add a `[codex]` prefix or any other agent/tool prefix to pull request titles.
 
+## New projects
+- Before scaffolding a new project or repo, load the `new-project` skill
+  (`./skills/new-project/SKILL.md`): Nix flake + direnv + just, Rust via fenix,
+  Dioxus / React Native code sharing, F-Droid auto-publishing, and example repos
+  to copy from.
+
 ## This machine's system configuration
 - This system is a NixOS machine managed by the flake at `/srv/dotfiles`, which
   is also where these instructions live.
