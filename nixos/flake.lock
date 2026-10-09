@@ -3010,10 +3010,11 @@
         "xmonad-contrib": "xmonad-contrib"
       },
       "locked": {
-        "lastModified": 1790783178,
-        "narHash": "sha256-16sGgagT1t9Tav2nkiSVk6g51kIspyWdmjuWsJaN/hI=",
-        "rev": "ef86f4e3123cda9590ece26c2a66add25ebc75b7",
-        "revCount": 2440,
+        "lastModified": 1790862426,
+        "narHash": "sha256-N3x3CMcc6kYaEeebg08RrEuItGfa6x0Fa0G4yo8g4YY=",
+        "ref": "refs/heads/master",
+        "rev": "418571d4f8e6a6aa939f1fcf3e233ee2f220e219",
+        "revCount": 2442,
         "type": "git",
         "url": "file:///srv/dotfiles/dotfiles/config/taffybar/taffybar"
       },
