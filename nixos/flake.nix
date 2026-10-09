@@ -352,7 +352,7 @@
     };
 
     eva = {
-      url = "github:colonelpanic8/eva/6b1b85a15014fc8a07dc2d1d06bc94a1cbdac914";
+      url = "github:colonelpanic8/eva/f6b4d9c5539110a28e0017e942f356f2ddc8e870";
     };
 
     paseo = {

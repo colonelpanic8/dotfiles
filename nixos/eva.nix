@@ -60,6 +60,7 @@ in {
           Service = {
             ExecStart = "${lib.getExe evaPackage} tray";
             Restart = "on-abnormal";
+            SuccessExitStatus = [143];
             RestartSec = 2;
           };
           Install.WantedBy = ["graphical-session.target"];
