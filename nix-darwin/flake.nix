@@ -86,7 +86,7 @@
     # Pin the assembled integration by revision; its flake owns packaging,
     # desktop integration, and the persistent server module.
     t3code-integration = {
-      url = "github:colonelpanic8/t3code/e542bc839fb331fcd08c3c1e3122539c46c0dc6e";
+      url = "github:colonelpanic8/t3code/73ddc3a77b1da2ebb82cf22930a36066b532ef40";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
@@ -337,9 +337,9 @@
             PASEO_HOME = paseoHome;
             PASEO_HOSTNAMES = config.networking.hostName;
             PATH = lib.concatStringsSep ":" [
+              "/etc/profiles/per-user/${paseoUser}/bin"
               "${homeForUser paseoUser}/.nix-profile/bin"
               "${homeForUser paseoUser}/.local/state/nix/profile/bin"
-              "/etc/profiles/per-user/${paseoUser}/bin"
               "/run/current-system/sw/bin"
               "/nix/var/nix/profiles/default/bin"
               "/opt/homebrew/bin"
@@ -358,6 +358,12 @@
       };
 
       system.primaryUser = primaryUser;
+      environment.profiles = lib.mkForce [
+        "/etc/profiles/per-user/$USER"
+        "$HOME/.nix-profile"
+        "/run/current-system/sw"
+        "/nix/var/nix/profiles/default"
+      ];
       # The uninstaller evaluates a nested nix-darwin system whose manual build
       # still passes removed nixos-render-docs flags with current nixpkgs.
       system.tools.darwin-uninstaller.enable = false;
@@ -435,19 +441,6 @@
       nixpkgs.overlays = [
         (import ../nix-shared/overlays)
         inputs.t3code-integration.overlays.client
-        (final: prev: let
-          previousUnwrapped = prev.t3code.unwrapped;
-          unwrapped = previousUnwrapped.overrideAttrs (_finalAttrs: previousAttrs: {
-            pnpmDeps = final.lib.overrideDerivation previousAttrs.pnpmDeps (_: {
-              outputHash = "sha256-VdE+ycyF/UvPr2urLlKOt/Aa5t2WqKcidr2D0sH0eVI=";
-            });
-          });
-        in {
-          t3code = prev.t3code.overrideAttrs (previousAttrs: {
-            paths = [unwrapped];
-            passthru = (previousAttrs.passthru or {}) // {inherit unwrapped;};
-          });
-        })
         # Use codex and claude-code from dedicated flakes with cachix
         (final: prev: {
           bazel = inputs.nixpkgs-bazel.legacyPackages.${prev.stdenv.hostPlatform.system}.bazel;
@@ -638,17 +631,14 @@
         ];
       };
   in {
-    # The default remains on the currently existing macOS account. Switch to
-    # mac-demarco-mini-imalison after the target login account and home are in
-    # place.
     darwinConfigurations."mac-demarco-mini" = mkDarwinSystem {
       primaryUser = activePrimaryUser;
-      enabledHomeUsers = [activePrimaryUser];
+      enabledHomeUsers = personalUsers;
     };
 
     darwinConfigurations."mac-demarco-mini-imalison" = mkDarwinSystem {
       primaryUser = targetPrimaryUser;
-      enabledHomeUsers = [targetPrimaryUser];
+      enabledHomeUsers = personalUsers;
     };
 
     # Expose the package set, including overlays, for convenience.

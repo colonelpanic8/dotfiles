@@ -8,7 +8,8 @@
   ...
 }: let
   srcDotfilesDir = builtins.dirOf libDir;
-  worktreeDotfilesDir = "${config.home.homeDirectory}/dotfiles/dotfiles";
+  dotfilesCheckout = "/Users/Shared/dotfiles";
+  worktreeDotfilesDir = "${dotfilesCheckout}/dotfiles";
   worktreeLibDir = "${worktreeDotfilesDir}/lib";
   outOfStore = config.lib.file.mkOutOfStoreSymlink;
   replaceRuntimeDir = builtins.replaceStrings ["$XDG_RUNTIME_DIR"] ["\${XDG_RUNTIME_DIR}"];
@@ -146,13 +147,14 @@ in {
   home.file = dotfilesLinks;
 
   myModules.codexGeneratedSkills.enable = true;
+  myModules.codexGeneratedSkills.worktreeCodexDir = "${worktreeDotfilesDir}/codex";
   services.t3code = {
-    enable = true;
+    enable = config.home.username == osConfig.system.primaryUser;
     package = pkgs.t3code;
-    repositoryRoot = "${config.home.homeDirectory}/dotfiles";
+    repositoryRoot = dotfilesCheckout;
   };
 
-  launchd.agents.t3code-headless = {
+  launchd.agents.t3code-headless = lib.mkIf t3codeCfg.enable {
     domain = "user";
     config.ProgramArguments = lib.mkForce ["${t3codeManagedServerCommand}"];
   };
@@ -197,6 +199,7 @@ in {
       playwright-cli
       prettier
       slack
+      t3code
       tea
       typescript
       vim

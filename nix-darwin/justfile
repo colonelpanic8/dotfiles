@@ -5,23 +5,23 @@ ssh-key := "/Users/kat/.ssh/id_ed25519"
 primary-uid := `id -u kat`
 
 build:
-	sudo -H env "GIT_SSH_COMMAND=ssh -i {{ssh-key}} -o IdentitiesOnly=yes" {{darwin-rebuild}} build --flake .#{{hostname}}
+    sudo -H env "GIT_SSH_COMMAND=ssh -i {{ ssh-key }} -o IdentitiesOnly=yes" {{ darwin-rebuild }} build --flake .#{{ hostname }}
 
 build-imalison:
-	sudo -H env "GIT_SSH_COMMAND=ssh -i {{ssh-key}} -o IdentitiesOnly=yes" {{darwin-rebuild}} build --flake .#{{target-hostname}}
+    sudo -H env "GIT_SSH_COMMAND=ssh -i {{ ssh-key }} -o IdentitiesOnly=yes" {{ darwin-rebuild }} build --flake .#{{ target-hostname }}
 
 check-imalison:
-	./scripts/check-imalison-ready.sh
+    DOTFILES_CHECKOUT=/Users/Shared/dotfiles ./scripts/check-imalison-ready.sh
 
-switch:
-	sudo launchctl asuser {{primary-uid}} env HOME=/var/root "GIT_SSH_COMMAND=ssh -i {{ssh-key}} -o IdentitiesOnly=yes" {{darwin-rebuild}} switch --flake .#{{hostname}}
+switch: check-imalison
+    sudo launchctl asuser {{ primary-uid }} env HOME=/var/root "GIT_SSH_COMMAND=ssh -i {{ ssh-key }} -o IdentitiesOnly=yes" {{ darwin-rebuild }} switch --flake .#{{ hostname }}
 
 switch-imalison: check-imalison
-	sudo -H env "GIT_SSH_COMMAND=ssh -i {{ssh-key}} -o IdentitiesOnly=yes" {{darwin-rebuild}} switch --flake .#{{target-hostname}}
+    sudo -H env "GIT_SSH_COMMAND=ssh -i {{ ssh-key }} -o IdentitiesOnly=yes" {{ darwin-rebuild }} switch --flake .#{{ target-hostname }}
 
 update:
-	/run/current-system/sw/bin/nix flake update
-	just switch
+    /run/current-system/sw/bin/nix flake update
+    just switch
 
 update-nix-darwin:
-	nix flake lock --update-input nix-darwin
+    nix flake lock --update-input nix-darwin
