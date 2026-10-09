@@ -47,23 +47,6 @@
     "brew-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1786348930,
-        "narHash": "sha256-bCQJkbgsAMDp5HQystZLCq11UHiyEuoWbxKulAPYrh8=",
-        "owner": "Homebrew",
-        "repo": "brew",
-        "rev": "3ecc9eff23feebf1bc73846d74e14a122c93b66f",
-        "type": "github"
-      },
-      "original": {
-        "owner": "Homebrew",
-        "ref": "6.0.16",
-        "repo": "brew",
-        "type": "github"
-      }
-    },
-    "brew-src_2": {
-      "flake": false,
-      "locked": {
         "lastModified": 1789661079,
         "narHash": "sha256-geVTQ51PGZ1mLULM5k7wO7qt/6xenOR/YG8X7Q3eCaI=",
         "owner": "Homebrew",
@@ -488,7 +471,7 @@
     },
     "nix-homebrew": {
       "inputs": {
-        "brew-src": "brew-src_2"
+        "brew-src": "brew-src"
       },
       "locked": {
         "lastModified": 1789928041,
@@ -693,7 +676,6 @@
     "root": {
       "inputs": {
         "agenix": "agenix",
-        "brew-src": "brew-src",
         "ccusage-fleet": "ccusage-fleet",
         "claude-code-nix": "claude-code-nix",
         "codex-cli-nix": "codex-cli-nix",
