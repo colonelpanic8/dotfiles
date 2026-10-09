@@ -245,17 +245,17 @@
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "lastModified": 1791479030,
-        "narHash": "sha256-Rzqfla+pCd73OQVpS6SIV12YdjmBnTcTU995mNm7zJ4=",
+        "lastModified": 1791506664,
+        "narHash": "sha256-WWOzu8XEG9j8/eMS+Oa89qZstKpLQYcr5757QTCVKLM=",
         "owner": "colonelpanic8",
         "repo": "eva",
-        "rev": "ba58433fc834f0e1b4175f8a0eac3fc541369224",
+        "rev": "6b1b85a15014fc8a07dc2d1d06bc94a1cbdac914",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
         "repo": "eva",
-        "rev": "ba58433fc834f0e1b4175f8a0eac3fc541369224",
+        "rev": "6b1b85a15014fc8a07dc2d1d06bc94a1cbdac914",
         "type": "github"
       }
     },
