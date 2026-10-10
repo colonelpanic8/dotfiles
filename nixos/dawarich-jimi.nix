@@ -157,7 +157,10 @@
       Type = "oneshot";
       RemainAfterExit = true;
       TimeoutStartSec = "60s";
-      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --bg --https=443 --set-path=/ http://100.114.206.79:47863";
+      ExecStartPre = "${config.services.tailscale.package}/bin/tailscale wait --timeout=45s";
+      ExecStart = "${pkgs.util-linux}/bin/flock /run/tailscale-serve.lock ${config.services.tailscale.package}/bin/tailscale serve --bg --https=443 --set-path=/ http://100.114.206.79:47863";
+      Restart = "on-failure";
+      RestartSec = "5s";
     };
   };
 
