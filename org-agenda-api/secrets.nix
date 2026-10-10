@@ -1,5 +1,5 @@
 let
-  keys = import ../nixos/keys.nix;
+  keys = import ../nix-shared/keys.nix;
 in
 {
   # colonelpanic instance

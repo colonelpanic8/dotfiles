@@ -36,9 +36,6 @@
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    railbird-secrets = {
-      url = "git+ssh://gitea@dev.railbird.ai:1123/railbird/secrets-flake.git";
-    };
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
 
     # Optional: Declarative tap management
@@ -571,7 +568,7 @@
           name = user;
           home = homeForUser user;
           description = mkUserDescription user;
-          openssh.authorizedKeys.keys = inputs.railbird-secrets.keys.sshClientKeys;
+          openssh.authorizedKeys.keys = (import ../nix-shared/keys.nix).sshClientKeys;
         })
         // {
           gitea-runner = {

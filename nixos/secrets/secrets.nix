@@ -1,5 +1,5 @@
 let
-  keys = import ../keys.nix;
+  keys = import ../../nix-shared/keys.nix;
 in {
   "dawarich-secret-key-base.age".publicKeys = keys.agenixKeys;
   "google-places-api-key.age".publicKeys = keys.agenixKeys;

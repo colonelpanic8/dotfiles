@@ -464,7 +464,7 @@
             inherit inputs;
             inherit machineNames;
             makeEnable = (import ./make-enable.nix) nixpkgs.lib;
-            keys = import ./keys.nix;
+            keys = import ../nix-shared/keys.nix;
             usersInfo = (import ./users.nix) {
               pkgs = {zsh = "zsh";};
               inherit keys system;
