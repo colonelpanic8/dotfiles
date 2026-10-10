@@ -168,6 +168,11 @@
       # still passes removed nixos-render-docs flags with current nixpkgs.
       system.tools.darwin-uninstaller.enable = false;
 
+      # SSH clients that don't forward LANG leave sessions in the C locale,
+      # which makes tmux replace non-ASCII glyphs with underscores.
+      environment.extraInit = ''
+        export LANG="''${LANG:-en_US.UTF-8}"
+      '';
 
       security.sudo.extraConfig = ''
         ${primaryUser} ALL=(ALL) NOPASSWD: ALL
