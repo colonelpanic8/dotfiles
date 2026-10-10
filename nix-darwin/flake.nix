@@ -121,11 +121,9 @@
     ...
   }: let
     libDir = ../dotfiles/lib;
-    activePrimaryUser = "kat";
-    targetPrimaryUser = "imalison";
     personalUsers = [
-      activePrimaryUser
-      targetPrimaryUser
+      "kat"
+      "imalison"
     ];
     sharedHomeModules = [
       ./home/common.nix
@@ -134,7 +132,7 @@
     ];
     homeForUser = user: "/Users/${user}";
     mkUserDescription = user:
-      if user == targetPrimaryUser
+      if user == "imalison"
       then "Ivan Malison"
       else null;
     sharedConfiguration = {primaryUser}: {lib, ...}: {
@@ -254,7 +252,7 @@
       ...
     }: let
       essentialPkgs = (import ../nix-shared/system/essential.nix {inherit pkgs lib inputs;}).environment.systemPackages;
-      paseoUser = targetPrimaryUser;
+      paseoUser = "imalison";
       paseoHome = "${homeForUser paseoUser}/.paseo";
       paseoPackage = inputs.paseo.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
         postInstall =
@@ -567,7 +565,7 @@
       };
 
       # Auto upgrade nix package and the daemon service.
-      launchd.user = lib.mkIf (primaryUser == activePrimaryUser) {
+      launchd.user = {
         envVariables.PATH = config.environment.systemPath;
       };
 
@@ -624,12 +622,7 @@
       };
   in {
     darwinConfigurations."mac-demarco-mini" = mkDarwinSystem {
-      primaryUser = activePrimaryUser;
-      enabledHomeUsers = personalUsers;
-    };
-
-    darwinConfigurations."mac-demarco-mini-imalison" = mkDarwinSystem {
-      primaryUser = targetPrimaryUser;
+      primaryUser = "kat";
       enabledHomeUsers = personalUsers;
     };
 

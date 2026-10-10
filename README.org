@@ -108,8 +108,8 @@ cd /srv/dotfiles/nix-darwin
 just switch
 #+end_src
 
-The active host configuration is =mac-demarco-mini=. There is also a
-=mac-demarco-mini-imalison= target used while migrating the primary macOS user.
+The host configuration is =mac-demarco-mini=, with =kat= as the primary macOS
+user.
 
 * Home File Linking
 
