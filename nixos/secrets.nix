@@ -11,6 +11,7 @@ in {
     imports =
       [
         inputs.agenix.homeManagerModules.default
+        ../nix-shared/home-manager/gpg-trust.nix
         ../nix-shared/home-manager/paseo-managed-hosts.nix
       ]
       ++ lib.optional t3codeEnabled ../nix-shared/home-manager/t3code-managed-connections.nix;
