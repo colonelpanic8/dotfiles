@@ -3366,11 +3366,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1791616629,
-        "narHash": "sha256-wQhqcdvKhfz9+5kcEfhmZsWTlvaloBuGJRipTfp8kHY=",
+        "lastModified": 1791620290,
+        "narHash": "sha256-zVHpCi32BTYSu7ZtOkTlRpGWQgN94YBQGP30L7HiQb0=",
         "owner": "colonelpanic8",
         "repo": "gocryptfs-tray",
-        "rev": "675b4e15fb448cff4d3583ebdcb4e048e8850ec5",
+        "rev": "c8e4a85aafd64ad6bb986271fdcbe9a0a85b9775",
         "type": "github"
       },
       "original": {
