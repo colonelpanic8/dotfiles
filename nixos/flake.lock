@@ -1843,11 +1843,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1790675182,
-        "narHash": "sha256-xYW94ULXAvGqQaLFdAUjaa8+guR3TUfl+RFA8teB1g0=",
+        "lastModified": 1791483049,
+        "narHash": "sha256-UzdZ64pDgqXUvy/p4mdaesTdAePQJe9XlxDC3DbvyvQ=",
         "owner": "nixified-ai",
         "repo": "flake",
-        "rev": "d45a23a136b8321b41c91c7ddda78e7ab772f6dc",
+        "rev": "5895893f1590197df646f833c8f633d2517e3d8b",
         "type": "github"
       },
       "original": {
