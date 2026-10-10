@@ -477,6 +477,9 @@
       imports = [
         (import ./gitea-actions-runner.nix)
         (import ./gitea-runner-external-storage.nix)
+        (import ./tailscale.nix {
+          authKeyFile = ../nixos/secrets/tailscale-authkey.age;
+        })
       ];
       age = {
         identityPaths = [
@@ -485,13 +488,7 @@
           "/etc/ssh/ssh_host_rsa_key"
         ];
         secrets.gitea-runner-token.file = ../nixos/secrets/gitea-runner-token.mac-demarco-mini.age;
-        secrets.tailscale-authkey = {
-          file = ../nixos/secrets/tailscale-authkey.age;
-          owner = "root";
-          mode = "0400";
-        };
       };
-      services.tailscale.enable = true;
       services.gitea-actions-runner = {
         user = "gitea-runner";
         instances.nix = {
@@ -537,45 +534,6 @@
         XDG_CACHE_HOME = "/var/lib/gitea-runner/.cache";
         XDG_RUNTIME_DIR = "/var/lib/gitea-runner/tmp";
       };
-      launchd.daemons.tailscaled.serviceConfig.KeepAlive = true;
-
-      launchd.daemons.tailscale-autoconnect = {
-        script = ''
-          set -euo pipefail
-
-          key_file='${config.age.secrets.tailscale-authkey.path}'
-          if [ ! -s "$key_file" ]; then
-            exit 0
-          fi
-          if [ "$(cat "$key_file")" = "DISABLED" ]; then
-            exit 0
-          fi
-
-          for _ in $(${pkgs.coreutils}/bin/seq 1 30); do
-            state="$(${config.services.tailscale.package}/bin/tailscale status --json 2>/dev/null | ${pkgs.jq}/bin/jq -r '.BackendState // empty' || true)"
-            if [ "$state" = "Running" ]; then
-              exit 0
-            fi
-            if [ -n "$state" ]; then
-              break
-            fi
-            sleep 2
-          done
-
-          ${config.services.tailscale.package}/bin/tailscale up \
-            --auth-key "file:$key_file" \
-            --accept-dns=true \
-            --operator="${primaryUser}" \
-            --timeout=60s
-        '';
-        serviceConfig = {
-          RunAtLoad = true;
-          StartInterval = 300;
-          StandardOutPath = "/var/log/tailscale-autoconnect.log";
-          StandardErrorPath = "/var/log/tailscale-autoconnect.err.log";
-        };
-      };
-
       system.defaults.NSGlobalDomain."com.apple.swipescrolldirection" = false;
       system.defaults.CustomUserPreferences."com.apple.screensaver".idleTime = 0;
       system.defaults.CustomUserPreferences."com.apple.symbolichotkeys".AppleSymbolicHotKeys = {
@@ -700,6 +658,7 @@
         agenix.darwinModules.default
         home-manager.darwinModules.home-manager
         (sharedConfiguration {primaryUser = "alex";})
+        (import ./tailscale.nix {})
         (paseoConfiguration {
           user = "alex";
           passwordSecret = "paseo-password-alexanders-macbook-air";
@@ -730,6 +689,7 @@
           lib,
           ...
         }: {
+          networking.hostName = "alexanders-macbook-air";
           system.stateVersion = 7;
           environment.systemPackages =
             (import ../nix-shared/system/essential.nix {inherit pkgs lib inputs;}).environment.systemPackages
