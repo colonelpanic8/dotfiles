@@ -2,25 +2,33 @@
 
 set -euo pipefail
 
+# The vault password is the pass entry's secret followed by a PIN that is
+# never stored; an empty PIN is the pre-PIN password.
 PASS_ENTRY="syncthing/private-vault"
 CIPHER_DIR="/var/lib/syncthing/sync/Private.encrypted"
-MOUNT_POINT="${HOME}/Private"
+RUNTIME_DIR="/run/syncthing-private-vault"
+MOUNT_DIR="${RUNTIME_DIR}/mnt"
+PASS_FILE="${RUNTIME_DIR}/passphrase"
+OLD_PASS_FILE="${RUNTIME_DIR}/passphrase.old"
+UNIT="syncthing-private-vault.service"
+MIN_PIN_LENGTH=4
 
 usage() {
-    cat <<'EOF'
+    cat <<'EOF_USAGE'
 Usage: syncthing-private-vault <command>
 
 Commands:
-  init      Initialize the encrypted backing directory
-  mount     Mount the decrypted view at ~/Private
-  unmount   Unmount ~/Private
-  status    Show current configuration and mount status
-EOF
+  init        Create the vault (once, on one machine) and its pass entry
+  mount       Unlock the vault (asks for the PIN); the decrypted view is ~/Private
+  unmount     Lock the vault
+  change-pin  Change the PIN (use an empty current PIN if none is set yet)
+  status      Show current configuration and mount status
+EOF_USAGE
 }
 
 require_commands() {
     local command_name
-    for command_name in gocryptfs pass mountpoint fusermount3 head mktemp mkdir; do
+    for command_name in gocryptfs pass mountpoint systemctl sudo head find; do
         command -v "$command_name" >/dev/null 2>&1 || {
             echo "Missing required command: $command_name" >&2
             exit 1
@@ -28,63 +36,105 @@ require_commands() {
     done
 }
 
-write_password_file() {
-    PASSWORD_FILE="$(mktemp)"
-    chmod 600 "$PASSWORD_FILE"
-    trap 'rm -f "$PASSWORD_FILE"' EXIT
-    pass show "$PASS_ENTRY" | head -n1 > "$PASSWORD_FILE"
+as_syncthing() {
+    sudo -u syncthing "$@"
 }
 
-ensure_directories() {
-    mkdir -p "$CIPHER_DIR" "$MOUNT_POINT"
+is_initialized() {
+    as_syncthing test -e "$CIPHER_DIR/gocryptfs.conf"
+}
+
+read_pin() {
+    local pin
+    read -rsp "$1" pin || {
+        echo "Could not read a PIN; run this from a terminal" >&2
+        return 1
+    }
+    echo >&2
+    printf '%s' "$pin"
+}
+
+read_new_pin() {
+    local pin confirm
+    pin="$(read_pin "New PIN: ")"
+    if [ "${#pin}" -lt "$MIN_PIN_LENGTH" ]; then
+        echo "PIN must be at least $MIN_PIN_LENGTH characters" >&2
+        return 1
+    fi
+    confirm="$(read_pin "Repeat new PIN: ")"
+    if [ "$pin" != "$confirm" ]; then
+        echo "PINs do not match" >&2
+        return 1
+    fi
+    printf '%s' "$pin"
+}
+
+# Writes the vault password for the given PIN to a file the syncthing user can read.
+write_password() {
+    local destination="$1" pin="$2" secret
+    secret="$(pass show "$PASS_ENTRY" | head -n1)"
+    (umask 027 && printf '%s%s\n' "$secret" "$pin" > "$destination")
 }
 
 init_vault() {
-    if [ -e "$CIPHER_DIR/gocryptfs.conf" ]; then
-        echo "Vault already initialized at $CIPHER_DIR" >&2
+    if [ -n "$(as_syncthing find "$CIPHER_DIR" -mindepth 1 -print -quit)" ]; then
+        echo "$CIPHER_DIR is not empty: already initialized, or syncthing is still pulling the vault" >&2
         return 1
     fi
 
-    write_password_file
-    gocryptfs -q -init -passfile "$PASSWORD_FILE" "$CIPHER_DIR"
+    local pin
+    pin="$(read_new_pin)"
+    pass show "$PASS_ENTRY" >/dev/null 2>&1 || pass generate "$PASS_ENTRY" 40 >/dev/null
+    write_password "$PASS_FILE" "$pin"
+    as_syncthing "$(command -v gocryptfs)" -q -init -passfile "$PASS_FILE" "$CIPHER_DIR"
 }
 
 mount_vault() {
-    if mountpoint -q "$MOUNT_POINT"; then
-        echo "Vault already mounted at $MOUNT_POINT"
+    if mountpoint -q "$MOUNT_DIR"; then
+        echo "Vault already mounted at $MOUNT_DIR"
         return 0
     fi
 
-    if [ ! -e "$CIPHER_DIR/gocryptfs.conf" ]; then
-        echo "Vault has not been initialized yet: $CIPHER_DIR/gocryptfs.conf is missing" >&2
+    if ! is_initialized; then
+        echo "Vault has not been initialized (or synced) yet: $CIPHER_DIR/gocryptfs.conf is missing" >&2
         return 1
     fi
 
-    write_password_file
-    exec gocryptfs -q -passfile "$PASSWORD_FILE" "$CIPHER_DIR" "$MOUNT_POINT"
+    local pin
+    pin="$(read_pin "PIN: ")"
+    write_password "$PASS_FILE" "$pin"
+    if ! sudo systemctl start "$UNIT" || ! mountpoint -q "$MOUNT_DIR"; then
+        echo "Vault did not mount (wrong PIN?); see: journalctl -u $UNIT" >&2
+        return 1
+    fi
 }
 
 unmount_vault() {
-    if ! mountpoint -q "$MOUNT_POINT"; then
-        echo "Vault is not mounted at $MOUNT_POINT"
-        return 0
-    fi
+    sudo systemctl stop "$UNIT"
+}
 
-    fusermount3 -u "$MOUNT_POINT"
+change_pin() {
+    local old_pin new_pin
+    old_pin="$(read_pin "Current PIN (empty if none): ")"
+    new_pin="$(read_new_pin)"
+    write_password "$OLD_PASS_FILE" "$old_pin"
+    write_password "$PASS_FILE" "$new_pin"
+    as_syncthing "$(command -v gocryptfs)" -q -passwd -passfile "$OLD_PASS_FILE" "$CIPHER_DIR" < "$PASS_FILE"
+    echo "PIN changed; other devices pick it up once syncthing syncs gocryptfs.conf"
 }
 
 status_vault() {
     echo "pass entry: $PASS_ENTRY"
     echo "cipher dir: $CIPHER_DIR"
-    echo "mount point: $MOUNT_POINT"
+    echo "mount dir: $MOUNT_DIR (~/Private)"
 
-    if [ -e "$CIPHER_DIR/gocryptfs.conf" ]; then
+    if is_initialized; then
         echo "initialized: yes"
     else
         echo "initialized: no"
     fi
 
-    if mountpoint -q "$MOUNT_POINT"; then
+    if mountpoint -q "$MOUNT_DIR"; then
         echo "mounted: yes"
     else
         echo "mounted: no"
@@ -93,7 +143,7 @@ status_vault() {
 
 main() {
     require_commands
-    ensure_directories
+    trap 'rm -f "$PASS_FILE" "$OLD_PASS_FILE"' EXIT
 
     case "${1:-}" in
         init)
@@ -104,6 +154,9 @@ main() {
             ;;
         unmount)
             unmount_vault
+            ;;
+        change-pin)
+            change_pin
             ;;
         status)
             status_vault
