@@ -658,7 +658,9 @@
         agenix.darwinModules.default
         home-manager.darwinModules.home-manager
         (sharedConfiguration {primaryUser = "alex";})
-        (import ./tailscale.nix {})
+        (import ./tailscale.nix {
+          authKeyFile = ../nixos/secrets/tailscale-authkey.alexanders-macbook-air.age;
+        })
         (paseoConfiguration {
           user = "alex";
           passwordSecret = "paseo-password-alexanders-macbook-air";
