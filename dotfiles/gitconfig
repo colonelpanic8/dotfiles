@@ -82,6 +82,10 @@
 [merge]
 	conflictstyle = diff3
 
+[user]
+	name = Ivan Malison
+	email = IvanMalison@gmail.com
+
 [include]
 	path = ~/.gitconfig.custom
 	path = ~/.gitconfig.this-machine
@@ -131,6 +135,3 @@
 	# ownership") and `elpaca-update-all` fails on every package.
 	directory = /srv/dotfiles/dotfiles/emacs.d/straight/repos/*
 	directory = /shared/dean/railbird
-[user]
-	name = Ivan Malison
-	email = IvanMalison@gmail.com
