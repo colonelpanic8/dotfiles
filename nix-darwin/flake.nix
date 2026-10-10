@@ -329,15 +329,17 @@
         };
       };
     };
-    mkConfiguration = {primaryUser}: {
-      pkgs,
-      lib,
+    paseoConfiguration = {
+      user,
+      passwordSecret,
+      hostnames ? null,
+    }: {
       config,
+      lib,
+      pkgs,
       ...
     }: let
-      essentialPkgs = (import ../nix-shared/system/essential.nix {inherit pkgs lib inputs;}).environment.systemPackages;
-      paseoUser = "imalison";
-      paseoHome = "${homeForUser paseoUser}/.paseo";
+      paseoHome = "${homeForUser user}/.paseo";
       paseoPackage = inputs.paseo.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
         postInstall =
           (old.postInstall or "")
@@ -355,14 +357,31 @@
         paseo = paseoPackage;
       };
       ensurePaseoMcpInjection = import ../nix-shared/ensure-paseo-mcp-injection.nix {inherit pkgs;};
+      # Tailscale.app's CLI cannot run headless, so without nix-darwin's
+      # tailscale service read the address off the interface instead.
+      tailscaleIpCommand =
+        if config.services.tailscale.enable
+        then "${config.services.tailscale.package}/bin/tailscale ip -4 2>/dev/null | ${pkgs.coreutils}/bin/head -n 1"
+        else ''/sbin/ifconfig | /usr/bin/awk '/inet 100\./ {print $2; exit}' '';
       paseoDaemon = pkgs.writeShellScript "paseo-daemon" ''
         set -eu
 
         ${ensurePaseoMcpInjection} ${lib.escapeShellArg "${paseoHome}/config.json"}
 
-        secret_file='${config.age.secrets.paseo-password-environment.path}'
-        /bin/wait4path "$secret_file"
-        password_line="$(${pkgs.gnugrep}/bin/grep -m1 '^PASEO_PASSWORD=' "$secret_file")"
+        secret_file='${config.age.secrets.${passwordSecret}.path}'
+        # wait4path only rechecks on mount events, so it misses secrets agenix
+        # creates after this starts.
+        attempts=0
+        while [ ! -r "$secret_file" ]; do
+          if [ "$attempts" -ge 60 ]; then
+            echo "Timed out waiting for $secret_file" >&2
+            exit 1
+          fi
+          attempts=$((attempts + 1))
+          sleep 1
+        done
+        # Accept either an environment file or a bare password.
+        password_line="$(${pkgs.gnugrep}/bin/grep -m1 '^PASEO_PASSWORD=' "$secret_file" || ${pkgs.coreutils}/bin/head -n 1 "$secret_file")"
         password="''${password_line#PASEO_PASSWORD=}"
         if [ -z "$password" ]; then
           echo "Paseo password secret is empty" >&2
@@ -372,7 +391,7 @@
         tailscale_ip=""
         attempts=0
         while [ "$attempts" -lt 30 ]; do
-          tailscale_ip="$(${config.services.tailscale.package}/bin/tailscale ip -4 2>/dev/null | ${pkgs.coreutils}/bin/head -n 1 || true)"
+          tailscale_ip="$(${tailscaleIpCommand} || true)"
           if [ -n "$tailscale_ip" ]; then
             break
           fi
@@ -388,6 +407,64 @@
         export PASEO_LISTEN="$tailscale_ip:6767"
         exec ${paseoPackage}/bin/paseo-server --no-relay
       '';
+    in {
+      age.secrets.${passwordSecret} = {
+        file = ../nixos/secrets + "/${passwordSecret}.age";
+        owner = user;
+        mode = "0400";
+      };
+
+      environment.systemPackages = [
+        paseoPackage
+        paseoDesktopPackage
+      ];
+
+      launchd.daemons.paseo = {
+        serviceConfig = {
+          ProgramArguments = ["${paseoDaemon}"];
+          UserName = user;
+          GroupName = "staff";
+          WorkingDirectory = homeForUser user;
+          EnvironmentVariables = {
+            HOME = homeForUser user;
+            USER = user;
+            LOGNAME = user;
+            SHELL = "/bin/zsh";
+            NODE_ENV = "production";
+            PASEO_HOME = paseoHome;
+            PASEO_HOSTNAMES = lib.concatStringsSep "," (
+              if hostnames == null
+              then [config.networking.hostName]
+              else hostnames
+            );
+            PATH = lib.concatStringsSep ":" [
+              "/etc/profiles/per-user/${user}/bin"
+              "${homeForUser user}/.nix-profile/bin"
+              "${homeForUser user}/.local/state/nix/profile/bin"
+              "/run/current-system/sw/bin"
+              "/nix/var/nix/profiles/default/bin"
+              "/opt/homebrew/bin"
+              "/usr/local/bin"
+              "/usr/bin"
+              "/bin"
+            ];
+          };
+          RunAtLoad = true;
+          KeepAlive = true;
+          ProcessType = "Background";
+          ThrottleInterval = 10;
+          StandardOutPath = "${homeForUser user}/Library/Logs/paseo-daemon.log";
+          StandardErrorPath = "${homeForUser user}/Library/Logs/paseo-daemon.err.log";
+        };
+      };
+    };
+    mkConfiguration = {primaryUser}: {
+      pkgs,
+      lib,
+      config,
+      ...
+    }: let
+      essentialPkgs = (import ../nix-shared/system/essential.nix {inherit pkgs lib inputs;}).environment.systemPackages;
       disabledAppleSymbolicHotKey = parameters: {
         enabled = false;
         value = {
@@ -411,11 +488,6 @@
         secrets.tailscale-authkey = {
           file = ../nixos/secrets/tailscale-authkey.age;
           owner = "root";
-          mode = "0400";
-        };
-        secrets.paseo-password-environment = {
-          file = ../nixos/secrets/paseo-password-environment.age;
-          owner = paseoUser;
           mode = "0400";
         };
       };
@@ -504,41 +576,6 @@
         };
       };
 
-      launchd.daemons.paseo = {
-        serviceConfig = {
-          ProgramArguments = ["${paseoDaemon}"];
-          UserName = paseoUser;
-          GroupName = "staff";
-          WorkingDirectory = homeForUser paseoUser;
-          EnvironmentVariables = {
-            HOME = homeForUser paseoUser;
-            USER = paseoUser;
-            LOGNAME = paseoUser;
-            SHELL = "/bin/zsh";
-            NODE_ENV = "production";
-            PASEO_HOME = paseoHome;
-            PASEO_HOSTNAMES = config.networking.hostName;
-            PATH = lib.concatStringsSep ":" [
-              "/etc/profiles/per-user/${paseoUser}/bin"
-              "${homeForUser paseoUser}/.nix-profile/bin"
-              "${homeForUser paseoUser}/.local/state/nix/profile/bin"
-              "/run/current-system/sw/bin"
-              "/nix/var/nix/profiles/default/bin"
-              "/opt/homebrew/bin"
-              "/usr/local/bin"
-              "/usr/bin"
-              "/bin"
-            ];
-          };
-          RunAtLoad = true;
-          KeepAlive = true;
-          ProcessType = "Background";
-          ThrottleInterval = 10;
-          StandardOutPath = "${homeForUser paseoUser}/Library/Logs/paseo-daemon.log";
-          StandardErrorPath = "${homeForUser paseoUser}/Library/Logs/paseo-daemon.err.log";
-        };
-      };
-
       system.defaults.NSGlobalDomain."com.apple.swipescrolldirection" = false;
       system.defaults.CustomUserPreferences."com.apple.screensaver".idleTime = 0;
       system.defaults.CustomUserPreferences."com.apple.symbolichotkeys".AppleSymbolicHotKeys = {
@@ -607,11 +644,7 @@
 
       environment.systemPackages =
         essentialPkgs
-        ++ [
-          pkgs.gnupg
-          paseoPackage
-          paseoDesktopPackage
-        ];
+        ++ [pkgs.gnupg];
 
       # Install GUI-visible fonts into /Library/Fonts/Nix Fonts.
       fonts.packages = with pkgs; [
@@ -645,6 +678,10 @@
           nix-homebrew.darwinModules.nix-homebrew
           (homebrewConfiguration {inherit primaryUser;})
           (sharedConfiguration {inherit primaryUser;})
+          (paseoConfiguration {
+            user = "imalison";
+            passwordSecret = "paseo-password-environment";
+          })
           (homeManagerConfiguration {
             inherit primaryUser;
             users = nixpkgs.lib.genAttrs enabledHomeUsers (_: personalHomeModules);
@@ -660,8 +697,17 @@
 
     darwinConfigurations."alexanders-macbook-air" = nix-darwin.lib.darwinSystem {
       modules = [
+        agenix.darwinModules.default
         home-manager.darwinModules.home-manager
         (sharedConfiguration {primaryUser = "alex";})
+        (paseoConfiguration {
+          user = "alex";
+          passwordSecret = "paseo-password-alexanders-macbook-air";
+          hostnames = [
+            "alexanders-macbook-air"
+            "alexanders-macbook-air.tail40f15e.ts.net"
+          ];
+        })
         (homeManagerConfiguration {
           primaryUser = "alex";
           users.alex = [
@@ -676,7 +722,7 @@
         nix-homebrew.darwinModules.nix-homebrew
         (homebrewConfiguration {
           primaryUser = "alex";
-          extraCasks = ["paseo"];
+          extraCasks = ["google-chrome"];
           cleanup = "none";
         })
         ({

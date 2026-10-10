@@ -26,6 +26,8 @@ rec {
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINYy93265G59aA1ksckjqlfeHq0vpEpzC8BwqCrpeXdh kat@Kats-Mac-mini.local"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG60q//rVd2JESQT59XLvLdsH9AdYfQXTkXMjx9pH3xp imalison@justin-bieber-creek"
   ];
+  # Not in hostKeys: this host only decrypts the secrets that name it.
+  alexandersMacbookAirHostKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFteByp8YTphfqwiYsVfmmQh06IXdbfIi85wYJYtg5wd alexanders-macbook-air";
   rescueKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEa3QDgHe6/QWK+H34a1rR0+gSCj54OORyLovHZc4Eqd imalison@nixos-rescue-usb-2026-08-18"
   ];
