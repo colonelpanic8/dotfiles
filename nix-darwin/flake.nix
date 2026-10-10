@@ -168,6 +168,7 @@
       # still passes removed nixos-render-docs flags with current nixpkgs.
       system.tools.darwin-uninstaller.enable = false;
 
+
       security.sudo.extraConfig = ''
         ${primaryUser} ALL=(ALL) NOPASSWD: ALL
       '';
@@ -269,7 +270,7 @@
     };
     homebrewConfiguration = {
       primaryUser,
-      excludedCasks ? [],
+      extraCasks ? [],
       cleanup ? "zap",
     }: {
       config,
@@ -294,15 +295,17 @@
           "ddcctl"
           "m1ddc"
         ];
-        casks = lib.subtractLists excludedCasks [
-          "claude"
-          "chatgpt"
-          "ghostty"
-          "hammerspoon"
-          "raycast"
-          "spotify"
-          "vlc"
-        ];
+        casks =
+          [
+            "claude"
+            "chatgpt"
+            "ghostty"
+            "hammerspoon"
+            "raycast"
+            "spotify"
+            "vlc"
+          ]
+          ++ extraCasks;
         greedyCasks = true;
         onActivation = {
           inherit cleanup;
@@ -664,8 +667,7 @@
         nix-homebrew.darwinModules.nix-homebrew
         (homebrewConfiguration {
           primaryUser = "alex";
-          # Installed manually outside Homebrew.
-          excludedCasks = ["chatgpt"];
+          extraCasks = ["paseo"];
           cleanup = "none";
         })
         ({
@@ -676,7 +678,10 @@
           system.stateVersion = 7;
           environment.systemPackages =
             (import ../nix-shared/system/essential.nix {inherit pkgs lib inputs;}).environment.systemPackages
-            ++ [pkgs.gnupg];
+            ++ (with pkgs; [
+              bitwarden-desktop
+              gnupg
+            ]);
           users.users.alex = {
             name = "alex";
             home = homeForUser "alex";
