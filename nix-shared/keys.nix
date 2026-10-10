@@ -53,6 +53,14 @@ rec {
   sshClientKeys = kanivanKeys ++ rescueKeys;
   agenixKeys = hostKeys ++ sshClientKeys;
   allKeys = loewyKeys ++ mikeKeys ++ sshClientKeys ++ deanKeys ++ alexKeys ++ hostKeys;
+  userKeys = {
+    imalison = sshClientKeys;
+    kat = sshClientKeys;
+    dean = sshClientKeys ++ deanKeys;
+    alex = sshClientKeys ++ alexKeys;
+    loewy = sshClientKeys ++ loewyKeys;
+    ben = benKeys ++ sshClientKeys;
+  };
   railbird-sf = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDozY/3Cd9npaYPCgIn/E7MjW9c7Zb5/wTO5Qi7yRU45 root@railbird-sf"
   ];

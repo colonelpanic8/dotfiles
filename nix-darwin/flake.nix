@@ -233,7 +233,7 @@
       system.configurationRevision = self.rev or self.dirtyRev or null;
 
       # Used for backwards compatibility, please read the changelog before changing
-      system.stateVersion = 4;
+      system.stateVersion = lib.mkDefault 4;
 
       # The platform the configuration will be used on.
 
@@ -576,7 +576,7 @@
           name = user;
           home = homeForUser user;
           description = mkUserDescription user;
-          openssh.authorizedKeys.keys = (import ../nix-shared/keys.nix).sshClientKeys;
+          openssh.authorizedKeys.keys = (import ../nix-shared/keys.nix).userKeys.${user};
         })
         // {
           gitea-runner = {
@@ -641,13 +641,14 @@
           lib,
           ...
         }: {
+          system.stateVersion = 7;
           environment.systemPackages =
             (import ../nix-shared/system/essential.nix {inherit pkgs lib inputs;}).environment.systemPackages
             ++ [pkgs.gnupg];
           users.users.alex = {
             name = "alex";
             home = homeForUser "alex";
-            openssh.authorizedKeys.keys = (import ../nix-shared/keys.nix).kanivanKeys;
+            openssh.authorizedKeys.keys = (import ../nix-shared/keys.nix).userKeys.alex;
           };
         })
       ];
