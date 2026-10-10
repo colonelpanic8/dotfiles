@@ -36,6 +36,7 @@ rec {
   ];
   alexKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP2SQkJenAX67Ze99SKOVpKDD1XvAZnxQ8RLP0dL/Ej2 alexm@MALISONSERVER"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMzEQf/e7YhaAtY43+5u8RSdfPzTR9B77lXYRrrDWRv/ alex@alexanders-macbook-air"
   ];
   mikeKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPnXd6c9xwr1yxBmxauj/FF3gnY8G11ospoM8i11mD2n countablecloud.com"
