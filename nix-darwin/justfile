@@ -1,5 +1,6 @@
 hostname := `scutil --get LocalHostName | tr '[:upper:]' '[:lower:]'`
 darwin-rebuild := "/run/current-system/sw/bin/darwin-rebuild"
+tracked-flake-inputs := "codex-cli-nix claude-code-nix git-sync-rs keepbook git-blame-rank lastfm-edit gmcli homebrew-core homebrew-cask"
 
 build:
     {{ darwin-rebuild }} build --flake .#{{ hostname }}
@@ -12,6 +13,10 @@ switch:
 
 update:
     /run/current-system/sw/bin/nix flake update
+    just switch
+
+bump-tracked-flakes:
+    /run/current-system/sw/bin/nix flake update {{ tracked-flake-inputs }}
     just switch
 
 update-nix-darwin:
