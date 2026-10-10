@@ -19,6 +19,12 @@ switch: check-imalison
 switch-imalison: check-imalison
     sudo -H env "GIT_SSH_COMMAND=ssh -i {{ ssh-key }} -o IdentitiesOnly=yes" {{ darwin-rebuild }} switch --flake .#{{ target-hostname }}
 
+build-air:
+    {{ darwin-rebuild }} build --flake .#alexanders-macbook-air
+
+switch-air:
+    sudo -H {{ darwin-rebuild }} switch --flake .#alexanders-macbook-air
+
 update:
     /run/current-system/sw/bin/nix flake update
     just switch

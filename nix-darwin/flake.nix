@@ -633,6 +633,26 @@
       enabledHomeUsers = personalUsers;
     };
 
+    darwinConfigurations."alexanders-macbook-air" = nix-darwin.lib.darwinSystem {
+      modules = [
+        (sharedConfiguration {primaryUser = "alex";})
+        ({
+          pkgs,
+          lib,
+          ...
+        }: {
+          environment.systemPackages =
+            (import ../nix-shared/system/essential.nix {inherit pkgs lib inputs;}).environment.systemPackages
+            ++ [pkgs.gnupg];
+          users.users.alex = {
+            name = "alex";
+            home = homeForUser "alex";
+            openssh.authorizedKeys.keys = (import ../nix-shared/keys.nix).kanivanKeys;
+          };
+        })
+      ];
+    };
+
     # Expose the package set, including overlays, for convenience.
     darwinPackages = self.darwinConfigurations."mac-demarco-mini".pkgs;
   };
