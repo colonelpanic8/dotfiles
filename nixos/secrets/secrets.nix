@@ -34,6 +34,7 @@ in {
   # Optional Tailscale pre-auth key for unattended enrollment.
   # This is safe to commit encrypted; default plaintext is "DISABLED".
   "tailscale-authkey.age".publicKeys = keys.sshClientKeys;
+  "tailscale-authkey.alexanders-macbook-air.age".publicKeys = [keys.alexandersMacbookAirHostKey];
   "paseo-password-environment.age".publicKeys = keys.agenixKeys;
   "paseo-password-alexanders-macbook-air.age".publicKeys = keys.agenixKeys ++ [keys.alexandersMacbookAirHostKey];
   "hermes-environment.age".publicKeys = keys.agenixKeys;
