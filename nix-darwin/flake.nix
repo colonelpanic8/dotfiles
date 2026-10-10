@@ -137,6 +137,113 @@
       if user == targetPrimaryUser
       then "Ivan Malison"
       else null;
+    sharedConfiguration = {primaryUser}: {lib, ...}: {
+      system.primaryUser = primaryUser;
+      environment.profiles = lib.mkForce [
+        "/etc/profiles/per-user/$USER"
+        "$HOME/.nix-profile"
+        "/run/current-system/sw"
+        "/nix/var/nix/profiles/default"
+      ];
+      # The uninstaller evaluates a nested nix-darwin system whose manual build
+      # still passes removed nixos-render-docs flags with current nixpkgs.
+      system.tools.darwin-uninstaller.enable = false;
+
+      nixpkgs.overlays = [
+        (import ../nix-shared/overlays)
+        inputs.t3code-integration.overlays.client
+        # Use codex and claude-code from dedicated flakes with cachix
+        (final: prev: {
+          bazel = inputs.nixpkgs-bazel.legacyPackages.${prev.stdenv.hostPlatform.system}.bazel;
+          starship = inputs.nixpkgs-bazel.legacyPackages.${prev.stdenv.hostPlatform.system}.starship;
+          codex = inputs.codex-cli-nix.packages.${prev.stdenv.hostPlatform.system}.default;
+          claude-code = inputs.claude-code-nix.packages.${prev.stdenv.hostPlatform.system}.default;
+          nixos-render-docs = prev.writeShellApplication {
+            name = "nixos-render-docs";
+            text = ''
+              args=()
+              while [ "$#" -gt 0 ]; do
+                case "$1" in
+                  --toc-depth|--chunk-toc-depth|--section-toc-depth)
+                    args+=("--sidebar-depth")
+                    shift
+                    if [ "$#" -gt 0 ]; then
+                      args+=("$1")
+                    fi
+                    ;;
+                  --toc-depth=*|--chunk-toc-depth=*|--section-toc-depth=*)
+                    args+=("--sidebar-depth=''${1#*=}")
+                    ;;
+                  *)
+                    args+=("$1")
+                    ;;
+                esac
+                shift || true
+              done
+              exec ${prev.nixos-render-docs}/bin/nixos-render-docs "''${args[@]}"
+            '';
+          };
+          git-sync-rs = git-sync-rs.packages.${prev.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
+            checkFlags =
+              (old.checkFlags or [])
+              ++ [
+                # Git can auto-detect the Darwin Nix build user's identity, so this
+                # test does not exercise git-sync-rs's missing-identity fallback here.
+                "--skip"
+                "sync::transport::tests::commit_retries_with_fallback_identity_when_git_identity_missing"
+              ];
+          });
+        })
+      ];
+
+      nixpkgs.config.allowUnfree = true;
+
+      programs.direnv.enable = true;
+
+      # Necessary for using flakes on this system.
+      nix.settings = {
+        experimental-features = "nix-command flakes";
+        # Trigger store GC before Nix consumes the machine's build headroom.
+        min-free = 10 * 1024 * 1024 * 1024;
+        max-free = 20 * 1024 * 1024 * 1024;
+        gc-reserved-space = 256 * 1024 * 1024;
+        substituters = [
+          "https://cache.nixos.org"
+          "https://codex-cli.cachix.org"
+          "https://claude-code.cachix.org"
+          "https://paseo-colonelpanic8.cachix.org"
+        ];
+        trusted-public-keys = [
+          "codex-cli.cachix.org-1:1Br3H1hHoRYG22n//cGKJOk3cQXgYobUel6O8DgSing="
+          "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="
+          "paseo-colonelpanic8.cachix.org-1:fxfDiskEv5JT+xX3CbXBUAWblc+234mDeodXDi7eY1k="
+        ];
+      };
+      nix.gc = {
+        automatic = true;
+        interval = {
+          Hour = 4;
+          Minute = 15;
+        };
+        options = "--delete-older-than 30d";
+      };
+      nix.optimise.automatic = true;
+
+      # Set Git commit hash for darwin-version.
+      system.configurationRevision = self.rev or self.dirtyRev or null;
+
+      # Used for backwards compatibility, please read the changelog before changing
+      system.stateVersion = 4;
+
+      # The platform the configuration will be used on.
+
+      nixpkgs.hostPlatform = "aarch64-darwin";
+
+      programs.zsh = {
+        enable = true;
+        enableSyntaxHighlighting = true;
+      };
+    };
     mkConfiguration = {
       primaryUser,
       enabledHomeUsers ? [primaryUser],
@@ -350,17 +457,6 @@
         };
       };
 
-      system.primaryUser = primaryUser;
-      environment.profiles = lib.mkForce [
-        "/etc/profiles/per-user/$USER"
-        "$HOME/.nix-profile"
-        "/run/current-system/sw"
-        "/nix/var/nix/profiles/default"
-      ];
-      # The uninstaller evaluates a nested nix-darwin system whose manual build
-      # still passes removed nixos-render-docs flags with current nixpkgs.
-      system.tools.darwin-uninstaller.enable = false;
-
       security.sudo.extraConfig = ''
         ${primaryUser} ALL=(ALL) NOPASSWD: ALL
       '';
@@ -431,52 +527,6 @@
         };
       };
 
-      nixpkgs.overlays = [
-        (import ../nix-shared/overlays)
-        inputs.t3code-integration.overlays.client
-        # Use codex and claude-code from dedicated flakes with cachix
-        (final: prev: {
-          bazel = inputs.nixpkgs-bazel.legacyPackages.${prev.stdenv.hostPlatform.system}.bazel;
-          starship = inputs.nixpkgs-bazel.legacyPackages.${prev.stdenv.hostPlatform.system}.starship;
-          codex = inputs.codex-cli-nix.packages.${prev.stdenv.hostPlatform.system}.default;
-          claude-code = inputs.claude-code-nix.packages.${prev.stdenv.hostPlatform.system}.default;
-          nixos-render-docs = prev.writeShellApplication {
-            name = "nixos-render-docs";
-            text = ''
-              args=()
-              while [ "$#" -gt 0 ]; do
-                case "$1" in
-                  --toc-depth|--chunk-toc-depth|--section-toc-depth)
-                    args+=("--sidebar-depth")
-                    shift
-                    if [ "$#" -gt 0 ]; then
-                      args+=("$1")
-                    fi
-                    ;;
-                  --toc-depth=*|--chunk-toc-depth=*|--section-toc-depth=*)
-                    args+=("--sidebar-depth=''${1#*=}")
-                    ;;
-                  *)
-                    args+=("$1")
-                    ;;
-                esac
-                shift || true
-              done
-              exec ${prev.nixos-render-docs}/bin/nixos-render-docs "''${args[@]}"
-            '';
-          };
-          git-sync-rs = git-sync-rs.packages.${prev.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
-            checkFlags =
-              (old.checkFlags or [])
-              ++ [
-                # Git can auto-detect the Darwin Nix build user's identity, so this
-                # test does not exercise git-sync-rs's missing-identity fallback here.
-                "--skip"
-                "sync::transport::tests::commit_retries_with_fallback_identity_when_git_identity_missing"
-              ];
-          });
-        })
-      ];
       environment.systemPackages =
         essentialPkgs
         ++ [
@@ -484,8 +534,6 @@
           paseoPackage
           paseoDesktopPackage
         ];
-
-      nixpkgs.config.allowUnfree = true;
 
       # Install GUI-visible fonts into /Library/Fonts/Nix Fonts.
       fonts.packages = with pkgs; [
@@ -523,46 +571,6 @@
         envVariables.PATH = config.environment.systemPath;
       };
 
-      programs.direnv.enable = true;
-
-      # Necessary for using flakes on this system.
-      nix.settings = {
-        experimental-features = "nix-command flakes";
-        # Trigger store GC before Nix consumes the machine's build headroom.
-        min-free = 10 * 1024 * 1024 * 1024;
-        max-free = 20 * 1024 * 1024 * 1024;
-        gc-reserved-space = 256 * 1024 * 1024;
-        substituters = [
-          "https://cache.nixos.org"
-          "https://codex-cli.cachix.org"
-          "https://claude-code.cachix.org"
-          "https://paseo-colonelpanic8.cachix.org"
-        ];
-        trusted-public-keys = [
-          "codex-cli.cachix.org-1:1Br3H1hHoRYG22n//cGKJOk3cQXgYobUel6O8DgSing="
-          "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="
-          "paseo-colonelpanic8.cachix.org-1:fxfDiskEv5JT+xX3CbXBUAWblc+234mDeodXDi7eY1k="
-        ];
-      };
-      nix.gc = {
-        automatic = true;
-        interval = {
-          Hour = 4;
-          Minute = 15;
-        };
-        options = "--delete-older-than 30d";
-      };
-      nix.optimise.automatic = true;
-
-      # Set Git commit hash for darwin-version.
-      system.configurationRevision = self.rev or self.dirtyRev or null;
-
-      # Used for backwards compatibility, please read the changelog before changing
-      system.stateVersion = 4;
-
-      # The platform the configuration will be used on.
-
-      nixpkgs.hostPlatform = "aarch64-darwin";
       users.users =
         lib.genAttrs personalUsers (user: {
           name = user;
@@ -579,10 +587,6 @@
           };
         };
 
-      programs.zsh = {
-        enable = true;
-        enableSyntaxHighlighting = true;
-      };
       home-manager = {
         useGlobalPkgs = true;
         useUserPackages = true;
@@ -614,6 +618,7 @@
               };
             };
           }
+          (sharedConfiguration {inherit primaryUser;})
           (mkConfiguration {inherit primaryUser enabledHomeUsers;})
         ];
       };
