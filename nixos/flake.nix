@@ -78,6 +78,14 @@
       };
     };
 
+    gocryptfs-tray = {
+      url = "github:colonelpanic8/gocryptfs-tray";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
+    };
+
     keepbook = {
       url = "github:colonelpanic8/keepbook";
       inputs = {

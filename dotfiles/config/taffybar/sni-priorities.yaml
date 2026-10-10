@@ -1,6 +1,8 @@
 format_version: 2
 max_visible_icons: 0
 priorities:
+- key: item-id:gocryptfs-tray
+  priority: 10
 - key: item-id:nm-applet
   priority: 3
 - key: icon-name:gitea

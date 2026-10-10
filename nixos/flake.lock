@@ -2695,7 +2695,8 @@
         "xdg-desktop-portal-hyprland": "xdg-desktop-portal-hyprland",
         "xmonad": "xmonad_2",
         "xmonad-contrib": "xmonad-contrib_2",
-        "xmonad-river": "xmonad-river"
+        "xmonad-river": "xmonad-river",
+        "gocryptfs-tray": "gocryptfs-tray"
       }
     },
     "rust-analyzer-src": {
@@ -3351,6 +3352,69 @@
       "original": {
         "owner": "xmonad",
         "repo": "xmonad",
+        "type": "github"
+      }
+    },
+    "gocryptfs-tray": {
+      "inputs": {
+        "fenix": "fenix_1",
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1791616629,
+        "narHash": "sha256-wQhqcdvKhfz9+5kcEfhmZsWTlvaloBuGJRipTfp8kHY=",
+        "owner": "colonelpanic8",
+        "repo": "gocryptfs-tray",
+        "rev": "675b4e15fb448cff4d3583ebdcb4e048e8850ec5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "colonelpanic8",
+        "repo": "gocryptfs-tray",
+        "type": "github"
+      }
+    },
+    "fenix_1": {
+      "inputs": {
+        "nixpkgs": [
+          "gocryptfs-tray",
+          "nixpkgs"
+        ],
+        "rust-analyzer-src": "rust-analyzer-src_1"
+      },
+      "locked": {
+        "lastModified": 1791550487,
+        "narHash": "sha256-V2dYFoE5csclBwmaW2XQ5uZYDHgZQielsjDmVyuVlgM=",
+        "owner": "nix-community",
+        "repo": "fenix",
+        "rev": "03354d2e087aa40031614557db02e87a62ff1880",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "fenix",
+        "type": "github"
+      }
+    },
+    "rust-analyzer-src_1": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1791485469,
+        "narHash": "sha256-DCIgcbCjTmvLA9RtpUXkwzUC4zX4ILOBFkrP9zzVcko=",
+        "owner": "rust-lang",
+        "repo": "rust-analyzer",
+        "rev": "2f92bea4424c888957d76cad7d9e427930b00da8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "rust-lang",
+        "ref": "nightly",
+        "repo": "rust-analyzer",
         "type": "github"
       }
     }
