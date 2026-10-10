@@ -12,6 +12,20 @@ for running agents.
   available.
 - Give every Paseo-managed subagent a self-contained initial prompt. It does not
   inherit the parent's full conversation automatically.
+- Before choosing a provider/model/account for a subagent, run
+  `~/.lib/bin/agent-delegation`. It prints any active override and remaining
+  usage for each provider.
+  - An active override wins over profile notes, skill defaults, and
+    cross-provider pairing advice. Only an explicit choice the user made in
+    the current request beats it.
+  - With no override, steer the heavy, long-running work (implementers, loop
+    workers) toward the provider with the most headroom relative to its reset
+    time. Avoid a provider above ~80% of its weekly window unless the task
+    specifically needs it, and say so when usage changed your pick.
+  - When the user states a standing preference like "use Opus for
+    implementers for now", record it with `agent-delegation set [--for 3d]
+    "<preference>"` (default expiry 7d) and clear it with
+    `agent-delegation clear`.
 
 ## Code verification
 - Run whatever formatting, lint, and type checks the project provides, at the
@@ -133,6 +147,8 @@ Examples of what's stored:
 - The store is regularly updated with new entries. Always do a dynamic lookup with `pass find` rather than assuming what's there.
 - Provide credentials to tools/config at runtime via environment variables or inline `pass` usage instead of committing them.
 - Never hardcode credentials or store them in plain text files.
+- Claude/Anthropic (claude.ai) and ChatGPT/Codex/OpenAI have no passwords in
+  `pass`; they use "Continue with Google" (ivanmalison@gmail.com).
 
 ## Project links (local symlink index)
 - Paths in this section are relative to this file's directory (`dotfiles/agents/`).

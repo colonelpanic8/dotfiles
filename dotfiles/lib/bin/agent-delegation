@@ -1,0 +1,129 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+state_dir=${XDG_STATE_HOME:-$HOME/.local/state}/agent-delegation
+override_file=$state_dir/override.json
+
+usage() {
+  cat <<'EOF'
+agent-delegation - provider/account preference for delegated subagents
+
+USAGE
+  agent-delegation [status]              Show the active override and remaining usage
+  agent-delegation set [--for DUR] TEXT  Set an override (DUR: 12h, 3d, 1w; default 7d)
+  agent-delegation clear                 Remove the override
+EOF
+}
+
+fmt_time() {
+  date -d "$1" '+%a %m-%d %H:%M'
+}
+
+window_label() {
+  local minutes=$1
+  if ((minutes % 1440 == 0)); then
+    echo "$((minutes / 1440))d"
+  else
+    echo "$((minutes / 60))h"
+  fi
+}
+
+show_override() {
+  if [ ! -f "$override_file" ]; then
+    echo "Override: none"
+    return
+  fi
+  local expires now
+  expires=$(jq -r '.expires_at' "$override_file")
+  now=$(date +%s)
+  if [ "$(date -d "$expires" +%s)" -le "$now" ]; then
+    rm -f "$override_file"
+    echo "Override: none (previous one expired $(fmt_time "$expires"))"
+    return
+  fi
+  echo "Override (set $(fmt_time "$(jq -r '.set_at' "$override_file")"), expires $(fmt_time "$expires")):"
+  jq -r '.text' "$override_file" | sed 's/^/  /'
+}
+
+show_claude_usage() {
+  local token response
+  token=$(jq -r '.claudeAiOauth.accessToken // empty' "$HOME/.claude/.credentials.json" 2>/dev/null || true)
+  if [ -z "$token" ] ||
+    ! response=$(curl -fsS -m 10 https://api.anthropic.com/api/oauth/usage \
+      -H "Authorization: Bearer $token" \
+      -H "anthropic-beta: oauth-2025-04-20" 2>/dev/null); then
+    echo "  claude  unavailable"
+    return
+  fi
+  print_windows claude < <(jq -r '["5h", .five_hour], ["7d", .seven_day]
+    | select(.[1] != null) | [.[0], .[1].utilization, .[1].resets_at] | @tsv' <<<"$response")
+}
+
+# Reads "label<TAB>percent<TAB>resets" rows.
+print_windows() {
+  local name=$1 suffix=${2:-} parts=() label used resets joined
+  while IFS=$'\t' read -r label used resets; do
+    parts+=("$label ${used%.*}% used (resets $(fmt_time "$resets"))")
+  done
+  joined=$(printf '%s; ' "${parts[@]}")
+  printf '  %-7s %s%s\n' "$name" "${joined%; }" "$suffix"
+}
+
+show_codex_usage() {
+  local file event=""
+  while IFS= read -r file; do
+    event=$(grep -h '"rate_limits"' "$file" | tail -1 || true)
+    [ -n "$event" ] && break
+  done < <(find "$HOME/.codex/sessions" -name '*.jsonl' -mtime -7 -printf '%T@ %p\n' 2>/dev/null |
+    sort -rn | head -20 | cut -d' ' -f2-)
+  if [ -z "$event" ]; then
+    echo "  codex   unavailable (no session in the last 7 days)"
+    return
+  fi
+  local window used resets
+  print_windows codex " [as of $(fmt_time "$(jq -r '.timestamp' <<<"$event")")]" < <(
+    jq -r '.payload.rate_limits | (.primary, .secondary) | select(. != null)
+      | [.window_minutes, .used_percent, .resets_at] | @tsv' <<<"$event" |
+      while IFS=$'\t' read -r window used resets; do
+        printf '%s\t%s\t@%s\n' "$(window_label "$window")" "$used" "$resets"
+      done
+  )
+}
+
+cmd=${1:-status}
+case "$cmd" in
+  status)
+    show_override
+    echo
+    echo "Usage:"
+    show_claude_usage
+    show_codex_usage
+    ;;
+  set)
+    shift
+    duration=7d
+    if [ "${1:-}" = "--for" ]; then
+      duration=${2:?--for needs a duration}
+      shift 2
+    fi
+    [ $# -gt 0 ] || { usage >&2; exit 2; }
+    case "$duration" in
+      *h) offset="${duration%h} hours" ;;
+      *d) offset="${duration%d} days" ;;
+      *w) offset="${duration%w} weeks" ;;
+      *) echo "agent-delegation: bad duration: $duration" >&2; exit 2 ;;
+    esac
+    mkdir -p "$state_dir"
+    jq -n --arg text "$*" \
+      --arg set_at "$(date -Iseconds)" \
+      --arg expires_at "$(date -Iseconds -d "+$offset")" \
+      '{text: $text, set_at: $set_at, expires_at: $expires_at}' >"$override_file"
+    show_override
+    ;;
+  clear)
+    rm -f "$override_file"
+    echo "Override cleared"
+    ;;
+  -h | --help | help) usage ;;
+  *) usage >&2; exit 2 ;;
+esac
