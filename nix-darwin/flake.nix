@@ -145,6 +145,11 @@
         sharedModules = baseHomeModules;
         users = lib.mapAttrs (_: modules: {imports = modules;}) users;
       };
+      # Home Manager refuses to activate until the user's Nix profile
+      # directory exists, which a fresh account does not have yet.
+      system.activationScripts.preActivation.text = lib.concatMapStrings (user: ''
+        /usr/bin/sudo -u ${user} /bin/mkdir -p ${homeForUser user}/.local/state/nix/profiles
+      '') (builtins.attrNames users);
     };
     homeForUser = user: "/Users/${user}";
     mkUserDescription = user:
