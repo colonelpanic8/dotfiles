@@ -125,11 +125,27 @@
       "kat"
       "imalison"
     ];
-    sharedHomeModules = [
-      ./home/common.nix
-      ./home/git-sync.nix
-      inputs.t3code-integration.homeManagerModules.t3code-server
+    baseHomeModules = [./home/common.nix];
+    personalHomeModules = [
+      ./home/personal.nix
+      ./home/desktop.nix
     ];
+    # Maps each Home Manager user to the modules layered over baseHomeModules.
+    homeManagerConfiguration = {
+      primaryUser,
+      users,
+    }: {lib, ...}: {
+      home-manager = {
+        useGlobalPkgs = true;
+        useUserPackages = true;
+        backupFileExtension = "hm-backup";
+        extraSpecialArgs = {
+          inherit inputs libDir primaryUser;
+        };
+        sharedModules = baseHomeModules;
+        users = lib.mapAttrs (_: modules: {imports = modules;}) users;
+      };
+    };
     homeForUser = user: "/Users/${user}";
     mkUserDescription = user:
       if user == "imalison"
@@ -146,6 +162,10 @@
       # The uninstaller evaluates a nested nix-darwin system whose manual build
       # still passes removed nixos-render-docs flags with current nixpkgs.
       system.tools.darwin-uninstaller.enable = false;
+
+      security.sudo.extraConfig = ''
+        ${primaryUser} ALL=(ALL) NOPASSWD: ALL
+      '';
 
       nixpkgs.overlays = [
         (import ../nix-shared/overlays)
@@ -242,10 +262,52 @@
         enableSyntaxHighlighting = true;
       };
     };
-    mkConfiguration = {
+    homebrewConfiguration = {
       primaryUser,
-      enabledHomeUsers ? [primaryUser],
+      excludedCasks ? [],
+      cleanup ? "zap",
     }: {
+      config,
+      lib,
+      ...
+    }: {
+      nix-homebrew = {
+        enable = true;
+        user = primaryUser;
+        autoMigrate = true;
+        taps = {
+          "homebrew/homebrew-core" = inputs.homebrew-core;
+          "homebrew/homebrew-cask" = inputs.homebrew-cask;
+        };
+      };
+
+      # Desktop apps are managed separately from the Codex and Claude Code CLIs.
+      homebrew = {
+        enable = true;
+        taps = builtins.attrNames config.nix-homebrew.taps;
+        brews = [
+          "ddcctl"
+          "m1ddc"
+        ];
+        casks = lib.subtractLists excludedCasks [
+          "claude"
+          "chatgpt"
+          "ghostty"
+          "hammerspoon"
+          "raycast"
+          "spotify"
+          "vlc"
+        ];
+        greedyCasks = true;
+        onActivation = {
+          inherit cleanup;
+          # Homebrew requires an explicit confirmation flag when
+          # `brew bundle install` runs with `--cleanup`.
+          extraFlags = lib.optionals (cleanup != "none") ["--force"];
+        };
+      };
+    };
+    mkConfiguration = {primaryUser}: {
       pkgs,
       lib,
       config,
@@ -455,10 +517,6 @@
         };
       };
 
-      security.sudo.extraConfig = ''
-        ${primaryUser} ALL=(ALL) NOPASSWD: ALL
-      '';
-
       system.defaults.NSGlobalDomain."com.apple.swipescrolldirection" = false;
       system.defaults.CustomUserPreferences."com.apple.screensaver".idleTime = 0;
       system.defaults.CustomUserPreferences."com.apple.symbolichotkeys".AppleSymbolicHotKeys = {
@@ -538,32 +596,6 @@
         nerd-fonts.jetbrains-mono
       ];
 
-      # Desktop apps are managed separately from the Codex and Claude Code CLIs.
-      homebrew = {
-        enable = true;
-        taps = builtins.attrNames config.nix-homebrew.taps;
-        brews = [
-          "ddcctl"
-          "m1ddc"
-        ];
-        casks = [
-          "claude"
-          "chatgpt"
-          "ghostty"
-          "hammerspoon"
-          "raycast"
-          "spotify"
-          "vlc"
-        ];
-        greedyCasks = true;
-        onActivation = {
-          cleanup = "zap";
-          # Homebrew requires an explicit confirmation flag when
-          # `brew bundle install` runs with `--cleanup`.
-          extraFlags = ["--force"];
-        };
-      };
-
       # Auto upgrade nix package and the daemon service.
       launchd.user = {
         envVariables.PATH = config.environment.systemPath;
@@ -584,17 +616,6 @@
             createHome = false;
           };
         };
-
-      home-manager = {
-        useGlobalPkgs = true;
-        useUserPackages = true;
-        backupFileExtension = "hm-backup";
-        extraSpecialArgs = {
-          inherit inputs libDir primaryUser;
-        };
-        sharedModules = sharedHomeModules;
-        users = lib.genAttrs enabledHomeUsers (_: {});
-      };
     };
     mkDarwinSystem = {
       primaryUser,
@@ -605,19 +626,13 @@
           agenix.darwinModules.default
           home-manager.darwinModules.home-manager
           nix-homebrew.darwinModules.nix-homebrew
-          {
-            nix-homebrew = {
-              enable = true;
-              user = primaryUser;
-              autoMigrate = true;
-              taps = {
-                "homebrew/homebrew-core" = inputs.homebrew-core;
-                "homebrew/homebrew-cask" = inputs.homebrew-cask;
-              };
-            };
-          }
+          (homebrewConfiguration {inherit primaryUser;})
           (sharedConfiguration {inherit primaryUser;})
-          (mkConfiguration {inherit primaryUser enabledHomeUsers;})
+          (homeManagerConfiguration {
+            inherit primaryUser;
+            users = nixpkgs.lib.genAttrs enabledHomeUsers (_: personalHomeModules);
+          })
+          (mkConfiguration {inherit primaryUser;})
         ];
       };
   in {
@@ -628,7 +643,26 @@
 
     darwinConfigurations."alexanders-macbook-air" = nix-darwin.lib.darwinSystem {
       modules = [
+        home-manager.darwinModules.home-manager
         (sharedConfiguration {primaryUser = "alex";})
+        (homeManagerConfiguration {
+          primaryUser = "alex";
+          users.alex = [
+            {
+              dotfiles.gitIdentity = {
+                name = "Alexander Malison";
+                email = "alexmalison@gmail.com";
+              };
+            }
+          ];
+        })
+        nix-homebrew.darwinModules.nix-homebrew
+        (homebrewConfiguration {
+          primaryUser = "alex";
+          # Installed manually outside Homebrew.
+          excludedCasks = ["chatgpt"];
+          cleanup = "none";
+        })
         ({
           pkgs,
           lib,

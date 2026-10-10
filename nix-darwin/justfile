@@ -1,18 +1,14 @@
-hostname := "mac-demarco-mini"
+hostname := `scutil --get LocalHostName | tr '[:upper:]' '[:lower:]'`
 darwin-rebuild := "/run/current-system/sw/bin/darwin-rebuild"
-ssh-key := "/Users/kat/.ssh/id_ed25519"
 
 build:
-    sudo -H env "GIT_SSH_COMMAND=ssh -i {{ ssh-key }} -o IdentitiesOnly=yes" {{ darwin-rebuild }} build --flake .#{{ hostname }}
+    {{ darwin-rebuild }} build --flake .#{{ hostname }}
 
+# Activate inside the primary user's launchd session so user agents load
+# even when switching over SSH.
 switch:
-    sudo launchctl asuser "$(id -u kat)" env HOME=/var/root "GIT_SSH_COMMAND=ssh -i {{ ssh-key }} -o IdentitiesOnly=yes" {{ darwin-rebuild }} switch --flake .#{{ hostname }}
-
-build-air:
-    {{ darwin-rebuild }} build --flake .#alexanders-macbook-air
-
-switch-air:
-    sudo -H {{ darwin-rebuild }} switch --flake .#alexanders-macbook-air
+    primary_user="$(nix eval --raw .#darwinConfigurations.{{ hostname }}.config.system.primaryUser)" && \
+    sudo launchctl asuser "$(id -u "$primary_user")" env HOME=/var/root {{ darwin-rebuild }} switch --flake .#{{ hostname }}
 
 update:
     /run/current-system/sw/bin/nix flake update

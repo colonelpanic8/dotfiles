@@ -1,124 +1,47 @@
 {
   config,
-  inputs,
   libDir,
   lib,
-  osConfig,
   pkgs,
   ...
 }: let
+  cfg = config.dotfiles;
   srcDotfilesDir = builtins.dirOf libDir;
-  dotfilesCheckout = "/Users/Shared/dotfiles";
-  worktreeDotfilesDir = "${dotfilesCheckout}/dotfiles";
-  worktreeLibDir = "${worktreeDotfilesDir}/lib";
+  worktreeLibDir = "${cfg.worktreeDotfilesDir}/lib";
   outOfStore = config.lib.file.mkOutOfStoreSymlink;
-  replaceRuntimeDir = builtins.replaceStrings ["$XDG_RUNTIME_DIR"] ["\${XDG_RUNTIME_DIR}"];
-  gpgKeyPath = replaceRuntimeDir config.age.secrets.gpg-keys.path;
-  gpgPassphrasePath = replaceRuntimeDir config.age.secrets.gpg-passphrase.path;
-  t3codeCfg = config.services.t3code;
-  t3codeManagedServerCommand = pkgs.writeShellScript "t3code-managed-headless-server" ''
-    set -eu
-
-    environment_file=${lib.escapeShellArg "${config.xdg.configHome}/t3code/managed-access.env"}
-    /bin/wait4path "$environment_file"
-    set -a
-    . "$environment_file"
-    set +a
-    export T3CODE_ENVIRONMENT_ID=${lib.escapeShellArg "fleet:${osConfig.networking.hostName}"}
-
-    repository_root=${lib.escapeShellArg t3codeCfg.repositoryRoot}
-    if [ ! -d "$repository_root" ]; then
-      echo "T3 Code repository root does not exist: $repository_root" >&2
-      exit 69
-    fi
-
-    export PATH=${lib.escapeShellArg "${lib.makeBinPath ([t3codeCfg.package] ++ t3codeCfg.extraPackages)}:/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"}
-    export T3CODE_HOME=${lib.escapeShellArg t3codeCfg.dataDirectory}
-
-    cd "$repository_root"
-    exec ${lib.getExe' t3codeCfg.package "t3"} serve \
-      --host ${lib.escapeShellArg t3codeCfg.host} \
-      --port ${toString t3codeCfg.port} \
-      ${lib.optionalString t3codeCfg.tailscaleServe.enable ''
-      --tailscale-serve \
-      --tailscale-serve-port ${toString t3codeCfg.tailscaleServe.port} \
-    ''} \
-      "$repository_root"
-  '';
-  importGpgKeyScript = pkgs.writeShellScript "import-gpg-key" ''
-    set -eu
-
-    key_path=${gpgKeyPath}
-    passphrase_path=${gpgPassphrasePath}
-
-    attempts=0
-    while [ "$attempts" -lt 30 ]; do
-      if [ -r "$key_path" ] && [ -r "$passphrase_path" ]; then
-        break
-      fi
-      attempts=$((attempts + 1))
-      sleep 1
-    done
-
-    if [ ! -r "$key_path" ] || [ ! -r "$passphrase_path" ]; then
-      echo "Timed out waiting for agenix GPG secrets" >&2
-      exit 1
-    fi
-
-    normalized_key_file="$(mktemp)"
-    trap 'rm -f "$normalized_key_file"' EXIT
-
-    # Some historical exports omitted the required blank line after the
-    # armor header. GnuPG imports the keys but exits non-zero in that case.
-    awk '
-      pending_blank {
-        if ($0 != "") {
-          print ""
-        }
-        pending_blank = 0
-      }
-      { print }
-      /^-----BEGIN PGP PRIVATE KEY BLOCK-----$/ {
-        pending_blank = 1
-      }
-    ' "$key_path" > "$normalized_key_file"
-
-    exec ${pkgs.gnupg}/bin/gpg \
-      --batch \
-      --pinentry-mode loopback \
-      --passphrase-file "$passphrase_path" \
-      --import "$normalized_key_file"
-  '';
-  guiApplicationLauncher = application:
-    pkgs.writeShellScript "launch-${lib.toLower application}-with-aqua" ''
-      while true; do
-        while ! /bin/launchctl print "gui/$UID" >/dev/null 2>&1; do
-          /bin/sleep 5
-        done
-
-        /usr/bin/open -gja ${lib.escapeShellArg application} || true
-
-        while /bin/launchctl print "gui/$UID" >/dev/null 2>&1; do
-          /bin/sleep 5
-        done
-      done
-    '';
   multiplexerAliases = import ../../nix-shared/multiplexer-aliases.nix;
 
-  excludedTopLevelEntries = [
-    "codex"
-    "config"
+  # Entries that carry Ivan's identity or agent setup rather than general
+  # tooling; only linked for users that import ./personal.nix.
+  personalTopLevelEntries = [
+    "agents"
+    "claude"
+    "gitconfig.org-agenda-api"
+    "pypirc"
   ];
 
-  excludedConfigEntries = [
-    "starship.toml"
+  personalConfigEntries = [
+    "keepbook"
   ];
+
+  excludedTopLevelEntries =
+    [
+      "codex"
+      "config"
+    ]
+    ++ lib.optionals (!cfg.personal) personalTopLevelEntries;
+
+  excludedConfigEntries =
+    [
+      "starship.toml"
+    ]
+    ++ lib.optionals (!cfg.personal) personalConfigEntries;
 
   dotfilesLinks = lib.listToAttrs (map (name: {
     name = ".${name}";
     value = {
       force = true;
-      source = outOfStore "${worktreeDotfilesDir}/${name}";
+      source = outOfStore "${cfg.worktreeDotfilesDir}/${name}";
     };
   }) (lib.subtractLists excludedTopLevelEntries (builtins.attrNames (builtins.readDir srcDotfilesDir))));
 
@@ -126,72 +49,50 @@
     name = name;
     value = {
       force = true;
-      source = outOfStore "${worktreeDotfilesDir}/config/${name}";
+      source = outOfStore "${cfg.worktreeDotfilesDir}/config/${name}";
     };
   }) (lib.subtractLists excludedConfigEntries (builtins.attrNames (builtins.readDir "${srcDotfilesDir}/config"))));
 in {
-  imports = [
-    inputs.agenix.homeManagerModules.default
-    ../../nix-shared/home-manager/codex-generated-skills.nix
-    ../../nix-shared/home-manager/paseo-managed-hosts.nix
-    ../../nix-shared/home-manager/paseo-settings-seed.nix
-    ../../nix-shared/home-manager/t3code-managed-connections.nix
-  ];
-
-  programs.home-manager.enable = true;
-
-  age.identityPaths = ["${config.home.homeDirectory}/.ssh/id_ed25519"];
-  age.secrets.gpg-keys.file = ../../nixos/secrets/gpg-keys.age;
-  age.secrets.gpg-passphrase.file = ../../nixos/secrets/gpg-passphrase.age;
-
-  home.file = dotfilesLinks;
-
-  myModules.codexGeneratedSkills.enable = true;
-  myModules.codexGeneratedSkills.worktreeCodexDir = "${worktreeDotfilesDir}/codex";
-  services.t3code = {
-    enable = config.home.username == osConfig.system.primaryUser;
-    package = pkgs.t3code;
-    repositoryRoot = dotfilesCheckout;
-  };
-
-  launchd.agents.t3code-headless = lib.mkIf t3codeCfg.enable {
-    domain = "user";
-    config.ProgramArguments = lib.mkForce ["${t3codeManagedServerCommand}"];
-  };
-
-  launchd.agents.hammerspoon = {
-    enable = true;
-    domain = "user";
-    config = {
-      ProgramArguments = ["${guiApplicationLauncher "Hammerspoon"}"];
-      ProcessType = "Background";
-      RunAtLoad = true;
+  options.dotfiles = {
+    checkout = lib.mkOption {
+      type = lib.types.str;
+      default = "/Users/Shared/dotfiles";
+    };
+    worktreeDotfilesDir = lib.mkOption {
+      type = lib.types.str;
+      default = "${cfg.checkout}/dotfiles";
+      readOnly = true;
+    };
+    personal = lib.mkEnableOption "Ivan's personal dotfiles, secrets, and agent setup";
+    gitIdentity = lib.mkOption {
+      type = lib.types.nullOr (lib.types.submodule {
+        options = {
+          name = lib.mkOption {type = lib.types.str;};
+          email = lib.mkOption {type = lib.types.str;};
+        };
+      });
+      default = null;
+      description = "Written to ~/.gitconfig.custom, which the shared gitconfig includes after its own [user].";
     };
   };
 
-  launchd.agents.raycast = {
-    enable = true;
-    domain = "user";
-    config = {
-      ProgramArguments = ["${guiApplicationLauncher "Raycast"}"];
-      ProcessType = "Background";
-      RunAtLoad = true;
-      StandardOutPath = "${config.home.homeDirectory}/Library/Logs/raycast-launchd.log";
-      StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/raycast-launchd.err.log";
-    };
-  };
+  config = {
+    programs.home-manager.enable = true;
 
-  home.packages =
-    [
-      (pkgs.pass.withExtensions (ext: [ext.pass-otp]))
-    ]
-    ++ (with pkgs; [
+    home.file =
+      dotfilesLinks
+      // lib.optionalAttrs (cfg.gitIdentity != null) {
+        ".gitconfig.custom".text = lib.generators.toGitINI {
+          user = {inherit (cfg.gitIdentity) name email;};
+        };
+      };
+
+    home.packages = with pkgs; [
       alejandra
       alt-tab-macos
       claude-code
       cocoapods
       codex
-      gnupg
       imagemagick
       inkscape
       nodejs
@@ -205,184 +106,72 @@ in {
       vim
       vtracer
       yarn
-    ]);
-
-  home.activation.repairGpgHomeAndImportKey = lib.hm.dag.entryAfter ["writeBoundary"] ''
-    gnupg_dir="$HOME/.gnupg"
-    password_store_gpg_id="$HOME/.password-store/.gpg-id"
-
-    /bin/mkdir -p "$gnupg_dir"
-    /bin/chmod 700 "$gnupg_dir"
-
-    if [ -r "$password_store_gpg_id" ]; then
-      needs_import=0
-
-      while IFS= read -r recipient; do
-        case "$recipient" in
-          ""|\#*)
-            continue
-            ;;
-        esac
-
-        if ! ${pkgs.gnupg}/bin/gpg --batch --list-secret-keys --with-colons "$recipient" 2>/dev/null | /usr/bin/grep -q '^sec:'; then
-          needs_import=1
-          break
-        fi
-      done < "$password_store_gpg_id"
-
-      if [ "$needs_import" -eq 1 ]; then
-        if [ -n "''${XDG_RUNTIME_DIR:-}" ] && [ -r "${gpgKeyPath}" ] && [ -r "${gpgPassphrasePath}" ]; then
-          ${importGpgKeyScript}
-        else
-          echo "Skipping GPG key import; agenix runtime secrets are not available yet" >&2
-        fi
-      fi
-    fi
-  '';
-
-  home.activation.configureRaycastHotkey = lib.hm.dag.entryAfter ["writeBoundary"] ''
-    raycast_domain="com.raycast.macos"
-    desired_hotkey="Command-49"
-    current_hotkey="$(/usr/bin/defaults read "$raycast_domain" raycastGlobalHotkey 2>/dev/null || true)"
-
-    if [ -d /Applications/Raycast.app ]; then
-      /usr/bin/xattr -dr com.apple.quarantine /Applications/Raycast.app 2>/dev/null || true
-    fi
-
-    if [ "$current_hotkey" != "$desired_hotkey" ]; then
-      /usr/bin/defaults write "$raycast_domain" raycastGlobalHotkey -string "$desired_hotkey"
-      /usr/bin/defaults write "$raycast_domain" mainWindow_isMonitoringGlobalHotkeys -bool true
-
-      if /usr/bin/pgrep -x Raycast >/dev/null 2>&1; then
-        /usr/bin/killall Raycast || true
-        /bin/sleep 1
-      fi
-      if /bin/launchctl print "gui/$UID" >/dev/null 2>&1; then
-        /usr/bin/open /Applications/Raycast.app || true
-      fi
-    fi
-  '';
-
-  home.sessionPath = [
-    "$HOME/.cargo/bin"
-    "${worktreeLibDir}/bin"
-    "${worktreeLibDir}/functions"
-  ];
-
-  home.sessionVariables = {
-    EDITOR = "emacsclient --alternate-editor emacs";
-  };
-
-  programs.ssh = {
-    enable = true;
-    enableDefaultConfig = false;
-    settings = {
-      "*" = {
-        ForwardAgent = true;
-        AddKeysToAgent = "no";
-        Compression = false;
-        ServerAliveInterval = 0;
-        ServerAliveCountMax = 3;
-        HashKnownHosts = false;
-        UserKnownHostsFile = "~/.ssh/known_hosts";
-        ControlMaster = "no";
-        ControlPath = "~/.ssh/master-%r@%n:%p";
-        ControlPersist = "no";
-      };
-    };
-  };
-
-  services.gpg-agent = {
-    enable = true;
-    defaultCacheTtl = 8 * 60 * 60;
-    maxCacheTtl = 8 * 60 * 60;
-    enableSshSupport = true;
-    pinentry.package = lib.mkIf pkgs.stdenv.isDarwin pkgs.pinentry_mac;
-    extraConfig = ''
-      allow-emacs-pinentry
-      allow-loopback-pinentry
-    '';
-  };
-
-  launchd.agents.activate-agenix = lib.mkIf pkgs.stdenv.isDarwin {
-    domain = "user";
-  };
-  launchd.agents.gpg-agent = lib.mkIf pkgs.stdenv.isDarwin {
-    domain = "user";
-  };
-
-  launchd.agents.import-gpg-key = {
-    enable = true;
-    domain = "user";
-    config = {
-      ProgramArguments = ["${importGpgKeyScript}"];
-      KeepAlive = {
-        Crashed = false;
-        SuccessfulExit = false;
-      };
-      ProcessType = "Background";
-      RunAtLoad = true;
-      StandardOutPath = "${config.home.homeDirectory}/Library/Logs/import-gpg-key.log";
-      StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/import-gpg-key.err.log";
-    };
-  };
-
-  launchd.agents.alt-tab = lib.mkIf pkgs.stdenv.isDarwin {
-    enable = false;
-    config = {
-      ProgramArguments = [
-        "/usr/bin/open"
-        "-gj"
-        "${pkgs.alt-tab-macos}/Applications/AltTab.app"
-      ];
-      KeepAlive = false;
-      ProcessType = "Interactive";
-      RunAtLoad = true;
-      StandardOutPath = "${config.home.homeDirectory}/Library/Logs/alt-tab-launchd.log";
-      StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/alt-tab-launchd.err.log";
-    };
-  };
-
-  programs.starship = {
-    enable = true;
-  };
-
-  programs.zsh = {
-    enable = true;
-    dotDir = "${config.home.homeDirectory}/.zsh";
-    autosuggestion.enable = true;
-    oh-my-zsh = {
-      enable = true;
-      plugins = ["git" "sudo"];
-    };
-    shellAliases =
-      {
-        df_ssh = "TERM='xterm-256color' ssh -o StrictHostKeyChecking=no";
-      }
-      // multiplexerAliases;
-    initContent = lib.mkMerge [
-      (lib.mkOrder 550 ''
-        fpath+="${worktreeLibDir}/functions"
-        for file in "${worktreeLibDir}/functions/"*(N); do
-          autoload "''${file##*/}"
-        done
-      '')
-      ''
-        [ -n "$EAT_SHELL_INTEGRATION_DIR" ] && source "$EAT_SHELL_INTEGRATION_DIR/zsh"
-
-        autoload -Uz bracketed-paste-magic
-        zle -N bracketed-paste bracketed-paste-magic
-      ''
     ];
-  };
 
-  xdg.configFile =
-    xdgConfigLinks
-    // {
-      "ccusage-fleet/config.json".text = import ../../nix-shared/ccusage-fleet-config.nix {
-        localHost = "mac-demarco-mini";
+    home.sessionPath = [
+      "$HOME/.cargo/bin"
+      "${worktreeLibDir}/bin"
+      "${worktreeLibDir}/functions"
+    ];
+
+    home.sessionVariables = {
+      EDITOR = "emacsclient --alternate-editor emacs";
+    };
+
+    programs.ssh = {
+      enable = true;
+      enableDefaultConfig = false;
+      settings = {
+        "*" = {
+          ForwardAgent = true;
+          AddKeysToAgent = "no";
+          Compression = false;
+          ServerAliveInterval = 0;
+          ServerAliveCountMax = 3;
+          HashKnownHosts = false;
+          UserKnownHostsFile = "~/.ssh/known_hosts";
+          ControlMaster = "no";
+          ControlPath = "~/.ssh/master-%r@%n:%p";
+          ControlPersist = "no";
+        };
       };
     };
 
-  home.stateVersion = "24.05";
+    programs.starship = {
+      enable = true;
+    };
+
+    programs.zsh = {
+      enable = true;
+      dotDir = "${config.home.homeDirectory}/.zsh";
+      autosuggestion.enable = true;
+      oh-my-zsh = {
+        enable = true;
+        plugins = ["git" "sudo"];
+      };
+      shellAliases =
+        {
+          df_ssh = "TERM='xterm-256color' ssh -o StrictHostKeyChecking=no";
+        }
+        // multiplexerAliases;
+      initContent = lib.mkMerge [
+        (lib.mkOrder 550 ''
+          fpath+="${worktreeLibDir}/functions"
+          for file in "${worktreeLibDir}/functions/"*(N); do
+            autoload "''${file##*/}"
+          done
+        '')
+        ''
+          [ -n "$EAT_SHELL_INTEGRATION_DIR" ] && source "$EAT_SHELL_INTEGRATION_DIR/zsh"
+
+          autoload -Uz bracketed-paste-magic
+          zle -N bracketed-paste bracketed-paste-magic
+        ''
+      ];
+    };
+
+    xdg.configFile = xdgConfigLinks;
+
+    home.stateVersion = "24.05";
+  };
 }
