@@ -55,6 +55,9 @@
         repositoryRoot = "/srv/dotfiles";
         tailscaleServe.port = cfg.tailscaleServePort;
         systemdTarget = cfg.startTarget;
+        inherit (cfg) settings;
+        keybindings = builtins.fromJSON (builtins.readFile ../nix-shared/t3code-keybindings.json);
+        fleetManifest = import ../nix-shared/t3code-fleet.nix;
       };
 
       systemd.user.services.t3code-headless = {
@@ -79,6 +82,12 @@ in
           type = lib.types.port;
           default = 443;
           description = "Tailnet-only HTTPS port exposed by Tailscale Serve.";
+        };
+
+        settings = lib.mkOption {
+          type = lib.types.attrsOf lib.types.anything;
+          default = {};
+          description = "Server settings this host fixes for T3 Code; see services.t3code.settings.";
         };
 
         startTarget = lib.mkOption {

@@ -19,6 +19,20 @@
   myModules.kubelet.enable = false;
   myModules.nvidia.enable = true;
   myModules.paseo.enable = true;
+  myModules.t3codeServer.settings.providerInstances = {
+    claudeAgent_dean = {
+      driver = "claudeAgent";
+      displayName = "Dean";
+      enabled = true;
+      config.homePath = "~/.claude-dean";
+    };
+    codex_colonel = {
+      driver = "codex";
+      displayName = "Colonel";
+      enabled = true;
+      config.homePath = "~/.codex-colonelpanic8";
+    };
+  };
   # Needed for now because monitors have different refresh rates
   myModules.xmonad.picom.vSync.enable = false;
   myModules.cache-server = {

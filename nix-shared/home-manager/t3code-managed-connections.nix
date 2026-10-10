@@ -4,25 +4,7 @@
   pkgs,
   ...
 }: let
-  fleetHosts = [
-    "jay-lenovo"
-    "jimi-hendnix"
-    "mac-demarco-mini"
-    "ryzen-shine"
-    "strixi-minaj"
-  ];
-  magicDnsSuffix = "taileb3aad.ts.net";
-  connections =
-    map (host: let
-      authority = "${host}.${magicDnsSuffix}";
-    in {
-      environmentId = "fleet:${host}";
-      label = host;
-      httpBaseUrl = "https://${authority}/";
-      wsBaseUrl = "wss://${authority}/";
-    })
-    fleetHosts;
-  connectionsJson = builtins.toJSON connections;
+  connectionsJson = builtins.toJSON (import ../t3code-fleet.nix);
   configuredSecretPath = config.age.secrets.paseo-password-environment.path;
   configDirectory = "${config.xdg.configHome}/t3code";
   registryPath = "${configDirectory}/managed-connections.json";

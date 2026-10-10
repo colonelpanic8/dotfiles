@@ -64,7 +64,15 @@
     ];
 
     home-manager.users.imalison = lib.mkIf config.myModules.desktop.enable {
-      imports = lib.optional t3codeEnabled ../nix-shared/home-manager/t3code-keybindings.nix;
+      imports = lib.optional t3codeEnabled inputs.t3code-integration.homeManagerModules.t3code-client;
+
+      programs.t3code-client = lib.mkIf t3codeEnabled {
+        enable = true;
+        # The overlaid client already passes --backend-mode=client-only.
+        package = pkgs.t3code;
+        managedConnectionsFile = "/home/imalison/.config/t3code/managed-connections.json";
+        settings.sidebarV2LargeIcons = true;
+      };
 
       programs.codex = {
         enable = true;
@@ -107,7 +115,6 @@
         opencode
         inputs.paseo.packages.${pkgs.stdenv.hostPlatform.system}.desktop
       ]
-      ++ lib.optional t3codeEnabled t3code
       ++ [
         # MCP
         github-mcp-server
