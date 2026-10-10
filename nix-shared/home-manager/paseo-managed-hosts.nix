@@ -35,8 +35,17 @@
       endpoint = "strixi-minaj:6767";
       color = "orange";
     }
+    {
+      label = "alexanders-macbook-air";
+      # Shared in from another tailnet, so the short MagicDNS name does not resolve.
+      endpoint = "alexanders-macbook-air.tail40f15e.ts.net:6767";
+      color = "red";
+      # Not a fleet machine, so its daemon has its own password.
+      passwordSecret = "paseo-password-alexanders-macbook-air";
+    }
   ];
   fleetHostsJson = builtins.toJSON fleetHosts;
+  hostPasswordSecrets = lib.unique (lib.catAttrs "passwordSecret" fleetHosts);
   configuredSecretPath = config.age.secrets.paseo-password-environment.path;
   registryPath = "${config.xdg.configHome}/paseo/managed-hosts.json";
   renderRegistry = pkgs.writeShellScript "render-paseo-managed-hosts" ''
@@ -55,6 +64,19 @@
       exit 1
     fi
 
+    host_passwords='{}'
+    ${lib.concatMapStrings (name: ''
+        host_password_file=${config.age.secrets.${name}.path}
+        ${lib.optionalString pkgs.stdenv.isDarwin ''
+          /bin/wait4path "$host_password_file"
+        ''}
+        host_passwords="$(${pkgs.jq}/bin/jq -c \
+          --arg name ${lib.escapeShellArg name} \
+          --rawfile value "$host_password_file" \
+          '. + {($name): ($value | rtrimstr("\n"))}' <<<"$host_passwords")"
+      '')
+      hostPasswordSecrets}
+
     registry_dir=${lib.escapeShellArg (builtins.dirOf registryPath)}
     registry_path=${lib.escapeShellArg registryPath}
     mkdir -p "$registry_dir"
@@ -63,15 +85,26 @@
 
     ${pkgs.jq}/bin/jq -n \
       --arg password "$password" \
+      --argjson hostPasswords "$host_passwords" \
       --argjson hosts ${lib.escapeShellArg fleetHostsJson} \
-      '{version: 1, hosts: ($hosts | map(. + {password: $password}))}' \
+      '{version: 1, hosts: ($hosts | map(
+        if .passwordSecret
+        then del(.passwordSecret) + {password: $hostPasswords[.passwordSecret]}
+        else . + {password: $password}
+        end))}' \
       > "$temporary"
     chmod 0600 "$temporary"
     mv "$temporary" "$registry_path"
     trap - EXIT
   '';
 in {
-  age.secrets.paseo-password-environment.file = ../../nixos/secrets/paseo-password-environment.age;
+  age.secrets =
+    {
+      paseo-password-environment.file = ../../nixos/secrets/paseo-password-environment.age;
+    }
+    // lib.genAttrs hostPasswordSecrets (name: {
+      file = ../../nixos/secrets + "/${name}.age";
+    });
 
   systemd.user.services.paseo-managed-hosts = lib.mkIf pkgs.stdenv.isLinux {
     Unit = {

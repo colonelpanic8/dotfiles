@@ -35,6 +35,7 @@ in {
   # This is safe to commit encrypted; default plaintext is "DISABLED".
   "tailscale-authkey.age".publicKeys = keys.sshClientKeys;
   "paseo-password-environment.age".publicKeys = keys.agenixKeys;
+  "paseo-password-alexanders-macbook-air.age".publicKeys = keys.agenixKeys;
   "hermes-environment.age".publicKeys = keys.agenixKeys;
   "google-messages-bridge-api-token.age".publicKeys = keys.agenixKeys;
   "google-messages-bridge-storage-key.age".publicKeys = keys.agenixKeys;
