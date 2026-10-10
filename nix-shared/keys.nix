@@ -58,7 +58,7 @@ rec {
     imalison = sshClientKeys;
     kat = sshClientKeys;
     dean = sshClientKeys ++ deanKeys;
-    alex = sshClientKeys ++ alexKeys;
+    alex = kanivanKeys ++ alexKeys;
     loewy = sshClientKeys ++ loewyKeys;
     ben = benKeys ++ sshClientKeys;
   };
