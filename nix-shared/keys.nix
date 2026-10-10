@@ -14,7 +14,6 @@ rec {
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICzGkqGJm+nrMvsrfuWOLVxXHvi0UL1ULJmyfzS9sKpy imalison@biskcomp"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOuO/tc728fKyctlufiehZQuKsD0XDiS/5x7TImk0Ip4 imalison@ivanm-dfinity-razer"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDt/rcYuGGlXBcRUJvzUCgOW8PNVkJJ5TwEOha1/KGM4 imalison@stevie-nixos"
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICzGkqGJm+nrMvsrfuWOLVxXHvi0UL1ULJmyfzS9sKpy imalison@biskcomp"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJr9kVlYIZIPXfXom4Fi7S2yvp5sWJ6BSM5m3uLh+8y5 imalison@adele"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOOFkA5JZkq8mRd7St0jP2P6WyYYhW2CChmQoY20N45f imalison@ryzen-shine"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICJ7S93cC2gsu/JbnDsa6X1omJzn1mI6ppKd2k+yV4aD imalison@jimi-hendnix"
