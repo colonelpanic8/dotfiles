@@ -156,8 +156,17 @@
       if user == "imalison"
       then "Ivan Malison"
       else null;
-    sharedConfiguration = {primaryUser}: {lib, ...}: {
+    sharedConfiguration = {primaryUser}: {
+      config,
+      lib,
+      ...
+    }: {
       system.primaryUser = primaryUser;
+      # GUI apps only see launchd's PATH, and launchctl setenv does not expand
+      # the $USER/$HOME references in systemPath.
+      launchd.user.envVariables.PATH =
+        builtins.replaceStrings ["$USER" "$HOME"] [primaryUser (homeForUser primaryUser)]
+        config.environment.systemPath;
       environment.profiles = lib.mkForce [
         "/etc/profiles/per-user/$USER"
         "$HOME/.nix-profile"
@@ -608,11 +617,6 @@
       fonts.packages = with pkgs; [
         nerd-fonts.jetbrains-mono
       ];
-
-      # Auto upgrade nix package and the daemon service.
-      launchd.user = {
-        envVariables.PATH = config.environment.systemPath;
-      };
 
       users.users =
         lib.genAttrs personalUsers (user: {
