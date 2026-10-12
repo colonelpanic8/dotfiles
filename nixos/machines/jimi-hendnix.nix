@@ -72,6 +72,7 @@ in {
   boot.loader.systemd-boot.enable = true;
 
   hardware.nvidia.modesetting.enable = true;
+  hardware.nvidia.moduleParams.nvidia.NVreg_EnableResizableBar = 1;
 
   # This also enables v4l2loopback
   programs.droidcam.enable = true;
