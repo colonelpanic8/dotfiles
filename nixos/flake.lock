@@ -874,11 +874,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1791759915,
-        "narHash": "sha256-ES1GXWH4740JxmGYh/dTk1xJAq0gpbwO98sGFD5ulVs=",
+        "lastModified": 1791778478,
+        "narHash": "sha256-wSPa6WBD2QJjFzrKvEn+5DSKJBmG3h2pGmdAa4/mYU8=",
         "owner": "colonelpanic8",
         "repo": "gocryptfs-tray",
-        "rev": "c44007be18fcb10e509c8f05aa9f349728447ad9",
+        "rev": "a64984980b12aa6f84d140009639dd27ece5aa7e",
         "type": "github"
       },
       "original": {
