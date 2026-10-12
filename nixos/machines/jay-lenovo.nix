@@ -4,7 +4,39 @@
   lib,
   pkgs,
   ...
-}: {
+}: let
+  builtinKeyboard = pkgs.writeShellApplication {
+    name = "builtin-keyboard";
+    text = ''
+      case "''${1:-auto}" in
+        on) inhibit=0 ;;
+        off) inhibit=1 ;;
+        auto)
+          inhibit=0
+          for dev in /sys/class/input/input*; do
+            if [ "$(cat "$dev/id/vendor" 2>/dev/null)" = 16c0 ] &&
+              [ "$(cat "$dev/id/product" 2>/dev/null)" = 27db ]; then
+              inhibit=1
+              break
+            fi
+          done
+          ;;
+        *)
+          echo "usage: builtin-keyboard [on|off|auto]" >&2
+          exit 2
+          ;;
+      esac
+
+      for dev in /sys/class/input/input*; do
+        case "$(cat "$dev/name" 2>/dev/null)" in
+          "AT Translated Set 2 keyboard" | "ITE Tech. Inc. ITE Device(8258) Keyboard")
+            echo "$inhibit" > "$dev/inhibited"
+            ;;
+        esac
+      done
+    '';
+  };
+in {
   imports = [
     ../configuration.nix
   ];
@@ -23,9 +55,16 @@
 
   environment.systemPackages = with pkgs; [
     android-studio
+    builtinKeyboard
     perf
     zenmonitor
   ];
+
+  # Inhibit the built-in keyboard while a MoErgo keyboard is connected.
+  # keyd grabs every keyboard, so this has to happen below it, in the kernel.
+  services.udev.extraRules = ''
+    ACTION=="add|remove", SUBSYSTEM=="input", KERNEL=="input*", ENV{PRODUCT}=="*/16c0/27db/*|11/1/1/*|3/48d/c977/*", RUN+="${lib.getExe builtinKeyboard} auto"
+  '';
 
   hardware.enableRedistributableFirmware = true;
   boot.kernelPackages = pkgs.linuxPackages_latest;
