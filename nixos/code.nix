@@ -64,15 +64,20 @@
     ];
 
     home-manager.users.imalison = lib.mkIf config.myModules.desktop.enable {
-      imports = lib.optional t3codeEnabled inputs.t3code-integration.homeManagerModules.t3code-client;
-
-      programs.t3code-client = lib.mkIf t3codeEnabled {
-        enable = true;
-        # The overlaid client already passes --backend-mode=client-only.
-        package = pkgs.t3code;
-        managedConnectionsFile = "/home/imalison/.config/t3code/managed-connections.json";
-        settings.sidebarV2LargeIcons = true;
-      };
+      # The option only exists when the module is imported, so the settings
+      # must be gated the same way; mkIf alone still references the option.
+      imports = lib.optionals t3codeEnabled [
+        inputs.t3code-integration.homeManagerModules.t3code-client
+        {
+          programs.t3code-client = {
+            enable = true;
+            # The overlaid client already passes --backend-mode=client-only.
+            package = pkgs.t3code;
+            managedConnectionsFile = "/home/imalison/.config/t3code/managed-connections.json";
+            settings.sidebarV2LargeIcons = true;
+          };
+        }
+      ];
 
       programs.codex = {
         enable = true;
