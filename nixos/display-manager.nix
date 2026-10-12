@@ -7,6 +7,22 @@
 }:
 makeEnable config "myModules.displayManager" false {
   services.accounts-daemon.enable = true;
+
+  # The greeter's PipeWire grabs ALSA devices at boot, so a lingering user's
+  # WirePlumber probes them while busy and drops the analog outputs.
+  systemd.user = let
+    notGreeter.unitConfig.ConditionUser = "!sddm";
+  in {
+    services = {
+      pipewire = notGreeter;
+      pipewire-pulse = notGreeter;
+      wireplumber = notGreeter;
+    };
+    sockets = {
+      pipewire = notGreeter;
+      pipewire-pulse = notGreeter;
+    };
+  };
   services.displayManager.sddm = {
     enable = true;
     settings = {
