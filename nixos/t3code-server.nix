@@ -10,6 +10,16 @@
   environmentId = "fleet:${config.networking.hostName}";
   serverSettings = {
     providers.claudeAgent.launchArgs = "--chrome";
+    textGenerationModelSelection = {
+      instanceId = "claudeAgent";
+      model = "claude-haiku-5-5";
+      options = [
+        {
+          id = "effort";
+          value = "low";
+        }
+      ];
+    };
   };
   # The server and its settings UI own settings.json, so merge declared keys
   # into it instead of replacing it.
