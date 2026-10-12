@@ -13,7 +13,7 @@
     set -eu
 
     secret_file=${configuredSecretPath}
-    ${lib.optionalString pkgs.stdenv.isDarwin ''
+    ${lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
       /bin/wait4path "$secret_file"
     ''}
     password_line="$(${pkgs.gnugrep}/bin/grep -m1 '^PASEO_PASSWORD=' "$secret_file")"
@@ -48,7 +48,7 @@ in
   lib.mkIf (lib.elem config.home.username ["imalison" "kat"]) {
     home.sessionVariables.T3CODE_MANAGED_CONNECTIONS_FILE = registryPath;
 
-    systemd.user.services.t3code-managed-connections = lib.mkIf pkgs.stdenv.isLinux {
+    systemd.user.services.t3code-managed-connections = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
       Unit = {
         Description = "Render the agenix-backed T3 Code fleet configuration";
         After = ["agenix.service"];
@@ -60,7 +60,7 @@ in
       };
     };
 
-    launchd.agents.t3code-managed-connections = lib.mkIf pkgs.stdenv.isDarwin {
+    launchd.agents.t3code-managed-connections = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
       enable = true;
       domain = "user";
       config = {

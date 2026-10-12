@@ -19,7 +19,7 @@
     desktop = {
       releaseChannel = "stable";
       daemon = {
-        manageBuiltInDaemon = pkgs.stdenv.isLinux;
+        manageBuiltInDaemon = pkgs.stdenv.hostPlatform.isLinux;
         keepRunningAfterQuit = false;
       };
     };
@@ -28,11 +28,11 @@
   settingsSeedJson = builtins.toJSON settingsSeed;
 in
   lib.mkIf (config.home.username == primaryUser) (lib.mkMerge [
-    (lib.mkIf pkgs.stdenv.isLinux {
+    (lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
       xdg.configFile."paseo/settings-seed.json".text = settingsSeedJson;
     })
 
-    (lib.mkIf pkgs.stdenv.isDarwin {
+    (lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
       home.file."Library/Application Support/Paseo/settings-seed.json".text = settingsSeedJson;
     })
   ])

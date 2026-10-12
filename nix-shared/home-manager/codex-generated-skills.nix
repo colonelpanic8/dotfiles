@@ -137,7 +137,7 @@ in {
       begin_marker="# BEGIN AUTO-GENERATED CODEX MACHINE STATE"
       end_marker="# END AUTO-GENERATED CODEX MACHINE STATE"
       rejected_project_prefixes=${lib.escapeShellArg (
-        if pkgs.stdenv.isDarwin
+        if pkgs.stdenv.hostPlatform.isDarwin
         then "/home/ /run/"
         else "/Users/ /Volumes/"
       )}

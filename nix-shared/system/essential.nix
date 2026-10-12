@@ -134,6 +134,6 @@ in {
 
   environment.systemPackages =
     commonPkgs
-    ++ lib.optionals pkgs.stdenv.isLinux linuxOnly
-    ++ lib.optionals pkgs.stdenv.isDarwin darwinOnly;
+    ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux linuxOnly
+    ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin darwinOnly;
 }

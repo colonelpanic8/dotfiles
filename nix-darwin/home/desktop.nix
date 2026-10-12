@@ -64,7 +64,7 @@ in {
     fi
   '';
 
-  launchd.agents.alt-tab = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.alt-tab = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = false;
     config = {
       ProgramArguments = [

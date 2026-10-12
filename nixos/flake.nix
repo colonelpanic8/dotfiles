@@ -14,18 +14,18 @@
     };
 
     pyproject-nix = {
-      url = "github:pyproject-nix/pyproject.nix/1b1485546d85f6f6c7aadb10c4923dbc09633263";
+      url = "github:pyproject-nix/pyproject.nix/ddc400a6883b042646d0940e65971bb7f7e96107";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     uv2nix = {
-      url = "github:pyproject-nix/uv2nix/0dfa8388dc855b1774f509725d8ea6806291571d";
+      url = "github:pyproject-nix/uv2nix/ddca81d752e29c063eaa914e040c3ec56ed39558";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.pyproject-nix.follows = "pyproject-nix";
     };
 
     pyproject-build-systems = {
-      url = "github:pyproject-nix/build-system-pkgs/90fde00db3687922d39d95fc591475fd0bbbcd72";
+      url = "github:pyproject-nix/build-system-pkgs/953d35d03a51dbecaf3feb3fb679eb63e90ebeb4";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.pyproject-nix.follows = "pyproject-nix";
       inputs.uv2nix.follows = "uv2nix";
@@ -78,11 +78,17 @@
       };
     };
 
+    fenix = {
+      url = "github:nix-community/fenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     gocryptfs-tray = {
       url = "github:colonelpanic8/gocryptfs-tray";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
+        fenix.follows = "fenix";
       };
     };
 
@@ -91,6 +97,7 @@
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
+        fenix.follows = "fenix";
       };
     };
 
@@ -99,6 +106,7 @@
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
+        fenix.follows = "fenix";
       };
     };
 
@@ -107,6 +115,7 @@
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
+        fenix.follows = "fenix";
       };
     };
 
@@ -334,6 +343,7 @@
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
+        fenix.follows = "fenix";
       };
     };
 
@@ -360,7 +370,7 @@
     };
 
     eva = {
-      url = "github:colonelpanic8/eva/daabab66ef73bb9d8246781eae7c057f33ba1cec";
+      url = "github:colonelpanic8/eva/4b58d8020f64cc0627834f572f2effe970fcbc39";
     };
 
     paseo = {

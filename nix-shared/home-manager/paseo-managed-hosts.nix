@@ -54,7 +54,7 @@
     # Home Manager agenix paths intentionally contain runtime shell
     # expressions on Linux and Darwin. Let the assignment expand them.
     secret_file=${configuredSecretPath}
-    ${lib.optionalString pkgs.stdenv.isDarwin ''
+    ${lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
       /bin/wait4path "$secret_file"
     ''}
     password_line="$(${pkgs.gnugrep}/bin/grep -m1 '^PASEO_PASSWORD=' "$secret_file")"
@@ -67,7 +67,7 @@
     host_passwords='{}'
     ${lib.concatMapStrings (name: ''
         host_password_file=${config.age.secrets.${name}.path}
-        ${lib.optionalString pkgs.stdenv.isDarwin ''
+        ${lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
           /bin/wait4path "$host_password_file"
         ''}
         host_passwords="$(${pkgs.jq}/bin/jq -c \
@@ -106,7 +106,7 @@ in {
       file = ../../nixos/secrets + "/${name}.age";
     });
 
-  systemd.user.services.paseo-managed-hosts = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services.paseo-managed-hosts = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     Unit = {
       Description = "Render the agenix-backed Paseo fleet registry";
       After = ["agenix.service"];
@@ -118,7 +118,7 @@ in {
     };
   };
 
-  launchd.agents.paseo-managed-hosts = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.paseo-managed-hosts = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     enable = true;
     domain = "user";
     config = {

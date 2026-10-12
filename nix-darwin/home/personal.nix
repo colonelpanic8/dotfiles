@@ -157,17 +157,17 @@ in {
     defaultCacheTtl = 8 * 60 * 60;
     maxCacheTtl = 8 * 60 * 60;
     enableSshSupport = true;
-    pinentry.package = lib.mkIf pkgs.stdenv.isDarwin pkgs.pinentry_mac;
+    pinentry.package = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin pkgs.pinentry_mac;
     extraConfig = ''
       allow-emacs-pinentry
       allow-loopback-pinentry
     '';
   };
 
-  launchd.agents.activate-agenix = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.activate-agenix = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     domain = "user";
   };
-  launchd.agents.gpg-agent = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents.gpg-agent = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     domain = "user";
   };
 
