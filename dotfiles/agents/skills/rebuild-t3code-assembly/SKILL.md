@@ -1,6 +1,6 @@
 ---
 name: rebuild-t3code-assembly
-description: "Change and publish Ivan's T3 Code assembly: admit or remove manifest topics, rebuild groups and the main branch, resolve conflicts, prove carried content survived, push a dated revision, repin Nix, build, smoke-test, activate, and commit coupled files. Use when asked to incorporate inventoried branches into the installed assembly, rebuild, regenerate, publish, repin, or resume a stopped integration build. Do not use for read-only inventory or topic-branch rebasing."
+description: "Change and publish Ivan's T3 Code assembly: admit or remove manifest topics, rebuild the assembly, resolve conflicts, prove carried content survived, push a dated revision, repin Nix, build, smoke-test, activate, and commit coupled files. Use when asked to incorporate inventoried branches into the installed assembly, rebuild, regenerate, publish, repin, or resume a stopped integration build. Do not use for read-only inventory or topic-branch rebasing."
 ---
 
 # Rebuild the T3 Code integration branch
@@ -17,8 +17,8 @@ manifest and integration-output mutations.
 
 Orientation, in BUILDING.md's terms:
 
-- Adding topics → "Adding a topic" (mode `extend`; `refresh` if it refuses).
-- Tracking upstream or changed entries → mode `refresh`.
+- Adding topics → "Inspecting and changing the stack" (`fork-assembler add`).
+- Tracking upstream or changed entries → `fork-assembler update`, then `build`.
 - Conflicts → "Resolving conflicts" (rerere first; never `-X ours/theirs`).
 - Before pushing → the syntax gate and all five ladder steps, in order.
 - Publishing → "Landing a rebuild" (repin by rev, build, `just switch`,

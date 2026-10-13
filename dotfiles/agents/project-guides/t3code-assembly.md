@@ -1,8 +1,8 @@
 # T3 Code personal assembly — shared model for the skills
 
-The installed T3 Code is upstream `main` plus ~35 carried topic branches,
+The installed T3 Code is upstream `main` plus ~25 carried topic branches,
 assembled by ordered 3-way merges into a throwaway integration branch that
-NixOS pins by revision. `assembly.toml` in the dedicated `t3code-assembly`
+NixOS pins by revision. `manifest.toml` in the dedicated `t3code-assembly`
 repository is the intent; `t3code/assembled` is the artifact; the lock records
 what was built. The repository pins its upstream base through a `t3code/`
 submodule.
@@ -53,14 +53,14 @@ recommend a mutation workflow but must not silently perform it.
 
 - **Maintained PR branches** — `colonelpanic8` fork branches; writable,
   rebasable.
-- **Local topics** — fork branches with no PR (e.g. `t3code/local/nix-flake`);
+- **Local topics** — fork branches with no PR (e.g. `t3code/main/live-voice`);
   writable, rebased like PR branches.
 - **Branch-linked topics** — manifest entries with a `branch` but no open PR;
   the branch is authoritative even if a former PR was closed.
 - **External topics** — `kind = "external"`, owned by others; read-only,
   merged from the PR head.
-- **Groups** — sub-manifests pinned as one main-manifest entry; rebuilt first.
-- **Epilogues** — minimal patches whose meaning depends on the assembled tree.
+- **Coherence fixups** — patches attached to the entry whose admission needs
+  them; their meaning depends on the assembled tree.
 
 Do not conflate open PRs, maintained branches, and carried topics: closed PRs
 can stay intentionally carried, and merged PRs stay carried until the selected

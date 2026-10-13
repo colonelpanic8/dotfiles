@@ -68,14 +68,15 @@ validated commit.
 ## 4. Integrate into the assembly
 
 Follow **`BUILDING.md` in the `t3code-assembly` repository**, sections
-"Adding a topic" through "Landing a rebuild". Re-read `assembly.toml` first —
-another session may have changed the assembly while the PR was being prepared.
+"Inspecting and changing the stack" through "Landing a rebuild". Re-read
+`manifest.toml` first — another session may have changed the assembly while
+the PR was being prepared.
 Do not claim success from a source build alone.
 
 ## 5. Report
 
 - PR URL and head OID.
-- Manifest entry added, and whether it went in the main assembly or a group.
+- Manifest entry added.
 - Conflicts resolved during the rebuild.
 - New integration rev and tag; tree changed or unchanged.
 - Build and activation result; T3 Code and dotfiles commits.
