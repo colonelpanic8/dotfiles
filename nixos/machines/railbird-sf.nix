@@ -109,9 +109,24 @@ in {
     serverAddr = "";
   };
   myModules."keepbook-sync".enable = true;
-  myModules.remote-hyprland = {
-    enable = true;
-    autoStart = true;
+  # Keeps the claude/codex remote-control user services running without a login.
+  users.users.imalison.linger = true;
+
+  # GL.iNet Comet Pro KVM on the LAN only has a self-signed cert; front it with a tailnet cert.
+  systemd.services.glkvm-serve = {
+    description = "Tailscale HTTPS for the GL.iNet KVM";
+    after = ["tailscaled.service"];
+    wants = ["tailscaled.service"];
+    wantedBy = ["multi-user.target"];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      TimeoutStartSec = "60s";
+      ExecStartPre = "${config.services.tailscale.package}/bin/tailscale wait --timeout=45s";
+      ExecStart = "${pkgs.util-linux}/bin/flock /run/tailscale-serve.lock ${config.services.tailscale.package}/bin/tailscale serve --bg --https=8443 --set-path=/ https+insecure://192.168.0.6";
+      Restart = "on-failure";
+      RestartSec = "5s";
+    };
   };
 
   # Mirror the old biskcomp "Syncthing hosting" pattern: serve the synced railbird tree over HTTPS with autoindex.
