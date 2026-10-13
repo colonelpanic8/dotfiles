@@ -19,6 +19,7 @@ pane per host and run all switches concurrently. Use `local` for this machine.
 Options:
   --online          Switch this host and configured NixOS hosts currently online
                     in Tailscale
+  --pull            Fast-forward each host's checkout from origin before switching
   --session NAME    Name the tmux session/window (default: fleet-switch-TIMESTAMP)
   --no-attach       Start a fanout without attaching to its tmux session/window
   -n, --dry-run     Print the commands without running them
@@ -29,6 +30,7 @@ Examples:
   fleet-switch strixi-minaj
   fleet-switch local strixi-minaj railbird-sf
   fleet-switch --online
+  fleet-switch --pull --online
   fleet-switch strixi-minaj -- --show-trace
 EOF
 }
@@ -94,11 +96,12 @@ run_one() {
 	if is_local_host "$host"; then
 		printf '\n==> %s (local)\n' "$(hostname -s)"
 		cd "$NIXOS_DIR"
+		[[ $pull == 1 ]] && git pull --ff-only
 		exec just switch "$@"
 	fi
 
 	local remote_command
-	remote_command="cd $(shell_quote "$NIXOS_DIR") && exec just switch"
+	remote_command="cd $(shell_quote "$NIXOS_DIR") && ${pull_command}exec just switch"
 	local arg
 	for arg in "$@"; do
 		remote_command+=" $(shell_quote "$arg")"
@@ -112,12 +115,12 @@ print_one() {
 	local host=$1
 	shift
 	if is_local_host "$host"; then
-		printf '[%s] cd %s && ' "$host" "$NIXOS_DIR"
+		printf '[%s] cd %s && %s' "$host" "$NIXOS_DIR" "$pull_command"
 		join_shell_command just switch "$@"
 	else
 		printf '[%s] ' "$host"
 		join_shell_command ssh -tt -- "$host" \
-			"cd $(shell_quote "$NIXOS_DIR") && exec just switch$(
+			"cd $(shell_quote "$NIXOS_DIR") && ${pull_command}exec just switch$(
 				for arg in "$@"; do printf ' %s' "$(shell_quote "$arg")"; done
 			)"
 	fi
@@ -145,7 +148,7 @@ start_fanout() {
 	command -v tmux >/dev/null 2>&1 || die "fanout requires tmux"
 
 	for host in "${hosts[@]}"; do
-		command=$(join_shell_command "$SELF" --run-one "$host" -- "${switch_args[@]}")
+		command=$(join_shell_command "$SELF" "${pull_flag[@]}" --run-one "$host" -- "${switch_args[@]}")
 		pane_commands+=("$command")
 	done
 
@@ -200,6 +203,7 @@ session="fleet-switch-$(date +%Y%m%d-%H%M%S)-$$"
 attach=1
 dry_run=0
 discover_online=0
+pull=0
 run_one_host=""
 declare -a hosts=()
 declare -a switch_args=()
@@ -208,6 +212,10 @@ while (($#)); do
 	case $1 in
 		--online)
 			discover_online=1
+			shift
+			;;
+		--pull)
+			pull=1
 			shift
 			;;
 		--session)
@@ -246,6 +254,13 @@ while (($#)); do
 			;;
 	esac
 done
+
+pull_command=""
+declare -a pull_flag=()
+if [[ $pull == 1 ]]; then
+	pull_command="git pull --ff-only && "
+	pull_flag=(--pull)
+fi
 
 if [[ -n $run_one_host ]]; then
 	run_one "$run_one_host" -- "${switch_args[@]}"
