@@ -49,6 +49,9 @@ makeEnable config "myModules.base" true {
   };
   networking.resolvconf.enable = false;
   services.resolved.enable = true;
+  # LLMNR races MagicDNS for bare hostnames, and when it wins it returns
+  # scope-less fe80:: addresses that can't be connected to. Avahi covers .local.
+  services.resolved.settings.Resolve.LLMNR = false;
   services.mullvad-vpn.enable = false;
 
   # Mullvad's kill-switch outlives the daemon. With lockdown mode on, the daemon
