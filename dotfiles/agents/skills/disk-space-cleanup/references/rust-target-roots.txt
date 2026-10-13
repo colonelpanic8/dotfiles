@@ -2,6 +2,8 @@
 # Keep this list machine-specific and update it when Rust repos move.
 
 /home/imalison/projects
+# strixi-minaj still has the pre-migration uppercase directory.
+/home/imalison/Projects
 /home/imalison/org
 /home/imalison/.codex/worktrees
 /srv/dotfiles

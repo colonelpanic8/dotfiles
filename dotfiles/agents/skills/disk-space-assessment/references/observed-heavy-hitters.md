@@ -36,6 +36,8 @@ Use these as hypotheses, not substitutes for a current snapshot.
 
 ## Nix Store
 
+- 2026-10-12 `strixi-minaj`: fresh direnv GC-root attribution found 139.57 GiB of total dev-shell closures, 109.26 GiB retained only by direnv, and 74.40 GiB summed marginal-unique NAR size. Largest unique roots were Railbird Mobile 20.94 GiB (78 days), Mova 14.60 GiB (192 days), and taffybar 11.39 GiB (88 days). These are logical upper bounds; re-audit before cleanup and preserve recent/active environments. Age-filtered stale roots excluded the newly loaded org shell and 25-day-old Paseo assembly shell.
+
 - A large store may be almost entirely live. In a 2026-07-10 audit, the Nix DB held 413.0 GiB logical NAR size with zero dead paths. By 2026-07-18 `nix-store --gc --print-dead` found 944 dead paths (~2.85 GiB by `du -c`) — mostly stale `.drv` files; small but real and zero-risk to collect.
 - The current system has directly pinned large ComfyUI model weights plus CUDA, GHC, Android, and Rust families.
 - Hundreds of `.direnv` GC-root entries have retained more than 100 GiB outside the current-system closure. `railbird-mobile`, Railbird backend, taffybar, rocket-sense, and keepbook dev shells have been notable roots. 2026-07-18 marginal-unique ranking (via `direnv_gc_roots_audit.py`) found most of the top closures were <1 day old (taffybar 11.6 GiB, rocket-sense 6.2 GiB — active work, don't touch) but ~3.1 GiB of marginal-unique closures belonged to projects untouched 36–68 days (`rockpload`, `rocket-sense/vendor/subtr-actor`, `hyprwinview`, `hyprexpo`, `http-client-vcr`, `notifications-tray-icon`, `lastfm-bulk-edit`, `scrobble-scrubber`) — low-risk GC candidates if those `.direnv` dirs are removed.

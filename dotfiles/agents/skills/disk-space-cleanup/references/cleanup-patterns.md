@@ -9,6 +9,7 @@ Use only after a current assessment confirms the path is significant.
 - `hypr-workspace-history/target` has been a removable Rust-style cache without a nearby `Cargo.toml`, so the guarded helper rejects it; inspect manually.
 - Preserve `~/projects/Hyprland/src/layout/target`, which is source code rather than build output.
 - Clean registered git worktrees only after preserving dirty ones. Stale nixpkgs worktree `result` symlinks may pin Nix closures.
+- A clean worktree can still contain ignored application state. Two old T3 worktrees on `strixi-minaj` held `userdata/` and `.t3/`; preserve these checkouts or their state before removing them. Git status does not protect ignored chat databases, attachments, credentials, or local environment files.
 
 ## Nix Roots and Store Optimization
 
@@ -36,6 +37,12 @@ opportunity. Check `nix-store --gc --print-dead` before collecting and measure
 the actual result. If few paths are dead, preserve an inventory and inspect
 `/Users`, `/private/var`, and `/Library/Developer` before proposing targeted
 Xcode, runner, or user-cache cleanup.
+
+## Package Caches
+
+- `pnpm store prune` operates on the store selected by that executable. On `strixi-minaj`, default pnpm 10 selected `store/v10` while most data lived in `store/v11`; `corepack pnpm@11.10.0 store path` confirmed v11, then its `store prune` reclaimed 11.7 GiB. Use the version recorded in the relevant project, verify `store path`, and let pnpm preserve referenced global virtual-store packages.
+- Yarn Classic `yarn cache clean` leaves `~/.local/share/yarn/berry/{cache,store,index}` intact. Remove those regenerable directories only after checking for active Yarn installs and open files; preserve other Berry state. Hardlinks into installed projects can make actual reclaimed space smaller than `du` suggests.
+- Idle `~/.gradle/caches` can be removed without deleting wrapper distributions or downloaded JDKs. Check recursive file freshness, Gradle/Kotlin JVM processes, and open files immediately before deletion. On `strixi-minaj`, caches last written in July reclaimed 17.4 GiB in October.
 
 ## Logs and App Caches
 

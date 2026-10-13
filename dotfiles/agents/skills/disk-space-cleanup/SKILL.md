@@ -76,6 +76,10 @@ On current npm versions, `npm cache clean --force` leaves the separate
 enumerate it with `npm cache npx ls` and remove the explicit listed keys with
 `npm cache npx rm <key>...`; do not delete the directory directly.
 
+For multiple pnpm store versions or older Yarn Berry caches, see
+[package cache cleanup](references/cleanup-patterns.md#package-caches). Match
+the pnpm executable to the store version before pruning.
+
 ## Step 3: Rust Build Artifact Cleanup
 
 Do not start with a blind `find ~ -name target` or with hard-coded roots that may miss worktrees. Inventory explicit `target/` directories first using the bundled helper and the machine-specific root list in `references/rust-target-roots.txt`.
