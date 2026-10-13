@@ -43,21 +43,6 @@ in {
   };
   services.k3s.disableAgent = true;
 
-  age.secrets.vaultwarden-environment-file = {
-    file = ../secrets/vaultwarden-environment-file.age;
-    owner = "vaultwarden";
-  };
-
-  services.vaultwarden = {
-    enable = true;
-    backupDir = "/var/backup/vaultwarden";
-    environmentFile = config.age.secrets.vaultwarden-environment-file.path;
-    config = {
-      ROCKET_ADDRESS = "::1";
-      ROCKET_PORT = 8222;
-    };
-  };
-
   security.acme = {
     acceptTerms = true;
     defaults.email = "IvanMalison@gmail.com";
@@ -113,13 +98,6 @@ in {
         enableACME = true;
         forceSSL = true;
         locations."/".proxyPass = "http://unix:/run/gitlab/gitlab-workhorse.socket";
-      };
-      "vaultwarden.railbird.ai" = {
-        enableACME = true;
-        forceSSL = true;
-        locations."/" = {
-          proxyPass = "http://[::1]:8222";
-        };
       };
       "syncthing.railbird.ai" = {
         enableACME = true;
