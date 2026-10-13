@@ -44,6 +44,7 @@
       bento4
       bind
       binutils
+      bitwarden-cli
       btop
       cachix
       bubblewrap
