@@ -11,7 +11,7 @@ HTTP API for org-mode agenda data. Use this skill when you need to query or modi
 
 Get credentials from pass:
 ```bash
-pass show org-agenda-api-imalison
+pass show org-agenda-api.duckdns.org/imalison
 ```
 
 Returns: password on first line. The username is currently `imalison`.

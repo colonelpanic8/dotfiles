@@ -12,14 +12,14 @@
         "command": "bash",
         "args": [
           "-lc",
-          "set -euo pipefail; export GITEA_BASE_URL='https://dev.railbird.ai'; export GITEA_ACCESS_TOKEN=\"$(pass show claude-mcp/gitea-access-token | head -1)\"; exec docker run -i --rm -e GITEA_ACCESS_TOKEN -e GITEA_BASE_URL docker.gitea.com/gitea-mcp-server"
+          "set -euo pipefail; export GITEA_BASE_URL='https://dev.railbird.ai'; export GITEA_ACCESS_TOKEN=\"$(pass show dev.railbird.ai/claude-mcp-access-token | head -1)\"; exec docker run -i --rm -e GITEA_ACCESS_TOKEN -e GITEA_BASE_URL docker.gitea.com/gitea-mcp-server"
         ]
       },
       "imap-email": {
         "command": "bash",
         "args": [
           "-lc",
-          "set -euo pipefail; export IMAP_USER='IvanMalison@gmail.com'; export IMAP_HOST='imap.gmail.com'; export IMAP_PASSWORD=\"$(pass show claude-mcp/gmail-imap-app-password | head -1)\"; exec npx -y imap-email-mcp"
+          "set -euo pipefail; export IMAP_USER='IvanMalison@gmail.com'; export IMAP_HOST='imap.gmail.com'; export IMAP_PASSWORD=\"$(pass show google.com/claude-mcp-imap-app-password | head -1)\"; exec npx -y imap-email-mcp"
         ]
       }
     }

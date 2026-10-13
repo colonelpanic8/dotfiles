@@ -76,12 +76,12 @@ in
         notifications-tray-icon-github =
           mkService
           "GitHub notifications tray icon"
-          "${notificationsTrayIcon}/bin/notifications-tray-icon github --token-pass github-token";
+          "${notificationsTrayIcon}/bin/notifications-tray-icon github --token-pass github.com/token";
 
         notifications-tray-icon-gitea =
           mkService
           "Gitea notifications tray icon"
-          "${notificationsTrayIcon}/bin/notifications-tray-icon gitea --url https://dev.railbird.ai --token-pass gitea-omni-token";
+          "${notificationsTrayIcon}/bin/notifications-tray-icon gitea --url https://dev.railbird.ai --token-pass dev.railbird.ai/omni-token";
 
         notifications-tray-icon-gmail =
           mkService

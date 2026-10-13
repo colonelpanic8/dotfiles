@@ -17,7 +17,7 @@ Bump version, build, validate, tag, push, and publish a Haskell package to Hacka
 6. **Create sdist**: `cabal sdist`
 7. **Commit & tag**: commit all changed files, `git tag vX.Y.Z.W`
 8. **Push**: `git push && git push --tags`
-9. **Get Hackage credentials**: `pass show hackage.haskell.org.gpg`
+9. **Get Hackage credentials**: `pass show hackage.haskell.org/eyevanmalicesun`
    - Format: first line is password, `user:` line has username
 10. **Publish package**: `cabal upload --publish <sdist-tarball> --username=<user> --password='<pass>'`
 11. **Build & publish docs**: `cabal haddock --haddock-for-hackage` then `cabal upload --documentation --publish <docs-tarball> --username=<user> --password='<pass>'`

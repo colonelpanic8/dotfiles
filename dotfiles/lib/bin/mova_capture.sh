@@ -29,7 +29,7 @@ mkdir -p "$queue_dir"
 
 url="${MOVA_API_URL:-https://org-agenda-api.rocket-sense.duckdns.org}"
 api_user="${MOVA_API_USER:-imalison}"
-pass_entry="${MOVA_API_PASS_ENTRY:-org-agenda-api-imalison}"
+pass_entry="${MOVA_API_PASS_ENTRY:-org-agenda-api.duckdns.org/imalison}"
 
 notify() {
   command -v notify-send >/dev/null 2>&1 && notify-send -a "mova capture" "$@" || true
