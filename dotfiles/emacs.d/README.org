@@ -249,12 +249,6 @@ Sets environment variables by starting a shell.
     (add-to-list 'exec-path-from-shell-variables "PYTHONPATH")
     (exec-path-from-shell-initialize)))
 #+END_SRC
-** noflet
-#+BEGIN_SRC emacs-lisp
-(use-package noflet
-  :after (dash) ;;@HACK: noflet does not properly declare dependencies
-  :demand t)
-#+END_SRC
 ** Non-Forking Shell Command To String
 Emacs' built in ~shell-command-to-string~ function has the downside that it
 forks a new shell process every time it is executed. This means that any shell
@@ -302,12 +296,13 @@ This had to be disabled because it was causing a bunch of issues with projectile
 This solution only applies it to projectile-find-file
 #+BEGIN_SRC emacs-lisp
 (defun imalison:call-with-quick-shell-command (fn &rest args)
-  (noflet
-    ((shell-command-to-string (&rest args)
-                              (condition-case _e
-                                  (or (apply 'imalison:try-call-process args) (apply this-fn args))
-                                (error (apply this-fn args)))))
-    (apply fn args)))
+  (let ((this-fn (symbol-function 'shell-command-to-string)))
+    (cl-letf (((symbol-function 'shell-command-to-string)
+               (lambda (&rest args)
+                 (condition-case _e
+                     (or (apply 'imalison:try-call-process args) (apply this-fn args))
+                   (error (apply this-fn args))))))
+      (apply fn args))))
 
 ;; I've had to disable this becuase newer versions of projectile use a ton of shell commands
 ;; (advice-add 'projectile-files-via-ext-command :around 'imalison:call-with-quick-shell-command)
@@ -1013,7 +1008,7 @@ I keep it around just in case I need it.
   (shell-command (format "grownotify -t %s -m %s" title message)))
 
 (defun notify-send (title message)
-  (when-let ((program (executable-find "notify-send")))
+  (when-let* ((program (executable-find "notify-send")))
     (let ((process-connection-type nil))
       (start-process "notify-send" nil program
                      "-u" "critical"
@@ -2299,8 +2294,11 @@ bind-key and global-set-key forms.
 * flycheck
 #+BEGIN_SRC emacs-lisp
 (use-package flycheck
-  :commands flycheck-mode
-  :init (add-hook 'prog-mode-hook 'flycheck-mode)
+  :commands (flycheck-mode flycheck-mode-on-safe)
+  :init
+  (progn
+    (setq flycheck-global-modes '(not lisp-interaction-mode))
+    (add-hook 'prog-mode-hook 'flycheck-mode-on-safe))
   :config
   (progn
 	(use-package flycheck-package
@@ -2633,16 +2631,18 @@ Reduce indentation for some functions
     (add-hook 'emacs-lisp-mode-hook 'eros-mode)))
 #+END_SRC
 **** Reevalute defvars when running eval-last-sexp
-We noflet elisp--preceding-sexp to munge defvars into sexps only for
+We override elisp--preceding-sexp to munge defvars into sexps only for
 eval-last-sexp.
 #+BEGIN_SRC emacs-lisp
 (defun imalison:maybe-setq-instead (fn &rest args)
-  (noflet ((elisp--preceding-sexp (&rest preceding-args)
-                                  (let* ((preceding-sexp (apply this-fn preceding-args)))
-                                    (if (and (listp preceding-sexp) (equal (car preceding-sexp) 'defvar))
-                                        `(setq ,@(cdr preceding-sexp))
-                                      preceding-sexp))))
-    (apply fn args)))
+  (let ((this-fn (symbol-function 'elisp--preceding-sexp)))
+    (cl-letf (((symbol-function 'elisp--preceding-sexp)
+               (lambda (&rest preceding-args)
+                 (let ((preceding-sexp (apply this-fn preceding-args)))
+                   (if (and (listp preceding-sexp) (equal (car preceding-sexp) 'defvar))
+                       `(setq ,@(cdr preceding-sexp))
+                     preceding-sexp)))))
+      (apply fn args))))
 
 (advice-add 'eval-last-sexp :around 'imalison:maybe-setq-instead)
 #+END_SRC
@@ -3956,7 +3956,7 @@ This is useful with server mode when editing gmail messages. I think that it is 
       ('low "low")
       (_ "normal")))
   (defun imalison:alert-notify-send (info)
-    (when-let ((program (executable-find "notify-send")))
+    (when-let* ((program (executable-find "notify-send")))
       (let ((process-connection-type nil))
         (start-process "alert-notify-send" nil program
                        "-u" (imalison:notify-send-urgency
@@ -4286,7 +4286,7 @@ load-theme hook (See the heading below).
       (when (find-font (font-spec :family family))
         (throw 'font (format "%s-10" family))))))
 
-(when-let ((font (imalison:default-font-parameter)))
+(when-let* ((font (imalison:default-font-parameter)))
   (add-to-list 'default-frame-alist `(font . ,font)))
 #+END_SRC
 ** imalison:appearance

@@ -73,7 +73,7 @@
 
 ;; GUI Emacs launched from the app bundle may not inherit a PATH that contains
 ;; the matching emacsclient binary.
-(when-let ((emacs-bin (imalison:emacs-bin-directory)))
+(when-let* ((emacs-bin (imalison:emacs-bin-directory)))
   (add-to-list 'exec-path emacs-bin)
   (setenv "PATH" (concat emacs-bin path-separator (or (getenv "PATH") ""))))
 (setq emacsclient-program-name
