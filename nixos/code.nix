@@ -95,6 +95,9 @@
             managedConnectionsFile = "/home/imalison/.config/t3code/managed-connections.json";
             settings.sidebarV2LargeIcons = true;
             settings.composerShortcutHints = "alt";
+            # A client-only desktop has no primary environment to take
+            # keybindings from, so it needs its own copy of the managed set.
+            keybindings = builtins.fromJSON (builtins.readFile ../nix-shared/t3code-keybindings.json);
           };
         }
       ];
