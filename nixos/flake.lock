@@ -2245,11 +2245,11 @@
         "org-window-habit": "org-window-habit"
       },
       "locked": {
-        "lastModified": 1791998461,
-        "narHash": "sha256-fZsqzf7jFmuf6HjnlYpkHw7vIANFRWigVddhflLtbx0=",
+        "lastModified": 1792001308,
+        "narHash": "sha256-L/g8BafzLhfxPPxNUAkF1p9e8qSLTCG50Y3PNeLeuMg=",
         "owner": "colonelpanic8",
         "repo": "org-agenda-api",
-        "rev": "f3e10242b22f1a927446feaba1d1c4fe967e2c96",
+        "rev": "0994f80e92bdd4a5b4b2ff896d470a439d1a9e1c",
         "type": "github"
       },
       "original": {
