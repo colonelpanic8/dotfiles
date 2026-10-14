@@ -203,6 +203,7 @@
   rlruPackages = inputs.rlru.packages.${pkgs.stdenv.hostPlatform.system};
   scrobbleScrubber = inputs.lastfm-edit.packages.${pkgs.stdenv.hostPlatform.system}.scrobble-scrubber;
   scrobbleScrubberApp = inputs.lastfm-edit.packages.${pkgs.stdenv.hostPlatform.system}.scrobble-scrubber-app;
+  movaDesktop = inputs.mova.packages.${pkgs.stdenv.hostPlatform.system}.desktop;
   rlruDioxusDesktopBase = rlruPackages.rlru-dioxus-desktop.overrideAttrs (_: {
     # Rust 1.95 can otherwise ICE/SEGV while compiling rlru's desktop dependency
     # graph in release mode.
@@ -423,6 +424,7 @@
         kdePackages.kleopatra
         libreoffice
         loupe
+        movaDesktop
         lxqt.lxqt-powermanagement
         kdePackages.okular
         quassel
