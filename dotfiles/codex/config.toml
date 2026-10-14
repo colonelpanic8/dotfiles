@@ -56,5 +56,12 @@ enabled = true
 [plugins."chrome@openai-bundled"]
 enabled = true
 
+[plugins."pstack@pstack-claude"]
+enabled = true
+
+[marketplaces.pstack-claude]
+source_type = "git"
+source = "https://github.com/michael-denyer/pstack-claude.git"
+
 [projects."/home/imalison/dotfiles"]
 trust_level = "trusted"
