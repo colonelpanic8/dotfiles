@@ -15,6 +15,11 @@
       command = "${lib.getExe cfg.computerUseLinuxPackage}"
       args = ["mcp"]
     ''}
+    ${lib.optionalString (cfg.gmessagesPackage != null) ''
+      [mcp_servers.gmessages]
+      command = "${lib.getExe' cfg.gmessagesPackage "gmessages"}"
+      args = ["mcp"]
+    ''}
   '';
 in {
   options.myModules.codexGeneratedSkills = {
@@ -66,6 +71,12 @@ in {
       type = lib.types.nullOr lib.types.package;
       default = null;
       description = "computer-use-linux package to register as a managed Codex MCP server.";
+    };
+
+    gmessagesPackage = lib.mkOption {
+      type = lib.types.nullOr lib.types.package;
+      default = null;
+      description = "Google Messages bridge package whose read-only `gmessages mcp` is registered as a managed Codex MCP server.";
     };
   };
 

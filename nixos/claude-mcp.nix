@@ -31,6 +31,14 @@
         command = "${lib.getExe pkgs.computer-use-linux}";
         args = ["mcp"];
       };
+    }
+    # Read-only; sending stays with the `gmessages send` CLI.
+    // lib.optionalAttrs config.myModules.googleMessages.enable {
+      gmessages = {
+        type = "stdio";
+        command = "${lib.getExe' pkgs.google-messages-multidevice-bridge "gmessages"}";
+        args = ["mcp"];
+      };
     };
   managedServersJson = builtins.toJSON managedServers;
 in

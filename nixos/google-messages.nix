@@ -90,6 +90,16 @@ makeEnable config "myModules.googleMessages" true {
     apiTokenFile = config.age.secrets.google-messages-bridge-api-token.path;
   };
 
+  # `gmessages` and `gmessages mcp` for scripts and agents. The default profile
+  # follows the client settings above.
+  services.google-messages-multidevice-bridge.cli = {
+    enable = true;
+    profiles.whatsapp = lib.mkIf isBridgeHost {
+      url = "https://${bridgeHost}.taileb3aad.ts.net:${toString whatsappServePort}";
+      tokenFile = config.age.secrets.whatsapp-bridge-api-token.path;
+    };
+  };
+
   # The bridge is a user service, so it only comes back after a reboot if the
   # user session outlives logout.
   users.users.imalison.linger = lib.mkIf isBridgeHost true;

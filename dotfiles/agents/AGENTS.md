@@ -150,6 +150,22 @@ Examples of what's stored:
 - Claude/Anthropic (claude.ai) and ChatGPT/Codex/OpenAI have no passwords in
   `pass`; they use "Continue with Google" (ivanmalison@gmail.com).
 
+## Verification codes
+
+- Whenever an authorized task needs an SMS verification code, use the Google
+  Messages Multi-Device Bridge to find it before asking the user, through the
+  `gmessages` CLI (already configured; `gmessages help`) or its read-only
+  `gmessages` MCP server.
+- Right after triggering the code, `gmessages wait --timeout 3m` (MCP:
+  `wait_for_message`) returns the next incoming message; narrow it with
+  `--query` or `--conversation <sender>`, and add `--since 5m` if the code may
+  already have arrived. `gmessages search --since 15m` lists recent messages.
+- Never print tokens or codes in logs or replies beyond what the task needs.
+- Read only messages relevant to the service and current verification attempt.
+  Ask the user for the code only if the bridge is unavailable or it has not arrived.
+- `gmessages send` texts real people from the user's phone: only when asked.
+  `--profile whatsapp` reaches the WhatsApp bridge on jimi-hendnix.
+
 ## Project links (local symlink index)
 - Paths in this section are relative to this file's directory (`dotfiles/agents/`).
 - Keep a local symlink index under `./project-links/` for projects that are frequently referenced.

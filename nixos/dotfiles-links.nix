@@ -101,6 +101,10 @@ in {
     if nixos.config.myModules.desktop.enable
     then pkgs.computer-use-linux
     else null;
+  myModules.codexGeneratedSkills.gmessagesPackage =
+    if nixos.config.myModules.googleMessages.enable
+    then pkgs.google-messages-multidevice-bridge
+    else null;
 
   # Home Manager directory links for .emacs.d resolve through the store on this
   # machine, which breaks Elpaca's writable state under ~/.emacs.d/elpaca.
