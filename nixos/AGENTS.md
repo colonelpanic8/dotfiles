@@ -19,13 +19,11 @@ Avoid dropping scripts in `~/bin` or `~/.local/bin` unless the user explicitly a
   a non-primary one, and overriding `DOTFILES_WORKTREE` to defeat that is a
   mistake: Home Manager's out-of-store symlinks would stay pointed at the
   temporary checkout after it is removed, leaving `~` full of dangling links.
-- A rebuild may restart `paseo.service` or `t3code-headless.service`, killing
-  every agent and terminal they host — including you, if you are one.
-  `just switch` detects that it is running inside either cgroup and
-  re-executes itself detached via `safe_switch`, a tmux session outside the
-  cgroup. Follow or retrieve that run
-  with `tmux -L nixos-switch attach -t switch` or
-  `tail -f ~/.local/state/nixos-switch/switch.log`.
+- A rebuild may restart `paseo.service` or `t3code-headless.service` and end
+  the agent session running it. That is harmless: `nixos-rebuild` activates
+  through the transient system unit `nixos-rebuild-switch-to-configuration`,
+  which finishes regardless of the caller. Afterwards, confirm with
+  `readlink /run/current-system` and `just switch-log`.
 
 ## Rofi/Tmux Integration Pointers
 
