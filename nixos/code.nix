@@ -33,6 +33,11 @@
     # desktop client below is useless without one to pair with.
     myModules.paseo.enable = lib.mkDefault true;
 
+    # Managed settings apply to every Claude config dir (~/.claude-dean etc.),
+    # so transcripts (our token-usage history) are never pruned.
+    environment.etc."claude-code/managed-settings.d/retention.json".text =
+      builtins.toJSON {cleanupPeriodDays = 100000;};
+
     programs.direnv = {
       enable = true;
       nix-direnv.enable = true;
