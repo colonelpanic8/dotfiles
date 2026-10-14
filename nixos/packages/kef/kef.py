@@ -11,7 +11,7 @@ from pykefcontrol.kef_connector import KefConnector
 from zeroconf import IPVersion, ServiceBrowser, ServiceListener, Zeroconf
 
 
-SOURCE_ALIASES = {"optic": "optical"}
+SOURCE_ALIASES = {"optic": "optical", "aux": "analog"}
 SOURCES = ("wifi", "bluetooth", "tv", "optical", "coaxial", "analog", "standby")
 DISCOVERY_SERVICE_TYPES = (
     "_kef-info._tcp.local.",
@@ -170,6 +170,24 @@ def normalize_source(source):
     return SOURCE_ALIASES.get(source, source)
 
 
+def power_on(speaker, source, timeout):
+    speaker.power_on()
+    if source is None:
+        return True
+
+    deadline = time.monotonic() + timeout
+    while True:
+        try:
+            speaker.source = source
+            if speaker.source == source:
+                return True
+        except requests.RequestException:
+            pass
+        if time.monotonic() >= deadline:
+            return False
+        time.sleep(1)
+
+
 def main():
     parser = argparse.ArgumentParser(prog="kef", description="Control KEF W2 speakers.")
     parser.add_argument(
@@ -191,7 +209,14 @@ def main():
 
     subparsers.add_parser("discover", help="List discovered KEF speakers as JSON.")
     subparsers.add_parser("status", help="Print speaker status as JSON.")
-    subparsers.add_parser("on", help="Power on.")
+    on = subparsers.add_parser("on", help="Power on, optionally selecting a source.")
+    on.add_argument("source", nargs="?", choices=SOURCES[:-1] + tuple(SOURCE_ALIASES))
+    on.add_argument(
+        "--timeout",
+        default=15.0,
+        type=float,
+        help="Seconds to keep retrying the source switch while the speaker wakes.",
+    )
     subparsers.add_parser("standby", help="Put the speaker in standby.")
     subparsers.add_parser("mute", help="Mute by setting volume to 0.")
 
@@ -222,7 +247,10 @@ def main():
         if args.command == "status":
             print_status(speaker)
         elif args.command == "on":
-            speaker.power_on()
+            source = normalize_source(args.source)
+            if not power_on(speaker, source, args.timeout):
+                print(f"kef: powered on, but failed to switch to {source}", file=sys.stderr)
+                return 1
         elif args.command == "standby":
             speaker.shutdown()
         elif args.command == "mute":
