@@ -150,21 +150,22 @@ Examples of what's stored:
 - Claude/Anthropic (claude.ai) and ChatGPT/Codex/OpenAI have no passwords in
   `pass`; they use "Continue with Google" (ivanmalison@gmail.com).
 
-## Verification codes
+## Text messages and 2FA codes
 
-- Whenever an authorized task needs an SMS verification code, use the Google
-  Messages Multi-Device Bridge to find it before asking the user, through the
-  `gmessages` CLI (already configured; `gmessages help`) or its read-only
-  `gmessages` MCP server.
+- You can read the user's text messages (SMS/RCS to 301-244-8534) on every NixOS
+  host through the Google Messages Multi-Device Bridge: the `gmessages` CLI
+  (preconfigured; `gmessages help`) or the read-only `gmessages` MCP server.
+- So when an authorized task hits a texted 2FA / MFA / one-time / login /
+  phone-verification code, fetch it yourself instead of asking the user for it.
+  Ask only if the bridge is unavailable or the code never arrives.
 - Right after triggering the code, `gmessages wait --timeout 3m` (MCP:
   `wait_for_message`) returns the next incoming message; narrow it with
   `--query` or `--conversation <sender>`, and add `--since 5m` if the code may
   already have arrived. `gmessages search --since 15m` lists recent messages.
-- Never print tokens or codes in logs or replies beyond what the task needs.
-- Read only messages relevant to the service and current verification attempt.
-  Ask the user for the code only if the bridge is unavailable or it has not arrived.
+- Read only messages relevant to the current attempt, and never print tokens or
+  codes in logs or replies beyond what the task needs.
 - `gmessages send` texts real people from the user's phone: only when asked.
-  `--profile whatsapp` reaches the WhatsApp bridge on jimi-hendnix.
+  `--profile whatsapp` reaches the WhatsApp bridge (on jimi-hendnix only).
 
 ## Project links (local symlink index)
 - Paths in this section are relative to this file's directory (`dotfiles/agents/`).
