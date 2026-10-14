@@ -75,6 +75,7 @@
             package = pkgs.t3code;
             managedConnectionsFile = "/home/imalison/.config/t3code/managed-connections.json";
             settings.sidebarV2LargeIcons = true;
+            settings.composerShortcutHints = "alt";
           };
         }
       ];
