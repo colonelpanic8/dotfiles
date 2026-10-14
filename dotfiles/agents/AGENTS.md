@@ -181,3 +181,9 @@ Examples of what's stored:
 - Prefer using chrome plugins and skills for tasks that can be completed
   entirely in a browser. Use computer-use tools when the task requires broader
   desktop interaction or the Chrome plugin cannot complete it.
+- Claude in Chrome gives every session its own tab group and never removes
+  it. When a browser task is done, close every tab in your session's group
+  with `tabs_close_mcp` (closing the last tab removes the group). Leave a tab
+  open only if the user needs to keep looking at it, and say which one.
+- Only call `tabs_context_mcp` with `createIfEmpty: true` when you are about
+  to use the browser. Calling it just to look creates an empty group.
