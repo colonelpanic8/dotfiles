@@ -26,5 +26,40 @@
   {
     "key": "f19",
     "command": "reasoning.select.high"
+  },
+  {
+    "key": "alt+m",
+    "command": "modelPicker.toggle",
+    "when": "!terminalFocus"
+  },
+  {
+    "key": "alt+e",
+    "command": "composer.effort",
+    "when": "!terminalFocus"
+  },
+  {
+    "key": "alt+a",
+    "command": "composer.mode",
+    "when": "!terminalFocus"
+  },
+  {
+    "key": "alt+p",
+    "command": "composer.interactionMode",
+    "when": "!terminalFocus"
+  },
+  {
+    "key": "alt+h",
+    "command": "composer.host",
+    "when": "!terminalFocus"
+  },
+  {
+    "key": "alt+i",
+    "command": "composer.workspace",
+    "when": "!terminalFocus"
+  },
+  {
+    "key": "alt+b",
+    "command": "composer.branch",
+    "when": "!terminalFocus"
   }
 ]
