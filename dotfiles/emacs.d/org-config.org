@@ -1079,7 +1079,10 @@ than by restricting =org-mem-watch-dirs= (the watch dirs also drive backlinks).
    ;; occurrence --- so indexing them buys nothing but title collisions and
    ;; completion noise.  Nothing outside the archives links to an ID inside
    ;; them, so no backlink is lost by this.
-   (org-mem-suffixes '(".org")))
+   (org-mem-suffixes '(".org"))
+   ;; Every task gets an ID, so repeated chores ("Wash sheets", "Clean out
+   ;; fridge") always collide.  M-x org-mem-list-title-collisions still works.
+   (org-mem-do-warn-title-collisions nil))
   :config
   (progn
     ;; `org-node-cache-mode' checks the cache immediately, while the initial
