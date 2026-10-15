@@ -72,12 +72,14 @@
 
       systemd.user.services.t3code-headless = {
         Unit = {
-          After = ["t3code-managed-connections.service"];
-          Requires = ["t3code-managed-connections.service"];
+          After = ["agenix.service"];
+          Requires = ["agenix.service"];
         };
         Service = {
-          Environment = ["T3CODE_ENVIRONMENT_ID=${environmentId}"];
-          EnvironmentFile = "${config.xdg.configHome}/t3code/managed-access.env";
+          Environment = [
+            "T3CODE_ENVIRONMENT_ID=${environmentId}"
+            "T3CODE_MANAGED_ACCESS_TOKEN_FILE=${config.age.secrets.t3code-managed-access-token.path}"
+          ];
           ExecStartPre = "${ensureServerSettings} ${lib.escapeShellArg "${config.services.t3code.dataDirectory}/userdata/settings.json"}";
         };
       };

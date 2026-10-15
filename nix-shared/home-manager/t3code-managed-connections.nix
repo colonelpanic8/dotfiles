@@ -1,73 +1,34 @@
-{
+{inputs}: {
   config,
   lib,
   pkgs,
   ...
 }: let
-  connectionsJson = builtins.toJSON (import ../t3code-fleet.nix);
-  configuredSecretPath = config.age.secrets.paseo-password-environment.path;
-  configDirectory = "${config.xdg.configHome}/t3code";
-  registryPath = "${configDirectory}/managed-connections.json";
-  environmentPath = "${configDirectory}/managed-access.env";
-  renderConfiguration = pkgs.writeShellScript "render-t3code-managed-connections" ''
-    set -eu
-
-    secret_file=${configuredSecretPath}
-    ${lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
-      /bin/wait4path "$secret_file"
-    ''}
-    password_line="$(${pkgs.gnugrep}/bin/grep -m1 '^PASEO_PASSWORD=' "$secret_file")"
-    password="''${password_line#PASEO_PASSWORD=}"
-    if [ -z "$password" ]; then
-      echo "Fleet credential secret is empty" >&2
-      exit 1
-    fi
-
-    token="$(printf 't3code-managed-access:%s' "$password" | ${pkgs.coreutils}/bin/sha256sum | ${pkgs.coreutils}/bin/cut -d' ' -f1)"
-    config_dir=${lib.escapeShellArg configDirectory}
-    registry_path=${lib.escapeShellArg registryPath}
-    environment_path=${lib.escapeShellArg environmentPath}
-    mkdir -p "$config_dir"
-
-    registry_temporary="$(${pkgs.coreutils}/bin/mktemp "$config_dir/.managed-connections.json.XXXXXX")"
-    environment_temporary="$(${pkgs.coreutils}/bin/mktemp "$config_dir/.managed-access.env.XXXXXX")"
-    trap 'rm -f "$registry_temporary" "$environment_temporary"' EXIT
-
-    ${pkgs.jq}/bin/jq -n \
-      --arg token "$token" \
-      --argjson connections ${lib.escapeShellArg connectionsJson} \
-      '{version: 1, connections: ($connections | map(. + {token: $token}))}' \
-      > "$registry_temporary"
-    printf 'T3CODE_MANAGED_ACCESS_TOKEN=%s\n' "$token" > "$environment_temporary"
-    chmod 0600 "$registry_temporary" "$environment_temporary"
-    mv "$registry_temporary" "$registry_path"
-    mv "$environment_temporary" "$environment_path"
-    trap - EXIT
-  '';
+  environments = import ../t3code-fleet.nix;
+  credentialPath = config.age.secrets.t3code-managed-access-token.path;
+  fleetImport = import "${inputs.t3code-integration}/nix/fleet-import.nix" {
+    inherit pkgs environments;
+  };
+  registryPath = "${config.xdg.configHome}/t3code/managed-connections.json";
 in
   lib.mkIf (lib.elem config.home.username ["imalison" "kat"]) {
+    age.secrets.t3code-managed-access-token = {
+      file = ../../nixos/secrets/t3code-managed-access-token.age;
+      # agenix keeps the decrypted bytes in its runtime directory; this is a symlink.
+      path = "${config.xdg.stateHome}/t3code/managed-access-token";
+    };
+
     home.sessionVariables.T3CODE_MANAGED_CONNECTIONS_FILE = registryPath;
-
-    systemd.user.services.t3code-managed-connections = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
-      Unit = {
-        Description = "Render the agenix-backed T3 Code fleet configuration";
-        After = ["agenix.service"];
-      };
-      Install.WantedBy = ["default.target"];
-      Service = {
-        Type = "oneshot";
-        ExecStart = "${renderConfiguration}";
+    xdg.configFile."t3code/managed-connections.json" = {
+      force = true;
+      text = builtins.toJSON {
+        version = 1;
+        connections = map (member: member // {token."$file" = credentialPath;}) environments;
       };
     };
+    xdg.configFile."t3code/fleet.json".source = fleetImport;
 
-    launchd.agents.t3code-managed-connections = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
-      enable = true;
-      domain = "user";
-      config = {
-        ProgramArguments = ["${renderConfiguration}"];
-        RunAtLoad = true;
-        StandardOutPath = "${config.home.homeDirectory}/Library/Logs/t3code-managed-connections.log";
-        StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/t3code-managed-connections.err.log";
-      };
-    };
+    home.activation.removeLegacyT3FleetEnvironment = lib.hm.dag.entryAfter ["writeBoundary"] ''
+      run ${pkgs.coreutils}/bin/rm -f ${lib.escapeShellArg "${config.xdg.configHome}/t3code/managed-access.env"}
+    '';
   }

@@ -14,11 +14,17 @@
   t3codeManagedServerCommand = pkgs.writeShellScript "t3code-managed-headless-server" ''
     set -eu
 
-    environment_file=${lib.escapeShellArg "${config.xdg.configHome}/t3code/managed-access.env"}
-    /bin/wait4path "$environment_file"
-    set -a
-    . "$environment_file"
-    set +a
+    export T3CODE_MANAGED_ACCESS_TOKEN_FILE=${lib.escapeShellArg config.age.secrets.t3code-managed-access-token.path}
+    attempts=0
+    while [ ! -r "$T3CODE_MANAGED_ACCESS_TOKEN_FILE" ]; do
+      if [ "$attempts" -ge 60 ]; then
+        echo "Timed out waiting for the T3 Code fleet credential" >&2
+        exit 1
+      fi
+      attempts=$((attempts + 1))
+      sleep 1
+    done
+    export T3CODE_FLEET_MANIFEST_FILE=${lib.escapeShellArg "${config.xdg.configHome}/t3code/fleet.json"}
     export T3CODE_ENVIRONMENT_ID=${lib.escapeShellArg "fleet:${osConfig.networking.hostName}"}
 
     repository_root=${lib.escapeShellArg t3codeCfg.repositoryRoot}
@@ -91,7 +97,7 @@ in {
     ../../nix-shared/home-manager/codex-generated-skills.nix
     ../../nix-shared/home-manager/paseo-managed-hosts.nix
     ../../nix-shared/home-manager/paseo-settings-seed.nix
-    ../../nix-shared/home-manager/t3code-managed-connections.nix
+    (import ../../nix-shared/home-manager/t3code-managed-connections.nix {inherit inputs;})
     ./git-sync.nix
   ];
 
