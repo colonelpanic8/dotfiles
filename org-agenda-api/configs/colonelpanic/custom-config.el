@@ -44,6 +44,7 @@
   (setq imalison:org-explore-file (imalison:join-paths imalison:org-dir "explore.org"))
   (setq imalison:org-vocabulary-file
         (imalison:join-paths imalison:org-dir "notes" "vocab.org"))
+  (setq imalison:org-shopping-file (imalison:join-paths imalison:org-dir "shopping.org"))
 
   ;; Shared agent memory served by the /memory endpoints
   (setq org-agenda-api-memory-file
@@ -53,7 +54,6 @@
   (setq imalison:shared-org-gtd-file nil)
   (setq imalison:shared-habits-file nil)
   (setq imalison:shared-calendar-file nil)
-  (setq imalison:shared-shopping-file nil)
   (setq imalison:shared-repeating-file nil)
   (setq imalison:org-recurring-file (imalison:join-paths imalison:org-dir "recurring.org"))
   (setq imalison:orgzly-files (list (imalison:join-paths imalison:org-dir "orgzly.org")))

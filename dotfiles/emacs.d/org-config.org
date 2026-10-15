@@ -78,14 +78,14 @@ We're going to use this to write separate parts of our config to different secti
   (imalison:join-paths imalison:org-dir "explore.org"))
 (defvar imalison:org-vocabulary-file
   (imalison:join-paths imalison:org-dir "notes" "vocab.org"))
+(defvar imalison:org-shopping-file
+  (imalison:join-paths imalison:org-dir "shopping.org"))
 (defvar imalison:shared-org-gtd-file
   (imalison:join-paths imalison:shared-org-dir "shared_gtd.org"))
 (defvar imalison:shared-habits-file
   (imalison:join-paths imalison:shared-org-dir "shared_habits.org"))
 (defvar imalison:shared-calendar-file
   (imalison:join-paths imalison:shared-org-dir "shared_calendar.org"))
-(defvar imalison:shared-shopping-file
-  (imalison:join-paths imalison:shared-org-dir "shared_shopping.org"))
 (defvar imalison:shared-repeating-file
   (imalison:join-paths imalison:shared-org-dir "repeating.org"))
 (defvar imalison:org-recurring-file
@@ -449,7 +449,7 @@ that have a SCHEDULED date before today to the current date."
 (imalison:add-to-org-agenda-files
  (nconc (list imalison:org-gtd-file imalison:org-calendar-file
               imalison:org-inbox-file imalison:shared-org-gtd-file
-              imalison:shared-calendar-file imalison:shared-shopping-file)
+              imalison:shared-calendar-file imalison:org-shopping-file)
         imalison:orgzly-files))
 
 (when imalison:include-repeating-in-agenda
@@ -746,7 +746,7 @@ specific time, they should appear in the agenda at that time!
                  ,(format "%s\n%s\n%s" "* %?" imalison:created-property-string "%^{When}T")))
 
   (add-to-list 'org-capture-templates
-               `("z" "Shopping Todo" entry (file ,imalison:shared-shopping-file)
+               `("z" "Shopping Todo" entry (file ,imalison:org-shopping-file)
                  (function (lambda (&rest args) (imalison:make-org-todo-template :creation-state "TODO")))))
 
   (add-to-list 'org-capture-templates

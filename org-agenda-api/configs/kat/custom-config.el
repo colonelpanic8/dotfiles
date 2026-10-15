@@ -41,7 +41,7 @@
   (setq imalison:shared-org-gtd-file (imalison:join-paths imalison:shared-org-dir "gtd.org"))
   (setq imalison:shared-habits-file (imalison:join-paths imalison:shared-org-dir "habits.org"))
   (setq imalison:shared-calendar-file (imalison:join-paths imalison:shared-org-dir "calendar.org"))
-  (setq imalison:shared-shopping-file (imalison:join-paths imalison:shared-org-dir "shopping.org"))
+  (setq imalison:org-shopping-file (imalison:join-paths imalison:shared-org-dir "shopping.org"))
   (setq imalison:shared-repeating-file (imalison:join-paths imalison:shared-org-dir "repeating.org"))
   (setq imalison:orgzly-files (list (imalison:join-paths imalison:org-dir "orgzly.org")))
   (setq imalison:repeating-org-files (list imalison:org-habits-file
