@@ -1,0 +1,273 @@
+#!/usr/bin/env python3
+"""Google Health API helper and org-window-habit auto-complete source.
+
+Subcommands:
+  auth            Run the OAuth flow and store the refresh token in pass.
+  raw TYPE        Print data points of TYPE (e.g. sleep) for the lookback.
+  azm [--min N]   One event per day whose Active Zone Minutes reach N.
+  sleep [--by HH:MM]
+                  One event per night whose main sleep started by HH:MM.
+
+Event subcommands follow the org-window-habit command contract: they read
+OWH_SINCE/OWH_NOW (RFC 3339) and print "TIMESTAMP ID NOTE" lines.
+"""
+
+import argparse
+import datetime as dt
+import http.server
+import json
+import os
+import secrets
+import subprocess
+import sys
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+
+API = "https://health.googleapis.com/v4/users/me/dataTypes"
+SCOPES = [
+    "https://www.googleapis.com/auth/googlehealth.activity_and_fitness.readonly",
+    "https://www.googleapis.com/auth/googlehealth.sleep.readonly",
+]
+PASS_ENTRY = os.environ.get("GOOGLE_HEALTH_PASS_ENTRY", "google-health/refresh-token")
+CLIENT_FILE = os.path.expanduser(
+    os.environ.get("GOOGLE_HEALTH_CLIENT_FILE", "~/.config/gws/client_secret.json")
+)
+TOKEN_CACHE = os.path.join(
+    os.environ.get("XDG_RUNTIME_DIR", "/tmp"), "google-health-access-token.json"
+)
+
+
+def client():
+    with open(CLIENT_FILE) as f:
+        data = json.load(f)
+    return next(iter(data.values()))
+
+
+def post_form(url, fields):
+    body = urllib.parse.urlencode(fields).encode()
+    with urllib.request.urlopen(urllib.request.Request(url, data=body)) as resp:
+        return json.load(resp)
+
+
+def access_token():
+    try:
+        with open(TOKEN_CACHE) as f:
+            cached = json.load(f)
+        if cached["expires_at"] > time.time() + 60:
+            return cached["access_token"]
+    except (OSError, ValueError, KeyError):
+        pass
+    refresh = subprocess.run(
+        ["pass", "show", PASS_ENTRY], check=True, capture_output=True, text=True
+    ).stdout.splitlines()[0]
+    c = client()
+    try:
+        token = post_form(
+            c["token_uri"],
+            {
+                "client_id": c["client_id"],
+                "client_secret": c["client_secret"],
+                "refresh_token": refresh,
+                "grant_type": "refresh_token",
+            },
+        )
+    except urllib.error.HTTPError as e:
+        sys.exit(f"token refresh failed ({e.code}); run: google-health auth")
+    fd = os.open(TOKEN_CACHE, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w") as f:
+        json.dump(
+            {
+                "access_token": token["access_token"],
+                "expires_at": time.time() + token["expires_in"],
+            },
+            f,
+        )
+    return token["access_token"]
+
+
+def auth(_args):
+    c = client()
+    state = secrets.token_urlsafe(16)
+    result = {}
+
+    class Handler(http.server.BaseHTTPRequestHandler):
+        def do_GET(self):
+            query = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
+            if query.get("state") == [state] and "code" in query:
+                result["code"] = query["code"][0]
+                message = b"google-health: authorized, you can close this tab."
+            else:
+                message = b"google-health: unexpected request."
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(message)
+
+        def log_message(self, *_):
+            pass
+
+    server = http.server.HTTPServer(("127.0.0.1", 0), Handler)
+    redirect = f"http://127.0.0.1:{server.server_port}"
+    url = c["auth_uri"] + "?" + urllib.parse.urlencode(
+        {
+            "client_id": c["client_id"],
+            "redirect_uri": redirect,
+            "response_type": "code",
+            "scope": " ".join(SCOPES),
+            "access_type": "offline",
+            "prompt": "consent",
+            "state": state,
+        }
+    )
+    print(url, flush=True)
+    while "code" not in result:
+        server.handle_request()
+    token = post_form(
+        c["token_uri"],
+        {
+            "client_id": c["client_id"],
+            "client_secret": c["client_secret"],
+            "code": result["code"],
+            "redirect_uri": redirect,
+            "grant_type": "authorization_code",
+        },
+    )
+    subprocess.run(
+        ["pass", "insert", "-m", "-f", PASS_ENTRY],
+        input=token["refresh_token"] + "\n",
+        text=True,
+        check=True,
+        capture_output=True,
+    )
+    try:
+        os.remove(TOKEN_CACHE)
+    except OSError:
+        pass
+    print(f"stored refresh token in pass:{PASS_ENTRY}", file=sys.stderr)
+
+
+def window():
+    now = dt.datetime.fromisoformat(
+        os.environ.get("OWH_NOW") or dt.datetime.now().astimezone().isoformat()
+    )
+    since = dt.datetime.fromisoformat(
+        os.environ.get("OWH_SINCE") or (now - dt.timedelta(days=3)).isoformat()
+    )
+    return since, now
+
+
+def list_points(data_type, filter_expr):
+    token = access_token()
+    page = None
+    while True:
+        params = {"filter": filter_expr}
+        if page:
+            params["pageToken"] = page
+        req = urllib.request.Request(
+            f"{API}/{data_type}/dataPoints?" + urllib.parse.urlencode(params),
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        try:
+            with urllib.request.urlopen(req) as resp:
+                data = json.load(resp)
+        except urllib.error.HTTPError as e:
+            sys.exit(f"{data_type}: HTTP {e.code}: {e.read().decode()[:500]}")
+        yield from data.get("dataPoints", [])
+        page = data.get("nextPageToken")
+        if not page:
+            return
+
+
+def civil(c):
+    d, t = c["date"], c.get("time", {})
+    return dt.datetime(
+        d["year"], d["month"], d["day"],
+        t.get("hours", 0), t.get("minutes", 0), t.get("seconds", 0),
+    )
+
+
+def offset(utc_offset):
+    return dt.timezone(dt.timedelta(seconds=float(utc_offset.rstrip("s"))))
+
+
+def raw(args):
+    since, now = window()
+    prefix = args.type.replace("-", "_")
+    field = "end_time" if args.type == "sleep" else "start_time"
+    filter_expr = (
+        f'{prefix}.interval.{field} >= "{since.astimezone(dt.timezone.utc):%Y-%m-%dT%H:%M:%SZ}"'
+    )
+    print(json.dumps(list(list_points(args.type, filter_expr)), indent=2))
+
+
+def azm(args):
+    since, now = window()
+    days = {}
+    for point in list_points(
+        "active-zone-minutes",
+        'active_zone_minutes.interval.civil_start_time >= "%s"' % since.date(),
+    ):
+        interval = point["activeZoneMinutes"]["interval"]
+        day = civil(interval["civilStartTime"]).date()
+        days.setdefault(day, []).append(
+            (interval["startTime"], interval["endTime"],
+             int(point["activeZoneMinutes"]["activeZoneMinutes"]))
+        )
+    for day, intervals in sorted(days.items()):
+        total = 0
+        for _start, end, minutes in sorted(intervals):
+            total += minutes
+            if total >= args.min:
+                print(f"{end} azm-{day} reached {args.min} zone minutes")
+                break
+
+
+def sleep(args):
+    since, now = window()
+    by = dt.time.fromisoformat(args.by)
+    nights = {}
+    for point in list_points(
+        "sleep", 'sleep.interval.civil_end_time >= "%s"' % since.date()
+    ):
+        s = point["sleep"]
+        if not s.get("metadata", {}).get("mainSleep"):
+            continue
+        interval = s["interval"]
+        start = (
+            dt.datetime.fromisoformat(interval["startTime"])
+            .astimezone(offset(interval["startUtcOffset"]))
+            .replace(tzinfo=None)
+        )
+        evening = start.date() - dt.timedelta(days=1 if start.hour < 12 else 0)
+        night_start = nights.get(evening, (None,))[0]
+        if night_start is None or start < night_start:
+            nights[evening] = (start, interval["startUtcOffset"])
+    for evening, (start, utc_offset) in sorted(nights.items()):
+        deadline = dt.datetime.combine(evening + dt.timedelta(days=1), by)
+        if start <= deadline:
+            stamp = dt.datetime.combine(
+                evening, dt.time(23, 59), tzinfo=offset(utc_offset)
+            )
+            print(f"{stamp.isoformat()} sleep-{evening} asleep {start:%H:%M}")
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    sub = parser.add_subparsers(dest="command", required=True)
+    sub.add_parser("auth").set_defaults(func=auth)
+    p = sub.add_parser("raw")
+    p.add_argument("type")
+    p.set_defaults(func=raw)
+    p = sub.add_parser("azm")
+    p.add_argument("--min", type=int, default=30)
+    p.set_defaults(func=azm)
+    p = sub.add_parser("sleep")
+    p.add_argument("--by", default="01:15")
+    p.set_defaults(func=sleep)
+    args = parser.parse_args()
+    args.func(args)
+
+
+if __name__ == "__main__":
+    main()

@@ -1480,8 +1480,17 @@ object the agent prints on stdout is used to fill in the card.")
   ((org-window-habit-property-prefix nil)
    (org-window-habit-repeat-to-scheduled t)
    (org-window-habit-preceding-intervals 21)
-   (org-window-habit-following-days 2))
+   (org-window-habit-following-days 2)
+   (org-window-habit-auto-complete-sources
+    '((fitbit-zone-minutes :command ("~/.lib/bin/google-health" "azm" "--min" "30"))
+      (fitbit-sleep :command ("~/.lib/bin/google-health" "sleep" "--by" "01:15"))))
+   (org-window-habit-auto-complete-hosts '("ryzen-shine"))
+   (org-window-habit-auto-complete-time-zone "America/Los_Angeles")
+   (org-window-habit-auto-complete-time-zone-overrides
+    '(("2026-09-18" "2026-10-07" "Asia/Tokyo"))))
   :config
   (progn
-    (org-window-habit-mode +1)))
+    (org-window-habit-mode +1)
+    (when (fboundp 'org-window-habit-auto-complete-mode)
+      (org-window-habit-auto-complete-mode +1))))
 #+end_src
