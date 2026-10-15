@@ -38,6 +38,20 @@
     environment.etc."claude-code/managed-settings.d/retention.json".text =
       builtins.toJSON {cleanupPeriodDays = 100000;};
 
+    environment.etc."claude-code/managed-settings.d/browser-cleanup.json".text = builtins.toJSON {
+      hooks.Stop = [
+        {
+          hooks = [
+            {
+              type = "command";
+              command = "${lib.getExe pkgs.python3} ${../dotfiles/lib/bin/agent-browser-cleanup}";
+              timeout = 10;
+            }
+          ];
+        }
+      ];
+    };
+
     programs.direnv = {
       enable = true;
       nix-direnv.enable = true;

@@ -199,8 +199,14 @@ Examples of what's stored:
   entirely in a browser. Use computer-use tools when the task requires broader
   desktop interaction or the Chrome plugin cannot complete it.
 - Claude in Chrome gives every session its own tab group and never removes
-  it. When a browser task is done, close every tab in your session's group
-  with `tabs_close_mcp` (closing the last tab removes the group). Leave a tab
-  open only if the user needs to keep looking at it, and say which one.
+  it. Before your final response, close every tab in your session's group
+  with `tabs_close_mcp` (closing the last tab removes the group), including
+  blank tabs and tabs left after a failed or abandoned attempt. Use
+  `tabs_context_mcp` with `createIfEmpty: false` to find the session's tabs;
+  never close the user's tabs or another agent's group. The final close
+  should report that the group is empty. Do not create a group to verify
+  cleanup. Leave a tab open only if the user needs to keep looking at it,
+  and say which one and why. If the browser is unavailable, report that
+  cleanup could not be completed.
 - Only call `tabs_context_mcp` with `createIfEmpty: true` when you are about
   to use the browser. Calling it just to look creates an empty group.

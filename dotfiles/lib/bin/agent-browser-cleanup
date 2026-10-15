@@ -1,0 +1,119 @@
+#!/usr/bin/env python3
+"""Give Claude one cleanup continuation when Chrome tabs remain at turn end."""
+
+import json
+import re
+import sys
+from pathlib import Path
+
+PREFIX = "mcp__claude-in-chrome__"
+NO_TABS = {
+    "list_connected_browsers",
+    "select_browser",
+    "switch_browser",
+    "shortcuts_list",
+}
+
+
+def pending_tabs(lines):
+    calls = {}
+    tabs = set()
+    unchecked = False
+    for line in lines:
+        try:
+            entry = json.loads(line)
+        except ValueError:
+            continue
+        message = entry.get("message", {})
+        content = message.get("content", [])
+        # Tool results also have role=user; only a real prompt starts a new turn.
+        if (
+            entry.get("type") == "user"
+            and not entry.get("isMeta")
+            and (
+                isinstance(content, str)
+                or any(block.get("type") == "text" for block in content)
+            )
+        ):
+            calls.clear()
+            tabs.clear()
+            unchecked = False
+        if not isinstance(content, list):
+            continue
+        for block in content:
+            if block.get("type") == "tool_use":
+                name = block.get("name", "")
+                if name.startswith(PREFIX) and name.removeprefix(PREFIX) not in NO_TABS:
+                    calls[block["id"]] = block
+            elif block.get("type") == "tool_result":
+                call = calls.pop(block.get("tool_use_id"), None)
+                if call is None or block.get("is_error"):
+                    continue
+                result = block.get("content", [])
+                texts = (
+                    [result]
+                    if isinstance(result, str)
+                    else [item.get("text", "") for item in result]
+                )
+                unchecked = True
+                for text in texts:
+                    try:
+                        snapshot = json.loads(text)
+                    except ValueError:
+                        snapshot = None
+                    if isinstance(snapshot, dict) and "availableTabs" in snapshot:
+                        tabs.update(tab["tabId"] for tab in snapshot["availableTabs"])
+                        unchecked = False
+                    # The extension appends this context even to browser_batch results.
+                    if text.startswith("\n\nTab Context:"):
+                        tabs.update(
+                            int(tab) for tab in re.findall(r"• tabId (\d+):", text)
+                        )
+                        unchecked = False
+                if call["name"] == PREFIX + "tabs_close_mcp":
+                    # Require a successful close, not merely an attempted tool call.
+                    tab_id = call.get("input", {}).get("tabId")
+                    if any(text.startswith(f"Closed tab {tab_id}.") for text in texts):
+                        tabs.discard(tab_id)
+                        if any(
+                            "Group is now empty (auto-removed)." in text
+                            for text in texts
+                        ):
+                            unchecked = False
+    return bool(tabs) or unchecked
+
+
+def main():
+    payload = json.load(sys.stdin)
+    if payload.get("stop_hook_active"):
+        return
+    path = payload.get("transcript_path")
+    if not path:
+        return
+    try:
+        with Path(path).expanduser().open() as transcript:
+            pending = pending_tabs(transcript)
+    except OSError:
+        return
+    if pending:
+        print(
+            json.dumps(
+                {
+                    "decision": "block",
+                    "reason": (
+                        "Finish browser cleanup before ending this turn. Chrome was used and "
+                        "cleanup is not confirmed. Query tabs_context_mcp with createIfEmpty: "
+                        "false, then close all tabs in THIS SESSION'S group with tabs_close_mcp, "
+                        "including blank tabs. Never close user tabs or another agent's group. "
+                        "Do not recreate a group to check cleanup. If a tab must stay open for "
+                        "the user, name it and explain why in your final response. If Chrome "
+                        "is unavailable or cleanup fails, report that limitation and finish; "
+                        "do not retry indefinitely."
+                    ),
+                }
+            )
+        )
+
+
+if __name__ == "__main__":
+    main()
