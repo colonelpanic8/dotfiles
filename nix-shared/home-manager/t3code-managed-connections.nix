@@ -28,7 +28,10 @@ in
     };
     xdg.configFile."t3code/fleet.json".source = fleetImport;
 
-    home.activation.removeLegacyT3FleetEnvironment = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    home.activation.removeLegacyT3FleetEnvironment = lib.hm.dag.entryAfter ["linkGeneration"] ''
       run ${pkgs.coreutils}/bin/rm -f ${lib.escapeShellArg "${config.xdg.configHome}/t3code/managed-access.env"}
+      for backup in ${lib.escapeShellArg "${registryPath}.hm-backup"} ${lib.escapeShellArg "${registryPath}.hm-backup"}.*; do
+        run ${pkgs.coreutils}/bin/rm -f -- "$backup"
+      done
     '';
   }
