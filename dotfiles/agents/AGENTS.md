@@ -61,6 +61,15 @@ for running agents.
 ## Tests
 - Don't add tests that just check a box or test something superflous.
 
+## Plan documents
+- Don't write or commit plan docs (design plans, implementation plans, task
+  breakdowns, scratch notes) into the repository they're about unless the user
+  explicitly asks for them to live in the repo.
+- By default, put them under `~/plans/<repo-or-project>/`, named like
+  `YYYY-MM-DD-<topic>.md`, creating the directory if needed.
+- Point to the plan's path when you hand off or delegate, rather than copying it
+  into the repo for a subagent to find.
+
 ## Git worktrees
 - For a repository at `<repo_root>`, use worktree paths like `<repo_root>/.worktrees/<task-or-branch>`.
 - Create `.worktrees/` if needed before running `git worktree add`.
