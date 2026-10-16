@@ -5,6 +5,7 @@
   ...
 }: let
   environments = import ../t3code-fleet.nix;
+  keys = import ../keys.nix;
   credentialPath = config.age.secrets.t3code-managed-access-token.path;
   fleetImport = import "${inputs.t3code-integration}/nix/fleet-import.nix" {
     inherit pkgs environments;
@@ -27,6 +28,8 @@ in
       };
     };
     xdg.configFile."t3code/fleet.json".source = fleetImport;
+    xdg.configFile."t3code/fleet-enrollment-recipients".text =
+      lib.concatStringsSep "\n" (keys.agenixKeys ++ keys.t3codeFleetEnrollmentRecipients) + "\n";
 
     home.activation.removeLegacyT3FleetEnvironment = lib.hm.dag.entryAfter ["linkGeneration"] ''
       run ${pkgs.coreutils}/bin/rm -f ${lib.escapeShellArg "${config.xdg.configHome}/t3code/managed-access.env"}

@@ -54,6 +54,10 @@ rec {
   ];
   sshClientKeys = kanivanKeys ++ rescueKeys;
   agenixKeys = hostKeys ++ sshClientKeys;
+  # Unlock identity is backed up in pass: t3code/fleet-enrollment-age-identity.
+  t3codeFleetEnrollmentRecipients = [
+    "age17uve8xv09jpn4wsks2njc9nwpaqgvgnvwyxyvy5nfr50fkl0jynqf6tclu"
+  ];
   allKeys = loewyKeys ++ mikeKeys ++ sshClientKeys ++ deanKeys ++ alexKeys ++ hostKeys;
   userKeys = {
     imalison = sshClientKeys;
