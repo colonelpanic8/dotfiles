@@ -122,21 +122,35 @@
         inputs.google-messages-bridge.overlays.default
         (final: prev: let
           unwrapped = prev.t3code.unwrapped;
+          # Electron names its libsecret safe-storage key after productName, so the
+          # Alpha -> Beta rebrand orphaned the key for the saved connection catalog.
+          adoptLegacySafeStorageKey = final.writeShellScript "t3code-adopt-legacy-safe-storage-key" ''
+            secret_tool=${final.libsecret}/bin/secret-tool
+            schema=chrome_libsecret_os_crypt_password_v2
+            lookup() {
+              ${final.coreutils}/bin/timeout 5 "$secret_tool" lookup xdg:schema "$schema" application "$1" 2>/dev/null
+            }
+            if ! lookup "T3 Code (Beta)" >/dev/null && legacy=$(lookup "T3 Code (Alpha)") && [ -n "$legacy" ]; then
+              printf %s "$legacy" | ${final.coreutils}/bin/timeout 5 "$secret_tool" store \
+                --label "Chromium Safe Storage" xdg:schema "$schema" application "T3 Code (Beta)" || true
+            fi
+          '';
         in {
           t3code = final.symlinkJoin {
             pname = "t3code-client";
             inherit (unwrapped) version meta;
             paths = [unwrapped];
-            nativeBuildInputs = [final.makeBinaryWrapper];
+            nativeBuildInputs = [final.makeBinaryWrapper final.makeShellWrapper];
             postBuild = ''
               for program in "$out/bin"/*; do
-                wrapProgram "$program" \
+                wrapProgramBinary "$program" \
                   --prefix PATH : "${final.lib.makeBinPath [final.codex final.gh final.git]}"
               done
               mv "$out/bin/t3code-desktop" \
                 "$out/bin/.t3code-desktop-client-unwrapped"
-              makeWrapper "$out/bin/.t3code-desktop-client-unwrapped" \
+              makeShellWrapper "$out/bin/.t3code-desktop-client-unwrapped" \
                 "$out/bin/t3code-desktop" \
+                --run ${adoptLegacySafeStorageKey} \
                 --add-flags "--password-store=gnome-libsecret" \
                 --add-flags "--backend-mode=client-only"
             '';
