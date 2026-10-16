@@ -28,16 +28,22 @@ vault after writing and checks every source entry. Decrypted source data and
 the login password stay in process memory. An isolated CLI profile lives in
 the user runtime directory and is removed after logout.
 
-Vaultwarden 1.37.3 lacks a key-ID endpoint used by CLI 2026.9.0. The helper
-uses the cached npm package `@bitwarden/cli@2026.7.0`, which works with this
-server. Bootstrap that cache once if needed:
+Vaultwarden 1.37.3 lacks a key-ID endpoint used by CLI 2026.9.0. The module
+obtains CLI 2026.7.0 from a hash-pinned nixpkgs revision in
+`nixos/packages/bitwarden-cli-vaultwarden/default.nix`.
+
+The installed sync command packages the Python script and its runtime
+dependencies in the Nix store. To build it independently:
 
 ```sh
-npx --yes --package=@bitwarden/cli@2026.7.0 bw --version
+cd /srv/dotfiles/nixos
+nix build --impure --no-write-lock-file --no-link \
+  .#nixosConfigurations.jimi-hendnix.config.system.build.pass-vaultwarden-sync
 ```
 
-The NixOS module `nixos/vaultwarden-jimi.nix` schedules a one-way sync every
-15 minutes. The service uses the existing agenix GPG passphrase file to decrypt
+The NixOS module `nixos/vaultwarden-jimi.nix` is imported only by jimi-hendnix
+and asserts that hostname. It installs the command and schedules a one-way sync
+every 15 minutes. The service uses the existing agenix GPG passphrase file to decrypt
 without a prompt. Manual runs use the GPG agent, or the file named by
 `PASS_SYNC_GPG_PASSPHRASE_FILE` when set. Failed runs leave source entries
 intact and retry on the next tick.

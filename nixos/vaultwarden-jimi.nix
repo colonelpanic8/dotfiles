@@ -1,11 +1,27 @@
 {
   config,
+  lib,
   pkgs,
   ...
 }: let
   backendPort = 8221;
   httpsPort = 8222;
+  bitwardenCli = pkgs.callPackage ./packages/bitwarden-cli-vaultwarden {};
+  syncCommand = pkgs.writeShellApplication {
+    name = "pass-vaultwarden-sync";
+    runtimeInputs = [pkgs.pass pkgs.gnupg pkgs.git pkgs.coreutils];
+    text = ''
+      exec ${pkgs.python3}/bin/python3 ${../dotfiles/lib/bin/pass-vaultwarden-sync.py} --bw-command ${lib.getExe bitwardenCli} "$@"
+    '';
+  };
 in {
+  system.build.pass-vaultwarden-sync = syncCommand;
+  assertions = [
+    {
+      assertion = config.networking.hostName == "jimi-hendnix";
+      message = "vaultwarden-jimi.nix must only be imported on jimi-hendnix";
+    }
+  ];
   age.secrets.vaultwarden-environment-file = {
     file = ./secrets/vaultwarden-environment-file.age;
     owner = "vaultwarden";
@@ -40,6 +56,7 @@ in {
   };
 
   home-manager.users.imalison = {
+    home.packages = [syncCommand];
     systemd.user.services.pass-vaultwarden-sync = {
       Unit = {
         Description = "Sync pass entries into the personal Vaultwarden vault";
@@ -48,10 +65,9 @@ in {
       Service = {
         Type = "oneshot";
         Environment = [
-          "PATH=${pkgs.lib.makeBinPath [pkgs.python3 pkgs.nodejs_22 pkgs.pass pkgs.gnupg pkgs.git pkgs.bash pkgs.coreutils]}"
-          "PASS_SYNC_GPG_PASSPHRASE_FILE=${builtins.replaceStrings ["$XDG_RUNTIME_DIR"] ["%t"] config.home-manager.users.imalison.age.secrets.gpg-passphrase.path}"
+          "PASS_SYNC_GPG_PASSPHRASE_FILE=${builtins.replaceStrings ["$XDG_RUNTIME_DIR" "\${XDG_RUNTIME_DIR}"] ["%t" "%t"] config.home-manager.users.imalison.age.secrets.gpg-passphrase.path}"
         ];
-        ExecStart = "${pkgs.python3}/bin/python3 ${config.dotfiles-worktree}/dotfiles/lib/bin/pass-vaultwarden-sync --apply";
+        ExecStart = "${lib.getExe syncCommand} --apply";
         TimeoutStartSec = "45min";
         UMask = "0077";
       };

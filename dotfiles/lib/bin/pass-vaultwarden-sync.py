@@ -28,8 +28,7 @@ MARKER = "pass-sync-path"
 NOTES_START = "\n\n--- pass metadata ---\n"
 # AES-CBC padding and base64 framing keep 7400 UTF-8 bytes below 10000 encrypted characters.
 NOTES_BYTES = 7400
-# 2026.9 requires a key-id endpoint missing from Vaultwarden 1.37.3.
-BW_COMMAND = "npx --offline --yes --package=@bitwarden/cli@2026.7.0 bw"
+BW_COMMAND = "bw"
 
 
 def run(command, *, env=None, stdin=None):
@@ -463,8 +462,6 @@ def main():
             prefix="pass-vaultwarden-", dir=runtime
         ) as directory:
             command = shlex.split(args.bw_command)
-            if args.bw_command == BW_COMMAND:
-                command = [run([*command[:-1], "--call", "command -v bw"]).strip()]
             vault = Vault(command, directory)
             vault.login(args.server, args.email, password)
             try:

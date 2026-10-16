@@ -4,7 +4,10 @@ import unittest
 from pathlib import Path
 
 SYNC = runpy.run_path(
-    str(Path(__file__).resolve().parents[1] / "dotfiles/lib/bin/pass-vaultwarden-sync")
+    str(
+        Path(__file__).resolve().parents[1]
+        / "dotfiles/lib/bin/pass-vaultwarden-sync.py"
+    )
 )
 
 
