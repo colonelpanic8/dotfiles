@@ -8,41 +8,6 @@
 }: let
   cfg = config.myModules.t3codeServer;
   environmentId = "fleet:${config.networking.hostName}";
-  serverSettings = {
-    providers.claudeAgent.launchArgs = "--chrome";
-    textGenerationModelSelection = {
-      instanceId = "claudeAgent";
-      model = "claude-haiku-5-5";
-      options = [
-        {
-          id = "effort";
-          value = "low";
-        }
-      ];
-    };
-  };
-  # The server and its settings UI own settings.json, so merge declared keys
-  # into it instead of replacing it.
-  ensureServerSettings = pkgs.writeShellScript "ensure-t3code-server-settings" ''
-    set -eu
-
-    settings_file="$1"
-    settings_dir="$(${pkgs.coreutils}/bin/dirname "$settings_file")"
-    mkdir -p "$settings_dir"
-    temporary="$(${pkgs.coreutils}/bin/mktemp "$settings_dir/.settings.json.XXXXXX")"
-    trap 'rm -f "$temporary"' EXIT
-
-    desired=${lib.escapeShellArg (builtins.toJSON serverSettings)}
-    if [ -f "$settings_file" ]; then
-      ${pkgs.jq}/bin/jq --argjson desired "$desired" '. * $desired' "$settings_file" > "$temporary"
-    else
-      ${pkgs.jq}/bin/jq -n --argjson desired "$desired" '$desired' > "$temporary"
-    fi
-
-    chmod 0600 "$temporary"
-    mv "$temporary" "$settings_file"
-    trap - EXIT
-  '';
   enabledModule = makeEnable config "myModules.t3codeServer" false {
     assertions = [
       {
@@ -53,6 +18,8 @@
     users.users.imalison.linger = true;
     home-manager.sharedModules = [inputs.t3code-integration.homeManagerModules.t3code-server];
     home-manager.users.imalison = {config, ...}: {
+      imports = [../nix-shared/home-manager/t3code-server-config.nix];
+
       services.t3code = {
         enable = true;
         # The module defaults to the flake's plain `t3code` package, whose
@@ -66,8 +33,6 @@
         tailscaleServe.port = cfg.tailscaleServePort;
         systemdTarget = cfg.startTarget;
         inherit (cfg) settings;
-        keybindings = builtins.fromJSON (builtins.readFile ../nix-shared/t3code-keybindings.json);
-        fleetManifest = import ../nix-shared/t3code-fleet.nix;
       };
 
       systemd.user.services.t3code-headless = {
@@ -80,7 +45,6 @@
             "T3CODE_ENVIRONMENT_ID=${environmentId}"
             "T3CODE_MANAGED_ACCESS_TOKEN_FILE=${config.age.secrets.t3code-managed-access-token.path}"
           ];
-          ExecStartPre = "${ensureServerSettings} ${lib.escapeShellArg "${config.services.t3code.dataDirectory}/userdata/settings.json"}";
         };
       };
     };

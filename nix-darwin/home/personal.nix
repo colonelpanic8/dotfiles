@@ -11,41 +11,6 @@
   gpgKeyPath = replaceRuntimeDir config.age.secrets.gpg-keys.path;
   gpgPassphrasePath = replaceRuntimeDir config.age.secrets.gpg-passphrase.path;
   t3codeCfg = config.services.t3code;
-  t3codeManagedServerCommand = pkgs.writeShellScript "t3code-managed-headless-server" ''
-    set -eu
-
-    export T3CODE_MANAGED_ACCESS_TOKEN_FILE=${lib.escapeShellArg config.age.secrets.t3code-managed-access-token.path}
-    attempts=0
-    while [ ! -r "$T3CODE_MANAGED_ACCESS_TOKEN_FILE" ]; do
-      if [ "$attempts" -ge 60 ]; then
-        echo "Timed out waiting for the T3 Code fleet credential" >&2
-        exit 1
-      fi
-      attempts=$((attempts + 1))
-      sleep 1
-    done
-    export T3CODE_FLEET_MANIFEST_FILE=${lib.escapeShellArg "${config.xdg.configHome}/t3code/fleet.json"}
-    export T3CODE_ENVIRONMENT_ID=${lib.escapeShellArg "fleet:${osConfig.networking.hostName}"}
-
-    repository_root=${lib.escapeShellArg t3codeCfg.repositoryRoot}
-    if [ ! -d "$repository_root" ]; then
-      echo "T3 Code repository root does not exist: $repository_root" >&2
-      exit 69
-    fi
-
-    export PATH=${lib.escapeShellArg "${lib.makeBinPath ([t3codeCfg.package] ++ t3codeCfg.extraPackages)}:/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"}
-    export T3CODE_HOME=${lib.escapeShellArg t3codeCfg.dataDirectory}
-
-    cd "$repository_root"
-    exec ${lib.getExe' t3codeCfg.package "t3"} serve \
-      --host ${lib.escapeShellArg t3codeCfg.host} \
-      --port ${toString t3codeCfg.port} \
-      ${lib.optionalString t3codeCfg.tailscaleServe.enable ''
-      --tailscale-serve \
-      --tailscale-serve-port ${toString t3codeCfg.tailscaleServe.port} \
-    ''} \
-      "$repository_root"
-  '';
   importGpgKeyScript = pkgs.writeShellScript "import-gpg-key" ''
     set -eu
 
@@ -98,6 +63,7 @@ in {
     ../../nix-shared/home-manager/paseo-managed-hosts.nix
     ../../nix-shared/home-manager/paseo-settings-seed.nix
     (import ../../nix-shared/home-manager/t3code-managed-connections.nix {inherit inputs;})
+    ../../nix-shared/home-manager/t3code-server-config.nix
     ./git-sync.nix
   ];
 
@@ -115,9 +81,13 @@ in {
     repositoryRoot = dotfilesCheckout;
   };
 
+  # The server exits until agenix has decrypted the token; KeepAlive retries it.
   launchd.agents.t3code-headless = lib.mkIf t3codeCfg.enable {
     domain = "user";
-    config.ProgramArguments = lib.mkForce ["${t3codeManagedServerCommand}"];
+    config.EnvironmentVariables = {
+      T3CODE_ENVIRONMENT_ID = "fleet:${osConfig.networking.hostName}";
+      T3CODE_MANAGED_ACCESS_TOKEN_FILE = config.age.secrets.t3code-managed-access-token.path;
+    };
   };
 
   home.packages = [
