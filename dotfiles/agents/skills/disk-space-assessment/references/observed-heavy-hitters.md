@@ -27,6 +27,12 @@ Use these as hypotheses, not substitutes for a current snapshot.
 - 2026-08-14 **still outstanding** here: `/home/kat/Downloads` holds 30.1 GiB in two design-course archives (kat's data — needs their consent, not an agent decision). `/var/lib/rancher` still holds 4.3 GiB of orphaned state with `rancher-desktop`/`containerd`/`k3s` all `not-found`; explicitly left in place on 2026-08-14. Docker is completely empty here (`docker system df` all zeros), so skip container pruning on this host.
 - 2026-08-14: `/srv/disk-space-assessments` was root-owned `drwxr-s---`, which silently breaks unprivileged `safe_ncdu` scans (`tee: Permission denied`, then `Error opening export file`). Either fix it to `imalison:users` `2750` or run every scan under `sudo`.
 
+## Host `mac-demarco-mini` (macOS, 245 GB internal APFS container)
+
+- 2026-10-16: Data volume 165 GB + separate `Nix Store` APFS volume 51 GB share one 245 GB container; free space swung 3.8G → 0.1G → 2.8G during the scan from concurrent writers. `safe_ncdu` is not installed here and `sudo -n` needs a password, so only unprivileged `du` was possible (~30 GB unattributed, mostly other users' `~/Library` and root-only state).
+- Heaviest measured: `/System/Library/AssetsV2` 38.7 GB (Apple Intelligence `UAF_FM_*` models ~21 GB, iOS simulator runtimes 16.2 GB), `/Library/Developer/CoreSimulator/Caches` 6.6 GB, `/Applications` 15.5 GB (iMovie/GarageBand/Keynote ~5 GB), `/Users/kat` ≥15.7 GB (`railbird-mobile` 7.3 GB), `~imalison` ~28 GB (`Library` 9.9, `dotfiles.before-shared-20261008-171142` 3.0, `.paseo.post-zap-*` 0.9, `Library/Logs/git-sync-rs.log` 0.8).
+- External `/Volumes/Extreme SSD` (1 TB Samsung, exFAT, ~78 GB free) already hosts the CI runner as an APFS sparsebundle mounted at `/private/var/lib/gitea-runner-external` (`nix-darwin/gitea-runner-external-storage.nix`); reuse that pattern for anything needing Unix semantics. The 500 GB T5 (disk6) is a Linux/Pi boot disk (FAT32 `FIRMWARE` + Linux partition), not usable from macOS as-is.
+
 ## Service State
 
 - `/var/lib/private/gitea-runner` has exceeded 50 GiB and is invisible to an unprivileged root scan; by 2026-07-18 it had settled back to 4.1 GiB after the tmpfs/nix.gc fix (see `rocket-sense-disk-bloat` memory).
