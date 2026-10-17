@@ -624,21 +624,7 @@ For composing functions with an apply so that they can be used with the ~:around
 ** Font Size
 This was taken from [[http://emacs.stackexchange.com/questions/7583/transiently-adjust-text-size-in-mode-line-and-minibuffer][here]] but it has diverged significantly from the original.
 #+BEGIN_SRC emacs-lisp
-(defvar imalison:default-font-size-pt nil)
-
-(defun imalison:acceptable-default-font-size (value)
-  (and (numberp value) (< value 150) (> value 50)))
-
-;; XXX: hack to get proper default value when default is set to something crazy
-(defun imalison:set-default-font-size (&rest args)
-  (interactive)
-  (when (and (imalison:acceptable-default-font-size
-              (face-attribute 'default :height))
-             (not (imalison:acceptable-default-font-size
-                   imalison:default-font-size-pt)))
-    (setq imalison:default-font-size-pt (face-attribute 'default :height))))
-
-(advice-add 'set-face-attribute :after 'imalison:set-default-font-size)
+(defvar imalison:default-font-size-pt 100)
 
 (defvar imalison:huge-font-size 280)
 
@@ -655,8 +641,6 @@ This was taken from [[http://emacs.stackexchange.com/questions/7583/transiently-
 
 (cl-defun imalison:modify-font-size (&optional (arg 10))
   (interactive "p")
-  (unless imalison:default-font-size-pt
-    (imalison:set-default-font-size))
   (imalison:set-font-size (+ (imalison:current-font-size) arg)))
 
 (defun imalison:font-size-incr ()
@@ -4266,89 +4250,50 @@ load-theme hook (See the heading below).
 (defvar imalison:dark-theme 'gotham)
 
 (defun imalison:after-load-theme (&rest _args)
-  (when (fboundp 'powerline-reset)
-    (powerline-reset))
-  (set-face-background 'fringe (face-background 'default))
   (imalison:restore-ansi-term-color-vector))
 
 (advice-add 'load-theme :after #'imalison:after-load-theme)
 #+END_SRC
+** Fringe
+An unspecified background makes the fringe match the default face of whatever
+theme is active, in every frame.
+#+BEGIN_SRC emacs-lisp
+(face-spec-set 'fringe '((t :background unspecified)) 'face-override-spec)
+#+END_SRC
 ** Set Font
+~face-font-family-alternatives~ is consulted whenever a frame realizes its
+faces, so the first installed family is picked per frame, including frames that
+a daemon creates later.
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:preferred-font-families
   '("JetBrainsMono Nerd Font"
     "JetBrains Mono"
     "JetBrainsMono Nerd Font Mono"))
 
-(defun imalison:default-font-parameter ()
-  (catch 'font
-    (dolist (family imalison:preferred-font-families)
-      (when (find-font (font-spec :family family))
-        (throw 'font (format "%s-10" family))))))
+(setopt face-font-family-alternatives
+        (cons imalison:preferred-font-families face-font-family-alternatives))
 
-(when-let* ((font (imalison:default-font-parameter)))
-  (add-to-list 'default-frame-alist `(font . ,font)))
+(set-face-attribute 'default nil
+                    :family (car imalison:preferred-font-families)
+                    :height imalison:default-font-size-pt)
 #+END_SRC
 ** imalison:appearance
+Themes are installed asynchronously by elpaca and may be selected in the custom
+files, so the theme is loaded once both are done.
 #+BEGIN_SRC emacs-lisp
-(defvar imalison:linum-format)
-
-(defun imalison:format-linum (line-text)
-  (propertize (format imalison:linum-format line-text) 'face 'linum))
-
-(make-variable-buffer-local 'imalison:linum-format)
-(defun imalison:linum-before-numbering-hook ()
-  (setq imalison:linum-format
-        (concat "%" (number-to-string
-                     (max (length
-                           (number-to-string
-                            (count-lines (point-min) (point-max)))) 3)) "d")))
-
-(defun imalison:remove-fringe-and-hl-line-mode (&rest _stuff)
+(defun imalison:appearance ()
+  "Restore the default theme and font size."
   (interactive)
-  (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-  (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-  (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-  (defvar-setq linum-format 'imalison:format-linum)
-  (add-hook 'linum-before-numbering-hook 'imalison:linum-before-numbering-hook)
-  (setq left-margin-width 0)
-  (defvar-setq hl-line-mode nil))
+  (unless (member imalison:dark-theme custom-enabled-themes)
+    (load-theme imalison:dark-theme t))
+  (imalison:font-size-reset))
 
+(defun imalison:startup-appearance ()
+  (imalison:appearance)
+  (when imalison:enable-doom-modeline-on-startup
+    (doom-modeline-mode +1)))
 
-(defun imalison:appearance (&optional frame)
-  (setq font-use-system-font nil)
-  (interactive (list nil))
-  (imalison:remove-fringe-and-hl-line-mode)
-  (setq powerline-default-separator (random-choice '(butt slant wave))))
-#+END_SRC
-*** Hooks to set everything up
-#+BEGIN_SRC emacs-lisp
-(defvar imalison:appearance-setup-done nil)
-
-(defun imalison:appearance-setup-hook (&rest args)
-  (unless imalison:appearance-setup-done
-    (unless (member imalison:dark-theme custom-enabled-themes)
-      (load-theme imalison:dark-theme t))
-    (apply 'imalison:appearance args)
-    (message "running appearance")
-    (when (and imalison:enable-doom-modeline-on-startup
-               (fboundp 'doom-modeline-mode))
-      (doom-modeline-mode +1))
-    (setq imalison:default-font-size-pt (face-attribute 'default :height))
-    (setq imalison:appearance-setup-done t)))
-
-(defun imalison:daemon-startup-p ()
-  (or (daemonp)
-      (seq-some (lambda (arg)
-                  (or (string= arg "--daemon")
-                      (string= arg "--bg-daemon")
-                      (string-prefix-p "--daemon=" arg)
-                      (string-prefix-p "--bg-daemon=" arg)))
-                command-line-args)))
-
-(if (imalison:daemon-startup-p)
-    (add-hook 'server-after-make-frame-hook 'imalison:appearance-setup-hook)
-  (add-hook 'elpaca-after-init-hook 'imalison:appearance-setup-hook))
+(add-hook 'elpaca-after-init-hook #'imalison:startup-appearance)
 #+END_SRC
 * Post Init Custom
 #+BEGIN_SRC emacs-lisp
