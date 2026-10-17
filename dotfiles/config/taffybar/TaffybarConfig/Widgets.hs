@@ -75,7 +75,7 @@ import TaffybarConfig.WidgetUtil
     stackInPill,
     usageLogoWidget,
   )
-import TaffybarConfig.Workspaces (workspaceLabelSetter, workspaceShowPredicate, workspaceWindowIconGetter)
+import TaffybarConfig.Workspaces (workspaceClickHandler, workspaceLabelSetter, workspaceShowPredicate, workspaceWindowIconGetter)
 import Text.Printf (printf)
 import Text.Read (readMaybe)
 
@@ -134,6 +134,7 @@ workspacesWidget =
                   HyprlandWorkspaces.specialWorkspaceWindowsToMinimized
               },
           Workspaces.labelSetter = workspaceLabelSetter,
+          Workspaces.onWorkspaceClick = workspaceClickHandler,
           Workspaces.showWorkspaceFn = workspaceShowPredicate,
           Workspaces.widgetBuilder = Workspaces.labelOverlayWidgetBuilder
         }

@@ -1,7 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module TaffybarConfig.Workspaces
-  ( workspaceLabelSetter,
+  ( workspaceClickHandler,
+    workspaceLabelSetter,
     workspaceShowPredicate,
     workspaceWindowIconGetter,
   )
@@ -66,6 +67,11 @@ workspaceShowPredicate :: WorkspaceModel.WorkspaceInfo -> Bool
 workspaceShowPredicate workspace =
   Workspaces.hideEmpty workspace
     && (not (WorkspaceModel.workspaceIsSpecial workspace) || workspaceIsMinimizedBucket workspace)
+
+workspaceClickHandler :: WorkspaceModel.WorkspaceInfo -> TaffyIO ()
+workspaceClickHandler workspace
+  | workspaceIsMinimizedBucket workspace = return ()
+  | otherwise = Workspaces.defaultOnWorkspaceClick workspace
 
 workspaceLabelSetter :: WorkspaceModel.WorkspaceInfo -> TaffyIO String
 workspaceLabelSetter workspace = do
