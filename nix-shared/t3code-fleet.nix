@@ -1,6 +1,7 @@
 # T3 Code fleet members, each reached through Tailscale Serve on its MagicDNS
-# name. Shared by the desktop's managed connections and the servers' fleet
-# manifest, which phones and unmanaged clients use to join the whole fleet.
+# name. Drives the desktop's managed connections and the phone enrollment
+# bundle (gen-gh-pages/t3code/mint-enrollment.sh), which carries a credential
+# for each of these hosts.
 let
   hosts = [
     "jay-lenovo"
