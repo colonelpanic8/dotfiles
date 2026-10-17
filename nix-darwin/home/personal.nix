@@ -2,7 +2,6 @@
   config,
   inputs,
   lib,
-  osConfig,
   pkgs,
   ...
 }: let
@@ -10,7 +9,6 @@
   replaceRuntimeDir = builtins.replaceStrings ["$XDG_RUNTIME_DIR"] ["\${XDG_RUNTIME_DIR}"];
   gpgKeyPath = replaceRuntimeDir config.age.secrets.gpg-keys.path;
   gpgPassphrasePath = replaceRuntimeDir config.age.secrets.gpg-passphrase.path;
-  t3codeCfg = config.services.t3code;
   importGpgKeyScript = pkgs.writeShellScript "import-gpg-key" ''
     set -eu
 
@@ -75,19 +73,11 @@ in {
 
   myModules.codexGeneratedSkills.enable = true;
   myModules.codexGeneratedSkills.worktreeCodexDir = "${config.dotfiles.worktreeDotfilesDir}/codex";
+  # The darwin t3codeConfiguration enables this for one user and runs it as a
+  # system daemon.
   services.t3code = {
-    enable = config.home.username == osConfig.system.primaryUser;
     package = pkgs.t3code;
     repositoryRoot = dotfilesCheckout;
-  };
-
-  # The server exits until agenix has decrypted the token; KeepAlive retries it.
-  launchd.agents.t3code-headless = lib.mkIf t3codeCfg.enable {
-    domain = "user";
-    config.EnvironmentVariables = {
-      T3CODE_ENVIRONMENT_ID = "fleet:${osConfig.networking.hostName}";
-      T3CODE_MANAGED_ACCESS_TOKEN_FILE = config.age.secrets.t3code-managed-access-token.path;
-    };
   };
 
   home.packages = [

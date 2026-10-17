@@ -1,5 +1,5 @@
 
 
 # >>> Codex installer >>>
-export PATH="/Users/kat/.local/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 # <<< Codex installer <<<

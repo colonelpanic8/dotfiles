@@ -467,6 +467,68 @@
         };
       };
     };
+    # Runs the Home Manager T3 Code server as a system daemon, like Paseo, so it
+    # does not depend on the user having a GUI login session.
+    t3codeConfiguration = {user}: {
+      config,
+      lib,
+      pkgs,
+      ...
+    }: let
+      agentConfig = config.home-manager.users.${user}.launchd.agents.t3code-headless.config;
+      tokenFile = config.age.secrets.t3code-managed-access-token.path;
+      t3codeDaemon = pkgs.writeShellScript "t3code-daemon" ''
+        set -eu
+
+        attempts=0
+        while [ ! -r ${lib.escapeShellArg tokenFile} ]; do
+          if [ "$attempts" -ge 60 ]; then
+            echo "Timed out waiting for ${tokenFile}" >&2
+            exit 1
+          fi
+          attempts=$((attempts + 1))
+          sleep 1
+        done
+
+        exec ${lib.escapeShellArgs agentConfig.ProgramArguments}
+      '';
+    in {
+      age.secrets.t3code-managed-access-token = {
+        file = ../nixos/secrets/t3code-managed-access-token.age;
+        owner = user;
+        mode = "0400";
+      };
+
+      home-manager.users.${user} = {
+        services.t3code.enable = true;
+        launchd.agents.t3code-headless.enable = lib.mkForce false;
+      };
+
+      launchd.daemons.t3code = {
+        serviceConfig = {
+          ProgramArguments = ["${t3codeDaemon}"];
+          UserName = user;
+          GroupName = "staff";
+          WorkingDirectory = homeForUser user;
+          EnvironmentVariables =
+            agentConfig.EnvironmentVariables
+            // {
+              HOME = homeForUser user;
+              USER = user;
+              LOGNAME = user;
+              SHELL = "/bin/zsh";
+              T3CODE_ENVIRONMENT_ID = "fleet:${config.networking.hostName}";
+              T3CODE_MANAGED_ACCESS_TOKEN_FILE = tokenFile;
+            };
+          RunAtLoad = true;
+          KeepAlive = true;
+          ProcessType = "Background";
+          ThrottleInterval = 10;
+          StandardOutPath = "${homeForUser user}/Library/Logs/t3code-daemon.log";
+          StandardErrorPath = "${homeForUser user}/Library/Logs/t3code-daemon.err.log";
+        };
+      };
+    };
     mkConfiguration = {primaryUser}: {
       pkgs,
       lib,
@@ -693,6 +755,7 @@
             user = "imalison";
             passwordSecret = "paseo-password-environment";
           })
+          (t3codeConfiguration {user = "imalison";})
           (homeManagerConfiguration {
             inherit primaryUser;
             users = nixpkgs.lib.genAttrs enabledHomeUsers (_: personalHomeModules);
@@ -702,7 +765,7 @@
       };
   in {
     darwinConfigurations."mac-demarco-mini" = mkDarwinSystem {
-      primaryUser = "kat";
+      primaryUser = "imalison";
       enabledHomeUsers = personalUsers;
     };
 
