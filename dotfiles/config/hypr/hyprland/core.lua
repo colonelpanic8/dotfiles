@@ -390,19 +390,6 @@ function M.setup(ctx)
     return left.id and right.id and left.id == right.id
   end
 
-  local function is_minimized_workspace(workspace)
-    if not workspace then
-      return false
-    end
-
-    local name = tostring(workspace.name or "")
-    return name == minimized_workspace or name == "minimized" or (workspace.special and name:find("minimized", 1, true) ~= nil)
-  end
-
-  local function is_minimized_window(window)
-    return window and is_minimized_workspace(window.workspace)
-  end
-
   local function is_normal_window(window)
     return window
       and window.mapped ~= false
@@ -612,8 +599,6 @@ function M.setup(ctx)
   ctx.write_layout_state = write_layout_state
   ctx.is_normal_workspace = is_normal_workspace
   ctx.same_workspace = same_workspace
-  ctx.is_minimized_workspace = is_minimized_workspace
-  ctx.is_minimized_window = is_minimized_window
   ctx.is_normal_window = is_normal_window
   ctx.tiled_windows = tiled_windows
   ctx.tiled_window_count = tiled_window_count

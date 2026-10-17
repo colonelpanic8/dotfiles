@@ -442,7 +442,6 @@ function M.setup(ctx)
   end
 
   local function hide_scratchpad_window(name, window)
-    remove_minimized_window(window)
     name = name or matching_scratchpad_name(window)
     move_window_to_workspace(name and scratchpad_workspace(name) or "special:NSP", false, window)
   end
@@ -462,7 +461,6 @@ function M.setup(ctx)
       return
     end
 
-    remove_minimized_window(window)
     mark_window_as_floating_scratchpad(window, name)
     if scratchpads[name] and scratchpads[name].dropdown then
       apply_scratchpad_geometry(name, window, target_monitor or hl.get_active_monitor(), "above")

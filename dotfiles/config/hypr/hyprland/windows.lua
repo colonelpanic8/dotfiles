@@ -53,55 +53,6 @@ function M.setup(ctx)
     return tostring(index) .. "  [" .. tostring(workspace) .. "] " .. class .. "  " .. title
   end
 
-  local function remove_minimized_window(target)
-    local remaining = {}
-    local target_address = target and target.address
-    for _, window in ipairs(minimized_windows) do
-      if window and window.address ~= target_address then
-        remaining[#remaining + 1] = window
-      end
-    end
-    minimized_windows = remaining
-  end
-
-  local function add_minimized_window(window)
-    if not window or not window.address then
-      return
-    end
-
-    remove_minimized_window(window)
-    minimized_windows[#minimized_windows + 1] = window
-  end
-
-  local function hydrate_minimized_windows()
-    local by_address = {}
-    local current_by_address = {}
-    local hydrated = {}
-
-    for _, window in ipairs(hl.get_windows()) do
-      if window and window.address then
-        current_by_address[window.address] = window
-      end
-    end
-
-    for _, window in ipairs(minimized_windows) do
-      local current = window and window.address and current_by_address[window.address]
-      if current and is_minimized_window(current) and not by_address[current.address] then
-        by_address[current.address] = true
-        hydrated[#hydrated + 1] = current
-      end
-    end
-
-    for _, window in pairs(current_by_address) do
-      if window and window.address and is_minimized_window(window) and not by_address[window.address] then
-        by_address[window.address] = true
-        hydrated[#hydrated + 1] = window
-      end
-    end
-
-    minimized_windows = hydrated
-  end
-
   local function float_active_window_preserving_tiled_geometry()
     local geometry = tiled_window_geometry(hl.get_active_window())
     dispatch(hl.dsp.window.float({ action = "enable", window = geometry and geometry.selector or nil }))
@@ -180,31 +131,9 @@ function M.setup(ctx)
     dispatch(hl.dsp.window.pin({ action = "enable", window = selector }))
   end
 
-  local function current_minimized_windows()
-    hydrate_minimized_windows()
-
-    local windows = {}
-    for _, window in ipairs(minimized_windows) do
-      if window and window.address and is_minimized_window(window) then
-        windows[#windows + 1] = window
-      end
-    end
-    minimized_windows = windows
-    return windows
-  end
-
-  local function restore_minimized_window(window, workspace)
-    if not window or not workspace then
-      return false
-    end
-
-    move_window_to_workspace(workspace.id, false, window)
-    return true
-  end
-
   local function window_picker_candidates_for(mode)
     if mode == "minimized" then
-      return current_minimized_windows()
+      return minimized_windows()
     end
 
     local focused = hl.get_active_window()
@@ -244,15 +173,8 @@ function M.setup(ctx)
     end
 
     local workspace = active_workspace()
-    if mode == "bring" and workspace then
+    if (mode == "bring" or mode == "minimized") and workspace then
       move_window_to_workspace(workspace.id, false, window)
-      dispatch(hl.dsp.focus({ window = window_selector(window) }))
-      return
-    end
-
-    if mode == "minimized" and workspace then
-      remove_minimized_window(window)
-      restore_minimized_window(window, workspace)
       dispatch(hl.dsp.focus({ window = window_selector(window) }))
       return
     end
@@ -536,97 +458,16 @@ function M.setup(ctx)
     hl.exec_cmd(command)
   end
 
-  local function minimize_active_window()
-    local window = hl.get_active_window()
-    if not window then
-      return
-    end
-
-    add_minimized_window(window)
-    move_window_to_workspace(minimized_workspace, false, window)
-  end
-
-  local function restore_last_minimized()
-    local workspace = active_workspace()
-    if not workspace then
-      return
-    end
-
-    hydrate_minimized_windows()
-
-    while #minimized_windows > 0 do
-      local window = table.remove(minimized_windows)
-      if window and window.address and is_minimized_window(window) then
-        restore_minimized_window(window, workspace)
-        dispatch(hl.dsp.focus({ window = window_selector(window) }))
-        return
-      end
-    end
-  end
-
-  local function restore_all_minimized()
-    local workspace = active_workspace()
-    if not workspace then
-      return
-    end
-
-    hydrate_minimized_windows()
-
-    while #minimized_windows > 0 do
-      restore_minimized_window(table.remove(minimized_windows), workspace)
-    end
-  end
-
-  local function minimize_other_classes()
-    local focused = hl.get_active_window()
-    local workspace = active_workspace()
-    if not focused or not workspace then
-      return
-    end
-
-    for _, window in ipairs(tiled_windows(workspace)) do
-      if window ~= focused and window.class ~= focused.class then
-        add_minimized_window(window)
-        move_window_to_workspace(minimized_workspace, false, window)
-      end
-    end
-  end
-
-  local function restore_focused_class()
-    local focused = hl.get_active_window()
-    local workspace = active_workspace()
-    if not focused or not workspace or not focused.class then
-      return
-    end
-
-    hydrate_minimized_windows()
-
-    local remaining = {}
-    for _, window in ipairs(minimized_windows) do
-      if window and window.class == focused.class and is_minimized_window(window) then
-        restore_minimized_window(window, workspace)
-      else
-        remaining[#remaining + 1] = window
-      end
-    end
-    minimized_windows = remaining
-  end
-
   ctx.same_class_windows = same_class_windows
   ctx.short_text = short_text
   ctx.normal_windows = normal_windows
   ctx.window_picker_entry = window_picker_entry
-  ctx.remove_minimized_window = remove_minimized_window
-  ctx.add_minimized_window = add_minimized_window
-  ctx.hydrate_minimized_windows = hydrate_minimized_windows
   ctx.float_active_window_preserving_tiled_geometry = float_active_window_preserving_tiled_geometry
   ctx.float_and_drag_active_window = float_and_drag_active_window
   ctx.float_and_resize_active_window = float_and_resize_active_window
   ctx.float_active_window_to_default_scratchpad_geometry = float_active_window_to_default_scratchpad_geometry
   ctx.tile_or_float_active_window = tile_or_float_active_window
   ctx.toggle_pinned_active_window = toggle_pinned_active_window
-  ctx.current_minimized_windows = current_minimized_windows
-  ctx.restore_minimized_window = restore_minimized_window
   ctx.window_picker_candidates_for = window_picker_candidates_for
   ctx.activate_window_picker_candidate = activate_window_picker_candidate
   ctx.enter_window_picker = enter_window_picker
@@ -641,11 +482,6 @@ function M.setup(ctx)
   ctx.toggle_active_window_real_fullscreen = toggle_active_window_real_fullscreen
   ctx.toggle_inactive_opacity_for_active_window = toggle_inactive_opacity_for_active_window
   ctx.raise_or_spawn = raise_or_spawn
-  ctx.minimize_active_window = minimize_active_window
-  ctx.restore_last_minimized = restore_last_minimized
-  ctx.restore_all_minimized = restore_all_minimized
-  ctx.minimize_other_classes = minimize_other_classes
-  ctx.restore_focused_class = restore_focused_class
 end
 
 return M
