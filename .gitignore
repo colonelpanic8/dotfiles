@@ -82,3 +82,7 @@ gotools
 !/dotfiles/codex/agents/claude-delegator.toml
 !/dotfiles/codex/config.toml
 !/dotfiles/codex/skills
+
+# gen-gh-pages/.gitignore is published, so it must not list deployed files.
+/gen-gh-pages/t3code/index.html
+/gen-gh-pages/t3code/fleet.age
