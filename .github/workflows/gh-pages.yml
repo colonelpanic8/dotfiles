@@ -41,6 +41,12 @@ jobs:
           cask exec emacs --script generate-html.el
           mv ../dotfiles/emacs.d/README.html ./index.html
 
+      - name: Install qrencode and jq
+        run: sudo apt-get update && sudo apt-get install -y qrencode jq
+
+      - name: Generate T3 Code enrollment page
+        run: gen-gh-pages/t3code/build.sh
+
       - name: Deploy to GitHub Pages
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v4
