@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2026-10-17 Sat 20:44 -->
+<!-- 2026-10-17 Sat 22:00 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -4052,12 +4052,9 @@ a:hover {
 <li><a href="#automaticthemechanger">20.8. Automatic Theme Changer</a></li>
 <li><a href="#fixansitermcolors">20.9. Fix <code>ansi-term</code> Colors</a></li>
 <li><a href="#afterloadthemehook">20.10. After <code>load-theme</code> hook</a></li>
-<li><a href="#setfont">20.11. Set Font</a></li>
-<li><a href="#imalisonappearance">20.12. imalison:appearance</a>
-<ul>
-<li><a href="#hookstoseteverythingup">20.12.1. Hooks to set everything up</a></li>
-</ul>
-</li>
+<li><a href="#fringe">20.11. Fringe</a></li>
+<li><a href="#setfont">20.12. Set Font</a></li>
+<li><a href="#imalisonappearance">20.13. imalison:appearance</a></li>
 </ul>
 </li>
 <li><a href="#postinitcustom">21. Post Init Custom</a></li>
@@ -5035,21 +5032,7 @@ For composing functions with an apply so that they can be used with the <code>:a
 This was taken from <a href="http://emacs.stackexchange.com/questions/7583/transiently-adjust-text-size-in-mode-line-and-minibuffer">here</a> but it has diverged significantly from the original.
 </p>
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:default-font-size-pt</span> nil)
-
-(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:acceptable-default-font-size</span> (value)
-  (<span class="org-keyword">and</span> (numberp value) (&lt; value 150) (&gt; value 50)))
-
-<span class="org-comment-delimiter">;; </span><span class="org-comment">XXX: hack to get proper default value when default is set to something crazy
-</span>(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:set-default-font-size</span> (<span class="org-type">&amp;rest</span> args)
-  (<span class="org-keyword">interactive</span>)
-  (<span class="org-keyword">when</span> (<span class="org-keyword">and</span> (imalison:acceptable-default-font-size
-              (face-attribute 'default <span class="org-builtin">:height</span>))
-             (not (imalison:acceptable-default-font-size
-                   imalison:default-font-size-pt)))
-    (<span class="org-keyword">setq</span> imalison:default-font-size-pt (face-attribute 'default <span class="org-builtin">:height</span>))))
-
-(advice-add 'set-face-attribute <span class="org-builtin">:after</span> 'imalison:set-default-font-size)
+<pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:default-font-size-pt</span> 100)
 
 (<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:huge-font-size</span> 280)
 
@@ -5066,8 +5049,6 @@ This was taken from <a href="http://emacs.stackexchange.com/questions/7583/trans
 
 (<span class="org-keyword">cl-defun</span> <span class="org-function-name">imalison:modify-font-size</span> (<span class="org-type">&amp;optional</span> (arg 10))
   (<span class="org-keyword">interactive</span> <span class="org-string">"p"</span>)
-  (<span class="org-keyword">unless</span> imalison:default-font-size-pt
-    (imalison:set-default-font-size))
   (imalison:set-font-size (+ (imalison:current-font-size) arg)))
 
 (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:font-size-incr</span> ()
@@ -10143,9 +10124,6 @@ load-theme hook (See the heading below).
 (<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:dark-theme</span> 'gotham)
 
 (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:after-load-theme</span> (<span class="org-type">&amp;rest</span> _args)
-  (<span class="org-keyword">when</span> (fboundp 'powerline-reset)
-    (powerline-reset))
-  (set-face-background 'fringe (face-background 'default))
   (imalison:restore-ansi-term-color-vector))
 
 (advice-add 'load-theme <span class="org-builtin">:after</span> #'imalison:after-load-theme)
@@ -10153,95 +10131,65 @@ load-theme hook (See the heading below).
 </div>
 </div>
 </div>
-<div id="outline-container-setfont" class="outline-3">
-<h3 id="setfont"><span class="section-number-3">20.11.</span> Set Font <a href="#setfont"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div id="outline-container-fringe" class="outline-3">
+<h3 id="fringe"><span class="section-number-3">20.11.</span> Fringe <a href="#fringe"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-20-11">
+<p>
+An unspecified background makes the fringe match the default face of whatever
+theme is active, in every frame.
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(face-spec-set 'fringe '((t <span class="org-builtin">:background</span> unspecified)) 'face-override-spec)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-setfont" class="outline-3">
+<h3 id="setfont"><span class="section-number-3">20.12.</span> Set Font <a href="#setfont"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-20-12">
+<p>
+<code>face-font-family-alternatives</code> is consulted whenever a frame realizes its
+faces, so the first installed family is picked per frame, including frames that
+a daemon creates later.
+</p>
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:preferred-font-families</span>
   '(<span class="org-string">"JetBrainsMono Nerd Font"</span>
     <span class="org-string">"JetBrains Mono"</span>
     <span class="org-string">"JetBrainsMono Nerd Font Mono"</span>))
 
-(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:default-font-parameter</span> ()
-  (<span class="org-keyword">catch</span> '<span class="org-constant">font</span>
-    (<span class="org-keyword">dolist</span> (family imalison:preferred-font-families)
-      (<span class="org-keyword">when</span> (find-font (font-spec <span class="org-builtin">:family</span> family))
-        (<span class="org-keyword">throw</span> '<span class="org-constant">font</span> (format <span class="org-string">"%s-10"</span> family))))))
+(<span class="org-keyword">setopt</span> face-font-family-alternatives
+        (cons imalison:preferred-font-families face-font-family-alternatives))
 
-(<span class="org-keyword">when-let*</span> ((font (imalison:default-font-parameter)))
-  (add-to-list 'default-frame-alist `(font . ,font)))
+(set-face-attribute 'default nil
+                    <span class="org-builtin">:family</span> (car imalison:preferred-font-families)
+                    <span class="org-builtin">:height</span> imalison:default-font-size-pt)
 </pre>
 </div>
 </div>
 </div>
 <div id="outline-container-imalisonappearance" class="outline-3">
-<h3 id="imalisonappearance"><span class="section-number-3">20.12.</span> imalison:appearance <a href="#imalisonappearance"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-20-12">
+<h3 id="imalisonappearance"><span class="section-number-3">20.13.</span> imalison:appearance <a href="#imalisonappearance"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-20-13">
+<p>
+Themes are installed asynchronously by elpaca and may be selected in the custom
+files, so the theme is loaded once both are done.
+</p>
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:linum-format</span>)
-
-(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:format-linum</span> (line-text)
-  (propertize (format imalison:linum-format line-text) 'face 'linum))
-
-(make-variable-buffer-local 'imalison:linum-format)
-(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:linum-before-numbering-hook</span> ()
-  (<span class="org-keyword">setq</span> imalison:linum-format
-        (concat <span class="org-string">"%"</span> (number-to-string
-                     (max (length
-                           (number-to-string
-                            (count-lines (point-min) (point-max)))) <span class="org-warning">3)) </span><span class="org-string"><span class="org-warning">"d"</span></span><span class="org-warning">)))</span>
-
-(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:remove-fringe-and-hl-line-mode</span> (<span class="org-type">&amp;rest</span> _stuff)
+<pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:appearance</span> ()
+  <span class="org-doc">"Restore the default theme and font size."</span>
   (<span class="org-keyword">interactive</span>)
-  (<span class="org-keyword">if</span> (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-  (<span class="org-keyword">if</span> (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-  (<span class="org-keyword">if</span> (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-  (defvar-setq linum-format 'imalison:format-linum)
-  (add-hook 'linum-before-numbering-hook 'imalison:linum-before-numbering-hook)
-  (<span class="org-keyword">setq</span> left-margin-width 0)
-  (defvar-setq hl-line-mode nil))
+  (<span class="org-keyword">unless</span> (member imalison:dark-theme custom-enabled-themes)
+    (load-theme imalison:dark-theme t))
+  (imalison:font-size-reset))
 
+(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:startup-appearance</span> ()
+  (imalison:appearance)
+  (<span class="org-keyword">when</span> imalison:enable-doom-modeline-on-startup
+    (doom-modeline-mode +1)))
 
-(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:appearance</span> (<span class="org-type">&amp;optional</span> frame)
-  (<span class="org-keyword">setq</span> font-use-system-font nil)
-  (<span class="org-keyword">interactive</span> (list nil))
-  (imalison:remove-fringe-and-hl-line-mode)
-  (<span class="org-keyword">setq</span> powerline-default-separator (random-choice '(butt slant wave))))
+(add-hook 'elpaca-after-init-hook #'imalison:startup-appearance)
 </pre>
-</div>
-</div>
-<div id="outline-container-hookstoseteverythingup" class="outline-4">
-<h4 id="hookstoseteverythingup"><span class="section-number-4">20.12.1.</span> Hooks to set everything up <a href="#hookstoseteverythingup"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h4>
-<div class="outline-text-4" id="text-20-12-1">
-<div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:appearance-setup-done</span> nil)
-
-(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:appearance-setup-hook</span> (<span class="org-type">&amp;rest</span> args)
-  (<span class="org-keyword">unless</span> imalison:appearance-setup-done
-    (<span class="org-keyword">unless</span> (member imalison:dark-theme custom-enabled-themes)
-      (load-theme imalison:dark-theme t))
-    (apply 'imalison:appearance args)
-    (message <span class="org-string">"running appearance"</span>)
-    (<span class="org-keyword">when</span> (<span class="org-keyword">and</span> imalison:enable-doom-modeline-on-startup
-               (fboundp 'doom-modeline-mode))
-      (doom-modeline-mode +1))
-    (<span class="org-keyword">setq</span> imalison:default-font-size-pt (face-attribute 'default <span class="org-builtin">:height</span>))
-    (<span class="org-keyword">setq</span> imalison:appearance-setup-done t)))
-
-(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:daemon-startup-p</span> ()
-  (<span class="org-keyword">or</span> (daemonp)
-      (seq-some (<span class="org-keyword">lambda</span> (arg)
-                  (<span class="org-keyword">or</span> (string= arg <span class="org-string">"--daemon"</span>)
-                      (string= arg <span class="org-string">"--bg-daemon"</span>)
-                      (string-prefix-p <span class="org-string">"--daemon="</span> arg)
-                      (string-prefix-p <span class="org-string">"--bg-daemon="</span> arg)))
-                command-line-args)))
-
-(<span class="org-keyword">if</span> (imalison:daemon-startup-p)
-    (add-hook 'server-after-make-frame-hook 'imalison:appearance-setup-hook)
-  (add-hook 'elpaca-after-init-hook 'imalison:appearance-setup-hook))
-</pre>
-</div>
 </div>
 </div>
 </div>
