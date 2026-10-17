@@ -5,11 +5,15 @@ tracked-flake-inputs := "codex-cli-nix claude-code-nix git-sync-rs keepbook git-
 build:
     {{ darwin-rebuild }} build --flake .#{{ hostname }}
 
-# Activate inside the primary user's launchd session so user agents load
-# even when switching over SSH.
+# Build as the invoking user, since root's Nix refuses a checkout it does not
+# own, then do what `darwin-rebuild switch` does after building. Activate
+# inside the primary user's launchd session so user agents load even when
+# switching over SSH.
 switch:
+    system="$(nix build --no-link --print-out-paths .#darwinConfigurations.{{ hostname }}.system)" && \
     primary_user="$(nix eval --raw .#darwinConfigurations.{{ hostname }}.config.system.primaryUser)" && \
-    sudo launchctl asuser "$(id -u "$primary_user")" env HOME=/var/root {{ darwin-rebuild }} switch --flake .#{{ hostname }}
+    sudo /run/current-system/sw/bin/nix-env -p /nix/var/nix/profiles/system --set "$system" && \
+    sudo launchctl asuser "$(id -u "$primary_user")" env HOME=/var/root "$system/activate"
 
 update:
     /run/current-system/sw/bin/nix flake update
