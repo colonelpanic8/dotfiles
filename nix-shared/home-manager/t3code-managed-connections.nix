@@ -5,6 +5,7 @@
   ...
 }: let
   environments = import ../t3code-fleet.nix;
+  keys = import ../keys.nix;
   credentialPath = config.age.secrets.t3code-managed-access-token.path;
   registryPath = "${config.xdg.configHome}/t3code/managed-connections.json";
 in
@@ -23,15 +24,8 @@ in
         connections = map (member: member // {token."$file" = credentialPath;}) environments;
       };
     };
-<<<<<<< Updated upstream
     xdg.configFile."t3code/fleet-enrollment-recipients".text =
       lib.concatStringsSep "\n" (keys.agenixKeys ++ keys.t3codeFleetEnrollmentRecipients) + "\n";
-||||||| Stash base
-    xdg.configFile."t3code/fleet.json".source = fleetImport;
-    xdg.configFile."t3code/fleet-enrollment-recipients".text =
-      lib.concatStringsSep "\n" (keys.agenixKeys ++ keys.t3codeFleetEnrollmentRecipients) + "\n";
-=======
->>>>>>> Stashed changes
 
     home.activation.removeLegacyT3FleetEnvironment = lib.hm.dag.entryAfter ["linkGeneration"] ''
       run ${pkgs.coreutils}/bin/rm -f ${lib.escapeShellArg "${config.xdg.configHome}/t3code/managed-access.env"}
