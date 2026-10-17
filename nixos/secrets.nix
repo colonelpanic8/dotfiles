@@ -14,7 +14,7 @@ in {
         ../nix-shared/home-manager/gpg-trust.nix
         ../nix-shared/home-manager/paseo-managed-hosts.nix
       ]
-      ++ lib.optional t3codeEnabled (import ../nix-shared/home-manager/t3code-managed-connections.nix {inherit inputs;});
+      ++ lib.optional t3codeEnabled ../nix-shared/home-manager/t3code-managed-connections.nix;
     age.identityPaths = ["${config.home.homeDirectory}/.ssh/id_ed25519"];
     home.packages = [
       inputs.agenix.packages."${pkgs.stdenv.hostPlatform.system}".default

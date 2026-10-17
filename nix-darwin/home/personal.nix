@@ -62,7 +62,7 @@ in {
     ../../nix-shared/home-manager/codex-generated-skills.nix
     ../../nix-shared/home-manager/paseo-managed-hosts.nix
     ../../nix-shared/home-manager/paseo-settings-seed.nix
-    (import ../../nix-shared/home-manager/t3code-managed-connections.nix {inherit inputs;})
+    ../../nix-shared/home-manager/t3code-managed-connections.nix
     ../../nix-shared/home-manager/t3code-server-config.nix
     ./git-sync.nix
   ];

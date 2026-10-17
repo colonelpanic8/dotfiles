@@ -1,4 +1,4 @@
-{inputs}: {
+{
   config,
   lib,
   pkgs,
@@ -7,9 +7,6 @@
   environments = import ../t3code-fleet.nix;
   keys = import ../keys.nix;
   credentialPath = config.age.secrets.t3code-managed-access-token.path;
-  fleetImport = import "${inputs.t3code-integration}/nix/fleet-import.nix" {
-    inherit pkgs environments;
-  };
   registryPath = "${config.xdg.configHome}/t3code/managed-connections.json";
 in
   lib.mkIf (lib.elem config.home.username ["imalison" "kat"]) {
@@ -27,7 +24,6 @@ in
         connections = map (member: member // {token."$file" = credentialPath;}) environments;
       };
     };
-    xdg.configFile."t3code/fleet.json".source = fleetImport;
     xdg.configFile."t3code/fleet-enrollment-recipients".text =
       lib.concatStringsSep "\n" (keys.agenixKeys ++ keys.t3codeFleetEnrollmentRecipients) + "\n";
 
