@@ -6,6 +6,7 @@ let
     "jay-lenovo"
     "jimi-hendnix"
     "mac-demarco-mini"
+    "railbird-sf"
     "ryzen-shine"
     "strixi-minaj"
   ];

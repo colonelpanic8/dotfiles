@@ -474,6 +474,8 @@
       };
     in {
       networking.hostName = "mac-demarco-mini";
+      # T3 Code labels its environment with ComputerName.
+      networking.computerName = config.networking.hostName;
       imports = [
         (import ./gitea-actions-runner.nix)
         (import ./gitea-runner-external-storage.nix)
