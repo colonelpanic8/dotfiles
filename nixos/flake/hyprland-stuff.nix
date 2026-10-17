@@ -413,8 +413,9 @@
     wtype
     cliphist
     grim
+    grimblast
     slurp
-    swappy
+    satty
     nwg-displays
     hyprsaver
     ddcutil

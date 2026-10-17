@@ -83,8 +83,9 @@ function M.setup(ctx)
 
     bind("XF86MonBrightnessUp", exec(brightness_script .. " up"), desc("Raise display brightness", { repeating = true }))
     bind("XF86MonBrightnessDown", exec(brightness_script .. " down"), desc("Lower display brightness", { repeating = true }))
-    bind("Print", exec("flameshot gui"), desc("Take screenshot"))
-    bind(hyper .. " + H", exec("flameshot gui"), desc("Take screenshot"))
+    local screenshot_command = "grimblast --freeze save area - | satty --filename -"
+    bind("Print", exec(screenshot_command), desc("Take screenshot"))
+    bind(hyper .. " + H", exec(screenshot_command), desc("Take screenshot"))
     bind("SHIFT + Print", exec("screen-record toggle region"), desc("Record a screen region (toggle)"))
     bind("CTRL + Print", exec("screen-record toggle monitor"), desc("Record the focused monitor (toggle)"))
     bind(hyper .. " + SHIFT + H", exec("screen-record toggle region"), desc("Record a screen region (toggle)"))

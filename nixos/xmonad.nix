@@ -59,6 +59,7 @@ in
       # xmonadPkgs.haskellPackages.notifications-tray-icon
       # xmonadPkgs.haskellPackages.gtk-sni-tray
       xmonadPkgs.haskellPackages.dbus-hslogger
+      pkgs.maim
     ];
 
     home-manager.sharedModules = [

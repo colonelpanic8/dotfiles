@@ -668,8 +668,9 @@
         wtype # Wayland input typing
         cliphist # Clipboard history
         grim # Screenshot utility
+        grimblast # Screenshot helper
         slurp # Region selection
-        swappy # Screenshot annotation
+        satty # Screenshot annotation
         gpu-screen-recorder-gtk # GUI for gpu-screen-recorder
         screenRecord # Region/window/monitor recording + instant replay
         nwg-displays # GUI monitor arrangement

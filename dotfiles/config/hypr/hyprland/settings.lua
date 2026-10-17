@@ -469,21 +469,10 @@ function M.setup(ctx)
       no_initial_focus = true,
     })
 
-    for index, match in ipairs({
-      { class = "^(flameshot)$" },
-      { title = "^(flameshot)$" },
-    }) do
-      hl.window_rule({
-        name = "flameshot-overlay-" .. tostring(index),
-        match = match,
-        float = true,
-        no_anim = true,
-        suppress_event = "fullscreen",
-      })
-    end
-    hl.layer_rule({
-      name = "flameshot-layer-overlay",
-      match = { namespace = "^(flameshot)$" },
+    hl.window_rule({
+      name = "satty",
+      match = { class = "^(com\\.gabm\\.satty)$" },
+      float = true,
       no_anim = true,
     })
 

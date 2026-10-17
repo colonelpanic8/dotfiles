@@ -8,7 +8,6 @@ core_services=(
 
 tray_services=(
   blueman-applet.service
-  flameshot.service
   kanshi-sni.service
   kdeconnect-indicator.service
   keepbook-dioxus.service

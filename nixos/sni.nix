@@ -83,8 +83,6 @@
         };
 
         services.pasystray.enable = isFull;
-
-        services.flameshot.enable = isFull;
       })
     ];
   };

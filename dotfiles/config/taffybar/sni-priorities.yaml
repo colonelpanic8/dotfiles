@@ -23,8 +23,6 @@ priorities:
   priority: 1
 - key: icon-name:kdeconnectindicatordark
   priority: 0
-- key: item-id:flameshot
-  priority: 0
 - key: item-id:keepbook-dioxus
   priority: 0
 - key: item-id:udiskie
