@@ -354,7 +354,7 @@
             PartOf = ["graphical-session.target"];
           };
           Service = {
-            ExecStart = lib.getExe pkgs.hyprpolkitagent;
+            ExecStart = "${pkgs.hyprpolkitagent}/libexec/hyprpolkitagent";
             Restart = "on-failure";
             RestartSec = 2;
           };
