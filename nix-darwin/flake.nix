@@ -342,6 +342,7 @@
       user,
       passwordSecret,
       hostnames ? null,
+      disableRelay ? true,
     }: {
       config,
       lib,
@@ -414,7 +415,7 @@
 
         export PASEO_PASSWORD="$password"
         export PASEO_LISTEN="$tailscale_ip:6767"
-        exec ${paseoPackage}/bin/paseo-server --no-relay
+        exec ${paseoPackage}/bin/paseo-server ${lib.optionalString disableRelay "--no-relay"}
       '';
     in {
       age.secrets.${passwordSecret} = {
@@ -427,6 +428,23 @@
         paseoPackage
         paseoDesktopPackage
       ];
+
+      home-manager.users.${user} = {lib, ...}: {
+        home.activation.configurePaseoDesktopDaemon = lib.hm.dag.entryAfter ["writeBoundary"] ''
+          settings_dir="$HOME/Library/Application Support/Paseo"
+          settings_file="$settings_dir/desktop-settings.json"
+          mkdir -p "$settings_dir"
+          temporary="$(${pkgs.coreutils}/bin/mktemp "$settings_dir/.desktop-settings.json.XXXXXX")"
+          if [ -f "$settings_file" ]; then
+            ${pkgs.jq}/bin/jq '. * {settings: {daemon: {manageBuiltInDaemon: false, keepRunningAfterQuit: false}}, migrations: {legacyRendererSettingsImported: true}}' \
+              "$settings_file" > "$temporary"
+          else
+            printf '%s\n' '{"version":1,"settings":{"daemon":{"manageBuiltInDaemon":false,"keepRunningAfterQuit":false}},"migrations":{"legacyRendererSettingsImported":true}}' > "$temporary"
+          fi
+          chmod 0600 "$temporary"
+          mv "$temporary" "$settings_file"
+        '';
+      };
 
       launchd.daemons.paseo = {
         serviceConfig = {
@@ -777,6 +795,7 @@
         (paseoConfiguration {
           user = "alex";
           passwordSecret = "paseo-password-alexanders-macbook-air";
+          disableRelay = false;
           hostnames = [
             "alexanders-macbook-air"
             "alexanders-macbook-air.tail40f15e.ts.net"

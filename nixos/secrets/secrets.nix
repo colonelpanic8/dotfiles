@@ -37,7 +37,7 @@ in {
   "paseo-password-environment.age".publicKeys = keys.agenixKeys;
   "t3code-managed-access-token.age".publicKeys = keys.agenixKeys;
   "t3code-fleet-enrollment.age".publicKeys = keys.agenixKeys ++ keys.t3codeFleetEnrollmentRecipients;
-  "paseo-password-alexanders-macbook-air.age".publicKeys = keys.agenixKeys ++ [keys.alexandersMacbookAirHostKey];
+  "paseo-password-alexanders-macbook-air.age".publicKeys = keys.agenixKeys ++ keys.alexKeys ++ [keys.alexandersMacbookAirHostKey];
   "hermes-environment.age".publicKeys = keys.agenixKeys;
   "google-messages-bridge-api-token.age".publicKeys = keys.agenixKeys;
   "google-messages-bridge-storage-key.age".publicKeys = keys.agenixKeys;
