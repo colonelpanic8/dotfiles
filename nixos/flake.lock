@@ -143,11 +143,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792199566,
-        "narHash": "sha256-mOsxURVw80lOVRUsJ53Sf5FUd43/Geszbg06O16XSMU=",
+        "lastModified": 1792280551,
+        "narHash": "sha256-hB5CXiWAnk6EszhydHVNfGqiPAWOzLrzi3Sav17o5eA=",
         "owner": "aaddrick",
         "repo": "claude-desktop-debian",
-        "rev": "64055949808cbdae6040d56d8db17ee252fd3b2e",
+        "rev": "58678522ec3993229968b917198149e2e1cbddda",
         "type": "github"
       },
       "original": {
@@ -182,11 +182,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1792218249,
-        "narHash": "sha256-9VcYkAh3mpW5OepMmxI6G/x2PjDQiIwW2lIkdNlAjnY=",
+        "lastModified": 1792346211,
+        "narHash": "sha256-dComqYx6MBk9puGp/wm0uKIQNdLPzs88OVa5QteoIW0=",
         "owner": "ilysenko",
         "repo": "codex-desktop-linux",
-        "rev": "56fb909e80c22f29f5a310f6243428ec9b9e8347",
+        "rev": "13e9609f4a8e446c148892f004921dcc707616a5",
         "type": "github"
       },
       "original": {
@@ -1613,11 +1613,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1791601837,
-        "narHash": "sha256-gTvg6MmoRT+vCY9pGyxUOMEOu0SmwDChjP8s4Dva1Wc=",
+        "lastModified": 1792343629,
+        "narHash": "sha256-znmPayyj+7M4+oCi12M8l3C/mfw7uYUO7Q+bxqb4PVU=",
         "owner": "colonelpanic8",
         "repo": "keepbook",
-        "rev": "d938031109ede1fa4272e39d940ef79517c6ca5a",
+        "rev": "e1a15b9ac62444bc8bdaf3eb90233a55952138e7",
         "type": "github"
       },
       "original": {

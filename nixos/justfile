@@ -11,12 +11,12 @@ switch-log lines="80":
 	/run/current-system/sw/bin/journalctl -b --no-pager -n {{lines}} -u nixos-rebuild-switch-to-configuration
 
 bump-tracked-flakes *args:
-	PATH=/run/current-system/sw/bin:/nix/var/nix/profiles/system/sw/bin:/etc/profiles/per-user/root/bin:/usr/bin:/bin nix flake update {{tracked-flake-inputs}}
+	github_token="$(gh auth token 2>/dev/null)"; PATH=/run/current-system/sw/bin:/nix/var/nix/profiles/system/sw/bin:/etc/profiles/per-user/root/bin:/usr/bin:/bin nix flake update ${github_token:+--option access-tokens "github.com=$github_token"} {{tracked-flake-inputs}}
 	just switch {{args}}
 
 # Commit/tag-pinned inputs remain fixed until their flake URLs are changed.
 bump-hyprland *args:
-	PATH=/run/current-system/sw/bin:/nix/var/nix/profiles/system/sw/bin:/etc/profiles/per-user/root/bin:/usr/bin:/bin nix flake update {{hyprland-flake-inputs}}
+	github_token="$(gh auth token 2>/dev/null)"; PATH=/run/current-system/sw/bin:/nix/var/nix/profiles/system/sw/bin:/etc/profiles/per-user/root/bin:/usr/bin:/bin nix flake update ${github_token:+--option access-tokens "github.com=$github_token"} {{hyprland-flake-inputs}}
 	just switch {{args}}
 
 populate-cachix cache="colonelpanic8-dotfiles" host=`hostname` *args:
