@@ -1683,11 +1683,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792295606,
-        "narHash": "sha256-mEyOubDdzLtEdt6pmdf/jTHPrv+MOOj9GCq2fQvCi9I=",
+        "lastModified": 1792354166,
+        "narHash": "sha256-WDyH5NWH7IrSVtPD1yzqU+B9HZWjHqq7Jc1TSCcYxAc=",
         "owner": "colonelpanic8",
         "repo": "mova",
-        "rev": "ebfd6b20e93c575b943af002ee7f231ce4625589",
+        "rev": "f7d9718775ecd462349a566842880a8b236b20f5",
         "type": "github"
       },
       "original": {
