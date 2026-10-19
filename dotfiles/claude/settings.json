@@ -12,6 +12,7 @@
     ]
   },
   "cleanupPeriodDays": 100000,
+  "autoMemoryEnabled": false,
   "effortLevel": "high",
   "skipDangerousModePermissionPrompt": true,
   "remoteControlAtStartup": true,

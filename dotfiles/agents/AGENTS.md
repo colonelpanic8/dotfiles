@@ -27,6 +27,11 @@ for running agents.
     "<preference>"` (default expiry 7d) and clear it with
     `agent-delegation clear`.
 
+## Memory
+- Never use Claude Code's auto-memory directory. Record durable guidance in the
+  repository it concerns (its `AGENTS.md`, `BUILDING.md`, or similar), or in
+  these dotfiles for cross-project preferences.
+
 ## Code verification
 - Run whatever formatting, lint, and type checks the project provides, at the
   narrowest scope covering the change. Don't skip them because a change is small
@@ -90,6 +95,10 @@ for running agents.
 - The trap is the repo that has no such `AGENTS.md`: the *fork* the assembled
   branch is pushed to, such as `colonelpanic8/rmk` (used by `glove80-rmk`).
   There the warning above is all you get.
+- Release fork-assembler stacks eagerly: once a build completes, publish,
+  repin, and activate it, then validate (audit, smoke, tests) and fix forward
+  in a follow-up rebuild. These stacks serve only the user, who accepts the
+  occasional bad release. Each stack's `BUILDING.md` spells out the order.
 - fork-assembler's own source is at `~/projects/fork-assembler`
   (`colonelpanic8/fork-assembler`; link: `./project-links/fork-assembler`).
 - Known stacks: `~/projects/paseo-assembly` (see `./project-guides/paseo-assembly.md`),
