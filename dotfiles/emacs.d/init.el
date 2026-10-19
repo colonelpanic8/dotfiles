@@ -50,6 +50,16 @@
   (elpaca-subscribe 'failed #'imalison:elpaca-warn-failed))
 (add-hook 'elpaca-after-init-hook #'imalison:elpaca-report-unfinished)
 
+(defun imalison:elpaca-process-new-queues ()
+  "Process declarations added while completed package configurations run."
+  (when (cl-some (lambda (entry)
+                   (eq (elpaca<-status (cdr entry)) 'queued))
+                 (elpaca--queued))
+    ;; Leave the current queue's finalizer before processing new declarations.
+    (run-at-time 0 nil #'elpaca-process-queues)))
+
+(add-hook 'elpaca-post-queue-hook #'imalison:elpaca-process-new-queues)
+
 (defun imalison:existing-executable (&rest candidates)
   (seq-find #'file-executable-p (delq nil candidates)))
 
@@ -235,7 +245,7 @@
      (emacs-directory-filepath "kat-mode.org")))
   ;; This runs from Elpaca's completion hook. Declarations added here (or by
   ;; package configuration) need another processing pass once it returns.
-  (run-at-time 0 nil #'elpaca-process-queues))
+  (imalison:elpaca-process-new-queues))
 
 ;; Install transient early to prevent built-in version from loading
 ;; Workaround: overriding-text-conversion-style is void on pgtk builds (no
