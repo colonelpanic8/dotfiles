@@ -15,7 +15,8 @@ The Neo and `mac-demarco-mini` use the same system packages, Home Manager tools,
 desktop apps, fonts, and T3 Code system daemon. Claude and Codex use the
 same pinned CLI flakes and binary caches on both Macs. Kat is the Neo's primary
 and only managed login account. The Gitea runner and its storage configuration
-live exclusively in `machines/mac-demarco-mini.nix`.
+live exclusively in `machines/mac-demarco-mini.nix`. The Neo preserves existing
+Homebrew packages outside the shared app list.
 
 The Neo has its own encrypted T3 Code credential. Kat's desktop
 connects to its local T3 Code daemon; it does not receive Ivan's fleet credential,

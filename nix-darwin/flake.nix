@@ -425,6 +425,7 @@
       homeModules ? personalHomeModules,
       machineModule,
       manageNix ? true,
+      homebrewCleanup ? "zap",
       t3codeTokenSecret ? "t3code-managed-access-token",
     }:
       nix-darwin.lib.darwinSystem {
@@ -432,7 +433,10 @@
           agenix.darwinModules.default
           home-manager.darwinModules.home-manager
           nix-homebrew.darwinModules.nix-homebrew
-          (homebrewConfiguration {inherit primaryUser;})
+          (homebrewConfiguration {
+            inherit primaryUser;
+            cleanup = homebrewCleanup;
+          })
           (sharedConfiguration {inherit primaryUser manageNix;})
           (t3codeConfiguration {
             user = primaryUser;
@@ -451,6 +455,7 @@
       primaryUser = "kat";
       machineModule = ./machines/kats-macbook-neo.nix;
       manageNix = false;
+      homebrewCleanup = "none";
       homeModules = [./home/agents.nix ./home/desktop.nix];
       t3codeTokenSecret = "t3code-managed-access-token.kats-macbook-neo";
     };
