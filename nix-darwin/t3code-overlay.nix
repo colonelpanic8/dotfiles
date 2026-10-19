@@ -33,6 +33,7 @@ in {
             --prefix PATH : ${prev.lib.makeBinPath [prev.codex prev.gh prev.git]} \
             --add-flags "${unwrapped}/libexec/t3code/apps/desktop" \
             --add-flags "--backend-mode=client-only"
+          /usr/bin/codesign --force --deep --sign - --preserve-metadata=entitlements "$bundle"
         done
       '';
     passthru = (old.passthru or {}) // {inherit unwrapped;};
