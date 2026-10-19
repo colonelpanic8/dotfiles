@@ -282,6 +282,7 @@
           [
             "claude"
             "chatgpt"
+            "codex-app"
             "ghostty"
             "hammerspoon"
             "raycast"
