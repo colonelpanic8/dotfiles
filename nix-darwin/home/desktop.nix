@@ -19,6 +19,13 @@
       done
     '';
 in {
+  home.activation.addGhosttyToDock = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    app="/Applications/Ghostty.app"
+    if [ -d "$app" ] && ! ${pkgs.dockutil}/bin/dockutil --find "$app" "$HOME" >/dev/null 2>&1; then
+      run ${pkgs.dockutil}/bin/dockutil --add "$app" --replacing "Ghostty" "$HOME"
+    fi
+  '';
+
   launchd.agents.hammerspoon = {
     enable = true;
     domain = "user";
