@@ -107,6 +107,10 @@ rest of the configuration queues optional packages.
 
 (defvar imalison:enable-doom-modeline-on-startup t
   "Non-nil means enable `doom-modeline-mode' during startup.")
+
+(use-package gotham-theme
+  :ensure (:wait t)
+  :demand t)
 #+END_SRC
 ** Security
 #+BEGIN_SRC emacs-lisp
@@ -4146,7 +4150,7 @@ Ensure all themes that I use are installed:
 
 (defvar-setq packages-appearance
   '(monokai-theme zenburn-theme base16-theme molokai-theme moe-theme
-                  tango-2-theme gotham-theme sublime-themes
+                  tango-2-theme sublime-themes
                   waher-theme ample-theme material-theme zerodark-theme
                   color-theme-modern leuven-theme spacemacs-theme gruvbox-theme
                   forest-blue-theme flatland-theme afternoon-theme
@@ -4278,8 +4282,9 @@ a daemon creates later.
                     :height imalison:default-font-size-pt)
 #+END_SRC
 ** imalison:appearance
-Themes are installed asynchronously by elpaca and may be selected in the custom
-files, so the theme is loaded once both are done.
+The default theme and modeline dependencies are installed synchronously above.
+Apply them after the custom files have loaded, independently of optional
+packages that may fail in Elpaca's remaining queue.
 #+BEGIN_SRC emacs-lisp
 (defun imalison:appearance ()
   "Restore the default theme and font size."
@@ -4293,7 +4298,7 @@ files, so the theme is loaded once both are done.
   (when imalison:enable-doom-modeline-on-startup
     (doom-modeline-mode +1)))
 
-(add-hook 'elpaca-after-init-hook #'imalison:startup-appearance)
+(add-hook 'after-init-hook #'imalison:startup-appearance)
 #+END_SRC
 * Post Init Custom
 #+BEGIN_SRC emacs-lisp
