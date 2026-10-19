@@ -809,11 +809,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792016698,
-        "narHash": "sha256-Bmz1IwGkR1meQtFKVhnoGLmg5x+ENByfDWFe0+m2qqg=",
+        "lastModified": 1792438798,
+        "narHash": "sha256-4MqUIdMKDbg7wkZ0VaU8gMvW2VQkI9yFO995l4Ws1yI=",
         "owner": "colonelpanic8",
         "repo": "google-messages-multidevice-bridge",
-        "rev": "30041f97d393a2e2e892acf09ba66b94cd8ecfbc",
+        "rev": "b21e23ed1ed084137f0c8943efa6091613cf202d",
         "type": "github"
       },
       "original": {
