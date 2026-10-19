@@ -19,7 +19,8 @@
     for bundle in ${pkgs.t3code}/Applications/*.app; do
       name="''${bundle##*/}"
       app="$HOME/Applications/Home Manager Apps/$name"
-      if ! ${pkgs.dockutil}/bin/dockutil --find "$app" "$HOME" >/dev/null 2>&1; then
+      if ! ${pkgs.dockutil}/bin/dockutil --find "$app" "$HOME" >/dev/null 2>&1 \
+        && ! ${pkgs.dockutil}/bin/dockutil --find "$bundle" "$HOME" >/dev/null 2>&1; then
         run ${pkgs.dockutil}/bin/dockutil --add "$app" --replacing "''${name%.app}" "$HOME"
       fi
     done
