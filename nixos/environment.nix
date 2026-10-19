@@ -167,6 +167,8 @@ in
         enableAllTerminfo = false;
         shellAliases =
           {
+            gtdf = "cd -- ${lib.escapeShellArg config.dotfiles-worktree}";
+            gtdfos = "cd -- ${lib.escapeShellArg "${config.dotfiles-worktree}/nixos"}";
             df_ssh = "TERM=xterm-256color ssh -o StrictHostKeyChecking=no";
             fix_nix = "LD_LIBRARY_PATH='' nix";
             xo = "xdg-open";

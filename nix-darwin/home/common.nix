@@ -140,6 +140,8 @@ in {
       };
       shellAliases =
         {
+          gtdf = "cd -- ${lib.escapeShellArg cfg.checkout}";
+          gtdfos = "cd -- ${lib.escapeShellArg "${cfg.checkout}/nix-darwin"}";
           df_ssh = "TERM='xterm-256color' ssh -o StrictHostKeyChecking=no";
         }
         // multiplexerAliases;
