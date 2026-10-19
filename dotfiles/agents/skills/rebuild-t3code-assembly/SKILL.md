@@ -20,14 +20,14 @@ Orientation, in BUILDING.md's terms:
 - Adding topics → "Inspecting and changing the stack" (`fork-assembler add`).
 - Tracking upstream or changed entries → `fork-assembler update`, then `build`.
 - Conflicts → "Resolving conflicts" (rerere first; never `-X ours/theirs`).
-- Before pushing → the syntax gate and all five ladder steps, in order.
-- Publishing → "Landing a rebuild" (repin by rev, build, `just switch`,
-  coupled commits with explicit paths).
+- Before pushing → the syntax gate only; releases are eager.
+- Publishing → "Landing a rebuild" (repin by rev, build, coupled commits with
+  explicit paths, then `just switch`).
+- After landing → the five ladder steps and "Test suites"; fix forward.
 
 Hard stops, even under time pressure:
 
 - Never commit to, base work on, or merge back `t3code/assembled`.
-- Never push an assembly that has not passed the content audit.
 - If you cannot finish, park the build worktree state on a named branch and
   report the exact entry and conflicted files ("If you cannot finish" in
   BUILDING.md).
