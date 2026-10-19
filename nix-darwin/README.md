@@ -60,18 +60,21 @@ sudo launchctl print system/org.nixos.dotfiles-auto-upgrade
 
 # Tailscale on macOS
 
-Both `mac-demarco-mini` and `alexanders-macbook-air` use the shared
+The Mini and Neo use the shared
 [`tailscale.nix`](tailscale.nix) module. Nix installs the CLI and runs `tailscaled`
 as a system launchd daemon, including before a user logs in. A launchd job
 reconciles MagicDNS acceptance, the configured hostname, and the primary user's
 operator access at startup and every five minutes. Other Tailscale preferences
 are left alone.
 
+The Air retains its existing Tailscale.app connection. Its optional daemon
+migration is described below; desktop and utility upgrades do not migrate its VPN.
+
 Authentication is separate from these settings:
 
 - The Mini continues to use its existing agenix auth key. A missing, empty, or
   `DISABLED` key skips automatic enrollment.
-- The Air uses `tailscale-authkey.alexanders-macbook-air.age`, encrypted only to
+- The Air's optional daemon setup uses `tailscale-authkey.alexanders-macbook-air.age`, encrypted only to
   its SSH host key. Agenix uses `/etc/ssh/ssh_host_ed25519_key` to decrypt it at
   activation, and the root-only plaintext file is passed to Tailscale by path.
   No user SSH identity is needed for unattended enrollment.
@@ -93,7 +96,10 @@ also has incomplete Taildrop support and cannot use an exit node.
    Trash, and reboot, following
    [Tailscale's macOS variant migration guidance](https://tailscale.com/docs/concepts/macos-variants).
    Use a local terminal for this migration because the VPN will disconnect.
-2. Activate the configuration:
+2. Import `../tailscale.nix` in `machines/alexanders-macbook-air.nix`, passing
+   `authKeyFile = ../../nixos/secrets/tailscale-authkey.alexanders-macbook-air.age`,
+   and set `age.identityPaths = ["/etc/ssh/ssh_host_ed25519_key"]`.
+   Activate the configuration:
 
    ```sh
    cd /Users/Shared/dotfiles/nix-darwin
