@@ -17,6 +17,7 @@
           }
         ];
       };
+      hiddenPullRequestRepositories = lib.mkDefault ["pingdotgg/t3code"];
     };
     keybindings = builtins.fromJSON (builtins.readFile ../t3code-keybindings.json);
     fleetManifest = import ../t3code-fleet.nix;
