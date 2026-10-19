@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2026-10-19 Mon 19:15 -->
+<!-- 2026-10-19 Mon 19:24 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -4276,6 +4276,10 @@ rest of the configuration queues optional packages.
 
 (<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:enable-doom-modeline-on-startup</span> t
   <span class="org-doc">"Non-nil means enable `</span><span class="org-doc"><span class="org-constant">doom-modeline-mode</span></span><span class="org-doc">' during startup."</span>)
+
+(<span class="org-keyword">use-package</span> <span class="org-constant">gotham-theme</span>
+  <span class="org-builtin">:ensure</span> (<span class="org-builtin">:wait</span> t)
+  <span class="org-builtin">:demand</span> t)
 </pre>
 </div>
 </div>
@@ -9970,7 +9974,7 @@ Ensure all themes that I use are installed:
 
 (defvar-setq packages-appearance
   '(monokai-theme zenburn-theme base16-theme molokai-theme moe-theme
-                  tango-2-theme gotham-theme sublime-themes
+                  tango-2-theme sublime-themes
                   waher-theme ample-theme material-theme zerodark-theme
                   color-theme-modern leuven-theme spacemacs-theme gruvbox-theme
                   forest-blue-theme flatland-theme afternoon-theme
@@ -10172,8 +10176,9 @@ a daemon creates later.
 <h3 id="imalisonappearance"><span class="section-number-3">20.13.</span> imalison:appearance <a href="#imalisonappearance"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-20-13">
 <p>
-Themes are installed asynchronously by elpaca and may be selected in the custom
-files, so the theme is loaded once both are done.
+The default theme and modeline dependencies are installed synchronously above.
+Apply them after the custom files have loaded, independently of optional
+packages that may fail in Elpaca's remaining queue.
 </p>
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:appearance</span> ()
@@ -10188,7 +10193,7 @@ files, so the theme is loaded once both are done.
   (<span class="org-keyword">when</span> imalison:enable-doom-modeline-on-startup
     (doom-modeline-mode +1)))
 
-(add-hook 'elpaca-after-init-hook #'imalison:startup-appearance)
+(add-hook 'after-init-hook #'imalison:startup-appearance)
 </pre>
 </div>
 </div>
