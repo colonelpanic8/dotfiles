@@ -3,6 +3,24 @@
 {lib, ...}: {
   services.t3code = {
     settings = {
+      favorites = [
+        {
+          provider = "codex";
+          model = "gpt-6.1-sol";
+        }
+        {
+          provider = "codex";
+          model = "gpt-6-astra";
+        }
+        {
+          provider = "claudeAgent";
+          model = "claude-fable-5-1";
+        }
+        {
+          provider = "claudeAgent";
+          model = "claude-opus-5-5";
+        }
+      ];
       providerInstances.claudeAgent = lib.mkDefault {
         driver = "claudeAgent";
         config.launchArgs = "--chrome";
