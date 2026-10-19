@@ -19,7 +19,8 @@
       done
     '';
 in {
-  home.activation.addT3CodeToDock = lib.hm.dag.entryAfter ["linkGeneration"] ''
+  home.activation.configureDock = lib.hm.dag.entryAfter ["linkGeneration"] ''
+    dock_changed=0
     applications="$(${pkgs.coreutils}/bin/realpath "$HOME/Applications/Home Manager Apps")"
     for bundle in ${pkgs.t3code}/Applications/*.app; do
       name="''${bundle##*/}"
@@ -27,15 +28,18 @@ in {
       if ! ${pkgs.dockutil}/bin/dockutil --find "$app" "$HOME" >/dev/null 2>&1 \
         && ! ${pkgs.dockutil}/bin/dockutil --find "$applications/$name" "$HOME" >/dev/null 2>&1 \
         && ! ${pkgs.dockutil}/bin/dockutil --find "$bundle" "$HOME" >/dev/null 2>&1; then
-        run ${pkgs.dockutil}/bin/dockutil --add "$app" --replacing "''${name%.app}" "$HOME"
+        run ${pkgs.dockutil}/bin/dockutil --add "$app" --no-restart --replacing "''${name%.app}" "$HOME"
+        dock_changed=1
       fi
     done
-  '';
 
-  home.activation.addGhosttyToDock = lib.hm.dag.entryAfter ["writeBoundary"] ''
     app="/Applications/Ghostty.app"
     if [ -d "$app" ] && ! ${pkgs.dockutil}/bin/dockutil --find "$app" "$HOME" >/dev/null 2>&1; then
-      run ${pkgs.dockutil}/bin/dockutil --add "$app" --replacing "Ghostty" "$HOME"
+      run ${pkgs.dockutil}/bin/dockutil --add "$app" --no-restart --replacing "Ghostty" "$HOME"
+      dock_changed=1
+    fi
+    if [ "$dock_changed" = 1 ]; then
+      run /usr/bin/killall Dock || true
     fi
   '';
 
