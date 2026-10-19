@@ -232,7 +232,10 @@
 (defun imalison:load-kat-mode ()
   (let ((debug-on-error t))
     (imalison:load-literate-file
-     (emacs-directory-filepath "kat-mode.org"))))
+     (emacs-directory-filepath "kat-mode.org")))
+  ;; This runs from Elpaca's completion hook. Declarations added here (or by
+  ;; package configuration) need another processing pass once it returns.
+  (run-at-time 0 nil #'elpaca-process-queues))
 
 ;; Install transient early to prevent built-in version from loading
 ;; Workaround: overriding-text-conversion-style is void on pgtk builds (no
