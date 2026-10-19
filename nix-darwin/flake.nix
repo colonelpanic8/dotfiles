@@ -159,6 +159,10 @@
       imports = lib.optional manageNix ./nix.nix;
       nix.enable = manageNix;
       system.primaryUser = primaryUser;
+      system.defaults.NSGlobalDomain = {
+        KeyRepeat = 2;
+        InitialKeyRepeat = 15;
+      };
       # GUI apps only see launchd's PATH, and launchctl setenv does not expand
       # the $USER/$HOME references in systemPath.
       launchd.user.envVariables.PATH =

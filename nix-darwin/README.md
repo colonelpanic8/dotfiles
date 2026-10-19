@@ -20,6 +20,8 @@ Homebrew packages outside the shared app list. Codex Desktop and Claude Desktop
 are declared as Homebrew casks; their CLIs come from the dedicated Nix flakes.
 The shared desktop module starts Raycast automatically, assigns Command-Space,
 and disables Spotlight's conflicting shortcuts.
+All Mac configurations use `KeyRepeat = 2` and `InitialKeyRepeat = 15` for
+faster keyboard repetition with a shorter initial delay.
 
 The Neo has its own encrypted T3 Code credential. Kat's desktop
 connects to its local T3 Code daemon; it does not receive Ivan's fleet credential,
