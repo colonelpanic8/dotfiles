@@ -464,27 +464,6 @@
         "type": "github"
       }
     },
-    "paseo": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1792034895,
-        "narHash": "sha256-9wMvnsj3Ufr9aIYKfwSEucLHbwf+1+M5pImqwIFvotA=",
-        "owner": "colonelpanic8",
-        "repo": "paseo",
-        "rev": "558947f02e0bcf90447dacce990b892605926dc3",
-        "type": "github"
-      },
-      "original": {
-        "owner": "colonelpanic8",
-        "ref": "assembled",
-        "repo": "paseo",
-        "type": "github"
-      }
-    },
     "pyproject-build-systems": {
       "inputs": {
         "nixpkgs": [
@@ -569,7 +548,6 @@
         "nix-homebrew": "nix-homebrew",
         "nixpkgs": "nixpkgs_3",
         "nixpkgs-bazel": "nixpkgs-bazel",
-        "paseo": "paseo",
         "pyproject-build-systems": "pyproject-build-systems",
         "pyproject-nix": "pyproject-nix",
         "repowise": "repowise",

@@ -12,12 +12,12 @@ just switch
 ```
 
 The Neo and `mac-demarco-mini` use the same system packages, Home Manager tools,
-desktop apps, fonts, and T3 Code/Paseo system daemons. Claude and Codex use the
+desktop apps, fonts, and T3 Code system daemon. Claude and Codex use the
 same pinned CLI flakes and binary caches on both Macs. Kat is the Neo's primary
 and only managed login account. The Gitea runner and its storage configuration
 live exclusively in `machines/mac-demarco-mini.nix`.
 
-The Neo has separate encrypted T3 Code and Paseo credentials. Kat's desktop
+The Neo has its own encrypted T3 Code credential. Kat's desktop
 connects to its local T3 Code daemon; it does not receive Ivan's fleet credential,
 GPG secrets, or private repository synchronization configuration.
 
@@ -40,7 +40,6 @@ Check the system daemons with:
 
 ```sh
 sudo launchctl print system/org.nixos.t3code
-sudo launchctl print system/org.nixos.paseo
 sudo launchctl print system/org.nixos.dotfiles-auto-upgrade
 ```
 
@@ -105,7 +104,7 @@ also has incomplete Taildrop support and cannot use an exit node.
 
 The new device may have a different Tailscale IP. Update any references to its
 old address and remove the old GUI client's device entry from the admin console
-once the new connection works. Paseo discovers the daemon's address directly.
+once the new connection works.
 
 For unattended enrollment on another Mac, pass an encrypted file as
 `authKeyFile` when importing the module, encrypt it to that Mac's SSH host key,

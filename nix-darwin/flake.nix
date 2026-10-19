@@ -86,11 +86,6 @@
       };
     };
 
-    paseo = {
-      url = "github:colonelpanic8/paseo/assembled";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     keepbook = {
       url = "github:colonelpanic8/keepbook";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -303,155 +298,7 @@
         };
       };
     };
-    paseoConfiguration = {
-      user,
-      passwordSecret,
-      hostnames ? null,
-      disableRelay ? true,
-    }: {
-      config,
-      lib,
-      pkgs,
-      ...
-    }: let
-      paseoHome = "${homeForUser user}/.paseo";
-      paseoPackage = inputs.paseo.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
-        postInstall =
-          (old.postInstall or "")
-          + ''
-            # Runtime tracing misses node-pty's dynamically loaded native files.
-            for path in {node_modules,packages/server/node_modules}/node-pty/{build/Release,prebuilds/darwin-arm64}/{pty.node,spawn-helper}; do
-              [ -f "$path" ] || continue
-              mkdir -p "$out/lib/paseo/$(dirname "$path")"
-              cp -p "$path" "$out/lib/paseo/$path"
-            done
-            node -e "require('$out/lib/paseo/packages/server/node_modules/node-pty')"
-          '';
-      });
-      paseoDesktopPackage = inputs.paseo.packages.${pkgs.stdenv.hostPlatform.system}.desktop.override {
-        paseo = paseoPackage;
-      };
-      ensurePaseoMcpInjection = import ../nix-shared/ensure-paseo-mcp-injection.nix {inherit pkgs;};
-      # Tailscale.app's CLI cannot run headless, so without nix-darwin's
-      # tailscale service read the address off the interface instead.
-      tailscaleIpCommand =
-        if config.services.tailscale.enable
-        then "${config.services.tailscale.package}/bin/tailscale ip -4 2>/dev/null | ${pkgs.coreutils}/bin/head -n 1"
-        else ''/sbin/ifconfig | /usr/bin/awk '/inet 100\./ {print $2; exit}' '';
-      paseoDaemon = pkgs.writeShellScript "paseo-daemon" ''
-        set -eu
-
-        ${ensurePaseoMcpInjection} ${lib.escapeShellArg "${paseoHome}/config.json"}
-
-        secret_file='${config.age.secrets.${passwordSecret}.path}'
-        # wait4path only rechecks on mount events, so it misses secrets agenix
-        # creates after this starts.
-        attempts=0
-        while [ ! -r "$secret_file" ]; do
-          if [ "$attempts" -ge 60 ]; then
-            echo "Timed out waiting for $secret_file" >&2
-            exit 1
-          fi
-          attempts=$((attempts + 1))
-          sleep 1
-        done
-        # Accept either an environment file or a bare password.
-        password_line="$(${pkgs.gnugrep}/bin/grep -m1 '^PASEO_PASSWORD=' "$secret_file" || ${pkgs.coreutils}/bin/head -n 1 "$secret_file")"
-        password="''${password_line#PASEO_PASSWORD=}"
-        if [ -z "$password" ]; then
-          echo "Paseo password secret is empty" >&2
-          exit 1
-        fi
-
-        tailscale_ip=""
-        attempts=0
-        while [ "$attempts" -lt 30 ]; do
-          tailscale_ip="$(${tailscaleIpCommand} || true)"
-          if [ -n "$tailscale_ip" ]; then
-            break
-          fi
-          attempts=$((attempts + 1))
-          sleep 2
-        done
-        if [ -z "$tailscale_ip" ]; then
-          echo "Timed out waiting for a Tailscale IPv4 address" >&2
-          exit 1
-        fi
-
-        export PASEO_PASSWORD="$password"
-        export PASEO_LISTEN="$tailscale_ip:6767"
-        exec ${paseoPackage}/bin/paseo-server ${lib.optionalString disableRelay "--no-relay"}
-      '';
-    in {
-      age.secrets.${passwordSecret} = {
-        file = ../nixos/secrets + "/${passwordSecret}.age";
-        owner = user;
-        mode = "0400";
-      };
-
-      environment.systemPackages = [
-        paseoPackage
-        paseoDesktopPackage
-      ];
-
-      home-manager.users.${user} = {lib, ...}: {
-        home.activation.configurePaseoDesktopDaemon = lib.hm.dag.entryAfter ["writeBoundary"] ''
-          settings_dir="$HOME/Library/Application Support/Paseo"
-          settings_file="$settings_dir/desktop-settings.json"
-          mkdir -p "$settings_dir"
-          temporary="$(${pkgs.coreutils}/bin/mktemp "$settings_dir/.desktop-settings.json.XXXXXX")"
-          if [ -f "$settings_file" ]; then
-            ${pkgs.jq}/bin/jq '. * {settings: {daemon: {manageBuiltInDaemon: false, keepRunningAfterQuit: false}}, migrations: {legacyRendererSettingsImported: true}}' \
-              "$settings_file" > "$temporary"
-          else
-            printf '%s\n' '{"version":1,"settings":{"daemon":{"manageBuiltInDaemon":false,"keepRunningAfterQuit":false}},"migrations":{"legacyRendererSettingsImported":true}}' > "$temporary"
-          fi
-          chmod 0600 "$temporary"
-          mv "$temporary" "$settings_file"
-        '';
-      };
-
-      launchd.daemons.paseo = {
-        serviceConfig = {
-          ProgramArguments = ["${paseoDaemon}"];
-          UserName = user;
-          GroupName = "staff";
-          WorkingDirectory = homeForUser user;
-          EnvironmentVariables = {
-            HOME = homeForUser user;
-            USER = user;
-            LOGNAME = user;
-            SHELL = "/bin/zsh";
-            NODE_ENV = "production";
-            PASEO_HOME = paseoHome;
-            PASEO_HOSTNAMES = lib.concatStringsSep "," (
-              if hostnames == null
-              then [config.networking.hostName]
-              else hostnames
-            );
-            PATH = lib.concatStringsSep ":" [
-              "/etc/profiles/per-user/${user}/bin"
-              "${homeForUser user}/.nix-profile/bin"
-              "${homeForUser user}/.local/state/nix/profile/bin"
-              "/run/current-system/sw/bin"
-              "/nix/var/nix/profiles/default/bin"
-              "/opt/homebrew/bin"
-              "/usr/local/bin"
-              "/usr/bin"
-              "/bin"
-            ];
-          };
-          RunAtLoad = true;
-          KeepAlive = true;
-          ProcessType = "Background";
-          ThrottleInterval = 10;
-          StandardOutPath = "${homeForUser user}/Library/Logs/paseo-daemon.log";
-          StandardErrorPath = "${homeForUser user}/Library/Logs/paseo-daemon.err.log";
-        };
-      };
-    };
-    # Runs the Home Manager T3 Code server as a system daemon, like Paseo, so it
-    # does not depend on the user having a GUI login session.
+    # Run T3 Code independently of the user's GUI login session.
     t3codeConfiguration = {
       user,
       tokenSecret ? "t3code-managed-access-token",
@@ -578,7 +425,6 @@
       homeModules ? personalHomeModules,
       machineModule,
       manageNix ? true,
-      paseoPasswordSecret ? "paseo-password-environment",
       t3codeTokenSecret ? "t3code-managed-access-token",
     }:
       nix-darwin.lib.darwinSystem {
@@ -588,10 +434,6 @@
           nix-homebrew.darwinModules.nix-homebrew
           (homebrewConfiguration {inherit primaryUser;})
           (sharedConfiguration {inherit primaryUser manageNix;})
-          (paseoConfiguration {
-            user = primaryUser;
-            passwordSecret = paseoPasswordSecret;
-          })
           (t3codeConfiguration {
             user = primaryUser;
             tokenSecret = t3codeTokenSecret;
@@ -610,7 +452,6 @@
       machineModule = ./machines/kats-macbook-neo.nix;
       manageNix = false;
       homeModules = [./home/agents.nix ./home/desktop.nix];
-      paseoPasswordSecret = "paseo-password-kats-macbook-neo";
       t3codeTokenSecret = "t3code-managed-access-token.kats-macbook-neo";
     };
 
@@ -627,15 +468,6 @@
         (sharedConfiguration {primaryUser = "alex";})
         (import ./tailscale.nix {
           authKeyFile = ../nixos/secrets/tailscale-authkey.alexanders-macbook-air.age;
-        })
-        (paseoConfiguration {
-          user = "alex";
-          passwordSecret = "paseo-password-alexanders-macbook-air";
-          disableRelay = false;
-          hostnames = [
-            "alexanders-macbook-air"
-            "alexanders-macbook-air.tail40f15e.ts.net"
-          ];
         })
         (homeManagerConfiguration {
           primaryUser = "alex";
