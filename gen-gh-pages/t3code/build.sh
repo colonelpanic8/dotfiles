@@ -1,5 +1,5 @@
 #!/bin/sh
-# Writes index.html and fleet.age next to this script for GitHub Pages.
+# Writes index.html, fleet.age, and settings.age next to this script for GitHub Pages.
 # Requires qrencode and jq.
 set -eu
 
@@ -21,6 +21,8 @@ deep_link="${APP_SCHEME}://connections/new?${query}"
 intent_url="intent://connections/new?${query}#Intent;scheme=${APP_SCHEME};package=${APP_PACKAGE};S.browser_fallback_url=$(uri "$FDROID_URL");end"
 
 cp "$enrollment" "$here/fleet.age"
+cp "$here/../../nixos/secrets/t3code-mobile-settings.age" "$here/settings.age"
+settings_url="${BASE_URL}settings.age"
 
 qr_svg=$(qrencode -t SVG --inline --svg-path -l M -m 4 "$page_url")
 
@@ -55,6 +57,7 @@ $qr_svg
 <li><a href="$RELEASES_URL">GitHub releases</a></li>
 </ul>
 <p><small>Encrypted enrollment: <a href="$fleet_url">fleet.age</a></small></p>
+<p><small>Settings feed (Settings &rarr; Environments &rarr; Settings feed): <a href="$settings_url">$settings_url</a></small></p>
 </body>
 </html>
 EOF
