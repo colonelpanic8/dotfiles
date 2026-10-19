@@ -192,6 +192,7 @@
       nixpkgs.overlays = [
         (import ../nix-shared/overlays)
         inputs.t3code-integration.overlays.client
+        (import ./t3code-overlay.nix)
         # Use codex and claude-code from dedicated flakes with cachix
         (final: prev: {
           bazel = inputs.nixpkgs-bazel.legacyPackages.${prev.stdenv.hostPlatform.system}.bazel;
