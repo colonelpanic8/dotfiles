@@ -11,17 +11,26 @@ cd /Users/Shared/dotfiles/nix-darwin
 just switch
 ```
 
-The Neo and `mac-demarco-mini` use the same system packages, Home Manager tools,
-desktop apps, fonts, and T3 Code system daemon. Claude and Codex use the
-same pinned CLI flakes and binary caches on both Macs. Kat is the Neo's primary
-and only managed login account. The Gitea runner and its storage configuration
-live exclusively in `machines/mac-demarco-mini.nix`. The Neo preserves existing
-Homebrew packages outside the shared app list. Codex Desktop and Claude Desktop
-are declared as Homebrew casks; their CLIs come from the dedicated Nix flakes.
-The shared desktop module starts Raycast automatically, assigns Command-Space,
-and disables Spotlight's conflicting shortcuts.
-All Mac configurations use `KeyRepeat = 2` and `InitialKeyRepeat = 15` for
-faster keyboard repetition with a shorter initial delay.
+All three Macs use `mkDarwinSystem` for shared CLI tools, desktop applications,
+fonts, and Home Manager settings. Host accounts and services live in `machines/`.
+The Gitea runner and its storage configuration are exclusive to the Mini.
+Kat is the Neo's primary and only managed login account; Alex remains the Air's
+primary user. Both laptops preserve unmanaged Homebrew packages.
+
+[`portable-packages.nix`](../nix-shared/portable-packages.nix) is the common utility
+list for macOS and NixOS. It includes Git, ripgrep, fd, jq, just, tmux, Zellij,
+Node, formatters, and image/media tools. Both systems consume it through
+`nix-shared/system/essential.nix`; platform-specific tools stay in that module.
+
+Codex Desktop and Claude Desktop are declared as shared Homebrew casks; their
+CLIs come from dedicated Nix flakes. The shared desktop module starts Raycast
+automatically, assigns Command-Space, disables Spotlight's conflicting shortcuts,
+and adds T3 Code and Ghostty to the Dock. The Mini and Neo run T3 Code system
+daemons; the Air retains its desktop client setup.
+
+All Macs use `KeyRepeat = 2`, `InitialKeyRepeat = 15`, and Caps Lock → Control.
+The Mini and Neo opt into `persistent-desktop.nix` for their existing sleep and
+screen-lock preferences; the Air retains macOS's defaults for those settings.
 
 The Neo has its own encrypted T3 Code credential. Kat's desktop
 connects to its local T3 Code daemon; it does not receive Ivan's fleet credential,

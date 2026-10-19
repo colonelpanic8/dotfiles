@@ -14,6 +14,7 @@
 in {
   networking.hostName = "mac-demarco-mini";
   imports = [
+    ../persistent-desktop.nix
     (import ../gitea-actions-runner.nix)
     (import ../gitea-runner-external-storage.nix)
     (import ../tailscale.nix {

@@ -4,6 +4,7 @@
   ...
 }: {
   imports = [
+    ../persistent-desktop.nix
     ../auto-upgrade.nix
     (import ../tailscale.nix {
       authKeyFile = ../../nixos/secrets/tailscale-authkey.kats-macbook-neo.age;

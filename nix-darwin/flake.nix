@@ -159,6 +159,10 @@
       imports = lib.optional manageNix ./nix.nix;
       nix.enable = manageNix;
       system.primaryUser = primaryUser;
+      system.keyboard = {
+        enableKeyMapping = true;
+        remapCapsLockToControl = true;
+      };
       system.defaults.NSGlobalDomain = {
         KeyRepeat = 2;
         InitialKeyRepeat = 15;
@@ -367,13 +371,11 @@
         };
       };
     };
-    desktopConfiguration = {primaryUser}: {
+    desktopConfiguration = {
       pkgs,
-      lib,
       config,
       ...
     }: let
-      essentialPkgs = (import ../nix-shared/system/essential.nix {inherit pkgs lib inputs;}).environment.systemPackages;
       disabledAppleSymbolicHotKey = parameters: {
         enabled = false;
         value = {
@@ -385,7 +387,6 @@
       # T3 Code labels its environment with ComputerName.
       networking.computerName = config.networking.hostName;
       system.defaults.NSGlobalDomain."com.apple.swipescrolldirection" = false;
-      system.defaults.CustomUserPreferences."com.apple.screensaver".idleTime = 0;
       system.defaults.CustomUserPreferences."com.apple.symbolichotkeys".AppleSymbolicHotKeys = {
         # Disable input source shortcuts that conflict with launcher usage.
         "60" = disabledAppleSymbolicHotKey [32 49 262144];
@@ -394,30 +395,7 @@
         "64" = disabledAppleSymbolicHotKey [32 49 1048576];
         "65" = disabledAppleSymbolicHotKey [32 49 1572864];
       };
-      system.defaults.screensaver.askForPassword = false;
-      system.defaults.screensaver.askForPasswordDelay = 0;
-
-      system.activationScripts.postActivation.text = ''
-        echo >&2 "current-host screensaver defaults..."
-        primary_uid="$(id -u -- ${primaryUser})"
-        if launchctl print "gui/$primary_uid" >/dev/null 2>&1; then
-          launchctl asuser "$primary_uid" sudo --user=${primaryUser} -- defaults -currentHost write com.apple.screensaver askForPassword -bool false
-          launchctl asuser "$primary_uid" sudo --user=${primaryUser} -- defaults -currentHost write com.apple.screensaver askForPasswordDelay -int 0
-          launchctl asuser "$primary_uid" sudo --user=${primaryUser} -- defaults -currentHost write com.apple.screensaver idleTime -int 0
-        else
-          echo >&2 "skipping current-host screensaver defaults; ${primaryUser} has no GUI launchd session"
-        fi
-      '';
-
-      power.sleep = {
-        computer = "never";
-        display = "never";
-        harddisk = "never";
-      };
-
-      environment.systemPackages =
-        essentialPkgs
-        ++ [pkgs.gnupg];
+      environment.systemPackages = [pkgs.gnupg];
 
       # Install GUI-visible fonts into /Library/Fonts/Nix Fonts.
       fonts.packages = with pkgs; [
@@ -431,29 +409,33 @@
       machineModule,
       manageNix ? true,
       homebrewCleanup ? "zap",
+      extraCasks ? [],
       t3codeTokenSecret ? "t3code-managed-access-token",
     }:
       nix-darwin.lib.darwinSystem {
-        modules = [
-          agenix.darwinModules.default
-          home-manager.darwinModules.home-manager
-          nix-homebrew.darwinModules.nix-homebrew
-          (homebrewConfiguration {
-            inherit primaryUser;
-            cleanup = homebrewCleanup;
-          })
-          (sharedConfiguration {inherit primaryUser manageNix;})
-          (t3codeConfiguration {
+        specialArgs = {inherit inputs;};
+        modules =
+          [
+            ../nix-shared/system/essential.nix
+            agenix.darwinModules.default
+            home-manager.darwinModules.home-manager
+            nix-homebrew.darwinModules.nix-homebrew
+            (homebrewConfiguration {
+              inherit primaryUser extraCasks;
+              cleanup = homebrewCleanup;
+            })
+            (sharedConfiguration {inherit primaryUser manageNix;})
+            (homeManagerConfiguration {
+              inherit primaryUser;
+              users = nixpkgs.lib.genAttrs enabledHomeUsers (_: homeModules);
+            })
+            desktopConfiguration
+            machineModule
+          ]
+          ++ nixpkgs.lib.optional (t3codeTokenSecret != null) (t3codeConfiguration {
             user = primaryUser;
             tokenSecret = t3codeTokenSecret;
-          })
-          (homeManagerConfiguration {
-            inherit primaryUser;
-            users = nixpkgs.lib.genAttrs enabledHomeUsers (_: homeModules);
-          })
-          (desktopConfiguration {inherit primaryUser;})
-          machineModule
-        ];
+          });
       };
   in {
     darwinConfigurations."kats-macbook-neo" = mkDarwinSystem {
@@ -471,50 +453,20 @@
       machineModule = ./machines/mac-demarco-mini.nix;
     };
 
-    darwinConfigurations."alexanders-macbook-air" = nix-darwin.lib.darwinSystem {
-      modules = [
-        agenix.darwinModules.default
-        home-manager.darwinModules.home-manager
-        (sharedConfiguration {primaryUser = "alex";})
-        (import ./tailscale.nix {
-          authKeyFile = ../nixos/secrets/tailscale-authkey.alexanders-macbook-air.age;
-        })
-        (homeManagerConfiguration {
-          primaryUser = "alex";
-          users.alex = [
-            {
-              dotfiles.gitIdentity = {
-                name = "Alexander Malison";
-                email = "alexmalison@gmail.com";
-              };
-            }
-          ];
-        })
-        nix-homebrew.darwinModules.nix-homebrew
-        (homebrewConfiguration {
-          primaryUser = "alex";
-          extraCasks = ["google-chrome"];
-          cleanup = "none";
-        })
-        ({
-          pkgs,
-          lib,
-          ...
-        }: {
-          networking.hostName = "alexanders-macbook-air";
-          system.stateVersion = 7;
-          environment.systemPackages =
-            (import ../nix-shared/system/essential.nix {inherit pkgs lib inputs;}).environment.systemPackages
-            ++ (with pkgs; [
-              bitwarden-desktop
-              gnupg
-            ]);
-          users.users.alex = {
-            name = "alex";
-            home = homeForUser "alex";
-            openssh.authorizedKeys.keys = (import ../nix-shared/keys.nix).userKeys.alex;
+    darwinConfigurations."alexanders-macbook-air" = mkDarwinSystem {
+      primaryUser = "alex";
+      machineModule = ./machines/alexanders-macbook-air.nix;
+      homebrewCleanup = "none";
+      extraCasks = ["google-chrome"];
+      t3codeTokenSecret = null;
+      homeModules = [
+        ./home/desktop.nix
+        {
+          dotfiles.gitIdentity = {
+            name = "Alexander Malison";
+            email = "alexmalison@gmail.com";
           };
-        })
+        }
       ];
     };
 

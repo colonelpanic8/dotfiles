@@ -88,24 +88,13 @@ in {
       };
 
     home.packages = with pkgs; [
-      alejandra
       alt-tab-macos
       claude-code
       cocoapods
       codex
-      imagemagick
       inkscape
-      nodejs
-      potrace
-      playwright-cli
-      prettier
       slack
       t3code
-      tea
-      typescript
-      vim
-      vtracer
-      yarn
     ];
 
     home.sessionPath = [
