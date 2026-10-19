@@ -152,16 +152,17 @@
       '') (builtins.attrNames users);
     };
     homeForUser = user: "/Users/${user}";
-    mkUserDescription = user:
-      if user == "imalison"
-      then "Ivan Malison"
-      else null;
-    sharedConfiguration = {primaryUser}: {
+    sharedConfiguration = {
+      primaryUser,
+      manageNix ? true,
+    }: {
       config,
       lib,
       pkgs,
       ...
     }: {
+      imports = lib.optional manageNix ./nix.nix;
+      nix.enable = manageNix;
       system.primaryUser = primaryUser;
       # GUI apps only see launchd's PATH, and launchctl setenv does not expand
       # the $USER/$HOME references in systemPath.
@@ -238,43 +239,6 @@
       nixpkgs.config.allowUnfree = true;
 
       programs.direnv.enable = true;
-
-      # Necessary for using flakes on this system.
-      nix.settings = {
-        experimental-features = "nix-command flakes";
-        # Trigger store GC before Nix consumes the machine's build headroom.
-        min-free = 10 * 1024 * 1024 * 1024;
-        max-free = 20 * 1024 * 1024 * 1024;
-        gc-reserved-space = 256 * 1024 * 1024;
-        substituters = [
-          "https://cache.nixos.org"
-          "https://codex-cli.cachix.org"
-          "https://claude-code.cachix.org"
-          "https://paseo-colonelpanic8.cachix.org"
-        ];
-        trusted-public-keys = [
-          "codex-cli.cachix.org-1:1Br3H1hHoRYG22n//cGKJOk3cQXgYobUel6O8DgSing="
-          "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="
-          "paseo-colonelpanic8.cachix.org-1:fxfDiskEv5JT+xX3CbXBUAWblc+234mDeodXDi7eY1k="
-        ];
-      };
-      nix.gc = {
-        automatic = true;
-        interval = {
-          Hour = 4;
-          Minute = 15;
-        };
-        options = "--delete-older-than 7d";
-      };
-      # Root's collection only expires generations under /nix/var/nix/profiles.
-      launchd.daemons.nix-gc.command = lib.mkForce "${pkgs.writeShellScript "nix-gc" ''
-        for profile in /Users/*/.local/state/nix/profiles/*; do
-          case "$profile" in *-link) continue ;; esac
-          ${config.nix.package}/bin/nix-env --profile "$profile" --delete-generations 7d || true
-        done
-        exec ${config.nix.package}/bin/nix-collect-garbage ${config.nix.gc.options}
-      ''}";
-      nix.optimise.automatic = true;
 
       # Set Git commit hash for darwin-version.
       system.configurationRevision = self.rev or self.dirtyRev or null;
@@ -487,14 +451,17 @@
     };
     # Runs the Home Manager T3 Code server as a system daemon, like Paseo, so it
     # does not depend on the user having a GUI login session.
-    t3codeConfiguration = {user}: {
+    t3codeConfiguration = {
+      user,
+      tokenSecret ? "t3code-managed-access-token",
+    }: {
       config,
       lib,
       pkgs,
       ...
     }: let
       agentConfig = config.home-manager.users.${user}.launchd.agents.t3code-headless.config;
-      tokenFile = config.age.secrets.t3code-managed-access-token.path;
+      tokenFile = config.age.secrets.${tokenSecret}.path;
       t3codeDaemon = pkgs.writeShellScript "t3code-daemon" ''
         set -eu
 
@@ -511,8 +478,8 @@
         exec ${lib.escapeShellArgs agentConfig.ProgramArguments}
       '';
     in {
-      age.secrets.t3code-managed-access-token = {
-        file = ../nixos/secrets/t3code-managed-access-token.age;
+      age.secrets.${tokenSecret} = {
+        file = ../nixos/secrets + "/${tokenSecret}.age";
         owner = user;
         mode = "0400";
       };
@@ -547,7 +514,7 @@
         };
       };
     };
-    mkConfiguration = {primaryUser}: {
+    desktopConfiguration = {primaryUser}: {
       pkgs,
       lib,
       config,
@@ -562,69 +529,8 @@
         };
       };
     in {
-      networking.hostName = "mac-demarco-mini";
       # T3 Code labels its environment with ComputerName.
       networking.computerName = config.networking.hostName;
-      imports = [
-        (import ./gitea-actions-runner.nix)
-        (import ./gitea-runner-external-storage.nix)
-        (import ./tailscale.nix {
-          authKeyFile = ../nixos/secrets/tailscale-authkey.age;
-        })
-      ];
-      age = {
-        identityPaths = [
-          "${config.users.users.${primaryUser}.home}/.ssh/id_ed25519"
-          "/etc/ssh/ssh_host_ed25519_key"
-          "/etc/ssh/ssh_host_rsa_key"
-        ];
-        secrets.gitea-runner-token.file = ../nixos/secrets/gitea-runner-token.mac-demarco-mini.age;
-      };
-      services.gitea-actions-runner = {
-        user = "gitea-runner";
-        instances.nix = {
-          enable = true;
-          name = config.networking.hostName;
-          url = "https://dev.railbird.ai";
-          tokenFile = config.age.secrets.gitea-runner-token.path;
-          labels = [
-            "nix-darwin-${pkgs.stdenv.hostPlatform.system}:host"
-            "macos-aarch64-darwin"
-            "nix:host"
-          ];
-          settings = {
-            cache = {
-              enabled = true;
-            };
-            host = {
-              workdir_parent = "/var/lib/gitea-runner/action-cache-dir";
-            };
-          };
-          hostPackages = with pkgs; [
-            bash
-            coreutils
-            curl
-            direnv
-            gawk
-            just
-            git-lfs
-            isort
-            git
-            gnused
-            ncdu
-            nixVersions.stable
-            nodejs
-            openssh
-            wget
-          ];
-        };
-      };
-
-      launchd.daemons.gitea-runner-nix.serviceConfig.EnvironmentVariables = {
-        XDG_CONFIG_HOME = "/var/lib/gitea-runner";
-        XDG_CACHE_HOME = "/var/lib/gitea-runner/.cache";
-        XDG_RUNTIME_DIR = "/var/lib/gitea-runner/tmp";
-      };
       system.defaults.NSGlobalDomain."com.apple.swipescrolldirection" = false;
       system.defaults.CustomUserPreferences."com.apple.screensaver".idleTime = 0;
       system.defaults.CustomUserPreferences."com.apple.symbolichotkeys".AppleSymbolicHotKeys = {
@@ -656,41 +562,6 @@
         harddisk = "never";
       };
 
-      # launchd.daemons.gitea-runner-restarter = {
-      #   serviceConfig = {
-      #     ProgramArguments = [
-      #       "/usr/bin/env"
-      #       "bash"
-      #       "-c"
-      #       ''
-      #         SERVICE_NAME="org.nixos.gitea-runner-nix"
-      #         while true; do
-      #         # Check the second column of launchctl list output for our service
-      #         EXIT_CODE=$(sudo launchctl list | grep "$SERVICE_NAME" | awk '{print $2}')
-      #         if [ -z "$EXIT_CODE" ]; then
-      #         echo "$(date): $SERVICE_NAME is running correctly. Terminating the restarter."
-      #         exit 0
-      #         else
-      #         echo "$(date): $SERVICE_NAME is not running or in error state. Attempting to restart..."
-      #         sudo launchctl bootout system/$SERVICE_NAME 2>/dev/null || true
-      #         sudo launchctl load /Library/LaunchDaemons/$SERVICE_NAME.plist
-      #         sleep 2  # Give the service some time to start
-      #         fi
-      #         done
-      #       ''
-      #     ];
-      #     RunAtLoad = true;
-      #     ThrottleInterval = 300;
-      #   };
-      # };
-
-      launchd.daemons.does-anything-work = {
-        serviceConfig = {
-          ProgramArguments = ["/usr/bin/env" "bash" "-c" "date > /var/log/does-anything-work"];
-          RunAtLoad = true;
-        };
-      };
-
       environment.systemPackages =
         essentialPkgs
         ++ [pkgs.gnupg];
@@ -699,26 +570,15 @@
       fonts.packages = with pkgs; [
         nerd-fonts.jetbrains-mono
       ];
-
-      users.users =
-        lib.genAttrs personalUsers (user: {
-          name = user;
-          home = homeForUser user;
-          description = mkUserDescription user;
-          openssh.authorizedKeys.keys = (import ../nix-shared/keys.nix).userKeys.${user};
-        })
-        // {
-          gitea-runner = {
-            name = "gitea-runner";
-            isHidden = false;
-            home = "/Users/gitea-runner";
-            createHome = false;
-          };
-        };
     };
     mkDarwinSystem = {
       primaryUser,
       enabledHomeUsers ? [primaryUser],
+      homeModules ? personalHomeModules,
+      machineModule,
+      manageNix ? true,
+      paseoPasswordSecret ? "paseo-password-environment",
+      t3codeTokenSecret ? "t3code-managed-access-token",
     }:
       nix-darwin.lib.darwinSystem {
         modules = [
@@ -726,23 +586,37 @@
           home-manager.darwinModules.home-manager
           nix-homebrew.darwinModules.nix-homebrew
           (homebrewConfiguration {inherit primaryUser;})
-          (sharedConfiguration {inherit primaryUser;})
+          (sharedConfiguration {inherit primaryUser manageNix;})
           (paseoConfiguration {
-            user = "imalison";
-            passwordSecret = "paseo-password-environment";
+            user = primaryUser;
+            passwordSecret = paseoPasswordSecret;
           })
-          (t3codeConfiguration {user = "imalison";})
+          (t3codeConfiguration {
+            user = primaryUser;
+            tokenSecret = t3codeTokenSecret;
+          })
           (homeManagerConfiguration {
             inherit primaryUser;
-            users = nixpkgs.lib.genAttrs enabledHomeUsers (_: personalHomeModules);
+            users = nixpkgs.lib.genAttrs enabledHomeUsers (_: homeModules);
           })
-          (mkConfiguration {inherit primaryUser;})
+          (desktopConfiguration {inherit primaryUser;})
+          machineModule
         ];
       };
   in {
+    darwinConfigurations."kats-macbook-neo" = mkDarwinSystem {
+      primaryUser = "kat";
+      machineModule = ./machines/kats-macbook-neo.nix;
+      manageNix = false;
+      homeModules = [./home/agents.nix ./home/desktop.nix];
+      paseoPasswordSecret = "paseo-password-kats-macbook-neo";
+      t3codeTokenSecret = "t3code-managed-access-token.kats-macbook-neo";
+    };
+
     darwinConfigurations."mac-demarco-mini" = mkDarwinSystem {
       primaryUser = "imalison";
       enabledHomeUsers = personalUsers;
+      machineModule = ./machines/mac-demarco-mini.nix;
     };
 
     darwinConfigurations."alexanders-macbook-air" = nix-darwin.lib.darwinSystem {

@@ -12,15 +12,15 @@ build:
 switch:
     system="$(nix build --no-link --print-out-paths .#darwinConfigurations.{{ hostname }}.system)" && \
     primary_user="$(nix eval --raw .#darwinConfigurations.{{ hostname }}.config.system.primaryUser)" && \
-    sudo /run/current-system/sw/bin/nix-env -p /nix/var/nix/profiles/system --set "$system" && \
+    sudo "$(command -v nix-env)" -p /nix/var/nix/profiles/system --set "$system" && \
     sudo launchctl asuser "$(id -u "$primary_user")" env HOME=/var/root "$system/activate"
 
 update:
-    /run/current-system/sw/bin/nix flake update
+    nix flake update
     just switch
 
 bump-tracked-flakes:
-    /run/current-system/sw/bin/nix flake update {{ tracked-flake-inputs }}
+    nix flake update {{ tracked-flake-inputs }}
     just switch
 
 update-nix-darwin:

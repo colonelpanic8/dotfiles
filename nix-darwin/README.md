@@ -1,3 +1,49 @@
+# Kat's MacBook Neo
+
+`kats-macbook-neo` uses a multi-user Determinate Nix installation. Determinate
+manages Nix and its daemon; the host module sets `nix.enable = false` so
+nix-darwin manages the system packages and shell integration separately.
+
+The shared checkout lives at `/Users/Shared/dotfiles`. To apply changes:
+
+```sh
+cd /Users/Shared/dotfiles/nix-darwin
+just switch
+```
+
+The Neo and `mac-demarco-mini` use the same system packages, Home Manager tools,
+desktop apps, fonts, and T3 Code/Paseo system daemons. Claude and Codex use the
+same pinned CLI flakes and binary caches on both Macs. Kat is the Neo's primary
+and only managed login account. The Gitea runner and its storage configuration
+live exclusively in `machines/mac-demarco-mini.nix`.
+
+The Neo has separate encrypted T3 Code and Paseo credentials. Kat's desktop
+connects to its local T3 Code daemon; it does not receive Ivan's fleet credential,
+GPG secrets, or private repository synchronization configuration.
+
+Tailscale runs as a system daemon and enrolls using
+`tailscale-authkey.kats-macbook-neo.age`, encrypted to this Mac's SSH host key
+and Kat's Ed25519 key. Kat is the local Tailscale operator. `katKeys` is separate
+from the shared SSH authorization and administrator key lists; this host alone
+includes it in Kat's authorized keys.
+
+The Neo's reusable enrollment token expires on January 17, 2027. Rotate the
+encrypted token before enrolling again after that date. An enrolled daemon
+keeps its device state across rebuilds and reboots.
+
+`org.nixos.dotfiles-auto-upgrade` pulls `origin/master` and runs `just switch`
+daily at 04:30 local time, or after the Mac wakes. It skips a checkout with local
+changes or another branch. Dependency versions follow the committed lockfile.
+Logs are in `~/Library/Logs/dotfiles-auto-upgrade{,.err}.log`.
+
+Check the system daemons with:
+
+```sh
+sudo launchctl print system/org.nixos.t3code
+sudo launchctl print system/org.nixos.paseo
+sudo launchctl print system/org.nixos.dotfiles-auto-upgrade
+```
+
 # Tailscale on macOS
 
 Both `mac-demarco-mini` and `alexanders-macbook-air` use the shared

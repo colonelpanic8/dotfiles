@@ -5,7 +5,6 @@
   pkgs,
   ...
 }: let
-  dotfilesCheckout = config.dotfiles.checkout;
   replaceRuntimeDir = builtins.replaceStrings ["$XDG_RUNTIME_DIR"] ["\${XDG_RUNTIME_DIR}"];
   gpgKeyPath = replaceRuntimeDir config.age.secrets.gpg-keys.path;
   gpgPassphrasePath = replaceRuntimeDir config.age.secrets.gpg-passphrase.path;
@@ -56,12 +55,11 @@
 in {
   imports = [
     inputs.agenix.homeManagerModules.default
-    inputs.t3code-integration.homeManagerModules.t3code-server
+    ./agents.nix
     ../../nix-shared/home-manager/codex-generated-skills.nix
     ../../nix-shared/home-manager/paseo-managed-hosts.nix
     ../../nix-shared/home-manager/paseo-settings-seed.nix
     ../../nix-shared/home-manager/t3code-managed-connections.nix
-    ../../nix-shared/home-manager/t3code-server-config.nix
     ./git-sync.nix
   ];
 
@@ -73,12 +71,6 @@ in {
 
   myModules.codexGeneratedSkills.enable = true;
   myModules.codexGeneratedSkills.worktreeCodexDir = "${config.dotfiles.worktreeDotfilesDir}/codex";
-  # The darwin t3codeConfiguration enables this for one user and runs it as a
-  # system daemon.
-  services.t3code = {
-    package = pkgs.t3code;
-    repositoryRoot = dotfilesCheckout;
-  };
 
   home.packages = [
     (pkgs.pass.withExtensions (ext: [ext.pass-otp]))
