@@ -184,6 +184,61 @@ def managed(command):
     )
 
 
+def publishing(processes):
+    pids = [str(pid) for pid, command in processes if managed(command)]
+    if not pids:
+        return False
+    result = subprocess.run(
+        [
+            "/usr/sbin/lsof",
+            "-a",
+            "-p",
+            ",".join(pids),
+            "-iTCP@127.0.0.1:18379",
+            "-sTCP:ESTABLISHED",
+            "-t",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return result.returncode == 0
+
+
+def stop_capture(paused, processes):
+    paused.touch()
+    for pid, command in processes:
+        if managed(command):
+            # OBS prompts on SIGTERM while streaming; Stop must release capture immediately.
+            try:
+                os.kill(pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+
+
+def start_capture(paused, processes):
+    if any(not managed(command) for _, command in processes):
+        raise RuntimeError(
+            "OBS is using another collection; leaving that session alone."
+        )
+    if publishing(processes):
+        paused.unlink(missing_ok=True)
+        print("Camera and microphone are already publishing.")
+        return
+    stop_capture(paused, processes)
+    paused.unlink(missing_ok=True)
+    subprocess.run(
+        [
+            "/bin/launchctl",
+            "kickstart",
+            "-k",
+            f"user/{os.getuid()}/org.nix-community.home.mac-camera",
+        ],
+        check=True,
+    )
+    print("Camera and microphone start requested.")
+
+
 def wait_for_relay(paused):
     while not paused.exists():
         try:
@@ -205,7 +260,10 @@ def clear_run_markers(home):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--owner", required=True)
-    parser.add_argument("action", choices=["run", "pause", "resume", "status"])
+    parser.add_argument(
+        "action", choices=["run", "start", "stop", "pause", "resume", "status"]
+    )
+    parser.add_argument("--json", action="store_true", help="Output status as JSON")
     args = parser.parse_args()
     if pwd.getpwuid(os.getuid()).pw_name != args.owner:
         parser.error(f"Run mac-camera as this Mac's primary user: {args.owner}")
@@ -213,30 +271,26 @@ def main():
     state = home / "Library/Application Support/TailnetCamera"
     state.mkdir(parents=True, exist_ok=True)
     paused = state / "paused"
-    if args.action == "pause":
-        paused.touch()
-        for pid, command in obs_processes():
-            if managed(command):
-                # OBS prompts on SIGTERM while streaming; Pause must release capture immediately.
-                try:
-                    os.kill(pid, signal.SIGKILL)
-                except ProcessLookupError:
-                    pass
+    if args.action in ("pause", "stop"):
+        stop_capture(paused, obs_processes())
         print("Camera and microphone paused; this survives login and rebuilds.")
-    elif args.action == "resume":
-        paused.unlink(missing_ok=True)
-        subprocess.run(
-            [
-                "/bin/launchctl",
-                "kickstart",
-                "-k",
-                f"user/{os.getuid()}/org.nix-community.home.mac-camera",
-            ],
-            check=True,
-        )
+    elif args.action in ("resume", "start"):
+        try:
+            start_capture(paused, obs_processes())
+        except RuntimeError as error:
+            parser.exit(1, f"{error}\n")
     elif args.action == "status":
-        print("Paused" if paused.exists() else "Enabled at login")
-        print("OBS running" if obs_processes() else "OBS stopped")
+        processes = obs_processes()
+        status = {
+            "paused": paused.exists(),
+            "obsRunning": any(managed(command) for _, command in processes),
+            "publishing": publishing(processes),
+        }
+        if args.json:
+            print(json.dumps(status))
+        else:
+            print("Paused" if status["paused"] else "Enabled at login")
+            print("Publishing" if status["publishing"] else "Not publishing")
     else:
         if paused.exists():
             return
@@ -269,6 +323,7 @@ def main():
                     "/usr/bin/open",
                     "-W",
                     "-g",
+                    "-j",
                     "-a",
                     OBS,
                     "--args",
@@ -277,6 +332,7 @@ def main():
                     "--collection",
                     NAME,
                     "--startstreaming",
+                    "--minimize-to-tray",
                     "--disable-updater",
                 ],
                 check=True,

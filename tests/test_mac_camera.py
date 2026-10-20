@@ -6,6 +6,7 @@ import threading
 import unittest
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from unittest.mock import patch
 
 
 def load(name):
@@ -109,6 +110,46 @@ class GatewayTests(unittest.TestCase):
 
 
 class ProfileTests(unittest.TestCase):
+    def test_start_preserves_an_active_stream(self):
+        processes = [(42, "OBS --collection TailnetCamera --startstreaming")]
+        with tempfile.TemporaryDirectory() as directory:
+            paused = Path(directory) / "paused"
+            paused.touch()
+            with (
+                patch.object(capture, "publishing", return_value=True),
+                patch.object(capture.os, "kill") as kill,
+                patch.object(capture.subprocess, "run") as run,
+            ):
+                capture.start_capture(paused, processes)
+            kill.assert_not_called()
+            run.assert_not_called()
+            self.assertFalse(paused.exists())
+
+    def test_start_does_not_touch_an_unmanaged_obs_session(self):
+        with tempfile.TemporaryDirectory() as directory:
+            paused = Path(directory) / "paused"
+            paused.touch()
+            with (
+                patch.object(capture.subprocess, "run") as run,
+                self.assertRaisesRegex(RuntimeError, "another collection"),
+            ):
+                capture.start_capture(paused, [(42, "OBS --collection Other")])
+            run.assert_not_called()
+            self.assertTrue(paused.exists())
+
+    def test_start_restarts_the_managed_profile_when_it_is_not_publishing(self):
+        with tempfile.TemporaryDirectory() as directory:
+            paused = Path(directory) / "paused"
+            with (
+                patch.object(capture, "publishing", return_value=False),
+                patch.object(capture.os, "kill") as kill,
+                patch.object(capture.subprocess, "run") as run,
+            ):
+                capture.start_capture(paused, [(42, "OBS --collection TailnetCamera")])
+            kill.assert_called_once()
+            run.assert_called_once()
+            self.assertFalse(paused.exists())
+
     def test_unattended_restart_clears_only_empty_obs_run_markers(self):
         with tempfile.TemporaryDirectory() as directory:
             home = Path(directory)

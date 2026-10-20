@@ -82,13 +82,29 @@ The primary user can also run:
 mac-camera pause
 mac-camera resume
 mac-camera status
+mac-camera status --json
 ```
+
+For unattended SSH control, use `mac-camera start` and `mac-camera stop` (aliases
+for Resume and Pause). For example:
+
+```sh
+ssh kat@kats-macbook-neo /run/current-system/sw/bin/mac-camera start
+ssh kat@kats-macbook-neo /run/current-system/sw/bin/mac-camera status --json
+ssh kat@kats-macbook-neo /run/current-system/sw/bin/mac-camera stop
+```
+
+Startup launches OBS hidden and minimized to its menu-bar icon, without taking
+keyboard focus or opening its main window. Its local controls and macOS capture
+indicators remain available. Start leaves an active stream running and restarts
+the dedicated profile if its OBS window was left open with streaming stopped.
+An OBS session using another collection is left alone. No screen-unlock or
+keyboard/mouse automation is used by these commands.
 
 Pause stops the dedicated OBS process immediately and persists across rebuilds,
 logins, and reboots. Resume starts it through the managed launch agent. Other OBS
 profiles are preserved; an already-running OBS session is left alone at startup.
 Stop Streaming in OBS stops publication; Pause also releases its capture devices.
-Quit OBS before Resume if you stopped its stream from the OBS window.
 The launch agent restarts failed capture processes; a normal Quit stays stopped
 until Resume or the next login.
 
