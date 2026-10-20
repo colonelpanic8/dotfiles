@@ -102,7 +102,7 @@ in {
     then pkgs.computer-use-linux
     else null;
   myModules.codexGeneratedSkills.gmessagesPackage =
-    if nixos.config.myModules.googleMessages.enable
+    if (nixos.config.myModules.googleMessages.enable or false)
     then pkgs.google-messages-multidevice-bridge
     else null;
 
