@@ -374,6 +374,7 @@
     desktopConfiguration = {
       pkgs,
       config,
+      lib,
       ...
     }: let
       disabledAppleSymbolicHotKey = parameters: {
@@ -396,6 +397,17 @@
         "65" = disabledAppleSymbolicHotKey [32 49 1572864];
       };
       environment.systemPackages = [pkgs.gnupg];
+
+      system.activationScripts.postActivation.text = lib.concatMapStringsSep "\n" (user: ''
+        user_id="$(/usr/bin/id -u ${lib.escapeShellArg user})"
+        if /usr/bin/pgrep -u "$user_id" -x Hammerspoon >/dev/null; then
+          /bin/launchctl asuser "$user_id" /usr/bin/sudo -n -u ${lib.escapeShellArg user} \
+            ${pkgs.coreutils}/bin/timeout 5 \
+            /Applications/Hammerspoon.app/Contents/Frameworks/hs/hs -q -t 2 \
+            -c 'hs.timer.doAfter(0.1, hs.reload)' </dev/null \
+            || echo "Could not reload Hammerspoon for ${user}; reload its configuration after logging in."
+        fi
+      '') (builtins.attrNames config.home-manager.users);
 
       # Install GUI-visible fonts into /Library/Fonts/Nix Fonts.
       fonts.packages = with pkgs; [

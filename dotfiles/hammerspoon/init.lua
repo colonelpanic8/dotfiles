@@ -1,11 +1,13 @@
-local hyper = { "cmd", "ctrl", "alt" }
-local hyperShift = { "cmd", "ctrl", "alt", "shift" }
-local wf = hs.window.filter.defaultCurrentSpace
-
-hs.window.animationDuration = 0
 pcall(function()
   hs.ipc.cliInstall()
 end)
+
+local hyper = { "cmd", "ctrl", "alt" }
+local hyperShift = { "cmd", "ctrl", "alt", "shift" }
+require("hyperkey")
+local wf = hs.window.filter.defaultCurrentSpace
+
+hs.window.animationDuration = 0
 
 local config = {
   gap = 8,

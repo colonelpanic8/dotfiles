@@ -29,6 +29,11 @@ and adds T3 Code and Ghostty to the Dock. The Mini and Neo run T3 Code system
 daemons; the Air retains its desktop client setup.
 
 All Macs use `KeyRepeat = 2`, `InitialKeyRepeat = 15`, and Caps Lock → Control.
+The shared Hammerspoon configuration maps Right Command to Hyper (⌃⌥⌘), with
+Shift available as a separate layer. Left Command and Caps Lock → Control keep
+their normal behavior. Rebuilds reload Hammerspoon for running managed users;
+new login sessions load the same configuration automatically. Hammerspoon needs
+macOS Accessibility permission. Hyper remapping pauses during Secure Input.
 The Mini and Neo opt into `persistent-desktop.nix` for their existing sleep and
 screen-lock preferences; the Air retains macOS's defaults for those settings.
 
