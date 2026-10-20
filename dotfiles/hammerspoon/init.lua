@@ -5,6 +5,7 @@ end)
 local hyper = { "cmd", "ctrl", "alt" }
 local hyperShift = { "cmd", "ctrl", "alt", "shift" }
 require("hyperkey")
+require("camera")
 local wf = hs.window.filter.defaultCurrentSpace
 
 hs.window.animationDuration = 0

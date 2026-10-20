@@ -442,6 +442,13 @@
               users = nixpkgs.lib.genAttrs enabledHomeUsers (_: homeModules);
             })
             desktopConfiguration
+            ./camera.nix
+            {
+              services.mac-camera = {
+                enable = true;
+                viewer = "ivanmalison@gmail.com";
+              };
+            }
             machineModule
           ]
           ++ nixpkgs.lib.optional (t3codeTokenSecret != null) (t3codeConfiguration {

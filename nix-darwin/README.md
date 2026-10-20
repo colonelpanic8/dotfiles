@@ -41,6 +41,52 @@ The Neo has its own encrypted T3 Code credential. Kat's desktop
 connects to its local T3 Code daemon; it does not receive Ivan's fleet credential,
 GPG secrets, or private repository synchronization configuration.
 
+## Private camera and microphone feeds
+
+All Macs import [`camera.nix`](camera.nix). OBS captures the primary user's
+camera and default microphone after GUI login. Its dedicated `TailnetCamera`
+profile uses hardware H.264 encoding at 720p/15fps and publishes only to a
+loopback MediaMTX relay. It does not capture the display or desktop audio.
+No recordings are enabled; HLS segments remain in a short memory buffer.
+
+Open `https://<machine's-Tailscale-DNS-name>:8443/camera/` from a device signed
+into **ivanmalison@gmail.com**. The player starts muted; use its audio control
+to listen. Tailscale Serve supplies the authenticated login and the gateway
+rejects every other login, including missing or duplicate identity headers.
+The relay and gateway listen only on `127.0.0.1` (ports 18379–18381). Port 443
+and its existing T3 Code route are separate. This configuration never enables
+Funnel. Local users and administrators remain trusted on their own Mac.
+
+OBS needs its normal macOS **Camera** and **Microphone** permission grants once
+per login account. In its initial permission window, grant those two and click
+Continue; Screen Recording, Accessibility, and Input Monitoring are unnecessary.
+Permissions cannot be supplied by Nix. OBS remains visible in the Dock and
+macOS displays its camera/microphone activity indicators.
+
+The shared Hammerspoon **Camera/Mic** menu offers Pause, Resume, and OBS controls.
+The primary user can also run:
+
+```sh
+mac-camera pause
+mac-camera resume
+mac-camera status
+```
+
+Pause stops the dedicated OBS process immediately and persists across rebuilds,
+logins, and reboots. Resume starts it through the managed launch agent. Other OBS
+profiles are preserved; an already-running OBS session is left alone at startup.
+Stop Streaming in OBS stops publication; Pause also releases its capture devices.
+Quit OBS before Resume if you stopped its stream from the OBS window.
+
+Capture requires the primary user's GUI session and an awake Mac. It does not
+run before login or while asleep. A closed Apple Silicon laptop lid disconnects
+the built-in microphone and obstructs its camera. Macs without a camera or input
+device skip OBS startup; attach hardware and run Resume. The Mini currently has
+neither connected. Alex's Air retains its existing Tailscale.app and DNS name.
+
+See [Tailscale Serve identity headers](https://tailscale.com/docs/features/tailscale-serve#identity-headers)
+and [Apple's capture permission documentation](https://developer.apple.com/documentation/bundleresources/requesting-authorization-for-media-capture-on-macos).
+
 Tailscale runs as a system daemon and enrolls using
 `tailscale-authkey.kats-macbook-neo.age`, encrypted to this Mac's SSH host key
 and Kat's Ed25519 key. Kat is the local Tailscale operator. `katKeys` is separate
