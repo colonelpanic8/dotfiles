@@ -3,6 +3,19 @@ local callbacks = {}
 
 local function noop() end
 
+local popen = io.popen
+local hyprwinview_path = "/nix/store/stub-hyprwinview/lib/libhyprwinview.so"
+
+io.popen = function(command, mode)
+  if command == "/run/current-system/sw/bin/readlink -f /run/current-system/sw/lib/libhyprwinview.so" then
+    local handle = assert(io.tmpfile())
+    handle:write(hyprwinview_path, "\n")
+    handle:seek("set")
+    return handle
+  end
+  return popen(command, mode)
+end
+
 local dispatcher = setmetatable({}, {
   __call = function()
     error("dispatcher objects cannot be called directly; use hl.dispatch(dispatcher)", 2)
