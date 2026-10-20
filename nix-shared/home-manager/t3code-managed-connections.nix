@@ -46,6 +46,7 @@ in
       // lib.mapAttrs' (_: member:
         lib.nameValuePair (familySecret member) {
           file = ../../nixos/secrets + "/${familySecret member}.age";
+          path = "${config.xdg.stateHome}/t3code/managed-access-token.${member.hostName}";
         })
       family;
 
