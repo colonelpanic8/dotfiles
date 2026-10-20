@@ -1,55 +1,42 @@
 {
   lib,
-  stdenv,
-  fetchurl,
-  autoPatchelfHook,
+  rustPlatform,
+  src,
+  pkg-config,
+  makeWrapper,
+  dbus,
+  fontconfig,
+  libxkbcommon,
+  wayland,
 }: let
-  binaries = {
-    x86_64-linux = {
-      triple = "x86_64-unknown-linux-gnu";
-      mainHash = "sha256-uUgAIzutlVlSw/EgZQabNFdAswEeHPoRX6lW5rUz/h8=";
-      cosmicHash = "sha256-FFQPkZzZ+Sjr7gYe5tGaNjfp5VSO7qPy17UbeXJf6/A=";
-    };
-    aarch64-linux = {
-      triple = "aarch64-unknown-linux-gnu";
-      mainHash = "sha256-XyOGzEaeRbpVojnvM/lNTjQJD9Itid+xXESjpWlGLLI=";
-      cosmicHash = "sha256-OJcHXy6iTO4gW6L05865WjuHskPyjrCYyMwVcquOm3Q=";
-    };
-  };
-  binary =
-    binaries.${stdenv.hostPlatform.system}
-    or (throw "computer-use-linux: unsupported system ${stdenv.hostPlatform.system}");
+  manifest = builtins.fromTOML (builtins.readFile "${src}/Cargo.toml");
 in
-  stdenv.mkDerivation (finalAttrs: {
+  rustPlatform.buildRustPackage {
     pname = "computer-use-linux";
-    version = "0.4.1";
+    inherit (manifest.package) version;
+    inherit src;
 
-    src = fetchurl {
-      url = "https://github.com/agent-sh/computer-use-linux/releases/download/v${finalAttrs.version}/computer-use-linux-${binary.triple}";
-      hash = binary.mainHash;
-    };
-    cosmicSrc = fetchurl {
-      url = "https://github.com/agent-sh/computer-use-linux/releases/download/v${finalAttrs.version}/computer-use-linux-cosmic-${binary.triple}";
-      hash = binary.cosmicHash;
-    };
+    cargoLock.lockFile = "${src}/Cargo.lock";
 
-    dontUnpack = true;
-    strictDeps = true;
-    nativeBuildInputs = [autoPatchelfHook];
-    buildInputs = [stdenv.cc.cc.lib];
+    nativeBuildInputs = [pkg-config makeWrapper];
+    buildInputs = [dbus];
 
-    installPhase = ''
-      runHook preInstall
-      install -Dm755 $src $out/bin/computer-use-linux
-      install -Dm755 $cosmicSrc $out/bin/computer-use-linux-cosmic
-      runHook postInstall
+    # Desktop integration tests need a live session outside the build sandbox.
+    doCheck = false;
+
+    postInstall = ''
+      for program in "$out/bin/"*; do
+        wrapProgram "$program" \
+          --prefix PATH : ${lib.makeBinPath [fontconfig]} \
+          --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [libxkbcommon wayland]}
+      done
     '';
 
     meta = {
       description = "Linux desktop control over MCP";
       homepage = "https://github.com/agent-sh/computer-use-linux";
       license = lib.licenses.mit;
-      platforms = lib.attrNames binaries;
+      platforms = ["x86_64-linux" "aarch64-linux"];
       mainProgram = "computer-use-linux";
     };
-  })
+  }

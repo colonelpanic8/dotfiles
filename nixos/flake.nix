@@ -69,6 +69,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    computer-use-linux = {
+      url = "github:agent-sh/computer-use-linux";
+      flake = false;
+    };
+
     git-sync-rs = {
       url = "github:colonelpanic8/git-sync-rs";
       inputs = {

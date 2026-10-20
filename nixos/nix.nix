@@ -163,7 +163,9 @@
           claude-code = inputs.claude-code-nix.packages.${prev.stdenv.hostPlatform.system}.default;
           git-sync-rs = inputs.git-sync-rs.packages.${prev.stdenv.hostPlatform.system}.default;
           agent-workspace-linux = final.callPackage ./packages/agent-workspace-linux {};
-          computer-use-linux = final.callPackage ./packages/computer-use-linux {};
+          computer-use-linux = final.callPackage ./packages/computer-use-linux {
+            src = inputs.computer-use-linux;
+          };
           elegant-grub2-theme = final.callPackage ./packages/elegant-grub2-theme {};
           kef = final.callPackage ./packages/kef {};
           pykefcontrol = final.python3Packages.callPackage ./packages/pykefcontrol {};

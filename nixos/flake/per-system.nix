@@ -39,6 +39,9 @@ in {
       kat-org-agenda-api = containerLib.containers.kat;
     }
     // lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
+      computer-use-linux = pkgs.callPackage ../packages/computer-use-linux {
+        src = inputs.computer-use-linux;
+      };
       hyprland-stuff = hyprlandStuffPackages.hyprlandStuff;
       hyprland-lua = hyprlandStuffPackages.hyprlandPackage;
       hyprNStack = hyprlandStuffPackages.hyprNStack;

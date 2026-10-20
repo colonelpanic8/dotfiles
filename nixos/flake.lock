@@ -196,6 +196,22 @@
         "type": "github"
       }
     },
+    "computer-use-linux": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1792521871,
+        "narHash": "sha256-HXgpghuxwwePStYNhC9bKr7B6NVZKYuwe9X3dlsliOo=",
+        "owner": "agent-sh",
+        "repo": "computer-use-linux",
+        "rev": "54a94fd80cc680942f5b39e916ec7de98270e237",
+        "type": "github"
+      },
+      "original": {
+        "owner": "agent-sh",
+        "repo": "computer-use-linux",
+        "type": "github"
+      }
+    },
     "darwin": {
       "inputs": {
         "nixpkgs": [
@@ -2597,6 +2613,7 @@
         "claude-desktop": "claude-desktop",
         "codex-cli-nix": "codex-cli-nix",
         "codex-desktop-linux": "codex-desktop-linux",
+        "computer-use-linux": "computer-use-linux",
         "eva": "eva",
         "fenix": "fenix",
         "flake-utils": "flake-utils_4",
