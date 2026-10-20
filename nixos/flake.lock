@@ -1527,17 +1527,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1788845669,
-        "narHash": "sha256-s8IGuMplcVBP8qsN6W7Pp05+zD8J8pSVrhLKlIhLOW8=",
+        "lastModified": 1792477422,
+        "narHash": "sha256-5wmxF1otr9+b8Zb82jaKJRqSM72fd29tUU1hv6+NDFo=",
         "owner": "colonelpanic8",
         "repo": "hyprwinview",
-        "rev": "08c8fffd078db094faa5b63f024f52f64e956f82",
+        "rev": "45c1dd1e94fdd5625aeb8e4359e5b66d35e30ca1",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
         "repo": "hyprwinview",
-        "rev": "08c8fffd078db094faa5b63f024f52f64e956f82",
+        "rev": "45c1dd1e94fdd5625aeb8e4359e5b66d35e30ca1",
         "type": "github"
       }
     },

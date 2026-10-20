@@ -85,7 +85,11 @@ function M.setup(ctx)
     hl.plugin.load("/run/current-system/sw/lib/libhyprNStack.so")
   end
   if enable_hyprwinview and not verify_config then
-    hl.plugin.load("/run/current-system/sw/lib/libhyprwinview.so")
+    -- Resolve the store path so updates cannot reuse an old dlopen mapping.
+    local path_command = assert(io.popen("/run/current-system/sw/bin/readlink -f /run/current-system/sw/lib/libhyprwinview.so", "r"))
+    local plugin_path = path_command:read("*l")
+    path_command:close()
+    hl.plugin.load(assert(plugin_path))
   end
   if enable_hyprtasking and not enable_hyprwinview and not verify_config then
     hl.plugin.load("/run/current-system/sw/lib/libhyprtasking.so")
