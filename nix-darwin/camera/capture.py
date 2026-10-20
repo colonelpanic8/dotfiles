@@ -5,6 +5,7 @@ import configparser
 import json
 import os
 import pwd
+import shlex
 import signal
 import subprocess
 import time
@@ -164,7 +165,7 @@ def prepare(home, inventory):
 
 def obs_processes():
     output = subprocess.check_output(
-        ["/bin/ps", "-U", str(os.getuid()), "-o", "pid=,command="], text=True
+        ["/bin/ps", "-ww", "-U", str(os.getuid()), "-o", "pid=,command="], text=True
     )
     return [
         (int(pid), command)
@@ -172,6 +173,14 @@ def obs_processes():
         for pid, command in [line.strip().split(None, 1)]
         if command.startswith(OBS + "/Contents/MacOS/OBS")
     ]
+
+
+def managed(command):
+    arguments = shlex.split(command)
+    return any(
+        pair == ["--collection", NAME]
+        for pair in (arguments[i : i + 2] for i in range(len(arguments) - 1))
+    )
 
 
 def main():
@@ -188,8 +197,12 @@ def main():
     if args.action == "pause":
         paused.touch()
         for pid, command in obs_processes():
-            if f"--collection {NAME}" in command:
-                os.kill(pid, signal.SIGKILL)
+            if managed(command):
+                # OBS prompts on SIGTERM while streaming; Pause must release capture immediately.
+                try:
+                    os.kill(pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
         print("Camera and microphone paused; this survives login and rebuilds.")
     elif args.action == "resume":
         paused.unlink(missing_ok=True)
@@ -197,6 +210,7 @@ def main():
             [
                 "/bin/launchctl",
                 "kickstart",
+                "-k",
                 f"user/{os.getuid()}/org.nix-community.home.mac-camera",
             ],
             check=True,

@@ -109,6 +109,15 @@ class GatewayTests(unittest.TestCase):
 
 
 class ProfileTests(unittest.TestCase):
+    def test_pause_only_targets_the_exact_managed_collection(self):
+        self.assertTrue(
+            capture.managed("OBS --collection TailnetCamera --startstreaming")
+        )
+        self.assertFalse(capture.managed("OBS --collection TailnetCamera-other"))
+        self.assertFalse(
+            capture.managed("OBS --profile TailnetCamera --collection Other")
+        )
+
     def test_absent_hardware_does_not_start_obs(self):
         with tempfile.TemporaryDirectory() as home:
             self.assertFalse(capture.prepare(Path(home), {}))
