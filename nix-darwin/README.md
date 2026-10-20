@@ -56,6 +56,13 @@ rejects every other login, including missing or duplicate identity headers.
 The relay and gateway listen only on `127.0.0.1` (ports 18379–18381). Port 443
 and its existing T3 Code route are separate. This configuration never enables
 Funnel. Local users and administrators remain trusted on their own Mac.
+Devices with Tailscale tags have no user identity and are denied as well.
+
+Tailscale Serve/HTTPS must be enabled in the Mac's owning tailnet. When it is
+disabled, `~/Library/Logs/mac-camera-serve.err.log` contains the approval link;
+open it with an administrator of that tailnet. Shared-device access from a
+different tailnet does not grant permission to enable Serve. The job retries
+every five minutes without changing existing routes on other ports.
 
 OBS needs its normal macOS **Camera** and **Microphone** permission grants once
 per login account. In its initial permission window, grant those two and click
@@ -77,6 +84,8 @@ logins, and reboots. Resume starts it through the managed launch agent. Other OB
 profiles are preserved; an already-running OBS session is left alone at startup.
 Stop Streaming in OBS stops publication; Pause also releases its capture devices.
 Quit OBS before Resume if you stopped its stream from the OBS window.
+The launch agent restarts failed capture processes; a normal Quit stays stopped
+until Resume or the next login.
 
 Capture requires the primary user's GUI session and an awake Mac. It does not
 run before login or while asleep. A closed Apple Silicon laptop lid disconnects

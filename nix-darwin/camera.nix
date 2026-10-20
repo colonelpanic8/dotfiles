@@ -103,6 +103,7 @@ in {
       config = {
         ProgramArguments = ["${capture}/bin/mac-camera" "run"];
         RunAtLoad = true;
+        KeepAlive.SuccessfulExit = false;
         ProcessType = "Interactive";
         StandardOutPath = "${home}/Library/Logs/mac-camera.log";
         StandardErrorPath = "${home}/Library/Logs/mac-camera.err.log";
