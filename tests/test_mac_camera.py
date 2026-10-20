@@ -109,6 +109,19 @@ class GatewayTests(unittest.TestCase):
 
 
 class ProfileTests(unittest.TestCase):
+    def test_unattended_restart_clears_only_empty_obs_run_markers(self):
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory)
+            markers = home / "Library/Application Support/obs-studio/.sentinel"
+            markers.mkdir(parents=True)
+            (markers / "run_previous-session").touch()
+            (markers / "run_nonempty").write_text("preserve")
+            (markers / "other").touch()
+            capture.clear_run_markers(home)
+            self.assertFalse((markers / "run_previous-session").exists())
+            self.assertEqual((markers / "run_nonempty").read_text(), "preserve")
+            self.assertTrue((markers / "other").exists())
+
     def test_pause_only_targets_the_exact_managed_collection(self):
         self.assertTrue(
             capture.managed("OBS --collection TailnetCamera --startstreaming")

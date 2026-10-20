@@ -194,6 +194,14 @@ def wait_for_relay(paused):
     return False
 
 
+def clear_run_markers(home):
+    # OBS 32's empty run markers otherwise make unattended restarts wait on a crash dialog.
+    directory = home / "Library/Application Support/obs-studio/.sentinel"
+    for marker in directory.glob("run_*"):
+        if marker.is_file() and marker.stat().st_size == 0:
+            marker.unlink(missing_ok=True)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--owner", required=True)
@@ -244,6 +252,7 @@ def main():
         if obs_processes():
             print("OBS is already running; leaving its session alone.")
             return
+        clear_run_markers(home)
         inventory = json.loads(
             subprocess.check_output(
                 [
@@ -269,7 +278,6 @@ def main():
                     NAME,
                     "--startstreaming",
                     "--disable-updater",
-                    "--disable-shutdown-check",
                 ],
                 check=True,
             )
