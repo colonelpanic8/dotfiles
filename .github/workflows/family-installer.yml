@@ -1,0 +1,28 @@
+name: Family installer
+on:
+  push:
+    branches: [master, family-stable]
+    paths:
+      - 'nixos/family-installer/**'
+      - '.github/workflows/family-installer.yml'
+  pull_request:
+    paths:
+      - 'nixos/family-installer/**'
+      - '.github/workflows/family-installer.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: nixos/family-installer
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: cachix/install-nix-action@v31
+      - run: nix develop --command just check
+      - run: nix flake check
+      - run: nix build .#calamares-extensions

@@ -54,7 +54,7 @@ in
   {
     imports = [
       inputs.home-manager.nixosModules.home-manager
-      (inputs.family-installer + "/modules/calamares.nix")
+      ./family-installer/modules/calamares.nix
       (
         if isIso
         then "${inputs.nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-graphical-base.nix"

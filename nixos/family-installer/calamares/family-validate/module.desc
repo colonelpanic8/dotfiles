@@ -1,0 +1,5 @@
+---
+type: job
+name: family-validate
+interface: python
+script: main.py

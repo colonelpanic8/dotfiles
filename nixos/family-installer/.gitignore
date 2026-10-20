@@ -1,0 +1,9 @@
+.direnv/
+.worktrees/
+.envrc.local
+.envrc.override
+__pycache__/
+.ruff_cache/
+result
+result-*
+*.qcow2

@@ -7,7 +7,7 @@
   primaryUser = config.myModules.primaryUser;
   owner = config.myModules.userProfile.owner;
 in {
-  imports = [../options.nix];
+  imports = [./user-options.nix];
 
   options.myModules.userProfile.owner = lib.mkOption {
     type = lib.types.enum ["ivan" "other"];
@@ -37,7 +37,7 @@ in {
       home.stateVersion = lib.mkDefault config.system.stateVersion;
       programs.zsh = {
         enable = true;
-        shellAliases = import ../../nix-shared/multiplexer-aliases.nix;
+        shellAliases = import ./multiplexer-aliases.nix;
       };
       programs.tmux.enable = true;
       programs.git = {
