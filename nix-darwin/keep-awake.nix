@@ -20,7 +20,7 @@ in {
         "/usr/bin/caffeinate"
         (
           if cfg.onBattery
-          then "-i"
+          then "-is"
           else "-s"
         )
       ];

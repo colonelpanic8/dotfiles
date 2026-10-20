@@ -37,9 +37,9 @@ macOS Accessibility permission. Hyper remapping pauses during Secure Input.
 The Mini and Neo opt into `persistent-desktop.nix` for their existing sleep and
 screen-lock preferences; the Air retains macOS's defaults for those settings.
 All three also use [`keep-awake.nix`](keep-awake.nix): a system LaunchDaemon runs
-macOS's built-in `caffeinate -s` to prevent sleep on AC power. Displays can still
-sleep and lock. Battery sleep behavior is preserved; set
-`services.keep-awake.onBattery = true` to prevent idle sleep on battery too.
+macOS's built-in `caffeinate -is` to prevent idle system sleep on AC and battery
+power, keeping unattended feeds reachable. Displays can still sleep and lock.
+Set `services.keep-awake.onBattery = false` to limit keep-awake to AC power.
 Manual sleep and the laptop lid's hardware restrictions still apply.
 
 The Neo has its own encrypted T3 Code credential. Kat's desktop

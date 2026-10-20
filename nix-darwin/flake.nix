@@ -445,7 +445,10 @@
             ./camera.nix
             ./keep-awake.nix
             {
-              services.keep-awake.enable = true;
+              services.keep-awake = {
+                enable = true;
+                onBattery = true;
+              };
               services.mac-camera = {
                 enable = true;
                 viewer = "ivanmalison@gmail.com";
