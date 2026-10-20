@@ -17,6 +17,10 @@ in
     };
 
     home.sessionVariables.T3CODE_MANAGED_CONNECTIONS_FILE = registryPath;
+    xdg.configFile."t3code/environment-groups.json".text = builtins.toJSON {
+      version = 1;
+      groups = import ../t3code-environment-groups.nix;
+    };
     xdg.configFile."t3code/managed-connections.json" = {
       force = true;
       text = builtins.toJSON {
