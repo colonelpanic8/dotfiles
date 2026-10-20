@@ -374,6 +374,9 @@
           ExecStart = lib.mkForce "${taffybarStart}";
           StandardOutput = "journal";
           StandardError = "journal";
+          MemoryMax = "1G";
+          MemorySwapMax = "256M";
+          OOMPolicy = "kill";
         };
       })
     ];
