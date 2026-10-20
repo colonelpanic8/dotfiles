@@ -19,8 +19,6 @@
 
   age.identityPaths = ["/etc/ssh/ssh_host_ed25519_key"];
 
-  # tailscaled needs writable resolver files rather than Nix store symlinks.
-  environment.etc."resolver/ts.net".enable = false;
   environment.etc."nix/nix.custom.conf".text =
     lib.concatStringsSep "\n" (lib.mapAttrsToList (
       name: value: "${

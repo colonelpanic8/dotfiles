@@ -10,6 +10,9 @@ in {
   services.tailscale.enable = true;
   launchd.daemons.tailscaled.serviceConfig.KeepAlive = true;
 
+  # tailscaled needs writable resolver files rather than Nix store symlinks.
+  environment.etc."resolver/ts.net".enable = false;
+
   # Authentication is optional and separate from the daemon/preferences.
   # Hosts without a key enroll once with `sudo tailscale up`.
   age.secrets = lib.optionalAttrs (authKeyFile != null) {
