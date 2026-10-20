@@ -196,6 +196,22 @@
         "type": "github"
       }
     },
+    "computer-use-linux": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1792521871,
+        "narHash": "sha256-HXgpghuxwwePStYNhC9bKr7B6NVZKYuwe9X3dlsliOo=",
+        "owner": "agent-sh",
+        "repo": "computer-use-linux",
+        "rev": "54a94fd80cc680942f5b39e916ec7de98270e237",
+        "type": "github"
+      },
+      "original": {
+        "owner": "agent-sh",
+        "repo": "computer-use-linux",
+        "type": "github"
+      }
+    },
     "darwin": {
       "inputs": {
         "nixpkgs": [
@@ -1508,17 +1524,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1792477422,
-        "narHash": "sha256-5wmxF1otr9+b8Zb82jaKJRqSM72fd29tUU1hv6+NDFo=",
+        "lastModified": 1792525032,
+        "narHash": "sha256-Hp0l3yk39EwNeRCEVWbDRDfYz0A9HIOxZ0XxpjKGncM=",
         "owner": "colonelpanic8",
         "repo": "hyprwinview",
-        "rev": "45c1dd1e94fdd5625aeb8e4359e5b66d35e30ca1",
+        "rev": "babe9f8006cd7c67a3f5036c405f8d070e673c9e",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
         "repo": "hyprwinview",
-        "rev": "45c1dd1e94fdd5625aeb8e4359e5b66d35e30ca1",
+        "rev": "babe9f8006cd7c67a3f5036c405f8d070e673c9e",
         "type": "github"
       }
     },
@@ -2343,11 +2359,11 @@
         "nixpkgs": "nixpkgs_13"
       },
       "locked": {
-        "lastModified": 1792522613,
-        "narHash": "sha256-Y70xAAdSrIKJcQ9k2fCk05ymxYDK3C9nDDgVj251GWQ=",
+        "lastModified": 1792524435,
+        "narHash": "sha256-eCpH3cx6E/P6yi3NF477cFjnMqIqxOtbhdmv5qeQEj4=",
         "owner": "colonelpanic8",
         "repo": "paseo",
-        "rev": "511581210d152c2e562d0d1b8875faca5f4288d0",
+        "rev": "220502993d8b127e53fd33a7cb2a4c6a739d99f9",
         "type": "github"
       },
       "original": {
@@ -2597,6 +2613,7 @@
         "claude-desktop": "claude-desktop",
         "codex-cli-nix": "codex-cli-nix",
         "codex-desktop-linux": "codex-desktop-linux",
+        "computer-use-linux": "computer-use-linux",
         "eva": "eva",
         "fenix": "fenix",
         "flake-utils": "flake-utils_4",

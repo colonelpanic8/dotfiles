@@ -70,7 +70,9 @@ in
     # package rather than pulling in the full workstation overlay set.
     nixpkgs.overlays = [
       (final: _prev: {
-        computer-use-linux = final.callPackage ./packages/computer-use-linux {};
+        computer-use-linux = final.callPackage ./packages/computer-use-linux {
+          src = inputs.computer-use-linux;
+        };
       })
     ];
 
