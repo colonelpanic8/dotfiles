@@ -259,6 +259,25 @@
         "type": "github"
       }
     },
+    "family-installer": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1792455432,
+        "narHash": "sha256-x7bJyVAZ2SpWYm3TjGJluK4sK3k93HGqGZjbZRv41KI=",
+        "ref": "main",
+        "rev": "ca657722326651e24b49c7192f7cd83773bf5ad0",
+        "revCount": 6,
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/colonelpanic8/nixos-family-installer"
+      },
+      "original": {
+        "ref": "main",
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/colonelpanic8/nixos-family-installer"
+      }
+    },
     "fenix": {
       "inputs": {
         "nixpkgs": [
@@ -2598,6 +2617,7 @@
         "codex-cli-nix": "codex-cli-nix",
         "codex-desktop-linux": "codex-desktop-linux",
         "eva": "eva",
+        "family-installer": "family-installer",
         "fenix": "fenix",
         "flake-utils": "flake-utils_4",
         "git-blame-rank": "git-blame-rank",

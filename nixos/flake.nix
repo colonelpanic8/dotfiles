@@ -8,6 +8,11 @@
       url = "github:NixOS/nixpkgs/nixos-26.05";
     };
 
+    family-installer = {
+      url = "git+https://github.com/colonelpanic8/nixos-family-installer?ref=main&submodules=1";
+      flake = false;
+    };
+
     repowise = {
       url = "github:repowise-dev/repowise/73c82764c8554a26b39853602aab023c81b2d014";
       flake = false;
