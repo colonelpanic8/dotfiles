@@ -50,6 +50,13 @@
       record = false;
     };
   });
+  relay = pkgs.writeShellScript "camera-relay" ''
+    set -eu
+    state=${lib.escapeShellArg "${home}/Library/Application Support/TailnetCamera/relay"}
+    ${pkgs.coreutils}/bin/install -d -m 700 "$state"
+    ${pkgs.coreutils}/bin/install -m 600 ${relayConfig} "$state/mediamtx.yml"
+    exec ${pkgs.mediamtx}/bin/mediamtx "$state/mediamtx.yml"
+  '';
   service = args: {
     serviceConfig = {
       ProgramArguments = args;
@@ -58,6 +65,7 @@
       KeepAlive = true;
       ProcessType = "Background";
       StandardErrorPath = "${home}/Library/Logs/mac-camera-services.err.log";
+      StandardOutPath = "${home}/Library/Logs/mac-camera-services.log";
     };
   };
   serve = pkgs.writeShellScript "camera-tailscale-serve" ''
@@ -80,7 +88,7 @@ in {
   config = lib.mkIf cfg.enable {
     homebrew.casks = ["obs"];
     environment.systemPackages = [capture];
-    launchd.daemons.mac-camera-relay = service ["${pkgs.mediamtx}/bin/mediamtx" "${relayConfig}"];
+    launchd.daemons.mac-camera-relay = service ["${relay}"];
     launchd.daemons.mac-camera-gateway = service [
       "${pkgs.python3}/bin/python3"
       "${./camera/proxy.py}"
