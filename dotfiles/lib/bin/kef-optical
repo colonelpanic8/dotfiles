@@ -16,9 +16,28 @@ notify() {
   fi
 }
 
-if kef "${kef_args[@]}" on optical; then
-  notify "Powered on and switched to optical"
-else
-  notify "Powered on, but optical input switch failed"
-  exit 1
-fi
+select_optical() {
+  local check source
+
+  timeout --kill-after=2s 40s kef "${kef_args[@]}" on optical --timeout 30 || return 1
+
+  for ((check = 0; check < 3; check++)); do
+    sleep 1
+    source=$(timeout --kill-after=2s 10s kef "${kef_args[@]}" source) || return 1
+    [[ "$source" == optical ]] || return 1
+  done
+}
+
+for attempt in 1 2 3; do
+  if select_optical; then
+    notify "Powered on and switched to optical"
+    exit 0
+  fi
+  printf 'kef-optical: attempt %s/3 failed to confirm optical input\n' "$attempt" >&2
+  if ((attempt < 3)); then
+    sleep 2
+  fi
+done
+
+notify "Could not activate optical input after 3 attempts"
+exit 1
