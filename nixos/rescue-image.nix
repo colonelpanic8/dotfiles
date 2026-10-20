@@ -23,7 +23,7 @@
       Super+P opens the application launcher.
 
     Graphical family installer
-      Open Install System from the application launcher, or run `calamares`.
+      Open Install System from the application launcher, or run `family-installer`.
       Choose Another person for a family account. The target uses the pinned
       family profile, not this rescue system's users, credentials, or desktop.
       Read /etc/nixos-family-installer/README.md before installing. Agents must
@@ -303,7 +303,7 @@ in
       # copied onto the writable USB takes precedence and is never overwritten.
       if [ ! -e /srv/dotfiles/nixos/flake.nix ]; then
         install -d -m 0755 -o ${rescueUser} -g users /srv/dotfiles
-        cp -a ${inputs.self.outPath}/. /srv/dotfiles/
+        cp -a ${../.}/. /srv/dotfiles/
         chmod -R u+rwX,g+rX /srv/dotfiles
         chown -R ${rescueUser}:users /srv/dotfiles
       fi

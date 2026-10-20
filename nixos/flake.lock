@@ -262,11 +262,11 @@
     "family-installer": {
       "flake": false,
       "locked": {
-        "lastModified": 1792455432,
-        "narHash": "sha256-x7bJyVAZ2SpWYm3TjGJluK4sK3k93HGqGZjbZRv41KI=",
+        "lastModified": 1792456785,
+        "narHash": "sha256-yPRmSfd5sRsOTXfEEnivK5dBBtcuTUOrCJQP6aZYzoY=",
         "ref": "main",
-        "rev": "ca657722326651e24b49c7192f7cd83773bf5ad0",
-        "revCount": 6,
+        "rev": "01790bfc56eb3b08daa9b362b0e7c983856467da",
+        "revCount": 8,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/colonelpanic8/nixos-family-installer"
