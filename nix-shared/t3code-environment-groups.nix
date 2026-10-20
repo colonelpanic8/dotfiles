@@ -1,12 +1,5 @@
-{
-  alex = {
-    label = "Alex";
-    environmentIds = ["fleet:alexanders-macbook-air"];
-    defaultVisible = false;
-  };
-  kat = {
-    label = "Kat";
-    environmentIds = ["fleet:kats-macbook-neo"];
-    defaultVisible = false;
-  };
-}
+builtins.mapAttrs (_: member: {
+  inherit (member) label;
+  environmentIds = ["fleet:${member.hostName}"];
+  defaultVisible = false;
+}) (import ./t3code-family.nix)
