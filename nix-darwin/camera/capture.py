@@ -7,6 +7,7 @@ import os
 import pwd
 import shlex
 import signal
+import socket
 import subprocess
 import time
 from pathlib import Path
@@ -183,6 +184,16 @@ def managed(command):
     )
 
 
+def wait_for_relay(paused):
+    while not paused.exists():
+        try:
+            with socket.create_connection(("127.0.0.1", 18379), timeout=2):
+                return True
+        except OSError:
+            time.sleep(2)
+    return False
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--owner", required=True)
@@ -243,7 +254,7 @@ def main():
                 ]
             )
         )
-        if prepare(home, inventory) and not paused.exists():
+        if prepare(home, inventory) and wait_for_relay(paused):
             subprocess.run(
                 [
                     "/usr/bin/open",

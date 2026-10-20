@@ -57,7 +57,7 @@
       RunAtLoad = true;
       KeepAlive = true;
       ProcessType = "Background";
-      StandardErrorPath = "/var/log/mac-camera-services.err.log";
+      StandardErrorPath = "${home}/Library/Logs/mac-camera-services.err.log";
     };
   };
   serve = pkgs.writeShellScript "camera-tailscale-serve" ''
@@ -93,8 +93,8 @@ in {
         UserName = user;
         RunAtLoad = true;
         StartInterval = 300;
-        StandardErrorPath = "/var/log/mac-camera-serve.err.log";
-        StandardOutPath = "/var/log/mac-camera-serve.log";
+        StandardErrorPath = "${home}/Library/Logs/mac-camera-serve.err.log";
+        StandardOutPath = "${home}/Library/Logs/mac-camera-serve.log";
       };
     };
     home-manager.users.${user}.launchd.agents.mac-camera = {
