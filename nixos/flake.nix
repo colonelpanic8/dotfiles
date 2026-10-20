@@ -243,7 +243,7 @@
     };
 
     hyprwinview = {
-      url = "github:colonelpanic8/hyprwinview/45c1dd1e94fdd5625aeb8e4359e5b66d35e30ca1";
+      url = "github:colonelpanic8/hyprwinview/babe9f8006cd7c67a3f5036c405f8d070e673c9e";
       inputs.hyprland.follows = "hyprland";
     };
 
