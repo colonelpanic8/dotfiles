@@ -111,6 +111,7 @@ Prefer driving the browser directly over describing steps for the user to perfor
 ## Credentials And Account Data
 
 - Search `pass` before asking the user for usernames, recovery emails, or OTP-related entries.
+- If the site texts a verification or 2FA code, read it yourself with `gmessages wait --since 5m --timeout 3m --query code` (MCP: `wait_for_message`) instead of asking the user.
 - Preserve existing metadata lines in multiline `pass` entries whenever possible.
 - Never print the new password in the final response unless the user explicitly asks for it.
 

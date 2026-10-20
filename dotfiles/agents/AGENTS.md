@@ -169,15 +169,21 @@ Examples of what's stored:
 - Never hardcode credentials or store them in plain text files.
 - Claude/Anthropic (claude.ai) and ChatGPT/Codex/OpenAI have no passwords in
   `pass`; they use "Continue with Google" (ivanmalison@gmail.com).
+- A login that texts a 2FA code is not a blocker: read the code yourself (see
+  "Texted 2FA codes" below).
 
-## Text messages and 2FA codes
+## Texted 2FA codes: fetch them yourself
 
-- You can read the user's text messages (SMS/RCS to 301-244-8534) on every NixOS
-  host through the Google Messages Multi-Device Bridge: the `gmessages` CLI
-  (preconfigured; `gmessages help`) or the read-only `gmessages` MCP server.
-- So when an authorized task hits a texted 2FA / MFA / one-time / login /
-  phone-verification code, fetch it yourself instead of asking the user for it.
-  Ask only if the bridge is unavailable or the code never arrives.
+**You can read the user's text messages, so texted 2FA codes are never a
+reason to stop and ask the user.** When an authorized task hits an SMS/RCS 2FA,
+MFA, one-time, login, or phone-verification code, trigger it and read it
+yourself, then carry on. Ask the user only if the bridge is unavailable or the
+code never arrives.
+
+- Texts to 301-244-8534 are readable on every NixOS host through the Google
+  Messages Multi-Device Bridge: the `gmessages` CLI (preconfigured;
+  `gmessages help`) or the read-only `gmessages` MCP server.
+- When a site lets you choose where to send the code, pick text message.
 - Right after triggering the code, `gmessages wait --timeout 3m` (MCP:
   `wait_for_message`) returns the next incoming message; narrow it with
   `--query` or `--conversation <sender>`, and add `--since 5m` if the code may
