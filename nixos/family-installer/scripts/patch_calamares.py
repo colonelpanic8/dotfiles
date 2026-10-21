@@ -2,6 +2,7 @@
 
 import json
 from pathlib import Path
+import re
 import sys
 
 
@@ -12,6 +13,8 @@ def replace_once(text, old, new):
 
 
 def patch(source, helper, target_release):
+    if not re.fullmatch(r"\d{2}\.\d{2}", target_release):
+        raise ValueError("The target state version must be a NixOS release such as 26.05")
     settings = source / "config/settings.conf"
     text = settings.read_text()
     text = replace_once(

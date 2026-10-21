@@ -7,6 +7,10 @@ from patch_calamares import patch
 
 
 class PatchTests(unittest.TestCase):
+    def test_rejects_channel_names_as_state_versions(self):
+        with self.assertRaisesRegex(ValueError, "target state version"):
+            patch(Path("unused"), "/helper", "nixpkgs-unstable")
+
     def test_preserves_partition_mount_users_and_unmount_jobs(self):
         with tempfile.TemporaryDirectory() as directory:
             source = Path(directory)

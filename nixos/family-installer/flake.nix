@@ -211,6 +211,11 @@
           other-user = profileCheck "other";
           ivan-user = profileCheck "ivan";
           rescue-module = rescueCheck;
+          installer-state-version = pkgs.runCommand "installer-state-version" {} ''
+            grep -F '    version = "${nixpkgs.lib.trivial.release}"' \
+              ${rescueConfig.system.build.familyCalamaresExtensions}/lib/calamares/modules/nixos/main.py
+            touch "$out"
+          '';
           provisioned-profile = provisionedCheck false;
           provisioned-tailscale-profile = provisionedCheck true;
           update-command = pkgs.runCommand "update-command" {} ''
