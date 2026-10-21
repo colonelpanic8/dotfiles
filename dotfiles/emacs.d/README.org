@@ -237,7 +237,9 @@ These definitions silence the byte-compiler.
 Sets environment variables by starting a shell.
 #+BEGIN_SRC emacs-lisp
 (use-package exec-path-from-shell
-  :disabled (not (equal system-type 'darwin))
+  :if (eq system-type 'darwin)
+  :ensure (:wait t)
+  :demand t
   :config
   (progn
     ;; For debugging
@@ -2351,7 +2353,9 @@ bind-key and global-set-key forms.
         (require 'lsp-pylsp)
         (setq lsp-pylsp-plugins-pydocstyle-enabled nil)))
 
-	(use-package sphinx-doc)
+	(use-package sphinx-doc
+      :ensure (:host github :repo "naiquevin/sphinx-doc.el"
+               :branch "master" :protocol https))
 	(unbind-key "C-j" python-mode-map)
 	(add-hook 'python-mode-hook #'imalison:python-mode)))
 #+END_SRC
@@ -2449,6 +2453,8 @@ bind-key and global-set-key forms.
         (setq lsp-go-server-wrapper-function
               #'imalison:go-lsp-server-wrapper-function)))
     (use-package gotest
+      :ensure (:host github :repo "nlamirault/gotest.el"
+               :branch "master" :protocol https)
       :demand t
       :bind (:map go-mode-map
                   ("C-c t" . imalison:gotest))
@@ -3432,6 +3438,9 @@ emr (emacs refactor) provides support for refactoring in many programming langua
   (progn
     (setq lsp-prefer-flymake nil)
     (use-package lsp-ui
+      :ensure (:host github :repo "emacs-lsp/lsp-ui"
+               :branch "master" :protocol https
+               :files (:defaults "lsp-ui-doc.html" "resources"))
       :config
       (progn
         (add-hook 'prog-mode-hook 'imalison:lsp-deferred-when-enabled)
@@ -3767,6 +3776,7 @@ I had to disable this mode because something that it does messes with coding set
 ** direnv
 #+begin_src emacs-lisp
 (use-package direnv
+  :if (executable-find "direnv")
   :demand t
   :config
   (direnv-mode +1)
