@@ -52,7 +52,7 @@
       (delete-directory dir t))))
 
 (ert-deftest package-compat-runs-before-compilation-on-rebuild ()
-  (dolist (id '(smartparens org-fc unrelated))
+  (dolist (id '(smartparens org-fc org-bullets gitolite-clone unrelated))
     (let* ((e (elpaca<--create :id id :recipe nil))
            (steps (elpaca-build-steps e :rebuild)))
       (if (eq id 'unrelated)
@@ -61,5 +61,36 @@
                     'imalison:package-compat-build))
         (should (memq 'elpaca-build-compile
                       (memq 'imalison:package-compat-build steps)))))))
+
+(ert-deftest package-compat-modernizes-mode-and-cache-forms ()
+  (dolist (case
+           '(("org-bullets.el"
+              (define-minor-mode org-bullets-mode "Bullets." nil nil nil
+                (message "mode body"))
+              (define-minor-mode org-bullets-mode "Bullets."
+                :init-value nil :lighter nil :keymap nil
+                (message "mode body")))
+             ("gitolite-clone.el"
+              (defvar gitolite-clone-pcache-repository
+                (pcache-repository "gitolite-clone"))
+              (defvar gitolite-clone-pcache-repository
+                (pcache-repository :object-name "gitolite-clone")))))
+    (let* ((directory (make-temp-file "package-compat-" t))
+           (file (expand-file-name (car case) directory)))
+      (unwind-protect
+          (progn
+            (with-temp-file file
+              (insert "; " (prin1-to-string (cadr case)) "\n")
+              (prin1 (prin1-to-string (cadr case)) (current-buffer))
+              (insert "\n")
+              (prin1 (cadr case) (current-buffer)))
+            (should (imalison:package-compat-file file))
+            (with-temp-buffer
+              (insert-file-contents file)
+              (should (equal (read (current-buffer))
+                             (prin1-to-string (cadr case))))
+              (should (equal (read (current-buffer)) (caddr case))))
+            (should-not (imalison:package-compat-file file)))
+        (delete-directory directory t)))))
 
 ;;; package-compat-tests.el ends here

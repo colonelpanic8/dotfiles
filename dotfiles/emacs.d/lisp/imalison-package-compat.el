@@ -1,8 +1,8 @@
 ;;; imalison-package-compat.el --- Local package build fixes -*- lexical-binding: t; -*-
 
 ;;; Commentary:
-;; Smartparens and org-fc still use macros deprecated in Emacs 31.  Patch
-;; build copies, leaving upstream checkouts clean for Elpaca updates.  Repair
+;; Several packages still use forms deprecated in Emacs 31.  Patch build
+;; copies, leaving upstream checkouts clean for Elpaca updates.  Repair
 ;; existing builds at startup and repeat after Elpaca links a fresh build.
 
 ;;; Code:
@@ -10,10 +10,44 @@
 (require 'elpaca)
 (require 'lisp-mode)
 
-(defconst imalison:package-compat-packages '(smartparens org-fc))
+(defconst imalison:package-compat-packages
+  '(smartparens org-fc org-bullets gitolite-clone))
+
+(defun imalison:package-compat-minor-mode ()
+  "Replace org-bullets' positional minor mode arguments in this buffer."
+  (goto-char (point-min))
+  (let (changed)
+    (while (re-search-forward
+            "(define-minor-mode[ \t\n]+org-bullets-mode\\_>" nil t)
+      (unless (nth 8 (save-excursion (syntax-ppss (match-beginning 0))))
+        (forward-comment (point-max))
+        (forward-sexp) ; docstring
+        (forward-comment (point-max))
+        (let ((start (point)))
+          (when (and (null (read (current-buffer)))
+                     (null (read (current-buffer)))
+                     (null (read (current-buffer))))
+            (delete-region start (point))
+            (insert ":init-value nil :lighter nil :keymap nil")
+            (setq changed t)))))
+    changed))
+
+(defun imalison:package-compat-pcache ()
+  "Replace gitolite-clone's obsolete constructor name in this buffer."
+  (goto-char (point-min))
+  (let (changed)
+    (while (re-search-forward
+            "(pcache-repository[ \t\n]+\\(\"gitolite-clone\"\\)" nil t)
+      (let ((start (match-beginning 0)) (name-start (match-beginning 1)))
+        (unless (nth 8 (save-excursion (syntax-ppss start)))
+          (goto-char name-start)
+          (insert ":object-name ")
+          (forward-sexp)
+          (setq changed t))))
+    changed))
 
 (defun imalison:package-compat-file (file)
-  "Modernize obsolete conditional binding macros in build FILE.
+  "Modernize obsolete package forms in build FILE.
 Return non-nil if FILE changed.  Preserve legacy single-binding semantics,
 skip strings and comments, and replace symlinks with patched build copies."
   (with-temp-buffer
@@ -39,6 +73,10 @@ skip strings and comments, and replace symlinks with patched build copies."
             (goto-char end)
             (insert "*")
             (setq changed t))))
+      (when (equal (file-name-nondirectory file) "org-bullets.el")
+        (setq changed (or (imalison:package-compat-minor-mode) changed)))
+      (when (equal (file-name-nondirectory file) "gitolite-clone.el")
+        (setq changed (or (imalison:package-compat-pcache) changed)))
       (when changed
         ;; Writing through Elpaca's symlink would dirty the source checkout.
         (when (file-symlink-p file) (delete-file file))

@@ -1065,6 +1065,10 @@ than by restricting =org-mem-watch-dirs= (the watch dirs also drive backlinks).
 (use-package org-mem
   :after org
   :defer 1
+  :init
+  ;; A fresh account has no notes directory yet.  The indexer requires its
+  ;; configured watch directory to exist, even before the first note.
+  (make-directory (expand-file-name imalison:org-dir) t)
   :custom
   ((org-mem-watch-dirs (list (expand-file-name imalison:org-dir)))
    ;; The explicit watch directory is the complete note corpus.  Do not also
