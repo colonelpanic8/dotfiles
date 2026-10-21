@@ -80,6 +80,28 @@ For multiple pnpm store versions or older Yarn Berry caches, see
 [package cache cleanup](references/cleanup-patterns.md#package-caches). Match
 the pnpm executable to the store version before pruning.
 
+### Deduplication and ext4 reserve
+
+- After GC, `sudo -n nix-store --optimise` can reclaim duplicate live store
+  files without removing generations. On 2026-10-21 `jimi-hendnix`, it reported
+  68.9 GiB freed by hard-linking 5,804,426 files. The full scan took about
+  41 minutes, read 387 GiB, and peaked at 19.3 GiB RAM; allow for that load
+  rather than treating it as an instant cleanup.
+- For ext4, compare `df` with `tune2fs -l <verified-root-device>` before
+  attributing unavailable space to files. This host's 5% reserve held about
+  45 GiB. Reducing it to 1% with `tune2fs -m 1` exposed about 36 GiB while
+  retaining about 9 GiB for root. Verify the mounted device, filesystem health,
+  and current reserve first; this changes allocation policy, not used bytes.
+- Run long maintenance under a named `systemd-run` service when the agent's
+  server may restart. On NixOS use `/run/current-system/sw/bin/bash` and set
+  `PATH=/run/current-system/sw/bin:/run/wrappers/bin`; `/bin/bash` may not exist
+  and the default service PATH may omit `sh`. Check the unit and journal before
+  restarting work: completed transient units can disappear. Use
+  `RemainAfterExit=yes` for a oneshot that launches a detached container, or
+  keep the container attached so systemd owns its actual lifetime.
+- If `sudo` on PATH reports a missing setuid bit, check the real NixOS wrapper
+  at `/run/wrappers/bin/sudo` before concluding privileged cleanup is unavailable.
+
 ## Step 3: Rust Build Artifact Cleanup
 
 Do not start with a blind `find ~ -name target` or with hard-coded roots that may miss worktrees. Inventory explicit `target/` directories first using the bundled helper and the machine-specific root list in `references/rust-target-roots.txt`.

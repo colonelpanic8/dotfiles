@@ -48,4 +48,18 @@
 - Treat `subtr-actor` as the source of truth for replay parsing, frame/state extraction, stats calculators, feature matrices, and JS/WASM replay-player data contracts.
 - Treat `rocket-sense` as the service/UI layer for replay hosting, metadata, processing state, auth, storage, OpenAPI, and deployed analytics workflows.
 - Treat `rlru` as the local uploader/client layer for replay discovery, account/auth state, upload destinations, Dioxus desktop UX, and the reusable `psynet` client.
+
+## Rocket Sense production hosting
+
+- Public origin: `https://rocket-sense.duckdns.org`. OAuth callback URLs stay on this origin.
+- `jimi-hendnix` runs the server, replay worker, and PostgreSQL 16 as rootful Podman services. Configuration is in `/srv/dotfiles/nixos/rocket-sense-jimi.nix`, imported by `nixos/machines/jimi-hendnix.nix`.
+- Router reservations: `jimi-hendnix` is `192.168.0.214` (`B4-8C-9D-9F-29-63`); `railbird-sf` is `192.168.0.159` (`7C-10-C9-52-DB-AB`). Forward public TCP ports 80 and 443 to jimi's matching ports.
+- nginx terminates Rocket Sense TLS locally. Other HTTPS hostnames pass through by SNI to railbird-sf, preserving Mova/org-agenda-api and the existing railbird sites. The application listens on loopback port `48763`; local TLS termination uses `45443`. Keep these internal ports private.
+- DuckDNS updates and the Rocket Sense privacy page are hosted on jimi. The DuckDNS encrypted token still has the filename `nixos/secrets/duckdns-token.railbird-sf.age`.
+- Persistent data: `/var/lib/rocket-sense/postgres/pgdata` and `/var/lib/rocket-sense/storage`. The `.migration-complete` marker gates startup until the initial data restore is verified. Keep that marker with the data.
+- Application credentials are encrypted in `nixos/secrets/rocket-sense.env.age` and decrypted by agenix into `/run/agenix/rocket-sense-environment`. Do not print them. The Podman database network alias preserves the hostname in the existing encrypted `DATABASE_URL`.
+- Check `podman-rocket-sense.service`, `podman-rocket-sense-worker.service`, `podman-rocket-sense-postgres.service`, `nginx.service`, and `duckdns.timer`. Health is `/api/v1/health`.
+- For an application update, build/push the image from landed Rocket Sense `master`, resolve the registry image digest, preload that exact image on jimi, and update `image` in `rocket-sense-jimi.nix`. Apply with `just switch` from `/srv/dotfiles/nixos`. Both application services follow the pinned image; there is no Kubernetes rollout step.
+- Commit and push configuration changes before restoring the hourly upgrade timer: NixOS automatic upgrades use GitHub `master`, so uncommitted local hosting changes are reverted by the next upgrade.
+- The old Rocket Sense k3s Deployments are scaled to zero. `rocket-sense`'s existing `deploy-railbird-sf`/Terraform recipes target that retired deployment; do not use them to update production on jimi. The old persistent volumes remain on railbird-sf as the migration backup.
 - For cross-repo work, check each repo's own `AGENTS.md`, `README.md`, and `justfile` before choosing commands.
