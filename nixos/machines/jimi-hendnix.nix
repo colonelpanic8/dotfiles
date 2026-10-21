@@ -16,6 +16,7 @@ in {
     ../configuration.nix
     ../dawarich-jimi.nix
     ../vaultwarden-jimi.nix
+    ../rocket-sense-jimi.nix
   ];
 
   services.macos-ventura = {

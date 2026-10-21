@@ -1,6 +1,7 @@
 let
   keys = import ../../nix-shared/keys.nix;
 in {
+  "rocket-sense.env.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
   "dawarich-secret-key-base.age".publicKeys = keys.agenixKeys;
   "google-places-api-key.age".publicKeys = keys.agenixKeys;
   "gpg-keys.age".publicKeys = keys.agenixKeys;
