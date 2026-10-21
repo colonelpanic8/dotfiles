@@ -13,9 +13,11 @@ an installed-system section run on the new family computer, not Ivan's workstati
 
 - [Choose the media](#choose-the-media)
 - [Build the family ISO](#build-the-family-iso)
+- [Prepare the USB on Windows](#prepare-the-usb-on-windows)
 - [Write and boot a USB stick](#write-and-boot-a-usb-stick)
 - [Connect a remote helper](#connect-a-remote-helper)
 - [Install through Calamares](#install-through-calamares)
+- [Replace an existing installation](#replace-an-existing-installation)
 - [Check the installed computer](#check-the-installed-computer)
 - [Register the machine](#register-the-machine)
 - [Enable conservative updates](#enable-conservative-updates)
@@ -26,6 +28,13 @@ an installed-system section run on the new family computer, not Ivan's workstati
 - [Implementation reference](#implementation-reference)
 
 ## Choose the media
+
+For a family computer, use the **standalone family Plasma ISO** from dotfiles'
+`family-stable` branch. It contains the custom installer and Tailscale, and
+boots into the desktop used in the installation tests. This is the default
+choice for Alex's installation. Use the combined rescue image only when the
+helper explicitly chooses it. `rescue-usb` is Ivan's device-specific persistent
+installation, not an ISO for another USB stick.
 
 The standalone family ISO boots an ephemeral Plasma desktop. Its default live
 account is `nixos`. It includes Calamares and Tailscale. Connect to the internet
@@ -105,6 +114,77 @@ That recipe creates a disposable 40 GiB virtual disk and prints its path. It
 uses KVM when available. Keep the disk to inspect the installation, or remove
 that printed file after shutting down the VM. The recipe does not test UEFI;
 use an OVMF-configured VM for a UEFI installation test.
+
+You can also build the family image from its public release URL on x86_64
+Linux with Nix and Git, without a local dotfiles checkout:
+
+```sh
+nix build 'git+https://github.com/colonelpanic8/dotfiles?dir=nixos/family-installer&ref=family-stable#iso' --out-link result-family
+sha256sum result-family/iso/*.iso
+```
+
+If Nix has not enabled flakes, add
+`--extra-experimental-features 'nix-command flakes'` to the `nix` command.
+Updating a checkout supplies the source and recipes; the build command still
+has to run to produce an ISO. Windows alone cannot build this Linux image.
+A configured x86_64 Linux environment, including WSL2 with Nix, can build it.
+A Windows computer only needs the completed ISO to write the USB.
+
+## Prepare the USB on Windows
+
+The prebuilt [family installer release](https://github.com/colonelpanic8/dotfiles/releases/tag/family-installer-2026-10-21)
+is the image to use for Alex's setup. Download `Download-Installer.ps1` from
+that release. Ask the assisting agent to inspect it, then run it in PowerShell:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Download-Installer.ps1
+```
+
+This sets the execution policy only for that process. The script downloads two
+image parts, verifies their SHA-256 checksums, joins them, and verifies the full
+ISO. It prints the verified file's path under your Downloads folder. It writes
+no disks. The parts are needed because GitHub limits each release asset to
+2 GiB. Do not flash a `.part01` or `.part02` file, the script, or a source ZIP.
+Use the assembled `.iso` file. `SHA256SUMS` and `BUILD-INFO.txt` on the release
+record the checksum and exact dotfiles source commit.
+
+If the helper supplies a complete ISO instead, use that file and its checksum.
+The helper can build both from the release command above. Ask for the actual
+image file or a working download link; a path on the helper's computer is not
+a download. A source ZIP from GitHub is not an ISO. Confirm the destination
+computer supports x86_64; the preparation computer's architecture does not
+establish the destination's architecture.
+
+**Writing the ISO erases every file and partition on the selected USB.**
+Back up its files. Unplug other removable drives to reduce selection mistakes.
+
+1. Download the ISO to the Windows computer. If a shared Drive file requires
+   login, use the email address to which the helper granted access.
+2. Open PowerShell. Replace the path with the actual downloaded file:
+
+   ```powershell
+   Get-FileHash -Algorithm SHA256 -LiteralPath 'C:\Users\YOUR-USER\Downloads\YOUR-IMAGE.iso'
+   ```
+
+   Compare all 64 hexadecimal digits with the helper's checksum. Letter case
+   does not matter. If they differ, download again and do not flash that file.
+3. Download Windows x64 [balenaEtcher](https://etcher.balena.io/) from its
+   official site. Use **Flash from file** and select the verified ISO.
+4. Use **Select target**. Match the USB's model and capacity to the device
+   the person has confirmed may be erased. Do not select an internal drive
+   or a duplicate USB entry that reports no media. Do not rely on a remembered
+   Windows disk number after unplugging or restarting.
+5. Review the selected USB and click **Flash**. Accept the administrator
+   prompt for the writer. Let both writing and validation finish successfully.
+6. If Windows offers to format the newly written USB, cancel. The installer
+   has Linux partitions Windows may not recognize. Eject the stick if it is
+   still mounted. Do not manually partition or preformat it.
+7. Move the USB to the destination computer and follow the boot instructions
+   below. Writing media does not install NixOS on the Windows preparation PC.
+
+Etcher's [official guide and downloads](https://etcher.balena.io/) describe
+image selection, target selection, flashing, and validation. Creating media
+needs neither a Nix installation nor WSL on the Windows computer.
 
 ## Write and boot a USB stick
 
@@ -235,6 +315,50 @@ and cannot be `root` or `nobody`.
 At boot, enter the disk passphrase if encryption is enabled. Then sign in with
 the account password. SSH cannot unlock the encrypted disk before boot; this
 project does not configure remote unlocking in the initrd.
+
+## Replace an existing installation
+
+For a computer whose existing OS and files can all be discarded, use
+Calamares' **Erase disk** option on the confirmed internal destination disk.
+This replaces the entire installation. It does not preserve the previous OS,
+recovery partitions, applications, or personal files on that disk.
+
+1. Before booting the installer, finish backups to another disk or a remote
+   location. Disconnect any backup disk before partitioning.
+2. Boot the USB in UEFI mode if the destination computer supports UEFI. Use
+   **Another person**, the intended primary login, a unique hostname, and
+   **Plasma**. Connect the helper before starting the installation.
+3. On **Partitions**, select the internal destination by model and capacity.
+   The installer USB is a separate device and must remain excluded. If there
+   are multiple internal disks, identify the one whose contents may be removed.
+4. Have the person confirm that this exact disk may be erased in full and
+   that needed files are backed up. Then choose **Erase disk**. Do not choose
+   install alongside, replace one partition, or manual partitioning for this
+   whole-disk replacement. Let Calamares generate the partition layout.
+5. If offered a filesystem choice, ext4 is suitable for this setup. Under UEFI,
+   the generated plan must include an EFI System Partition mounted at
+   `/boot` and a root filesystem mounted at `/`. An encrypted installation
+   places the root filesystem inside LUKS; the EFI partition stays unencrypted.
+   Use the installer's automatic sizes rather than entering device names or
+   a partition table copied from another computer. Swap choices can use the
+   installer defaults; hibernation is not required for this setup.
+6. Decide on **Encrypt system** with the person. If enabled, they must retain
+   the separate disk passphrase and enter it locally after every reboot.
+   Remote SSH cannot unlock it. Do not choose or disclose the passphrase for them.
+7. Review **Summary** together. Check the internal disk model and capacity,
+   the full-disk deletion, the boot mode, and the proposed EFI and root mounts.
+   If the USB, another disk, or an unexpected layout is listed for deletion,
+   stop and correct the selection. **Install** starts disk writes without
+   another confirmation dialog.
+8. After installation completes, restart from the internal disk, remove the
+   USB when safe, unlock the disk if encrypted, and sign in to the new account.
+   Verify this boot before registering the machine or enabling managed updates.
+
+The plan to replace the old installation does not identify a device by itself.
+An assisting agent still needs the person's confirmation of the actual disk.
+Booting the installer or confirming the USB is not confirmation to erase the
+internal disk. On legacy BIOS hardware, the automatic bootloader layout is
+different; have the helper review it instead of forcing the UEFI layout above.
 
 ## Check the installed computer
 
