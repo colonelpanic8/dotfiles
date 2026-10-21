@@ -59,6 +59,7 @@ in {
   services.k3s.enable = lib.mkForce false;
 
   networking.hostName = "jimi-hendnix";
+  networking.networkmanager.wifi.powersave = false;
   myModules.hostIdentity = {
     emoticon = "🐩";
     tmux.background = "#db2777";

@@ -62,6 +62,7 @@ in {
         appContainer
         // {
           ports = ["127.0.0.1:${toString backendPort}:8080"];
+          extraOptions = appContainer.extraOptions ++ ["--memory=4g"];
           environment =
             environment
             // {
