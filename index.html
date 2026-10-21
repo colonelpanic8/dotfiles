@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2026-10-21 Wed 14:04 -->
+<!-- 2026-10-21 Wed 18:25 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -4464,7 +4464,9 @@ Sets environment variables by starting a shell.
 </p>
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">exec-path-from-shell</span>
-  <span class="org-builtin">:disabled</span> (not (equal system-type 'darwin))
+  <span class="org-builtin">:if</span> (eq system-type 'darwin)
+  <span class="org-builtin">:ensure</span> (<span class="org-builtin">:wait</span> t)
+  <span class="org-builtin">:demand</span> t
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
     <span class="org-comment-delimiter">;; </span><span class="org-comment">For debugging
@@ -7446,7 +7448,9 @@ bind-key and global-set-key forms.
         (<span class="org-keyword">require</span> '<span class="org-constant">lsp-pylsp</span>)
         (<span class="org-keyword">setq</span> lsp-pylsp-plugins-pydocstyle-enabled nil)))
 
-        (<span class="org-keyword">use-package</span> <span class="org-constant">sphinx-doc</span>)
+        (<span class="org-keyword">use-package</span> <span class="org-constant">sphinx-doc</span>
+      <span class="org-builtin">:ensure</span> (<span class="org-builtin">:host</span> github <span class="org-builtin">:repo</span> <span class="org-string">"naiquevin/sphinx-doc.el"</span>
+               <span class="org-builtin">:branch</span> <span class="org-string">"master"</span> <span class="org-builtin">:protocol</span> https))
         (<span class="org-keyword">unbind-key</span> <span class="org-string">"C-j"</span> python-mode-map)
         (add-hook 'python-mode-hook #'imalison:python-mode)))
 </pre>
@@ -7554,6 +7558,8 @@ bind-key and global-set-key forms.
         (<span class="org-keyword">setq</span> lsp-go-server-wrapper-function
               #'imalison:go-lsp-server-wrapper-function)))
     (<span class="org-keyword">use-package</span> <span class="org-constant">gotest</span>
+      <span class="org-builtin">:ensure</span> (<span class="org-builtin">:host</span> github <span class="org-builtin">:repo</span> <span class="org-string">"nlamirault/gotest.el"</span>
+               <span class="org-builtin">:branch</span> <span class="org-string">"master"</span> <span class="org-builtin">:protocol</span> https)
       <span class="org-builtin">:demand</span> t
       <span class="org-builtin">:bind</span> (<span class="org-builtin">:map</span> go-mode-map
                   (<span class="org-string">"C-c t"</span> . imalison:gotest))
@@ -8956,6 +8962,9 @@ emr (emacs refactor) provides support for refactoring in many programming langua
   (<span class="org-keyword">progn</span>
     (<span class="org-keyword">setq</span> lsp-prefer-flymake nil)
     (<span class="org-keyword">use-package</span> <span class="org-constant">lsp-ui</span>
+      <span class="org-builtin">:ensure</span> (<span class="org-builtin">:host</span> github <span class="org-builtin">:repo</span> <span class="org-string">"emacs-lsp/lsp-ui"</span>
+               <span class="org-builtin">:branch</span> <span class="org-string">"master"</span> <span class="org-builtin">:protocol</span> https
+               <span class="org-builtin">:files</span> (<span class="org-builtin">:defaults</span> <span class="org-string">"lsp-ui-doc.html"</span> <span class="org-string">"resources"</span>))
       <span class="org-builtin">:config</span>
       (<span class="org-keyword">progn</span>
         (add-hook 'prog-mode-hook 'imalison:lsp-deferred-when-enabled)
@@ -9413,6 +9422,7 @@ I had to disable this mode because something that it does messes with coding set
 <div class="outline-text-3" id="text-19-7">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">use-package</span> <span class="org-constant">direnv</span>
+  <span class="org-builtin">:if</span> (executable-find <span class="org-string">"direnv"</span>)
   <span class="org-builtin">:demand</span> t
   <span class="org-builtin">:config</span>
   (direnv-mode +1)
