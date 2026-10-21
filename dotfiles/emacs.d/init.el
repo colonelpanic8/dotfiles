@@ -21,6 +21,8 @@
 
 (load-file (expand-file-name "elpaca-installer.el" user-emacs-directory))
 
+(require 'imalison-package-compat)
+
 ;; Elpaca's initial queue logger can fire during self-bootstrap before its
 ;; helper is callable under --debug-init. Keep command logging, but skip the
 ;; fragile initial-queue logger so startup diagnostics reach the real config.

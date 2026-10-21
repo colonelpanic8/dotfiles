@@ -429,6 +429,7 @@
         modules =
           [
             ../nix-shared/system/essential.nix
+            ./shared-checkout.nix
             agenix.darwinModules.default
             home-manager.darwinModules.home-manager
             nix-homebrew.darwinModules.nix-homebrew
