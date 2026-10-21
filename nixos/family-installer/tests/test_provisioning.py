@@ -8,7 +8,7 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
-from prepare_media import codex_credentials, inspect_usb
+from prepare_media import codex_credentials, inspect_usb, write_usb
 from prepare_target import prepare_target
 from provisioning import (
     boot_target,
@@ -314,6 +314,42 @@ class ProvisioningTests(unittest.TestCase):
                 self.assertRaises(ValueError),
             ):
                 inspect_usb("/dev/disk2", 50)
+
+    def test_usb_copy_and_verification_commands_with_regular_files(self):
+        image = self.base / "installer.iso"
+        image.write_bytes(b"installer fixture\n" * 1000)
+        target = self.base / "usb.img"
+        target.write_bytes(b"x" * (image.stat().st_size + 37))
+        raw_device = "/dev/rdisk-test"
+        info = {"DeviceIdentifier": "disk-test", "TotalSize": target.stat().st_size}
+        disk_actions = []
+
+        def run(*command):
+            if command[0] == "sudo":
+                args = list(command[1:])
+                if args[0] == "dd":
+                    destination = f"of={raw_device}"
+                    self.assertIn(destination, args)
+                    args[args.index(destination)] = f"of={target}"
+                    args.append("conv=notrunc")
+                else:
+                    self.assertEqual(args[0], "cmp")
+                    self.assertEqual(args[-1], raw_device)
+                    args[-1] = target
+                subprocess.run(args, check=True, capture_output=True)
+            elif command[0] == "diskutil":
+                disk_actions.append(command[1])
+            else:
+                self.assertEqual(command, ("sync",))
+
+        with (
+            patch("prepare_media.inspect_usb", return_value=info),
+            patch("builtins.input", return_value="ERASE disk-test"),
+            patch("prepare_media.run", side_effect=run),
+        ):
+            write_usb(image, "/dev/disk-test")
+        self.assertEqual(target.read_bytes(), image.read_bytes() + b"x" * 37)
+        self.assertEqual(disk_actions, ["unmountDisk", "eject"])
 
     def test_dedicated_codex_profile_is_exported(self):
         home = self.base / "codex-login"
