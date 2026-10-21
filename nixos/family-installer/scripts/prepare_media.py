@@ -175,7 +175,7 @@ def write_usb(image, device):
         if current.get(key) != info.get(key):
             raise ValueError("USB identity changed; inspect devices again")
     run("diskutil", "unmountDisk", device)
-    run("sudo", "dd", f"if={image}", f"of=/dev/r{identifier}", "bs=4m")
+    run("sudo", "dd", f"if={image}", f"of=/dev/r{identifier}", "bs=4194304")
     run("sync")
     # Compare only the written image length; the USB is usually larger.
     run("sudo", "cmp", "-n", str(image.stat().st_size), image, f"/dev/r{identifier}")
