@@ -151,13 +151,19 @@ in {
     streamConfig = ''
       map $ssl_preread_server_name $https_backend {
         rocket-sense.duckdns.org 127.0.0.1:${toString tlsPort};
-        default 192.168.0.159:443;
+        default 127.0.0.1:45444;
       }
       server {
         listen ${lanAddress}:443;
         ssl_preread on;
         proxy_pass $https_backend;
+        proxy_protocol on;
         proxy_connect_timeout 10s;
+        proxy_timeout 300s;
+      }
+      server {
+        listen 127.0.0.1:45444 proxy_protocol;
+        proxy_pass 192.168.0.159:443;
         proxy_timeout 300s;
       }
     '';
@@ -174,8 +180,13 @@ in {
             addr = "127.0.0.1";
             port = tlsPort;
             ssl = true;
+            extraParameters = ["proxy_protocol"];
           }
         ];
+        extraConfig = ''
+          set_real_ip_from 127.0.0.1;
+          real_ip_header proxy_protocol;
+        '';
         locations."/" = {
           proxyPass = "http://127.0.0.1:${toString backendPort}";
           proxyWebsockets = true;
