@@ -26,6 +26,12 @@ in {
   };
 
   features.full.enable = true;
+  nix.gc = {
+    automatic = true;
+    dates = "daily";
+    options = "--delete-older-than 7d";
+  };
+  nix.settings.auto-optimise-store = true;
   myModules.taffybar.aiUsageMode = "both";
   myModules.cache-server = {
     enable = true;
