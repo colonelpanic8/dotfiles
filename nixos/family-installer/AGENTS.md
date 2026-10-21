@@ -7,6 +7,10 @@ person at the computer and an assisting agent. Start with its
 the section for the current stage. Establish which computer and environment
 you are controlling before running commands.
 
+Alex's current workflow starts on his MacBook Air, with its existing dotfiles
+clone and a prepared base ISO. Read [START-HERE.md](START-HERE.md) for the live
+USB prompt. The old Windows release instructions describe a generic fallback.
+
 On combined rescue media, this guide and README are installed under
 `/etc/nixos-family-installer`. On a family target, the source copy is under
 `/srv/nixos-family-installer`. Follow local machine instructions as well.
@@ -35,7 +39,13 @@ login name.
 - Owner selection does not grant secret access. Do not import personal GPG,
   Git-sync, password-store, Syncthing or agent credentials implicitly.
 - Keep Calamares' partition/encryption, user password, and bootloader handling.
-- Private host keys stay on the target. Enrollment requests contain public data.
+- A personal target key may be generated on the trusted preparation computer
+  and transported in the encrypted personal bundle. Never put it in Git, a
+  Nix input, a public ISO, or logs. Enrollment requests contain public data.
+- Only explicitly selected provider accounts are provisioned. Codex-only
+  media is supported; do not require Claude login when it was omitted.
+- Confirm USB identity before writing media and internal disk identity before
+  installation. These are separate destructive operations.
 - Do not enable automatic updates until the host exists on the published
   `family-stable` ref. Never reboot unattended by default.
 - For dotfiles development, use only the primary `/srv/dotfiles` checkout.

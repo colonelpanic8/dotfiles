@@ -37,6 +37,9 @@ family-check:
 family-iso:
     nix build ./family-installer#iso --out-link result-family
 
+family-usb *args:
+    cd family-installer && nix develop --command just prepare {{args}}
+
 rescue-iso:
     nix build .#nixosConfigurations.rescue.config.system.build.isoImage --out-link result-rescue
 

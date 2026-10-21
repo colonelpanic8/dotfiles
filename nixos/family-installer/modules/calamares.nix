@@ -7,9 +7,9 @@
   targetRelease = lib.removePrefix "nixos-" (builtins.fromJSON (builtins.readFile ../flake.lock)).nodes.nixpkgs.original.ref;
   prepareTarget = pkgs.writeShellApplication {
     name = "family-prepare-target";
-    runtimeInputs = [pkgs.python3 pkgs.openssh];
+    runtimeInputs = [pkgs.python3 pkgs.openssh pkgs.age pkgs.procps];
     text = ''
-      exec python3 ${../scripts/prepare_target.py} --source ${../.} "$@"
+      exec python3 ${../scripts}/prepare_target.py --source ${../.} "$@"
     '';
   };
   launchInstaller = pkgs.writeShellApplication {

@@ -8,6 +8,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     flake-utils.url = "github:numtide/flake-utils";
+    agent-nixpkgs.url = "github:NixOS/nixpkgs/4975466d324710c576dc11ad614684e6bd8cad8e";
+    t3code = {
+      url = "github:colonelpanic8/t3code/2797e64ebf29577a6297d9f7c6fdad6538d39658";
+      inputs.nixpkgs.follows = "agent-nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
+    };
+    codex.url = "github:sadjow/codex-cli-nix/8dc8656b82ed75c9f76002f1368415b1e8471264";
+    claude.url = "github:sadjow/claude-code-nix/c932f70402686f018d829534d71f9e8ba7859cfb";
   };
 
   outputs = inputs @ {
@@ -20,10 +28,12 @@
     mkMachine = system: machine:
       nixpkgs.lib.nixosSystem {
         inherit system;
+        specialArgs = {familyInputs = inputs;};
         modules = [
           home-manager.nixosModules.home-manager
           ./modules/user-profile.nix
           ./modules/managed-system.nix
+          ./modules/agent-tools.nix
           machine
         ];
       };
@@ -32,6 +42,7 @@
     ) (builtins.attrNames (builtins.readDir ./machines));
     iso = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
+      specialArgs = {familyInputs = inputs;};
       modules = [./modules/iso.nix];
     };
   in
@@ -52,8 +63,9 @@
     // flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {inherit system;};
       python = pkgs.python3.withPackages (ps: [ps.ruff ps.pyyaml]);
-      testMachine = owner: updates:
+      testMachine = owner: updates: extra:
         mkMachine system ({...}: {
+          imports = [extra];
           myModules.primaryUser = "dad";
           myModules.userProfile.owner = owner;
           networking.hostName = "family-test";
@@ -66,7 +78,7 @@
           familyInstaller.updates.enable = updates;
         });
       profileCheck = owner: let
-        cfg = (testMachine owner false).config;
+        cfg = (testMachine owner false {}).config;
         home = cfg.home-manager.users.dad;
         normalUsers = builtins.attrNames (nixpkgs.lib.filterAttrs (_: user: user.isNormalUser) cfg.users.users);
       in
@@ -117,7 +129,53 @@
           guide = rescueConfig.environment.etc."nixos-family-installer/README.md".source;
           extensions = rescueConfig.system.build.familyCalamaresExtensions;
         });
-      updateConfig = (testMachine "other" true).config;
+      provisionedCheck = tailscale: let
+        helperKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFixtureHelperKeyOnly helper";
+        cfg =
+          (testMachine "other" false {
+            imports = [./modules/provisioned-system.nix];
+            familyInstaller.provisioning = {
+              enable = true;
+              authorizedKeys = [helperKey];
+              inherit tailscale;
+            };
+          }).config;
+        ssh = cfg.services.openssh;
+        firewall = cfg.networking.firewall;
+        provision = cfg.systemd.services.family-provision;
+        autoconnect = cfg.systemd.services.tailscaled-autoconnect;
+      in
+        assert firewall.enable;
+        assert !ssh.openFirewall;
+        assert ssh.ports == [22];
+        assert !(builtins.elem 22 firewall.allowedTCPPorts);
+        assert firewall.trustedInterfaces == ["lo"];
+        assert firewall.interfaces.tailscale0.allowedTCPPorts == [22];
+        assert ssh.settings.PasswordAuthentication == false;
+        assert ssh.settings.KbdInteractiveAuthentication == false;
+        assert ssh.settings.PermitRootLogin == "no";
+        assert cfg.users.users.dad.openssh.authorizedKeys.keys == [helperKey];
+        assert cfg.users.users.root.openssh.authorizedKeys.keys == [];
+        assert cfg.services.tailscale.enable;
+        assert provision.serviceConfig.UMask == "0077";
+        assert builtins.elem "multi-user.target" provision.wantedBy;
+        assert builtins.elem "display-manager.service" provision.before;
+        assert (
+          if tailscale
+          then
+            cfg.services.tailscale.authKeyFile
+            == "/run/family-installer/tailscale-authkey"
+            && builtins.elem "tailscaled-autoconnect.service" provision.before
+            && builtins.elem "family-provision.service" autoconnect.requires
+            && builtins.elem "family-provision.service" autoconnect.after
+          else cfg.services.tailscale.authKeyFile == null && !(cfg.systemd.services ? tailscaled-autoconnect)
+        );
+        assert builtins.all (a: a.assertion) cfg.assertions;
+          pkgs.writeText "provisioned-profile-check" (builtins.toJSON {
+            inherit tailscale;
+            sshInterfaces = builtins.attrNames (nixpkgs.lib.filterAttrs (_: i: builtins.elem 22 i.allowedTCPPorts) firewall.interfaces);
+          });
+      updateConfig = (testMachine "other" true {}).config;
       recordUpgrade = pkgs.writeShellScript "record-upgrade" ''
         printf '%s\n' "$@" > "$out"
       '';
@@ -129,7 +187,7 @@
     in {
       formatter = pkgs.alejandra;
       devShells.default = pkgs.mkShell {
-        packages = [pkgs.just pkgs.git pkgs.alejandra python pkgs.openssh pkgs.qemu];
+        packages = [pkgs.just pkgs.git pkgs.alejandra python pkgs.openssh pkgs.qemu pkgs.age pkgs.xorriso];
       };
       checks =
         {
@@ -137,7 +195,7 @@
             alejandra --check ${./flake.nix} ${./modules} ${./modules/user-profile.nix}
             touch "$out"
           '';
-          helper = pkgs.runCommand "installer-helper-tests" {nativeBuildInputs = [python pkgs.openssh pkgs.nix];} ''
+          helper = pkgs.runCommand "installer-helper-tests" {nativeBuildInputs = [python pkgs.openssh pkgs.nix pkgs.age];} ''
             cp -r ${./scripts} scripts
             cp -r ${./tests} tests
             cp -r ${./calamares} calamares
@@ -153,6 +211,8 @@
           other-user = profileCheck "other";
           ivan-user = profileCheck "ivan";
           rescue-module = rescueCheck;
+          provisioned-profile = provisionedCheck false;
+          provisioned-tailscale-profile = provisionedCheck true;
           update-command = pkgs.runCommand "update-command" {} ''
             ${upgradeScript}
             test "$(sed -n '4p' "$out")" = '${updateConfig.system.autoUpgrade.flake}'
