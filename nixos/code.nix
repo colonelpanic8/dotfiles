@@ -224,8 +224,9 @@
         if pkgs.stdenv.hostPlatform.system == "x86_64-linux"
         then
           with pkgs; [
-            # purescript
-            purescript
+            (import ./packages/purescript-compat {
+              system = pkgs.stdenv.hostPlatform.system;
+            })
             # Broken
             # spago
           ]
