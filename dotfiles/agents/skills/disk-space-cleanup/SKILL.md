@@ -141,9 +141,16 @@ Recommended sequence:
 3. For inactive repos, abandoned branches, and `.worktrees/*/target`, prefer guarded direct deletion of the explicit `target/` directory.
 4. Re-run the list command after each deletion round to show reclaimed space.
 
+On large JavaScript monorepos, the helper also traverses `node_modules`, `.git`,
+and nested `.repos` directories before printing results. On `ryzen-shine`, a
+full inventory spent over nine minutes in Paseo/T3 Code dependencies. Avoid
+overlapping full scans; use a shared snapshot or `du` to locate a large target,
+then validate that explicit path with the helper's dry-run `delete` command.
+
 Machine-specific note:
 
 - Project-local `.worktrees/*/target` directories are common cleanup wins on this machine and are easy to miss with the old hard-coded workflow.
+- Check `/proc/*/maps` as well as cwd, executable, and file-descriptor links before deleting Rust caches. On 2026-10-22, an already-removed Keepbook build shard still had proc-macro libraries mapped by `rust-analyzer`; an fd-only check missed them. Treat an absent shard as already removed, and do not count its historical size as newly reclaimed space.
 - `cargo-sweep` is installed through the NixOS `code.nix` package set, but stale manually-installed binaries under `~/.cargo/bin` can shadow `/run/current-system/sw/bin/cargo-sweep`. If `cargo sweep` fails with a missing loader or `No such file or directory`, run `type -a cargo-sweep` and remove the stale `~/.cargo/bin/cargo-sweep` entry.
 - `cargo-sweep sweep -i/--installed` can fail when `rustup toolchain list` contains stale toolchains whose `rustc` no longer exists. On this machine, `1.68.2-x86_64-unknown-linux-gnu` caused `failed to determine fingerprint ... 'rustc': No such file or directory`.
 - `/home/imalison/projects/codex/codex-rs/target` can be dominated by current-looking `target/debug/incremental` data that `cargo-sweep sweep -a` and `--maxsize` report as not removable. If it is stale and space pressure is high, use the guarded `rust_target_dirs.py delete ... --yes` workflow for that explicit target directory.
@@ -281,7 +288,7 @@ Machine-specific heavy hitters seen in practice:
 - 2026-07-20 acute unblock: when manual shard deletion is unavailable, `systemctl --user start cargo-sweep-rust-targets.service` is a sanctioned first move — one run swept project `target/` dirs and freed 43G (`/` 100% -> 95%) in under a minute, without touching the 2-day `~/.cargo/build` window.
 - 2026-10-18 `jimi-hendnix` acute unblock (`/` 100%, 1001M free -> 85%, 134G free; **+133G**), entirely unprivileged because the agent shell had no sudo (setuid stripped, same as `railbird-sf`):
   - Unprivileged `nix-store --gc` goes through the daemon and still works without sudo: 6,977 paths, 21.4 GiB, in about a minute. It's the fastest first move when `--print-dead` is non-zero.
-  - **The cargo-sweep timer can silently skip a huge stale target.** `keepbook/target` held 86.7G (`target/debug/deps` 60G, `incremental` 18G) with no file modified in 9 days, yet the 6-hourly `--time 2` sweep removed nothing and `rust_target_dirs.py list` reported age `0d`. Both go by access time, which something keeps refreshing. Check `find <target> -type f -newermt '-2 days' | wc -l` for real write activity; with zero writes and no `/proc/*/fd` references, the guarded `delete --yes` was safe and reclaimed the full 86.7G.
+  - **The cargo-sweep timer can silently skip a huge stale target.** `keepbook/target` held 86.7G (`target/debug/deps` 60G, `incremental` 18G) with no file modified in 9 days, yet the 6-hourly `--time 2` sweep removed nothing and `rust_target_dirs.py list` reported age `0d`. The helper's age uses the target directory's own mtime, not recursive file freshness (verified in its source on 2026-10-22). Check `find <target> -type f -newermt '-2 days' | wc -l` for real write activity; with zero writes and no `/proc/*/fd` references, the guarded `delete --yes` was safe and reclaimed the full 86.7G.
   - A `/tmp/rmk-bughunt.*` dir mixed build subdirs with irreplaceable repro material (`README.md`, `reproduce.sh`, crate copies, `capacities*.toml`). List each scratch dir's top level and delete only the large build subdirs instead of the whole dir. The other `/tmp/rmk-judgment-*-build` and `moergo-rmk-*-cargo` dirs were pure Cargo output (`CACHEDIR.TAG`, `debug/`) and went entirely.
   - `bc` isn't on PATH, and zsh mangles multi-field `printf` loops. Run survey loops under `bash -c` with integer `du -m`.
   - `~/projects/paseo/.worktrees`: these may be Paseo-registered workspaces, so keep the worktrees and drop only their dependencies. Run `git -C <wt> clean -fdxq -- <each node_modules path>` (8–10 per worktree in the monorepo). With user approval, doing this in 13 clean worktrees whose last commit was 34+ days old freed 43G of measured `df` space against 44.8G apparent. Paseo uses npm, not pnpm, so nearly nothing is hard-link shared and the reclaim matches `du`. `assembled-voice` is detached on a commit no ref contains, so it's reflog-only.
