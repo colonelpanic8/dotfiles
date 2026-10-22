@@ -220,6 +220,7 @@
   enabledModule = makeEnable config "myModules.desktop" true {
     services.greenclip.enable = true;
     imports = [
+      inputs.cua-driver.nixosModules.cua-driver
       ./fonts.nix
       ./eva.nix
       ./hyprland.nix
@@ -264,6 +265,11 @@
 
     services.gnome.at-spi2-core.enable = true;
 
+    services.cua-driver = {
+      enable = true;
+      package = inputs.cua-driver.packages.${pkgs.stdenv.hostPlatform.system}.cua-driver;
+    };
+
     services.gnome.gnome-keyring.enable = true;
 
     home-manager.users.imalison = lib.mkIf isFull {
@@ -276,6 +282,11 @@
         package = rlruDioxusDesktop;
         startInTray = true;
       };
+    };
+
+    home-manager.extraSpecialArgs.cuaDriverSkill = builtins.path {
+      path = "${inputs.cua-driver}/libs/cua-driver/rust/Skills/cua-driver";
+      name = "cua-driver-skill";
     };
 
     home-manager.sharedModules = [

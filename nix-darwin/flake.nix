@@ -482,8 +482,9 @@
       machineModule = ./machines/alexanders-macbook-air.nix;
       homebrewCleanup = "none";
       extraCasks = ["google-chrome"];
-      t3codeTokenSecret = null;
+      t3codeTokenSecret = "t3code-managed-access-token.alexanders-macbook-air";
       homeModules = [
+        ./home/agents.nix
         ./home/desktop.nix
         {
           dotfiles.gitIdentity = {

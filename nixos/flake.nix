@@ -74,6 +74,14 @@
       flake = false;
     };
 
+    cua-driver = {
+      url = "github:trycua/cua";
+      inputs = {
+        nixpkgs.follows = "nixpkgs-stable";
+        flake-utils.follows = "flake-utils";
+      };
+    };
+
     git-sync-rs = {
       url = "github:colonelpanic8/git-sync-rs";
       inputs = {
@@ -401,7 +409,7 @@
     # Pin by REV, never by branch: generated assembly branches move on rebuild.
     # Each rebuild also pushes a dated tag, so older revs stay fetchable.
     t3code-integration = {
-      url = "github:colonelpanic8/t3code/98cd9d13197f66ddcb80ad191fc6a17345a7969e";
+      url = "github:colonelpanic8/t3code/e3c6c6e3c3b0e2c62f40fb9c3a92fd055f939d9c";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";

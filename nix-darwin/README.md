@@ -26,7 +26,7 @@ Codex Desktop and Claude Desktop are declared as shared Homebrew casks; their
 CLIs come from dedicated Nix flakes. The shared desktop module starts Raycast
 automatically, assigns Command-Space, disables Spotlight's conflicting shortcuts,
 and adds T3 Code and Ghostty to the Dock. The Mini and Neo run T3 Code system
-daemons; the Air retains its desktop client setup.
+daemons; the Air also runs a T3 Code daemon with its own encrypted credential.
 
 All Macs use `KeyRepeat = 2`, `InitialKeyRepeat = 15`, and Caps Lock → Control.
 The shared Hammerspoon configuration maps Right Command to Hyper (⌃⌥⌘), with
@@ -45,6 +45,13 @@ Manual sleep and the laptop lid's hardware restrictions still apply.
 The Neo has its own encrypted T3 Code credential. Kat's desktop
 connects to its local T3 Code daemon; it does not receive Ivan's fleet credential,
 GPG secrets, or private repository synchronization configuration.
+
+Ivan's family connections are declared in `nix-shared/t3code-family.nix`.
+Home Manager installs persistent SSH tunnels with pinned host keys and a
+managed T3 connection registry. Each connection reads its own agenix credential;
+no pairing step is required. Group membership and hidden defaults derive from
+the same declaration. Session visibility switches do not change these files.
+The Air's server listens on loopback and is reached through the SSH tunnel.
 
 ## Private camera and microphone feeds
 

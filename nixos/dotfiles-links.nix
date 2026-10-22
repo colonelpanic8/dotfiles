@@ -1,5 +1,6 @@
 {
   config,
+  cuaDriverSkill ? null,
   lib,
   nixos,
   pkgs,
@@ -19,6 +20,8 @@
   # managed user on a shared machine.
   worktreeRoot = nixos.config.dotfiles-worktree or "/srv/dotfiles";
   worktreeDotfiles = "${worktreeRoot}/dotfiles";
+  cuaDriverEnabled = nixos.config.services.cua-driver.enable;
+  claudeSkillsDir = "${config.home.homeDirectory}/.local/share/cua-driver/claude-skills";
 
   # Use the flake source for enumeration (pure), but point links at the worktree.
   srcDotfiles = ../dotfiles;
@@ -62,7 +65,11 @@
 
   mkManaged = rel:
     lib.nameValuePair ".${rel}" {
-      source = oos "${worktreeDotfiles}/${rel}";
+      source = oos (
+        if rel == "claude/skills" && cuaDriverEnabled
+        then claudeSkillsDir
+        else "${worktreeDotfiles}/${rel}"
+      );
     };
 
   configEntries = builtins.readDir srcConfig;
@@ -86,7 +93,26 @@ in {
   ];
 
   home.file =
-    builtins.listToAttrs (map mkManaged managedRelFiles);
+    builtins.listToAttrs (map mkManaged managedRelFiles)
+    // lib.optionalAttrs cuaDriverEnabled (lib.genAttrs [
+      ".cua-driver/skills/cua-driver"
+      ".agents/skills/cua-driver"
+      ".config/opencode/skills/cua-driver"
+    ] (_: {source = cuaDriverSkill;}));
+
+  home.activation.linkClaudeCuaDriverSkill = lib.mkIf cuaDriverEnabled (
+    lib.hm.dag.entryBetween ["linkGeneration"] ["writeBoundary"] ''
+      shared_skills=${lib.escapeShellArg "${worktreeDotfiles}/agents/skills"}
+      claude_skills=${lib.escapeShellArg claudeSkillsDir}
+      mkdir -p "$claude_skills"
+      for skill in "$shared_skills"/* "$shared_skills"/.[!.]* "$shared_skills"/..?*; do
+        [ -e "$skill" ] || [ -L "$skill" ] || continue
+        [ "''${skill##*/}" != cua-driver ] || continue
+        ln -sfnT "$skill" "$claude_skills/''${skill##*/}"
+      done
+      ln -sfnT ${lib.escapeShellArg cuaDriverSkill} "$claude_skills/cua-driver"
+    ''
+  );
 
   xdg.configFile =
     builtins.listToAttrs (map mkConfigDir configDirNames);
@@ -100,6 +126,10 @@ in {
   myModules.codexGeneratedSkills.computerUseLinuxPackage =
     if nixos.config.myModules.desktop.enable
     then pkgs.computer-use-linux
+    else null;
+  myModules.codexGeneratedSkills.cuaDriverPackage =
+    if nixos.config.services.cua-driver.enable
+    then nixos.config.services.cua-driver.package
     else null;
   myModules.codexGeneratedSkills.gmessagesPackage =
     if (nixos.config.myModules.googleMessages.enable or false)

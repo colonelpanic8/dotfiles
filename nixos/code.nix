@@ -96,9 +96,23 @@
             settings.sidebarV2LargeIcons = true;
             settings.composerShortcutHints = "alt";
             settings.followUpBehavior = "steer";
+            settings.environmentGroups = import ../nix-shared/t3code-environment-groups.nix;
             # A client-only desktop has no primary environment to take
             # keybindings from, so it needs its own copy of the managed set.
             keybindings = builtins.fromJSON (builtins.readFile ../nix-shared/t3code-keybindings.json);
+          };
+          xdg.dataFile."applications/com.t3tools.T3Code.desktop" = {
+            force = true;
+            text = ''
+              [Desktop Entry]
+              Type=Application
+              Name=T3 Code (Nightly)
+              Exec=/etc/profiles/per-user/imalison/bin/t3code-desktop %U
+              Icon=t3code
+              StartupWMClass=com.t3tools.T3Code
+              MimeType=x-scheme-handler/t3code;
+              Categories=Development;IDE;
+            '';
           };
         }
       ];

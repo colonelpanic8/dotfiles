@@ -15,6 +15,11 @@
       command = "${lib.getExe cfg.computerUseLinuxPackage}"
       args = ["mcp"]
     ''}
+    ${lib.optionalString (cfg.cuaDriverPackage != null) ''
+      [mcp_servers.cua-driver]
+      command = "${lib.getExe cfg.cuaDriverPackage}"
+      args = ["mcp"]
+    ''}
     ${lib.optionalString (cfg.gmessagesPackage != null) ''
       [mcp_servers.gmessages]
       command = "${lib.getExe' cfg.gmessagesPackage "gmessages"}"
@@ -71,6 +76,12 @@ in {
       type = lib.types.nullOr lib.types.package;
       default = null;
       description = "computer-use-linux package to register as a managed Codex MCP server.";
+    };
+
+    cuaDriverPackage = lib.mkOption {
+      type = lib.types.nullOr lib.types.package;
+      default = null;
+      description = "Cua Driver package to register as a managed Codex MCP server.";
     };
 
     gmessagesPackage = lib.mkOption {

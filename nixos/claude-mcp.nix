@@ -32,6 +32,13 @@
         args = ["mcp"];
       };
     }
+    // lib.optionalAttrs config.services.cua-driver.enable {
+      cua-driver = {
+        type = "stdio";
+        command = lib.getExe config.services.cua-driver.package;
+        args = ["mcp"];
+      };
+    }
     # Read-only; sending stays with the `gmessages send` CLI.
     // lib.optionalAttrs config.myModules.googleMessages.enable {
       gmessages = {
