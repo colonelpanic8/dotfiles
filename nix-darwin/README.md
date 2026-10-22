@@ -11,6 +11,20 @@ cd /Users/Shared/dotfiles/nix-darwin
 just switch
 ```
 
+If macOS asks for the **Nix Store** password after restarting even though
+Determinate mounts `/nix` automatically, repair the system Keychain lookup:
+
+```sh
+sudo /usr/bin/python3 /Users/Shared/dotfiles/nix-darwin/repair-nix-store-keychain.py
+```
+
+The helper verifies the installer's existing password without unmounting the
+store, then saves a copy under the volume UUID that macOS's APFS unlock agent
+searches for. It retains encryption and the installer's original Keychain entry;
+passwords are passed through memory and stdin, never command arguments or files.
+This is a one-time repair per volume, and is safe to rerun. It requires Apple's
+Command Line Tools for `/usr/bin/python3`.
+
 Every Mac's activation creates a `dotfiles` group containing its primary user
 and personal Home Manager users. It repairs `/Users/Shared/dotfiles` to use that
 group, keeps existing file owners, and enables inherited group write access for
