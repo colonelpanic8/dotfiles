@@ -48,6 +48,7 @@
         done
         mkdir -p "$state_dir"
         printf 'extra-substituters = %s\n' "''${enabled[*]}" > "$conf_file.tmp"
+        chmod 0644 "$conf_file.tmp"
         mv "$conf_file.tmp" "$conf_file"
       }
 
@@ -90,6 +91,7 @@
             fi
             grep -vxF "$name" "$disabled_file" > "$disabled_file.tmp" || true
             [ "$action" = disable ] && echo "$name" >> "$disabled_file.tmp"
+            chmod 0644 "$disabled_file.tmp"
             mv "$disabled_file.tmp" "$disabled_file"
             echo "$name: ''${action}d"
           done
