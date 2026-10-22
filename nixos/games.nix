@@ -7,7 +7,7 @@
   ...
 }: let
   heroicAccountSwitchingVersion = "${pkgs.heroic.version}-epic-account-switching-${inputs.heroic-games-launcher.shortRev or "dirty"}";
-  heroicUnwrappedWithEpicAccountSwitching = pkgs.heroic-unwrapped.overrideAttrs (oldAttrs: {
+  heroicUnwrappedWithEpicAccountSwitching = (pkgs.heroic-unwrapped.override {pnpm_12 = pkgs.pnpm_10;}).overrideAttrs (oldAttrs: {
     name = "${oldAttrs.pname or "heroic-unwrapped"}-${heroicAccountSwitchingVersion}";
     version = heroicAccountSwitchingVersion;
     src = inputs.heroic-games-launcher;

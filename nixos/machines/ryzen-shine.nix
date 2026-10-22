@@ -58,7 +58,18 @@
   };
   services.mullvad-vpn.enable = lib.mkForce false;
   myModules.nixified-ai.enable = true;
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxPackages_latest.extend (_: prev: {
+    xpad-noone = prev.xpad-noone.overrideAttrs (old: {
+      # Kbuild installs the per-module certificate required by modules.cer.
+      installPhase = ''
+        runHook preInstall
+        make ${lib.escapeShellArgs old.makeFlags} \
+          -C ${prev.kernel.dev}/lib/modules/${prev.kernel.modDirVersion}/build \
+          M="$PWD" INSTALL_MOD_PATH="$out" modules_install
+        runHook postInstall
+      '';
+    });
+  });
 
   # MemTest86 2026-08-16 (/boot/MemTest86-Report-20260816-215525_934520.html):
   # 193 errors, every one a bit-31 flip, at five addresses inside a 25KB window

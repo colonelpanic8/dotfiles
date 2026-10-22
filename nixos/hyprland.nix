@@ -35,6 +35,7 @@
     hyprland = baseHyprlandPackage;
     hyprland-unwrapped = final.hyprland.override {wrapRuntimeDeps = false;};
     hyprland-with-tests = final.hyprland.override {withTests = true;};
+    hyprpolkitagent = inputs.nixpkgs.legacyPackages.${system}.hyprpolkitagent;
     hyprtoolkit = prev.hyprtoolkit.overrideAttrs (_: {
       version = "0.5.4";
       src = prev.fetchFromGitHub {
@@ -501,6 +502,9 @@
       enable = true;
       group = "video";
     };
+
+    # Capabilities must target the ELF, while session launchers keep their setup.
+    security.wrappers.Hyprland.source = lib.mkForce "${baseHyprlandPackage}/bin/.Hyprland-wrapped";
 
     programs.hyprland = {
       enable = true;
