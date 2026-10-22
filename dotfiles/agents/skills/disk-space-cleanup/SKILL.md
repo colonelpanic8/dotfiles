@@ -80,6 +80,28 @@ For multiple pnpm store versions or older Yarn Berry caches, see
 [package cache cleanup](references/cleanup-patterns.md#package-caches). Match
 the pnpm executable to the store version before pruning.
 
+### Deduplication and ext4 reserve
+
+- After GC, `sudo -n nix-store --optimise` can reclaim duplicate live store
+  files without removing generations. On 2026-10-21 `jimi-hendnix`, it reported
+  68.9 GiB freed by hard-linking 5,804,426 files. The full scan took about
+  41 minutes, read 387 GiB, and peaked at 19.3 GiB RAM; allow for that load
+  rather than treating it as an instant cleanup.
+- For ext4, compare `df` with `tune2fs -l <verified-root-device>` before
+  attributing unavailable space to files. This host's 5% reserve held about
+  45 GiB. Reducing it to 1% with `tune2fs -m 1` exposed about 36 GiB while
+  retaining about 9 GiB for root. Verify the mounted device, filesystem health,
+  and current reserve first; this changes allocation policy, not used bytes.
+- Run long maintenance under a named `systemd-run` service when the agent's
+  server may restart. On NixOS use `/run/current-system/sw/bin/bash` and set
+  `PATH=/run/current-system/sw/bin:/run/wrappers/bin`; `/bin/bash` may not exist
+  and the default service PATH may omit `sh`. Check the unit and journal before
+  restarting work: completed transient units can disappear. Use
+  `RemainAfterExit=yes` for a oneshot that launches a detached container, or
+  keep the container attached so systemd owns its actual lifetime.
+- If `sudo` on PATH reports a missing setuid bit, check the real NixOS wrapper
+  at `/run/wrappers/bin/sudo` before concluding privileged cleanup is unavailable.
+
 ## Step 3: Rust Build Artifact Cleanup
 
 Do not start with a blind `find ~ -name target` or with hard-coded roots that may miss worktrees. Inventory explicit `target/` directories first using the bundled helper and the machine-specific root list in `references/rust-target-roots.txt`.
@@ -263,6 +285,7 @@ Machine-specific heavy hitters seen in practice:
   - A `/tmp/rmk-bughunt.*` dir mixed build subdirs with irreplaceable repro material (`README.md`, `reproduce.sh`, crate copies, `capacities*.toml`). List each scratch dir's top level and delete only the large build subdirs instead of the whole dir. The other `/tmp/rmk-judgment-*-build` and `moergo-rmk-*-cargo` dirs were pure Cargo output (`CACHEDIR.TAG`, `debug/`) and went entirely.
   - `bc` isn't on PATH, and zsh mangles multi-field `printf` loops. Run survey loops under `bash -c` with integer `du -m`.
   - `~/projects/paseo/.worktrees`: these may be Paseo-registered workspaces, so keep the worktrees and drop only their dependencies. Run `git -C <wt> clean -fdxq -- <each node_modules path>` (8–10 per worktree in the monorepo). With user approval, doing this in 13 clean worktrees whose last commit was 34+ days old freed 43G of measured `df` space against 44.8G apparent. Paseo uses npm, not pnpm, so nearly nothing is hard-link shared and the reclaim matches `du`. `assembled-voice` is detached on a commit no ref contains, so it's reflog-only.
+- 2026-10-20 `jimi-hendnix` zero-free-space failure mode inside Claude Code: with `/` at 100% (83M free), **every Bash tool call failed before running anything** (even `mkdir`), because the harness captures stdout under `/tmp/claude-1000/<project>/<session>/tasks/` and the ENOSPC write aborted the call. `run_in_background` and T3 `delegate_task` (returned `parent_not_active`) did not help either. Reads still worked, so a bare `df -h /tmp` eventually got through once a few MB freed up. The unblock was the unprivileged `nix-store --gc` (no sudo in the agent shell): 13,902 dead paths, 39.2 GiB, `/` 100% -> 95% (49G free) in under two minutes. `/tmp` itself was 12G and left untouched.
 - 2026-07-19 cleanup: inactive `/tmp/rmk-*`, `/tmp/glove80-*`, and `/tmp/codex-asar.*` build/extraction directories accumulated about 85G in one day. Before deleting these explicit top-level patterns, scan `/proc/*/{cwd,root,exe,fd/*}` for references and check the candidates for nested `.git` entries; with neither present, removing them reduced `/tmp` from 63G to 4.2G and restored 85G of filesystem headroom.
 - 2026-07-22 T3 Code review-worktree unblock: many detached `.worktrees/pr-*` checkouts each materialized about 2.7G of `node_modules` while repeated PR review cycles were running. After checking `/proc/*/cwd` and selecting only completed, inactive worktrees, `git -C <worktree> clean -fdx -- node_modules` on five explicit targets restored about 1.9G of physical space. Preserve source and foreign/active worktrees, and prefer relinking the repository's existing dependencies over creating another independent install.
 - 2026-07-24 T3 Code stack cleanup: deleting all 174 `node_modules` directories under `/home/imalison/src/t3code` (including workspace-local link farms) removed about 30.7G of apparent data but reclaimed only 1.7G of filesystem space because the large pnpm trees shared content/hard links. Enumerate exact paths first, verify `/proc/*/{cwd,maps,fd/*}` has no `node_modules` users, and use `git -C <worktree> clean -fdx -- <relative-node_modules-path>` for each validated path. The Nix package/system rebuild remained reproducible without repository-local dependencies.

@@ -16,6 +16,7 @@ in {
     ../configuration.nix
     ../dawarich-jimi.nix
     ../vaultwarden-jimi.nix
+    ../rocket-sense-jimi.nix
   ];
 
   services.macos-ventura = {
@@ -25,6 +26,12 @@ in {
   };
 
   features.full.enable = true;
+  nix.gc = {
+    automatic = true;
+    dates = "daily";
+    options = "--delete-older-than 7d";
+  };
+  nix.settings.auto-optimise-store = true;
   myModules.taffybar.aiUsageMode = "both";
   myModules.cache-server = {
     enable = true;
@@ -58,6 +65,7 @@ in {
   services.k3s.enable = lib.mkForce false;
 
   networking.hostName = "jimi-hendnix";
+  networking.networkmanager.wifi.powersave = false;
   myModules.hostIdentity = {
     emoticon = "🐩";
     tmux.background = "#db2777";

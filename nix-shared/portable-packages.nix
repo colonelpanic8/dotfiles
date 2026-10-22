@@ -29,6 +29,7 @@ with pkgs; [
   just
   lsof
   magic-wormhole-rs
+  markdownlint-cli2
   ncdu
   neovim
   nix-index

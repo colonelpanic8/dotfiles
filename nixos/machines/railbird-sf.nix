@@ -36,11 +36,6 @@ in {
     file = ../secrets/org-api-ssh-key.age;
     mode = "0400"; # Restrictive permissions for SSH key
   };
-  # DuckDNS token for the rocket-sense.duckdns.org dynamic-DNS updater below.
-  age.secrets.duckdns-token = {
-    file = ../secrets/duckdns-token.railbird-sf.age;
-    mode = "0400";
-  };
 
   services.org-agenda-api-host = {
     enable = true;
@@ -155,62 +150,7 @@ in {
     enableACME = true;
     forceSSL = true;
     locations."= /privacy" = {
-      alias = pkgs.writeText "rocket-sense-privacy.html" ''
-        <!doctype html>
-        <html lang="en">
-          <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <title>Rocket Sense Privacy Policy</title>
-            <style>
-              body {
-                color: #171717;
-                font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-                line-height: 1.55;
-                margin: 0;
-                padding: 48px 24px;
-              }
-              main {
-                max-width: 760px;
-                margin: 0 auto;
-              }
-              h1, h2 {
-                line-height: 1.2;
-              }
-              h1 {
-                font-size: 2rem;
-              }
-              h2 {
-                font-size: 1.2rem;
-                margin-top: 2rem;
-              }
-            </style>
-          </head>
-          <body>
-            <main>
-              <h1>Rocket Sense Privacy Policy</h1>
-              <p>Last updated: June 18, 2026</p>
-
-              <p>Rocket Sense is a Rocket League replay analysis service operated by Ivan Malison. This policy explains what information the service uses when you sign in and upload or view replay data.</p>
-
-              <h2>Information We Collect</h2>
-              <p>When you sign in with Epic Games, Rocket Sense receives the Epic account identifiers and profile fields that you approve during the Epic login flow, such as account ID and display name. When you use the service, Rocket Sense may store replay files, replay metadata, player identifiers, derived gameplay statistics, and basic account/session records needed to operate the site.</p>
-
-              <h2>How We Use Information</h2>
-              <p>Rocket Sense uses this information to authenticate users, associate uploads with accounts, process replay files, display replay-derived statistics, maintain site reliability, and prevent abuse.</p>
-
-              <h2>Sharing</h2>
-              <p>Rocket Sense does not sell personal information. Information may be processed by infrastructure providers used to host and operate the service, and may be disclosed if required by law or necessary to protect the service and its users.</p>
-
-              <h2>Retention</h2>
-              <p>Rocket Sense keeps account, replay, and derived analysis data for as long as needed to provide the service, debug issues, maintain security, or comply with legal obligations.</p>
-
-              <h2>Contact</h2>
-              <p>For privacy questions or deletion requests, contact Ivan Malison at IvanMalison@gmail.com.</p>
-            </main>
-          </body>
-        </html>
-      '';
+      alias = ../rocket-sense-privacy.html;
       extraConfig = ''
         default_type text/html;
       '';
@@ -223,40 +163,6 @@ in {
         proxy_read_timeout 300s;
         proxy_connect_timeout 75s;
       '';
-    };
-  };
-
-  # Dynamic-DNS updater: keep rocket-sense.duckdns.org pointed at this node's
-  # current public IP. The residential WAN IP changes (e.g. after an ISP
-  # outage/failover), and without this the public hostname goes stale and the
-  # site becomes unreachable until manually re-pointed. Leaving ip= blank tells
-  # DuckDNS to detect the source IP of this request, so it always reflects
-  # whatever connection the node is currently egressing through.
-  systemd.services.duckdns = {
-    description = "DuckDNS updater for rocket-sense.duckdns.org";
-    after = ["network-online.target"];
-    wants = ["network-online.target"];
-    serviceConfig = {
-      Type = "oneshot";
-      DynamicUser = true;
-      LoadCredential = ["token:${config.age.secrets.duckdns-token.path}"];
-    };
-    script = ''
-      token="$(cat "$CREDENTIALS_DIRECTORY/token")"
-      resp="$(${pkgs.curl}/bin/curl -fsS --retry 3 --max-time 30 \
-        "https://www.duckdns.org/update?domains=rocket-sense&token=$token&ip=")"
-      echo "DuckDNS response: $resp"
-      [ "$resp" = "OK" ] || { echo "DuckDNS update failed"; exit 1; }
-    '';
-  };
-
-  systemd.timers.duckdns = {
-    description = "Periodic DuckDNS update for rocket-sense.duckdns.org";
-    wantedBy = ["timers.target"];
-    timerConfig = {
-      OnBootSec = "1min";
-      OnUnitActiveSec = "5min";
-      Persistent = true;
     };
   };
 

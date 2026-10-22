@@ -21,6 +21,9 @@ check: fmt-check lint test
 build:
     nix build .#iso
 
+prepare *args:
+    python scripts/prepare_media.py --source . {{args}}
+
 vm:
     #!/usr/bin/env bash
     set -euo pipefail

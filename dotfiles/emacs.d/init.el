@@ -12,6 +12,9 @@
 
 (add-to-list 'load-path (emacs-directory-filepath "lisp"))
 
+(require 'imalison-exec-path)
+(imalison:initialize-exec-path)
+
 ;; Treat this Emacs as if it was built without D-Bus.  The local
 ;; lisp/dbus.el shim prevents `require' from loading the built-in dbus.el,
 ;; whose top-level form eagerly opens system and session bus connections.
@@ -20,6 +23,8 @@
       dbus-runtime-version nil)
 
 (load-file (expand-file-name "elpaca-installer.el" user-emacs-directory))
+
+(require 'imalison-package-compat)
 
 ;; Elpaca's initial queue logger can fire during self-bootstrap before its
 ;; helper is callable under --debug-init. Keep command logging, but skip the

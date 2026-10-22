@@ -1,21 +1,26 @@
 # NixOS family installer
 
-Install NixOS through Calamares with a shared user profile and an independently
-chosen primary user. The installer lives in `nixos/family-installer/` in
+Prepare a personal installer USB on an existing trusted computer, then install
+NixOS through Calamares with T3 Code and the new owner's agent account. The
+installer lives in `nixos/family-installer/` in
 [dotfiles](https://github.com/colonelpanic8/dotfiles), alongside Ivan's existing
-rescue ISO and persistent USB configuration. The first installation needs no
-personal keys or machine registration. Ivan can help over SSH after the person at the computer connects
-the live environment to the network.
+rescue ISO and persistent USB configuration. Alex prepares media from his MacBook
+Air's existing `/Users/Shared/dotfiles` checkout. His authenticated Codex account
+and a newly generated target host key can be staged before booting the PC. No
+separate repository, release upload, or new branch is needed to prepare media.
 
 This is the operating guide for the person installing, a remote helper, and an
 assisting agent. Start at the section matching the current state. Commands in
 an installed-system section run on the new family computer, not Ivan's workstation.
 
+- [Prepare personal media on Alex's Mac](#prepare-personal-media-on-alexs-mac)
 - [Choose the media](#choose-the-media)
 - [Build the family ISO](#build-the-family-iso)
+- [Prepare the USB on Windows](#prepare-the-usb-on-windows)
 - [Write and boot a USB stick](#write-and-boot-a-usb-stick)
 - [Connect a remote helper](#connect-a-remote-helper)
 - [Install through Calamares](#install-through-calamares)
+- [Replace an existing installation](#replace-an-existing-installation)
 - [Check the installed computer](#check-the-installed-computer)
 - [Register the machine](#register-the-machine)
 - [Enable conservative updates](#enable-conservative-updates)
@@ -25,7 +30,137 @@ an installed-system section run on the new family computer, not Ivan's workstati
 - [Maintain the installer](#maintain-the-installer)
 - [Implementation reference](#implementation-reference)
 
+## Prepare personal media on Alex's Mac
+
+Use the MacBook Air already on Tailscale, logged in as `alex`. This Mac prepares
+the USB; NixOS goes on the separate x86_64 PC. The Mac's internal disk is never
+an installation destination. Read [START-HERE.md](START-HERE.md) for the short
+live-USB walkthrough and a prompt for the assisting agent.
+
+The base ISO contains T3 Code, Codex, Claude Code, and Calamares. It contains no
+provider credentials. Personalization adds a passphrase-encrypted bundle after
+the Nix build, outside the Nix store. The bundle contains a new target SSH host
+identity and only the explicitly selected accounts/access. Do not publish the
+personal ISO or put preparation state into Git.
+
+On the Mac, from the existing checkout:
+
+```sh
+cd /Users/Shared/dotfiles/nixos
+just family-usb --iso /Users/alex/Downloads/nixos-family-base.iso \
+  --authorized-key /Users/alex/.ssh/id_ed25519.pub
+```
+
+Use the actual verified base ISO path supplied during preparation. A helper
+can build it with `just family-iso` on Linux and copy it directly with SCP;
+there is no need to publish it. Compare SHA-256 at both ends before preparing
+personal media. Omitting `--iso` builds the base image from this checkout.
+That requires x86_64 Linux or a configured Linux builder: Apple Silicon macOS
+alone cannot execute x86_64 Linux builds. Nix and an existing clone alone do
+not provide a Linux builder.
+
+Defaults are login `alex`, hostname `alex-nixos`, account email
+`alexmalison@gmail.com`, and **Another person**. Override with `--username`,
+`--hostname`, and `--email` when preparing another person's computer. The
+command opens a **separate Codex login for the new PC**, using
+`~/.local/state/nixos-family-installer/<hostname>/codex-login` as `CODEX_HOME`.
+Sign in as `alexmalison@gmail.com` in the browser when prompted. The command
+checks that email before exporting. It never exports the Mac's usual
+`~/.codex/auth.json`: sharing a refresh token between independent computers can
+invalidate their sessions. After successfully creating the personal ISO, it
+removes the temporary login file from the preparation profile. It does not copy
+conversations, settings, Git-sync directories, or GPG material. Claude Code is
+installed but its account is not exported; sign in separately later if wanted.
+
+The command keeps the prepared host identity under
+`~/.local/state/nixos-family-installer/<hostname>/`, reusing it on retries.
+Only `identity.json` and the `.pub` file are public. The private host key remains
+on this trusted preparation Mac and travels in the encrypted personal bundle.
+Inside that bundle, account credentials are additionally encrypted to the host
+key. Choose a USB bundle passphrase when prompted; enter it again on the live
+USB. This protects the credentials if the USB is lost. It is separate from the
+eventual disk-unlock and login passwords. Keep private media out of cloud
+sharing and source control.
+
+After preparation, plug in the intended USB and inspect:
+
+```sh
+diskutil list external physical
+```
+
+Match model and capacity, back up any needed USB files, then write the completed
+personal image. Replace `/dev/diskN` with the actual external whole USB disk:
+
+```sh
+just family-usb \
+  --write-existing /Users/alex/.local/state/nixos-family-installer/alex-nixos/alex-nixos-installer.iso \
+  --device /dev/diskN
+```
+
+**This erases every file and partition on that USB.** The writer rejects
+internal disks, partitions, non-USB devices, read-only media, and undersized
+devices. It displays the selected disk and requires typing `ERASE diskN` before
+writing. It rechecks identity, writes the image, verifies the bytes, and ejects
+the stick. Preparation can also take `--device` to do both stages in one run.
+No USB write happens without that explicit device confirmation.
+
+Boot the separate PC from the USB. Connect its network and use **Start personal
+setup**. The terminal unlocks the bundle, installs the selected account login
+into the live user's home, and launches T3 Code. Open the `Setup` project and
+use the prompt in `START-HERE.md`. Choose Codex.
+Calamares refuses to partition a personal USB installation until the bundle is
+unlocked, and validates the prepared user, hostname, and owner.
+Its disk, bootloader, encryption and password screens remain in charge of the
+installation. The person must separately confirm the actual internal disk.
+
+At the end of installation, Calamares stops the live Codex processes, encrypts
+the live session's current credentials for the target (including token refreshes
+during setup), and removes the live login. The live agent disconnecting at this
+point is expected. Reboot when Calamares finishes; continue with the agent on
+the installed system.
+The installed computer receives T3 Code and those credentials at first boot,
+then deletes its encrypted account bootstrap file. Later logout or account
+changes are preserved. The personal USB is a **single-install credential
+transfer**, not reusable authenticated rescue media: booting its original
+credential snapshot again may require a fresh login. After a successful install,
+erase the personal USB and delete its private ISO and bundle from the Mac when
+no longer needed. Keep the public identity record for support.
+Credentials remain revocable and may expire or require a later provider login;
+preparation is not a promise of permanent authentication. The live T3
+conversation is ephemeral, so save needed notes to the target before rebooting.
+
+### Optional pre-authorized remote support
+
+Pass each approved helper's Ed25519 **public** key with `--authorized-key`.
+Never pass a private helper key. Prepared targets accept key-based SSH on
+`tailscale0`, disable password/root SSH, and do not open SSH to the LAN.
+
+To avoid a Tailscale login at installation, arrange two distinct pre-authorized,
+appropriately scoped, single-use enrollment keys ahead of time: one for the live installer,
+one for the permanent PC. Pass paths using `--tailscale-live-key` and
+`--tailscale-target-key`. The command encrypts each to the new host key; neither
+is a Nix input. The live node uses `<hostname>-installer`; the target enrolls
+independently at first boot. Its encrypted enrollment key and runtime plaintext
+are removed after Tailscale reports Running. If enrollment fails, the encrypted
+key remains for retry; replace an expired key or remove that bootstrap file
+before retrying with interactive login. Do not copy the Mac's Tailscale state or reuse its
+device identity. A tag or auth key alone does not restrict access: verify the
+tailnet's policy permits only the intended helper access and does not grant
+the family device broad access to Ivan's machines.
+
+Without these keys, Tailscale is available but not pre-authenticated. Codex
+assistance and installation still work locally. Neither `--authorized-key`
+nor a running Tailscale daemon implies that remote enrollment is complete.
+Only report support ready after actually testing the intended connection.
+
 ## Choose the media
+
+For Alex's prepared setup, use the **personalized family Plasma ISO on his Mac**.
+The current base image contains the custom installer, T3 Code, agent CLIs and Tailscale, and
+boots into the desktop used in the installation tests. This is the default
+choice for Alex's installation. Use the combined rescue image only when the
+helper explicitly chooses it. `rescue-usb` is Ivan's device-specific persistent
+installation, not an ISO for another USB stick.
 
 The standalone family ISO boots an ephemeral Plasma desktop. Its default live
 account is `nixos`. It includes Calamares and Tailscale. Connect to the internet
@@ -59,13 +194,16 @@ Calamares; it does not clone the rescue system's accounts or home directory.
 
 ## Build the family ISO
 
-Build on x86_64 Linux with Git and Nix. Flakes must be available.
+Build the current checkout on x86_64 Linux with Git and Nix. Flakes must be available.
+For Alex's personal media, use the current `master` checkout containing this
+workflow. The older published generic ISO does not contain personal enrollment.
+`family-stable` controls reviewed updates to installed systems; preparing this
+USB does not require switching the Mac to that branch.
 The project provides its remaining development tools through Nix.
 
 ```sh
 git clone https://github.com/colonelpanic8/dotfiles.git
 cd dotfiles
-git switch family-stable
 cd nixos/family-installer
 nix develop --command just check
 nix flake check
@@ -105,6 +243,78 @@ That recipe creates a disposable 40 GiB virtual disk and prints its path. It
 uses KVM when available. Keep the disk to inspect the installation, or remove
 that printed file after shutting down the VM. The recipe does not test UEFI;
 use an OVMF-configured VM for a UEFI installation test.
+
+You can also build the family image from its public release URL on x86_64
+Linux with Nix and Git, without a local dotfiles checkout:
+
+```sh
+nix build 'git+https://github.com/colonelpanic8/dotfiles?dir=nixos/family-installer&ref=family-stable#iso' --out-link result-family
+sha256sum result-family/iso/*.iso
+```
+
+If Nix has not enabled flakes, add
+`--extra-experimental-features 'nix-command flakes'` to the `nix` command.
+Updating a checkout supplies the source and recipes; the build command still
+has to run to produce an ISO. Windows alone cannot build this Linux image.
+A configured x86_64 Linux environment, including WSL2 with Nix, can build it.
+A Windows computer only needs the completed ISO to write the USB.
+
+## Prepare the USB on Windows
+
+The older prebuilt [family installer release](https://github.com/colonelpanic8/dotfiles/releases/tag/family-installer-2026-10-21)
+is a fallback generic installer. It predates personal agent enrollment; use the
+prepared Mac image for Alex's current setup. To use that older release, download `Download-Installer.ps1` from
+that release. Ask the assisting agent to inspect it, then run it in PowerShell:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Download-Installer.ps1
+```
+
+This sets the execution policy only for that process. The script downloads two
+image parts, verifies their SHA-256 checksums, joins them, and verifies the full
+ISO. It prints the verified file's path under your Downloads folder. It writes
+no disks. The parts are needed because GitHub limits each release asset to
+2 GiB. Do not flash a `.part01` or `.part02` file, the script, or a source ZIP.
+Use the assembled `.iso` file. `SHA256SUMS` and `BUILD-INFO.txt` on the release
+record the checksum and exact dotfiles source commit.
+
+If the helper supplies a complete ISO instead, use that file and its checksum.
+The helper can build both from the release command above. Ask for the actual
+image file or a working download link; a path on the helper's computer is not
+a download. A source ZIP from GitHub is not an ISO. Confirm the destination
+computer supports x86_64; the preparation computer's architecture does not
+establish the destination's architecture.
+
+**Writing the ISO erases every file and partition on the selected USB.**
+Back up its files. Unplug other removable drives to reduce selection mistakes.
+
+1. Download the ISO to the Windows computer. If a shared Drive file requires
+   login, use the email address to which the helper granted access.
+2. Open PowerShell. Replace the path with the actual downloaded file:
+
+   ```powershell
+   Get-FileHash -Algorithm SHA256 -LiteralPath 'C:\Users\YOUR-USER\Downloads\YOUR-IMAGE.iso'
+   ```
+
+   Compare all 64 hexadecimal digits with the helper's checksum. Letter case
+   does not matter. If they differ, download again and do not flash that file.
+3. Download Windows x64 [balenaEtcher](https://etcher.balena.io/) from its
+   official site. Use **Flash from file** and select the verified ISO.
+4. Use **Select target**. Match the USB's model and capacity to the device
+   the person has confirmed may be erased. Do not select an internal drive
+   or a duplicate USB entry that reports no media. Do not rely on a remembered
+   Windows disk number after unplugging or restarting.
+5. Review the selected USB and click **Flash**. Accept the administrator
+   prompt for the writer. Let both writing and validation finish successfully.
+6. If Windows offers to format the newly written USB, cancel. The installer
+   has Linux partitions Windows may not recognize. Eject the stick if it is
+   still mounted. Do not manually partition or preformat it.
+7. Move the USB to the destination computer and follow the boot instructions
+   below. Writing media does not install NixOS on the Windows preparation PC.
+
+Etcher's [official guide and downloads](https://etcher.balena.io/) describe
+image selection, target selection, flashing, and validation. Creating media
+needs neither a Nix installation nor WSL on the Windows computer.
 
 ## Write and boot a USB stick
 
@@ -188,13 +398,13 @@ separate identities. A changed fingerprint after reboot requires verification.
 
 SSH provides a shell. Graphical screen sharing is not configured. The person
 at the computer clicks through Calamares while the helper explains choices
-and reads relevant diagnostics. A local agent app on the rescue system needs
-its own authorized provider login; the family installer supplies no provider
-credentials.
+and reads relevant diagnostics. An agent on generic media needs its own login.
+Personal media explicitly supplies the accounts selected during preparation.
 
 Keep a way to contact the person outside this SSH session. Installation and
-reboot end the live session. The installed computer does not automatically
-inherit its Tailscale login, SSH server, temporary live password, or agent login.
+reboot end the live session. Generic installations do not inherit the live
+Tailscale or agent login. Personal media provisions the target separately;
+temporary live passwords and live Tailscale state are still not copied.
 
 ## Install through Calamares
 
@@ -236,6 +446,50 @@ At boot, enter the disk passphrase if encryption is enabled. Then sign in with
 the account password. SSH cannot unlock the encrypted disk before boot; this
 project does not configure remote unlocking in the initrd.
 
+## Replace an existing installation
+
+For a computer whose existing OS and files can all be discarded, use
+Calamares' **Erase disk** option on the confirmed internal destination disk.
+This replaces the entire installation. It does not preserve the previous OS,
+recovery partitions, applications, or personal files on that disk.
+
+1. Before booting the installer, finish backups to another disk or a remote
+   location. Disconnect any backup disk before partitioning.
+2. Boot the USB in UEFI mode if the destination computer supports UEFI. Use
+   **Another person**, the intended primary login, a unique hostname, and
+   **Plasma**. Connect the helper before starting the installation.
+3. On **Partitions**, select the internal destination by model and capacity.
+   The installer USB is a separate device and must remain excluded. If there
+   are multiple internal disks, identify the one whose contents may be removed.
+4. Have the person confirm that this exact disk may be erased in full and
+   that needed files are backed up. Then choose **Erase disk**. Do not choose
+   install alongside, replace one partition, or manual partitioning for this
+   whole-disk replacement. Let Calamares generate the partition layout.
+5. If offered a filesystem choice, ext4 is suitable for this setup. Under UEFI,
+   the generated plan must include an EFI System Partition mounted at
+   `/boot` and a root filesystem mounted at `/`. An encrypted installation
+   places the root filesystem inside LUKS; the EFI partition stays unencrypted.
+   Use the installer's automatic sizes rather than entering device names or
+   a partition table copied from another computer. Swap choices can use the
+   installer defaults; hibernation is not required for this setup.
+6. Decide on **Encrypt system** with the person. If enabled, they must retain
+   the separate disk passphrase and enter it locally after every reboot.
+   Remote SSH cannot unlock it. Do not choose or disclose the passphrase for them.
+7. Review **Summary** together. Check the internal disk model and capacity,
+   the full-disk deletion, the boot mode, and the proposed EFI and root mounts.
+   If the USB, another disk, or an unexpected layout is listed for deletion,
+   stop and correct the selection. **Install** starts disk writes without
+   another confirmation dialog.
+8. After installation completes, restart from the internal disk, remove the
+   USB when safe, unlock the disk if encrypted, and sign in to the new account.
+   Verify this boot before registering the machine or enabling managed updates.
+
+The plan to replace the old installation does not identify a device by itself.
+An assisting agent still needs the person's confirmation of the actual disk.
+Booting the installer or confirming the USB is not confirmation to erase the
+internal disk. On legacy BIOS hardware, the automatic bootloader layout is
+different; have the helper review it instead of forcing the UEFI layout above.
+
 ## Check the installed computer
 
 Run these commands in a terminal on the newly installed computer:
@@ -259,7 +513,8 @@ inherited Git identity. Check the latter with `git config --get user.email`;
 an unset value produces no output and a nonzero exit status.
 
 The installer imports no personal GPG keys, password store, Git-sync repositories,
-Syncthing folders, or provider credentials. It does not create Ivan's account
+or Syncthing folders. Agent credentials are included only through explicit
+personal media preparation. It does not create Ivan's account
 in addition to the chosen primary account. The profile is a shared subset of
 dotfiles, not the full workstation configuration or a symlink to Ivan's home.
 
@@ -273,7 +528,8 @@ stat -c '%a %U %n' /etc/ssh/ssh_host_ed25519_key
 
 The request names the chosen machine and user, includes its public host key,
 and requests no secrets. The private host-key file belongs to root with mode
-`600`. Never print or transfer the private key.
+`600`. Never print the private key or transfer it outside the documented trusted
+Mac → encrypted personal media → target path.
 
 Automatic updates are initially disabled. An absent `nixos-upgrade.timer` is
 expected until registration. Installation can succeed without tailnet access,

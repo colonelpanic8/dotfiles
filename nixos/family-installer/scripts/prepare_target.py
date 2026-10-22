@@ -24,8 +24,12 @@ def validate_identity(username, hostname, owner):
         raise ValueError("Choose Ivan or Another person")
 
 
-def prepare_target(source, root, username, hostname, owner):
+def prepare_target(source, root, username, hostname, owner, seed=None):
     validate_identity(username, hostname, owner)
+    if seed:
+        from provisioning import validate_seed
+
+        validate_seed(seed, username, hostname, owner)
     root = root.resolve()
     source = source.resolve()
     if root == Path("/") or root == source or root in source.parents or source in root.parents:
@@ -67,7 +71,7 @@ def prepare_target(source, root, username, hostname, owner):
         "{...}: let\n"
         "  identity = builtins.fromJSON (builtins.readFile ./identity.json);\n"
         "in {\n"
-        "  imports = [./configuration.nix];\n"
+        f"  imports = [./configuration.nix{' ./provisioning.nix' if seed else ''}];\n"
         "  myModules.primaryUser = identity.primaryUser;\n"
         "  myModules.userProfile.owner = identity.owner;\n"
         "}\n"
@@ -75,6 +79,10 @@ def prepare_target(source, root, username, hostname, owner):
 
     host_key = root / "etc/ssh/ssh_host_ed25519_key"
     host_key.parent.mkdir(parents=True, exist_ok=True)
+    if seed:
+        from provisioning import provision_target
+
+        provision_target(seed, root, machine)
     if not host_key.exists():
         subprocess.run(
             ["ssh-keygen", "-q", "-t", "ed25519", "-N", "", "-C", hostname, "-f", str(host_key)],
@@ -127,15 +135,26 @@ def main():
     parser.add_argument("--finish", action="store_true")
     parser.add_argument("--validate", action="store_true")
     args = parser.parse_args()
+    from provisioning import load_live_seed, refresh_target_accounts, stop_live_codex, validate_seed
+
+    try:
+        seed = load_live_seed()
+    except ValueError as error:
+        parser.error(str(error))
     if args.finish:
         if not args.root:
             parser.error("--root is required to finish installation")
         finish_target(Path(args.root))
+        if seed:
+            stop_live_codex()
+            refresh_target_accounts(Path(args.root), seed)
         return
     if not all((args.username, args.hostname, args.owner)):
         parser.error("--username, --hostname and --owner are required for preparation")
     try:
         validate_identity(args.username, args.hostname, args.owner)
+        if seed:
+            validate_seed(seed, args.username, args.hostname, args.owner)
     except ValueError as error:
         parser.error(str(error))
     if args.validate:
@@ -143,7 +162,9 @@ def main():
     if not args.root:
         parser.error("--root is required for preparation")
     print(
-        prepare_target(Path(args.source), Path(args.root), args.username, args.hostname, args.owner)
+        prepare_target(
+            Path(args.source), Path(args.root), args.username, args.hostname, args.owner, seed
+        )
     )
 
 

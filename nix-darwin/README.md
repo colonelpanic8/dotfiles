@@ -11,6 +11,20 @@ cd /Users/Shared/dotfiles/nix-darwin
 just switch
 ```
 
+Every Mac's activation creates a `dotfiles` group containing its primary user
+and personal Home Manager users. It repairs `/Users/Shared/dotfiles` to use that
+group, keeps existing file owners, and enables inherited group write access for
+new files and directories, including Git metadata. Symlink targets are left
+alone. Git group sharing and each user's trust for this checkout are configured
+automatically. If the checkout does not exist yet, clone it there and run
+`just switch` again. Restart existing login sessions to refresh group membership.
+
+To repair permissions before the first rebuild:
+
+```sh
+sudo /bin/bash /Users/Shared/dotfiles/nix-darwin/setup-shared-checkout.sh /Users/Shared/dotfiles "$USER"
+```
+
 All three Macs use `mkDarwinSystem` for shared CLI tools, desktop applications,
 fonts, and Home Manager settings. Host accounts and services live in `machines/`.
 The Gitea runner and its storage configuration are exclusive to the Mini.
