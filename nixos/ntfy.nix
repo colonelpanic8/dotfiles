@@ -12,6 +12,6 @@ makeEnable config "myModules.ntfy" false {
     };
   };
 
-  # Topics are unauthenticated, so expose the port only through Tailscale.
-  networking.firewall.interfaces."tailscale0".allowedTCPPorts = [2586];
+  # Topics are unauthenticated, so only accept connections over Tailscale.
+  systemd.services.ntfy-sh.serviceConfig.RestrictNetworkInterfaces = "lo tailscale0";
 }

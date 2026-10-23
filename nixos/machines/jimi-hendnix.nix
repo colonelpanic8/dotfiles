@@ -178,3 +178,4 @@ in {
 
   system.stateVersion = "23.11";
 }
+  systemd.services.xrdp.serviceConfig.RestrictNetworkInterfaces = "lo tailscale0";

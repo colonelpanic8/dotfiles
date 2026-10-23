@@ -143,6 +143,8 @@ in {
       enableDelete = true;
       enableGarbageCollect = true;
     };
+    # Pushes and deletes are unauthenticated, so only accept them over Tailscale.
+    systemd.services.docker-registry.serviceConfig.RestrictNetworkInterfaces = "lo tailscale0";
 
     # The upstream NixOS unit runs registry GC without --delete-untagged, so
     # every manifest ever pushed to the mutable `dev` tag remains reachable.

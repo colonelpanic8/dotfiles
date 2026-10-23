@@ -37,5 +37,8 @@ in {
         priority = 30;
       };
     };
+    # Peers reach the cache by MagicDNS name, so LAN access is never needed.
+    systemd.sockets.harmonia.socketConfig.RestrictNetworkInterfaces = "lo tailscale0";
+    systemd.services.harmonia.serviceConfig.RestrictNetworkInterfaces = "lo tailscale0";
   };
 }

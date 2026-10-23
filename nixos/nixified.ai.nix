@@ -786,6 +786,8 @@ in
     ];
 
     systemd.services.comfyui.serviceConfig = {
+      # No authentication; only accept connections over Tailscale.
+      RestrictNetworkInterfaces = "lo tailscale0";
       ExecStartPre = [
         "+${pkgs.writeShellScript "install-comfyui-workflows" ''
           rm -f /var/lib/comfyui/workflows/Qwen-Rapid-AIO-v23-SFW.json
