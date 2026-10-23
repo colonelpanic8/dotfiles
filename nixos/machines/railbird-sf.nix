@@ -127,6 +127,9 @@ in {
     enableACME = true;
     forceSSL = true;
     root = "/var/lib/syncthing/railbird";
+    # Any device sharing the folder could sync in a symlink to files nginx can
+    # read through its syncthing group, like ~/sync or Syncthing's own keys.
+    extraConfig = "disable_symlinks on;";
     locations."/" = {
       extraConfig = ''
         autoindex on;
@@ -138,6 +141,7 @@ in {
     enableACME = true;
     forceSSL = true;
     root = "/var/lib/syncthing/railbird/docs";
+    extraConfig = "disable_symlinks on;";
     locations."/" = {
       extraConfig = ''
         autoindex on;
