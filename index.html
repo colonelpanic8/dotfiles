@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2026-10-23 Fri 00:24 -->
+<!-- 2026-10-23 Fri 00:49 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -3639,14 +3639,15 @@ a:hover {
 <li><a href="#setupautocompile">4.4. Setup auto-compile</a></li>
 <li><a href="#prefernewerversions">4.5. Prefer Newer Versions</a></li>
 <li><a href="#customfiles">4.6. Custom Files</a></li>
-<li><a href="#benchmarking">4.7. Benchmarking</a></li>
-<li><a href="#guidisables">4.8. GUI Disables</a></li>
-<li><a href="#bytecompiler">4.9. Byte-Compiler</a></li>
-<li><a href="#execpathfromshell">4.10. exec-path-from-shell</a></li>
-<li><a href="#nonforkingshellcommandtostring">4.11. Non-Forking Shell Command To String</a></li>
-<li><a href="#setemacsenvironmentvariable">4.12. Set EMACS environment variable</a></li>
-<li><a href="#dontusesystemfont">4.13. Don't use system font</a></li>
-<li><a href="#setdefaultbrowser">4.14. Set default browser</a></li>
+<li><a href="#startuptheme">4.7. Startup Theme</a></li>
+<li><a href="#benchmarking">4.8. Benchmarking</a></li>
+<li><a href="#guidisables">4.9. GUI Disables</a></li>
+<li><a href="#bytecompiler">4.10. Byte-Compiler</a></li>
+<li><a href="#execpathfromshell">4.11. exec-path-from-shell</a></li>
+<li><a href="#nonforkingshellcommandtostring">4.12. Non-Forking Shell Command To String</a></li>
+<li><a href="#setemacsenvironmentvariable">4.13. Set EMACS environment variable</a></li>
+<li><a href="#dontusesystemfont">4.14. Don't use system font</a></li>
+<li><a href="#setdefaultbrowser">4.15. Set default browser</a></li>
 </ul>
 </li>
 <li><a href="#functions">5. Functions</a>
@@ -4276,10 +4277,6 @@ rest of the configuration queues optional packages.
 
 (<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:enable-doom-modeline-on-startup</span> t
   <span class="org-doc">"Non-nil means enable `</span><span class="org-doc"><span class="org-constant">doom-modeline-mode</span></span><span class="org-doc">' during startup."</span>)
-
-(<span class="org-keyword">use-package</span> <span class="org-constant">gotham-theme</span>
-  <span class="org-builtin">:ensure</span> (<span class="org-builtin">:wait</span> t)
-  <span class="org-builtin">:demand</span> t)
 </pre>
 </div>
 </div>
@@ -4380,9 +4377,31 @@ in the dotfiles repo but they are shared across machines elsewhere.
 </div>
 </div>
 </div>
-<div id="outline-container-benchmarking" class="outline-3">
-<h3 id="benchmarking"><span class="section-number-3">4.7.</span> Benchmarking <a href="#benchmarking"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div id="outline-container-startuptheme" class="outline-3">
+<h3 id="startuptheme"><span class="section-number-3">4.7.</span> Startup Theme <a href="#startuptheme"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-4-7">
+<p>
+The custom files may choose a different dark theme, so install whichever one
+startup will load synchronously, before the rest of the configuration queues
+optional packages.
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:dark-theme</span> 'gotham)
+
+(<span class="org-keyword">defun</span> <span class="org-function-name">imalison:theme-package</span> (theme)
+  (intern (format <span class="org-string">"%s-theme"</span> theme)))
+
+(eval `(<span class="org-keyword">use-package</span> ,(imalison:theme-package imalison:dark-theme)
+         <span class="org-builtin">:ensure</span> (<span class="org-builtin">:wait</span> t)
+         <span class="org-builtin">:defer</span> t)
+      t)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-benchmarking" class="outline-3">
+<h3 id="benchmarking"><span class="section-number-3">4.8.</span> Benchmarking <a href="#benchmarking"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-4-8">
 <p>
 This appears here so that it can accurately benchmark as much of
 startup as possible.
@@ -4404,8 +4423,8 @@ startup as possible.
 </div>
 </div>
 <div id="outline-container-guidisables" class="outline-3">
-<h3 id="guidisables"><span class="section-number-3">4.8.</span> GUI Disables <a href="#guidisables"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-4-8">
+<h3 id="guidisables"><span class="section-number-3">4.9.</span> GUI Disables <a href="#guidisables"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-4-9">
 <p>
 Death to any gui elements in emacs! Do this EARLY so that emacs
 doesn't redisplay in a way that is visually unpleasant on startup a
@@ -4427,8 +4446,8 @@ Tooltips are annoying:
 </div>
 </div>
 <div id="outline-container-bytecompiler" class="outline-3">
-<h3 id="bytecompiler"><span class="section-number-3">4.9.</span> Byte-Compiler <a href="#bytecompiler"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-4-9">
+<h3 id="bytecompiler"><span class="section-number-3">4.10.</span> Byte-Compiler <a href="#bytecompiler"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-4-10">
 <p>
 These definitions silence the byte-compiler.
 </p>
@@ -4457,8 +4476,8 @@ These definitions silence the byte-compiler.
 </div>
 </div>
 <div id="outline-container-execpathfromshell" class="outline-3">
-<h3 id="execpathfromshell"><span class="section-number-3">4.10.</span> exec-path-from-shell <a href="#execpathfromshell"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-4-10">
+<h3 id="execpathfromshell"><span class="section-number-3">4.11.</span> exec-path-from-shell <a href="#execpathfromshell"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-4-11">
 <p>
 Sets environment variables by starting a shell.
 </p>
@@ -4486,8 +4505,8 @@ Sets environment variables by starting a shell.
 </div>
 </div>
 <div id="outline-container-nonforkingshellcommandtostring" class="outline-3">
-<h3 id="nonforkingshellcommandtostring"><span class="section-number-3">4.11.</span> Non-Forking Shell Command To String <a href="#nonforkingshellcommandtostring"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-4-11">
+<h3 id="nonforkingshellcommandtostring"><span class="section-number-3">4.12.</span> Non-Forking Shell Command To String <a href="#nonforkingshellcommandtostring"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-4-12">
 <p>
 Emacs' built in <code>shell-command-to-string</code> function has the downside that it
 forks a new shell process every time it is executed. This means that any shell
@@ -4564,8 +4583,8 @@ This solution only applies it to projectile-find-file
 </div>
 </div>
 <div id="outline-container-setemacsenvironmentvariable" class="outline-3">
-<h3 id="setemacsenvironmentvariable"><span class="section-number-3">4.12.</span> Set EMACS environment variable <a href="#setemacsenvironmentvariable"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-4-12">
+<h3 id="setemacsenvironmentvariable"><span class="section-number-3">4.13.</span> Set EMACS environment variable <a href="#setemacsenvironmentvariable"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-4-13">
 <p>
 Emacs cask seems to depend on the EMACS environment variable being set to the
 binary path of emacs. I found the method for getting the path to the emacs
@@ -4585,8 +4604,8 @@ to cause issues. Oh well&#x2026;
 </div>
 </div>
 <div id="outline-container-dontusesystemfont" class="outline-3">
-<h3 id="dontusesystemfont"><span class="section-number-3">4.13.</span> Don't use system font <a href="#dontusesystemfont"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-4-13">
+<h3 id="dontusesystemfont"><span class="section-number-3">4.14.</span> Don't use system font <a href="#dontusesystemfont"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-4-14">
 <p>
 I want to control my own font for emacs
 </p>
@@ -4597,8 +4616,8 @@ I want to control my own font for emacs
 </div>
 </div>
 <div id="outline-container-setdefaultbrowser" class="outline-3">
-<h3 id="setdefaultbrowser"><span class="section-number-3">4.14.</span> Set default browser <a href="#setdefaultbrowser"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
-<div class="outline-text-3" id="text-4-14">
+<h3 id="setdefaultbrowser"><span class="section-number-3">4.15.</span> Set default browser <a href="#setdefaultbrowser"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
+<div class="outline-text-3" id="text-4-15">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">when</span> (equal system-type 'gnu/linux)
     (<span class="org-keyword">setq</span> browse-url-browser-function 'browse-url-generic
@@ -9984,13 +10003,14 @@ Ensure all themes that I use are installed:
 
 (defvar-setq packages-appearance
   '(monokai-theme zenburn-theme base16-theme molokai-theme moe-theme
-                  tango-2-theme sublime-themes
+                  tango-2-theme gotham-theme sublime-themes
                   waher-theme ample-theme material-theme zerodark-theme
                   color-theme-modern leuven-theme spacemacs-theme gruvbox-theme
                   forest-blue-theme flatland-theme afternoon-theme
                   cyberpunk-theme dracula-theme))
 
-(<span class="org-keyword">dolist</span> (package packages-appearance)
+(<span class="org-keyword">dolist</span> (package (remq (imalison:theme-package imalison:dark-theme)
+                       packages-appearance))
   (eval `(<span class="org-keyword">use-package</span> ,package <span class="org-builtin">:defer</span> t) t))
 
 (<span class="org-keyword">use-package</span> <span class="org-constant">doom-themes</span>
@@ -10135,7 +10155,6 @@ load-theme hook (See the heading below).
 <div class="outline-text-3" id="text-20-10">
 <div class="org-src-container">
 <pre class="src src-emacs-lisp">(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:light-theme</span> 'solarized-light)
-(<span class="org-keyword">defvar</span> <span class="org-variable-name">imalison:dark-theme</span> 'gotham)
 
 (<span class="org-keyword">defun</span> <span class="org-function-name">imalison:after-load-theme</span> (<span class="org-type">&amp;rest</span> _args)
   (imalison:restore-ansi-term-color-vector))
@@ -10186,7 +10205,7 @@ a daemon creates later.
 <h3 id="imalisonappearance"><span class="section-number-3">20.13.</span> imalison:appearance <a href="#imalisonappearance"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a></h3>
 <div class="outline-text-3" id="text-20-13">
 <p>
-The default theme and modeline dependencies are installed synchronously above.
+The startup theme and modeline dependencies are installed synchronously above.
 Apply them after the custom files have loaded, independently of optional
 packages that may fail in Elpaca's remaining queue.
 </p>
