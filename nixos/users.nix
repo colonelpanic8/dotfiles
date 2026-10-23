@@ -21,7 +21,20 @@
     "vboxusers"
     "video"
   ];
-  extraGroupsWithWheel = extraGroups ++ ["wheel"];
+  # Each of these grants root or reads imalison's data (raw disks, container
+  # and VM daemons, the synced home folders, all logs, keystrokes).
+  privilegedGroups = [
+    "disk"
+    "docker"
+    "input"
+    "libvirtd"
+    "libvirtd-qemu"
+    "qemu-libvirtd"
+    "syncthing"
+    "systemd-journal"
+  ];
+  guestGroups = builtins.filter (g: !(builtins.elem g privilegedGroups)) extraGroups;
+  guestGroupsWithWheel = guestGroups ++ ["wheel"];
   userDefaults = {
     group = "users";
     isNormalUser = true;
@@ -29,47 +42,58 @@
     shell = pkgs.zsh;
   };
 in {
-  security.sudo.wheelNeedsPassword = false;
+  security.sudo.wheelNeedsPassword = true;
+  security.sudo.extraRules = [
+    {
+      users = ["imalison"];
+      commands = [
+        {
+          command = "ALL";
+          options = ["NOPASSWD" "SETENV"];
+        }
+      ];
+    }
+  ];
   users.users = with keys; {
     imalison =
       userDefaults
       // {
-        extraGroups = extraGroupsWithWheel ++ ["dialout"];
+        extraGroups = extraGroups ++ ["wheel" "dialout"];
         name = "imalison";
         openssh.authorizedKeys.keys = userKeys.imalison;
       };
     kat =
       userDefaults
       // {
-        extraGroups = extraGroupsWithWheel;
+        extraGroups = guestGroupsWithWheel;
         name = "kat";
         openssh.authorizedKeys.keys = userKeys.kat;
       };
     dean =
       userDefaults
       // {
-        extraGroups = extraGroupsWithWheel;
+        extraGroups = guestGroupsWithWheel;
         name = "dean";
         openssh.authorizedKeys.keys = userKeys.dean;
       };
     alex =
       userDefaults
       // {
-        extraGroups = extraGroupsWithWheel;
+        extraGroups = guestGroupsWithWheel;
         name = "alex";
         openssh.authorizedKeys.keys = userKeys.alex;
       };
     loewy =
       userDefaults
       // {
-        inherit extraGroups;
+        extraGroups = guestGroups;
         name = "loewy";
         openssh.authorizedKeys.keys = userKeys.loewy;
       };
     ben =
       userDefaults
       // {
-        inherit extraGroups;
+        extraGroups = guestGroups;
         name = "ben";
         openssh.authorizedKeys.keys = userKeys.ben;
       };

@@ -3,7 +3,6 @@
   lib,
   pkgs,
   makeEnable,
-  realUsers,
   ...
 }:
 makeEnable config "myModules.base" true {
@@ -154,5 +153,5 @@ makeEnable config "myModules.base" true {
 
   programs.dconf.enable = true;
 
-  nix.settings.trusted-users = realUsers ++ ["gitea-runner"];
+  nix.settings.trusted-users = ["imalison" "gitea-runner"];
 }
