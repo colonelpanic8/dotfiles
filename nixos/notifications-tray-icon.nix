@@ -81,7 +81,7 @@ in
         notifications-tray-icon-gitea =
           mkService
           "Gitea notifications tray icon"
-          "${notificationsTrayIcon}/bin/notifications-tray-icon gitea --url https://dev.railbird.ai --token-pass dev.railbird.ai/omni-token";
+          "${notificationsTrayIcon}/bin/notifications-tray-icon gitea --url https://dev.railbird.ai --token-pass dev.railbird.ai/notifications-tray-icon-token";
 
         notifications-tray-icon-gmail =
           mkService
