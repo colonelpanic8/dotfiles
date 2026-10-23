@@ -8,8 +8,25 @@
   wayvncShare = pkgs.writeShellScript "wayvnc-share" ''
     set -euo pipefail
 
+    state_dir="''${XDG_STATE_HOME:-$HOME/.local/state}/wayvnc"
+    rsa_key="$state_dir/rsa_key.pem"
+    if [ ! -s "$rsa_key" ]; then
+      mkdir -p "$state_dir"
+      ${pkgs.openssh}/bin/ssh-keygen -q -m pem -t rsa -N "" -f "$rsa_key"
+    fi
+
+    # Log in with the account password. Tailscale already encrypts the link,
+    # so relax_encryption only adds Apple DH for macOS Screen Sharing.
+    config_file="$XDG_RUNTIME_DIR/wayvnc-share.conf"
+    cat > "$config_file" <<EOF
+    enable_auth=true
+    enable_pam=true
+    relax_encryption=true
+    rsa_private_key_file=$rsa_key
+    EOF
+
     tailscale_ip="$(${config.services.tailscale.package}/bin/tailscale ip -4)"
-    exec ${pkgs.wayvnc}/bin/wayvnc --log-level=info "$tailscale_ip" 5900
+    exec ${pkgs.wayvnc}/bin/wayvnc --config="$config_file" --log-level=info "$tailscale_ip" 5900
   '';
 in {
   imports = [
@@ -44,6 +61,7 @@ in {
   myModules.nvidia.enable = true;
   myModules.hyprland.ultrawideRefreshRate = 99.98;
   environment.systemPackages = [pkgs.wayvnc];
+  security.pam.services.wayvnc = {};
 
   # Share the active Hyprland desktop only on this host's Tailscale address.
   systemd.user.services.wayvnc-share = {
@@ -164,6 +182,7 @@ in {
   services.xrdp.enable = true;
   services.xrdp.defaultWindowManager = "startplasma-x11";
   services.xrdp.openFirewall = true;
+  systemd.services.xrdp.serviceConfig.RestrictNetworkInterfaces = "lo tailscale0";
 
   system.autoUpgrade = {
     enable = true;
@@ -178,4 +197,3 @@ in {
 
   system.stateVersion = "23.11";
 }
-  systemd.services.xrdp.serviceConfig.RestrictNetworkInterfaces = "lo tailscale0";
