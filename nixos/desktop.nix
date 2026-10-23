@@ -365,7 +365,7 @@
             PartOf = ["graphical-session.target"];
           };
           Service = {
-            ExecStart = "${pkgs.hyprpolkitagent}/libexec/hyprpolkitagent";
+            ExecStart = "${pkgs.bash}/bin/bash ${../dotfiles/lib/bin/with-loaded-nvidia-egl} ${pkgs.hyprpolkitagent}/libexec/hyprpolkitagent";
             Restart = "on-failure";
             RestartSec = 2;
           };
