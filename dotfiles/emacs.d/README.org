@@ -107,10 +107,6 @@ rest of the configuration queues optional packages.
 
 (defvar imalison:enable-doom-modeline-on-startup t
   "Non-nil means enable `doom-modeline-mode' during startup.")
-
-(use-package gotham-theme
-  :ensure (:wait t)
-  :demand t)
 #+END_SRC
 ** Security
 #+BEGIN_SRC emacs-lisp
@@ -181,6 +177,21 @@ in the dotfiles repo but they are shared across machines elsewhere.
 (defvar custom-after-file "~/.emacs.d/custom-after.el")
 (setq custom-file "~/.emacs.d/custom-before.el")
 (when (file-exists-p custom-file) (load custom-file))
+#+END_SRC
+** Startup Theme
+The custom files may choose a different dark theme, so install whichever one
+startup will load synchronously, before the rest of the configuration queues
+optional packages.
+#+BEGIN_SRC emacs-lisp
+(defvar imalison:dark-theme 'gotham)
+
+(defun imalison:theme-package (theme)
+  (intern (format "%s-theme" theme)))
+
+(eval `(use-package ,(imalison:theme-package imalison:dark-theme)
+         :ensure (:wait t)
+         :defer t)
+      t)
 #+END_SRC
 ** Benchmarking
 This appears here so that it can accurately benchmark as much of
@@ -4160,13 +4171,14 @@ Ensure all themes that I use are installed:
 
 (defvar-setq packages-appearance
   '(monokai-theme zenburn-theme base16-theme molokai-theme moe-theme
-                  tango-2-theme sublime-themes
+                  tango-2-theme gotham-theme sublime-themes
                   waher-theme ample-theme material-theme zerodark-theme
                   color-theme-modern leuven-theme spacemacs-theme gruvbox-theme
                   forest-blue-theme flatland-theme afternoon-theme
                   cyberpunk-theme dracula-theme))
 
-(dolist (package packages-appearance)
+(dolist (package (remq (imalison:theme-package imalison:dark-theme)
+                       packages-appearance))
   (eval `(use-package ,package :defer t) t))
 
 (use-package doom-themes
@@ -4261,7 +4273,6 @@ load-theme hook (See the heading below).
 ** After ~load-theme~ hook
 #+BEGIN_SRC emacs-lisp
 (defvar imalison:light-theme 'solarized-light)
-(defvar imalison:dark-theme 'gotham)
 
 (defun imalison:after-load-theme (&rest _args)
   (imalison:restore-ansi-term-color-vector))
@@ -4292,7 +4303,7 @@ a daemon creates later.
                     :height imalison:default-font-size-pt)
 #+END_SRC
 ** imalison:appearance
-The default theme and modeline dependencies are installed synchronously above.
+The startup theme and modeline dependencies are installed synchronously above.
 Apply them after the custom files have loaded, independently of optional
 packages that may fail in Elpaca's remaining queue.
 #+BEGIN_SRC emacs-lisp
