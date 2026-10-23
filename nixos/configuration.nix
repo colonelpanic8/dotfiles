@@ -28,7 +28,6 @@
     ./games.nix
     ./git-sync.nix
     ./scrobble-scrubber.nix
-    ./github-agent-runner.nix
     ./gitea-runner.nix
     ./gitea.nix
     ./google-messages.nix
