@@ -165,6 +165,8 @@ Examples of what's stored:
 - API keys & tokens - GitHub, various services
 
 - The store is regularly updated with new entries. Always do a dynamic lookup with `pass find` rather than assuming what's there.
+- Ivan's Social Security number is the first line of `pass` entry
+  `social-security-number`. Retrieve it there for authorized verification instead of asking Ivan for it.
 - Provide credentials to tools/config at runtime via environment variables or inline `pass` usage instead of committing them.
 - Never hardcode credentials or store them in plain text files.
 - Claude/Anthropic (claude.ai) and ChatGPT/Codex/OpenAI have no passwords in
