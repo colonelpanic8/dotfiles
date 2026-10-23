@@ -24,6 +24,7 @@
       AllowAgentForwarding = true;
       AllowTcpForwarding = true;
       PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
       X11Forwarding = true;
     };
   };
