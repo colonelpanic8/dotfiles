@@ -21,7 +21,7 @@ current_vendor="/run/opengl-driver/share/glvnd/egl_vendor.d/10_nvidia.json"
 
 if [ -n "$nvidia_version" ] && [ -r "$current_vendor" ] && ! grep -q "$nvidia_version" "$current_vendor"; then
   matching_vendor=""
-  for candidate in /nix/store/*-nvidia-x11-"$nvidia_version"*/share/glvnd/egl_vendor.d/10_nvidia.json; do
+  for candidate in /nix/store/*-nvidia-x11-"$nvidia_version"/share/glvnd/egl_vendor.d/10_nvidia.json; do
     if [ -r "$candidate" ]; then
       matching_vendor="$candidate"
       break
