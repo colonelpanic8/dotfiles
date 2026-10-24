@@ -71,7 +71,15 @@ makeEnable config "myModules.gitea-runner" false {
       # leaked entries.
       TMPDIR = "${gitea-runner-directory}/tmp";
     };
-    serviceConfig.PrivateTmp = false;
+    serviceConfig = {
+      PrivateTmp = false;
+      # Host-label jobs run inside this unit's cgroup. Four concurrent jobs
+      # once filled all RAM and swap on railbird-sf; cap them so a runaway job
+      # is OOM-killed here instead of taking the machine down.
+      MemoryHigh = "16G";
+      MemoryMax = "20G";
+      MemorySwapMax = "8G";
+    };
   };
   systemd.tmpfiles.rules = [
     "d /var/lib/private/gitea-runner/tmp 0750 gitea-runner gitea-runner 2d"

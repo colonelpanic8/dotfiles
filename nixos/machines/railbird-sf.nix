@@ -75,6 +75,12 @@ in {
     max-free = 150 * 1024 * 1024 * 1024; # GC until 150G free
   };
 
+  # CI jobs plus user workloads have filled RAM and swap here, thrashing until
+  # sshd and tailscaled stopped responding while the kernel OOM killer only
+  # picked off small user services. Let oomd kill the heaviest cgroup instead.
+  systemd.oomd.enableRootSlice = true;
+  systemd.slices."-".sliceConfig.ManagedOOMSwap = "kill";
+
   hardware.nvidia = {
     powerManagement.enable = false;
     # Fine-grained power management. Turns off GPU when not in use.
