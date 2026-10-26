@@ -98,6 +98,17 @@ in {
   myModules.claudeRemoteControl.enable = true;
   # Dean only lingered here to run a headless T3 Code server.
   users.users.dean.linger = false;
+  security.sudo.extraRules = [
+    {
+      users = ["dean"];
+      commands = [
+        {
+          command = "ALL";
+          options = ["NOPASSWD" "SETENV"];
+        }
+      ];
+    }
+  ];
   myModules.syncthing.enable = true;
   myModules.fonts.enable = true;
   myModules.plasma.enable = true;
