@@ -10,8 +10,9 @@ makeEnable config "myModules.keyd" true {
 
     # Base remap applied to all keyboards.
     keyboards.default = {
-      # Exclude the Glove80 (MoErgo) by vendor:product ID.
-      ids = ["*" "-16c0:27db"];
+      # Exclude the Glove80 (MoErgo) and the ydotoold virtual device, whose
+      # synthesized keys must reach the compositor unremapped.
+      ids = ["*" "-16c0:27db" "-2333:6666"];
       settings = {
         main = {
           # Caps Lock -> Control
