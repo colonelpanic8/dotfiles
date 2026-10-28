@@ -91,7 +91,7 @@
         rm -f "$out/bin/Hyprland"
         printf '%s\n' \
           '#!${pkgs.runtimeShell}' \
-          'exec ${pkgs.runtimeShell} "${package}/bin/Hyprland" "$@"' \
+          'exec "${package}/bin/Hyprland" "$@"' \
           > "$out/bin/Hyprland"
         chmod +x "$out/bin/Hyprland"
 
