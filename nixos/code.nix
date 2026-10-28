@@ -69,6 +69,15 @@
 
     hardware.uinput.enable = lib.mkIf config.myModules.desktop.enable true;
 
+    # Let the seat user create uinput devices (computer-use-linux's absolute
+    # pointer). uaccess must be tagged before 73-seat-late.rules, so this can't
+    # go in extraRules.
+    services.udev.packages = lib.mkIf config.myModules.desktop.enable [
+      (pkgs.writeTextDir "lib/udev/rules.d/70-uinput-uaccess.rules" ''
+        KERNEL=="uinput", SUBSYSTEM=="misc", TAG+="uaccess", OPTIONS+="static_node=uinput"
+      '')
+    ];
+
     programs.ydotool = lib.mkIf config.myModules.desktop.enable {
       enable = true;
       group = "input";

@@ -175,8 +175,7 @@ We're going to use this to write separate parts of our config to different secti
           ("STYLE_ALL" . "habit"))))
 (org-todo-keywords
  '((sequence "INBOX(i!)" "TODO(t!)" "NEXT(n!)" "STARTED(s!)" "WAIT(w!)"
-             "BACKLOG(b!)" "|" "DONE(d!)" "HANDLED(h!)" "EXPIRED(e!)"
-             "CANCELED(c!)")))
+             "BACKLOG(b!)" "|" "DONE(d!)" "CANCELED(c!)")))
 #+end_src
 ** Skip showing deadline when we are scheduled
 #+begin_src emacs-lisp :tangle org-config-custom.el
