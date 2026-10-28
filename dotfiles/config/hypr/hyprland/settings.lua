@@ -149,6 +149,12 @@ function M.setup(ctx)
         size = 7,
         passes = 3,
       },
+      wobble = {
+        enabled = true,
+        intensity = 0.55,
+        stiffness = 350,
+        damping = 14,
+      },
       active_opacity = 1.0,
       inactive_opacity = 0.65,
     },
@@ -196,7 +202,7 @@ function M.setup(ctx)
   hl.curve("smoothOut", { type = "bezier", points = { { 0.36, 1 }, { 0.3, 1 } } })
   hl.curve("smoothInOut", { type = "bezier", points = { { 0.42, 0 }, { 0.58, 1 } } })
   hl.curve("linear", { type = "bezier", points = { { 0, 0 }, { 1, 1 } } })
-  local spring_time_scale = 5
+  local spring_time_scale = 5.75
   local function spring_curve(mass, stiffness, dampening)
     return {
       type = "spring",
@@ -355,6 +361,9 @@ function M.setup(ctx)
         blur = {
           enabled = visual_effects_enabled,
         },
+        wobble = {
+          enabled = visual_effects_enabled,
+        },
       },
       animations = {
         enabled = visual_effects_enabled,
@@ -391,6 +400,7 @@ function M.setup(ctx)
       no_blur = true,
       no_shadow = true,
       no_anim = true,
+      no_wobble = true,
       rounding = 0,
       border_size = 0,
     })
