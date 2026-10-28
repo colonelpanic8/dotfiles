@@ -516,9 +516,6 @@
     defaultConfigurationParams =
       builtins.listToAttrs (map mkConfigurationParams machineFilenames);
     customParams = {
-      biskcomp = {
-        system = "aarch64-linux";
-      };
       air-gapped-pi = {
         system = "aarch64-linux";
       };
