@@ -446,6 +446,51 @@
     flake-utils,
     ...
   }: let
+    # Nixpkgs PR patches - just specify PR number and hash
+    nixpkgsPRPatches = [
+      # Example:
+      # {
+      #   pr = 1234;
+      #   hash = "sha256-...";
+      # }
+    ];
+
+    # Custom patches that don't fit the PR template
+    nixpkgsCustomPatches = [];
+
+    # Home-manager PR patches - just specify PR number and hash
+    homeManagerPRPatches = [];
+
+    # Custom home-manager patches that don't fit the PR template
+    homeManagerCustomPatches = [];
+
+    prPatchesToPatches = repo:
+      map (p: {
+        url = "https://patch-diff.githubusercontent.com/raw/${repo}/pull/${toString p.pr}.patch";
+        inherit (p) hash;
+      });
+
+    allNixpkgsPatches = (prPatchesToPatches "NixOS/nixpkgs" nixpkgsPRPatches) ++ nixpkgsCustomPatches;
+    allHomeManagerPatches = (prPatchesToPatches "nix-community/home-manager" homeManagerPRPatches) ++ homeManagerCustomPatches;
+
+    # Patched sources are architecture-independent, so build them for the
+    # evaluating machine rather than the target: aarch64 hosts then evaluate on
+    # x86_64 without an aarch64 builder. Pure evaluation falls back to the target.
+    patchedSources = targetSystem: let
+      pkgs = nixpkgs.legacyPackages.${builtins.currentSystem or targetSystem};
+      patchSource = name: src: patches:
+        if patches == []
+        then src
+        else
+          pkgs.applyPatches {
+            inherit name src;
+            patches = map pkgs.fetchpatch patches;
+          };
+    in {
+      nixpkgs = patchSource "nixpkgs-patched" nixpkgs allNixpkgsPatches;
+      home-manager = patchSource "home-manager-patched" home-manager allHomeManagerPatches;
+    };
+
     perSystem = import ./flake/per-system.nix {
       inherit self inputs nixpkgs org-agenda-api agenix;
     };
@@ -490,20 +535,51 @@
       modules ? [],
       specialArgs ? {},
       ...
-    }:
-      nixpkgs.lib.nixosSystem {
+    }: let
+      patched = patchedSources system;
+      # Without patches, skip import-from-derivation entirely. With them, evaluate
+      # the patched flake under the input's source info, so versionSuffix and
+      # nixpkgs.flake.source still match a normal flake build.
+      patchedNixpkgsFlake = let
+        self = nixpkgs.sourceInfo // {outPath = "${patched.nixpkgs}";} // outputs;
+        outputs = (import "${patched.nixpkgs}/flake.nix").outputs {inherit self;};
+      in
+        self;
+      nixosSystem =
+        if allNixpkgsPatches == []
+        then nixpkgs.lib.nixosSystem
+        else patchedNixpkgsFlake.lib.nixosSystem;
+      inputs' =
+        if allHomeManagerPatches == []
+        then inputs
+        else
+          inputs
+          // {
+            home-manager =
+              home-manager
+              // {
+                nixosModules =
+                  home-manager.nixosModules
+                  // {
+                    home-manager = import "${patched.home-manager}/nixos";
+                  };
+                outPath = "${patched.home-manager}";
+              };
+          };
+    in
+      nixosSystem {
         inherit system;
         modules = baseModules ++ modules;
         specialArgs =
           rec {
-            inherit inputs;
+            inputs = inputs';
             inherit machineNames;
             makeEnable = (import ./make-enable.nix) nixpkgs.lib;
             keys = import ../nix-shared/keys.nix;
             usersInfo = (import ./users.nix) {
               pkgs = {zsh = "zsh";};
               inherit keys system;
-              inherit inputs;
+              inputs = inputs';
             };
             realUsers = (
               builtins.attrNames

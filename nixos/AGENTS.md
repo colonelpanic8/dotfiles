@@ -11,6 +11,13 @@ scripts and shell functions live outside of it.
 
 Avoid dropping scripts in `~/bin` or `~/.local/bin` unless the user explicitly asks.
 
+## Carrying Nixpkgs / Home Manager PRs
+
+- Apply an unmerged nixpkgs or Home Manager PR by adding `{ pr = N; hash = …; }`
+  to `nixpkgsPRPatches` / `homeManagerPRPatches` in `flake.nix`. Keep that
+  mechanism even when the lists are empty; with no patches it evaluates exactly
+  like plain `nixpkgs.lib.nixosSystem`.
+
 ## NixOS Rebuild Workflow
 
 - Run `just switch` from `/etc/nixos` or `/srv/dotfiles/nixos` (not `nixos-rebuild` directly).
