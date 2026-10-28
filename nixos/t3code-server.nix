@@ -16,6 +16,29 @@
       }
     ];
     users.users.imalison.linger = true;
+    # The server's preview browser is a generic-linux chrome-headless-shell it
+    # downloads to ~/.t3/tools and runs through nix-ld.
+    programs.nix-ld = {
+      enable = true;
+      libraries = with pkgs; [
+        alsa-lib
+        at-spi2-core
+        dbus
+        expat
+        glib
+        libgbm
+        libx11
+        libxcb
+        libxcomposite
+        libxdamage
+        libxext
+        libxfixes
+        libxkbcommon
+        libxrandr
+        nspr
+        nss
+      ];
+    };
     home-manager.sharedModules = [inputs.t3code-integration.homeManagerModules.t3code-server];
     home-manager.users.imalison = {config, ...}: {
       imports = [../nix-shared/home-manager/t3code-server-config.nix];
