@@ -187,7 +187,7 @@
     # revisions from the release lock. Plugins follow this input so they build
     # against the exact same Hyprland ABI.
     hyprland = {
-      url = "git+https://github.com/hyprwm/Hyprland?submodules=1&rev=efb50993780079460b0cbed1363e2166a2de1d9f";
+      url = "git+https://github.com/hyprwm/Hyprland?submodules=1&rev=0aa6745f705f2c4b0a5004eb019ef76e5bbdb426";
       inputs = {
         aquamarine.follows = "aquamarine";
         hyprutils.follows = "hyprutils";
@@ -195,7 +195,7 @@
     };
 
     aquamarine = {
-      url = "github:hyprwm/aquamarine/1a10fe26a9f7d989c359e6a9ea61aa2e44d06c36";
+      url = "github:hyprwm/aquamarine/52ea11f06dd492f34b3cc0b39a9c805beecafcff";
       inputs = {
         hyprutils.follows = "hyprutils";
         nixpkgs.follows = "nixpkgs";
@@ -206,12 +206,12 @@
     hyprgraphics.follows = "hyprland/hyprgraphics";
     hyprlang.follows = "hyprland/hyprlang";
     hyprutils = {
-      url = "github:hyprwm/hyprutils/5a7b8cf221914ce4714407950e4ffbdddcd8b66f";
+      url = "github:hyprwm/hyprutils/0d13d5a624eb093b600d1b2cbe448fb613c86424";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.systems.follows = "systems";
     };
     hyprlock = {
-      url = "github:hyprwm/hyprlock/b222d9b1f87e980cac379371df57913a53b99d7f";
+      url = "github:hyprwm/hyprlock/0332e40b8e56404f11cd79f859f208a4b9de8714";
       inputs = {
         hyprgraphics.follows = "hyprgraphics";
         hyprlang.follows = "hyprlang";
@@ -222,8 +222,11 @@
       };
     };
     xdg-desktop-portal-hyprland = {
-      url = "github:hyprwm/xdg-desktop-portal-hyprland/cc8e5ef8fb2acef3db488b9a33b0c48c2a4ee204";
+      url = "github:hyprwm/xdg-desktop-portal-hyprland/0121b2e3f85c7ebf6280173f1054f7e5606262d1";
       inputs = {
+        aquamarine.follows = "aquamarine";
+        hyprgraphics.follows = "hyprgraphics";
+        hyprtoolkit.follows = "hyprland/hyprtoolkit";
         hyprland-protocols.follows = "hyprland/hyprland-protocols";
         hyprlang.follows = "hyprlang";
         hyprutils.follows = "hyprutils";
@@ -234,7 +237,7 @@
     };
 
     hyprNStack = {
-      url = "github:colonelpanic8/hyprNStack?ref=codex/hyprnstack-combined-0.56";
+      url = "github:colonelpanic8/hyprNStack?ref=codex/hyprnstack-combined-0.57";
       inputs = {
         hyprland.follows = "hyprland";
         nixpkgs.follows = "nixpkgs";
@@ -251,12 +254,13 @@
     };
 
     hyprwinview = {
-      url = "github:colonelpanic8/hyprwinview/babe9f8006cd7c67a3f5036c405f8d070e673c9e";
+      url = "github:colonelpanic8/hyprwinview/6fd565e79eb02dbba03b1fe2644a17d980f9b3e7";
       inputs.hyprland.follows = "hyprland";
     };
 
     hyprtasking = {
-      url = "github:raybbian/hyprtasking/2da6a6c73deb3ca23dc8334a9672d9a6cf403eef";
+      # Pending upstream PR #140: Hyprland 0.57 support.
+      url = "github:colonelpanic8/hyprtasking/a3bd530ddad57c1bdd5c25fe465013d14d18553d";
       inputs = {
         hyprland.follows = "hyprland";
         nixpkgs.follows = "nixpkgs";
@@ -265,13 +269,13 @@
     };
 
     hypr-workspace-history = {
-      url = "github:colonelpanic8/hypr-workspace-history/d1178fddea5299d166daef40235a93cb21cca2bd";
+      url = "github:colonelpanic8/hypr-workspace-history/8a12c9d95528716b9040d0fc4a8a56ef43be4862";
       inputs.hyprland.follows = "hyprland";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     hypr-dynamic-cursors = {
-      url = "github:VirtCode/hypr-dynamic-cursors/5a224284872208b5324759d535d65061043725de";
+      url = "github:VirtCode/hypr-dynamic-cursors/2a8d0b735328d874a78ca93b2f201649f712a74a";
       inputs = {
         hyprland.follows = "hyprland";
         nixpkgs.follows = "nixpkgs";

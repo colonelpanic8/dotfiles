@@ -16,21 +16,12 @@
   hyprlockPackage = inputs.hyprlock.packages.${system}.default;
   xdgDesktopPortalHyprlandPackage = inputs.xdg-desktop-portal-hyprland.packages.${system}.default;
   baseHyprlandPackage =
-    (hyprlandInput.packages.${system}.hyprland.override {
+    hyprlandInput.packages.${system}.hyprland.override {
       stdenv = hyprlandStdenv;
       hyprland-guiutils = hyprlandInput.inputs.hyprland-guiutils.packages.${system}.default.override {
         stdenv = hyprlandStdenv;
       };
-    }).overrideAttrs (old: {
-      # The 0.56.2 release branch rejects glaze 8 even though main accepts it,
-      # while the release's own pinned nixpkgs already packages glaze 8.
-      postPatch =
-        (old.postPatch or "")
-        + ''
-          substituteInPlace CMakeLists.txt \
-            --replace-fail 'find_package(glaze 7...<8 QUIET)' 'find_package(glaze QUIET)'
-        '';
-    });
+    };
   hyprlandGcc16Overlay = final: prev: {
     hyprland = baseHyprlandPackage;
     hyprland-unwrapped = final.hyprland.override {wrapRuntimeDeps = false;};
