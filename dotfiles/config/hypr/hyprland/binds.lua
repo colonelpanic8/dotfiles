@@ -23,7 +23,7 @@ function M.setup(ctx)
 
   local function setup_shell_and_session_bindings()
     bind(hyper .. " + SHIFT + N", exec(shell_ui_command .. " control-center"), desc("Open control center"))
-    bind(hyper .. " + CTRL + N", exec(shell_ui_command .. " settings"), desc("Open system settings"))
+    bind(hyper .. " + F12", exec(shell_ui_command .. " settings"), desc("Open system settings"))
     bind(main_mod .. " + Q", exec("hyprctl reload"), desc("Reload Hyprland"))
     bind(main_mod .. " + R", exec("hyprctl reload"), desc("Reload Hyprland"))
     bind(hyper .. " + SHIFT + L", exec("hyprlock"), desc("Lock screen"))

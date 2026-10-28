@@ -62,7 +62,14 @@ monitor.active_workspace = workspace
 
 hl = {
   animation = noop,
-  bind = noop,
+  bind = function(keys)
+    local seen = {}
+    for key in keys:gmatch("[^+]+") do
+      key = key:match("^%s*(.-)%s*$")
+      assert(not seen[key], "repeated key in binding: " .. keys)
+      seen[key] = true
+    end
+  end,
   config = noop,
   curve = noop,
   dispatch = noop,
