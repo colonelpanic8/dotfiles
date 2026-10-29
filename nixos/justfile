@@ -29,19 +29,9 @@ publish-hyprland-cachix cache="colonelpanic8-dotfiles" *args:
 t3code-apk *args:
 	nix run .#t3code-apk -- {{args}}
 
-# Family installer commands use its independent stable flake.
-family-check:
-    cd family-installer && nix develop --command just check
-    nix flake check ./family-installer
-
-family-iso:
-    nix build ./family-installer#iso --out-link result-family
-
-family-usb *args:
-    cd family-installer && nix develop --command just prepare {{args}}
-
-rescue-iso:
-    nix build .#nixosConfigurations.rescue.config.system.build.isoImage --out-link result-rescue
+# Write this with the nixos-portable repo's `just prepare write --image ...`.
+rescue-usb-image:
+    nix build .#nixosConfigurations.rescue-usb.config.system.build.usbImage --out-link result-rescue-usb-image
 
 rescue-usb-build:
     nix build .#nixosConfigurations.rescue-usb.config.system.build.toplevel --out-link result-rescue-usb

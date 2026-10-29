@@ -1,1 +1,4 @@
-import ../nixos/family-installer/modules/multiplexer-aliases.nix
+{
+  ta = "tmux attach";
+  za = "zellij attach";
+}

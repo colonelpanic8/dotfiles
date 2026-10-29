@@ -6,6 +6,8 @@
   configuration intended for every user in the appropriate shared NixOS or Home
   Manager module instead.
 - For rescue media, family installation, remote support, or recovery, read the
-  [family installer operating guide](https://github.com/colonelpanic8/dotfiles/blob/master/nixos/family-installer/README.md).
-  Updated rescue media includes its pinned copy at
-  `/etc/nixos-family-installer/README.md`, with agent instructions alongside it.
+  [nixos-portable operating guide](https://github.com/colonelpanic8/nixos-portable/blob/master/README.md)
+  (local checkout: `~/projects/nixos-portable`). The shared stick lives there;
+  `nixos/machines/rescue-usb.nix` adds Ivan's personal layer. Every stick
+  includes its pinned copy at `/etc/nixos-family-installer/README.md`, with
+  agent instructions alongside it.

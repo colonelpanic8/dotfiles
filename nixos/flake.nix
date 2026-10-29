@@ -421,6 +421,13 @@
       };
     };
 
+    # Shared portable USB stick and family installer. rescue-usb layers Ivan's
+    # account and credentials on top of it.
+    nixos-portable = {
+      url = "github:colonelpanic8/nixos-portable";
+      inputs.flake-utils.follows = "flake-utils";
+    };
+
     claude-desktop = {
       url = "github:aaddrick/claude-desktop-debian";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -603,17 +610,8 @@
           )
           defaultConfigurationParams)
         // {
-          rescue = mkConfig {
-            baseModules = [./machines/rescue.nix];
-            specialArgs.rescueMode = "iso";
-          };
-          rescue-usb = mkConfig {
-            baseModules = [
-              ./machines/rescue.nix
-              ./rescue-usb.nix
-            ];
-            specialArgs.rescueMode = "usb";
-          };
+          # Only the modules it imports itself, not the default machine set.
+          rescue-usb = mkConfig {baseModules = [./machines/rescue-usb.nix];};
         };
     }
     // flake-utils.lib.eachDefaultSystem perSystem;
