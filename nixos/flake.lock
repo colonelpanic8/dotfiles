@@ -1732,22 +1732,6 @@
         "type": "github"
       }
     },
-    "mova_2": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1792354166,
-        "narHash": "sha256-WDyH5NWH7IrSVtPD1yzqU+B9HZWjHqq7Jc1TSCcYxAc=",
-        "owner": "colonelpanic8",
-        "repo": "mova",
-        "rev": "f7d9718775ecd462349a566842880a8b236b20f5",
-        "type": "github"
-      },
-      "original": {
-        "owner": "colonelpanic8",
-        "repo": "mova",
-        "type": "github"
-      }
-    },
     "nix-appimage": {
       "inputs": {
         "flake-compat": "flake-compat_4",
@@ -2271,7 +2255,9 @@
         "git-sync-rs": [
           "git-sync-rs"
         ],
-        "mova": "mova_2",
+        "mova": [
+          "mova"
+        ],
         "nixpkgs": [
           "nixpkgs"
         ],

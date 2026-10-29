@@ -139,6 +139,7 @@
         flake-utils.follows = "flake-utils";
         git-sync-rs.follows = "git-sync-rs";
         emacs-overlay.inputs.nixpkgs.follows = "nixpkgs";
+        mova.follows = "mova";
       };
     };
 
