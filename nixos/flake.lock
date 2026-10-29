@@ -2966,11 +2966,11 @@
         "xmonad-contrib": "xmonad-contrib"
       },
       "locked": {
-        "lastModified": 1792479112,
-        "narHash": "sha256-8+hErYA/QK8RH/t1MZt0AumyUN027vgLrVjsXvW5jGE=",
+        "lastModified": 1793249098,
+        "narHash": "sha256-ytFVzYTZka8Rtm8FSkJmUDTUaJu8wBfyl4ErtEQXo5M=",
         "ref": "refs/heads/integration/7.4.4-usb-pd-battery-flow",
-        "rev": "cf9ba3934a2cf31c6b9b7f9cdd63a9bbfe7ba896",
-        "revCount": 2451,
+        "rev": "3653b9bc64afa37458fb10aaad7536adda9cbc7b",
+        "revCount": 2452,
         "type": "git",
         "url": "file:///srv/dotfiles/dotfiles/config/taffybar/taffybar"
       },
