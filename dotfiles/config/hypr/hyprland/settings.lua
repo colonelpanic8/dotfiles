@@ -405,6 +405,13 @@ function M.setup(ctx)
       border_size = 0,
     })
 
+    -- Fullscreen browsers otherwise flip the monitor into HDR, a full modeset.
+    hl.window_rule({
+      name = "browser-no-auto-hdr",
+      match = { class = "^(google-chrome|chromium-browser|brave-browser|firefox)$" },
+      no_auto_hdr = true,
+    })
+
     hl.window_rule({ match = { class = "^()$", title = "^()$" }, float = true })
     hl.window_rule({ match = { title = "^(Picture-in-Picture)$" }, float = true })
     hl.window_rule({
