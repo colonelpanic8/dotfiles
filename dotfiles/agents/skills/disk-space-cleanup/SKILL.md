@@ -60,6 +60,14 @@ sudo -n podman system prune -a
 Notes:
 - Add `--volumes` only when the user approves deleting unused volumes.
 - Re-check free space after each command to show impact.
+- 2026-10-21 `jimi-hendnix`: Docker initially reported 9.312 GB reclaimable;
+  removing the approved six-week-old stopped test container with `docker rm`
+  (without `-v`), then `docker image prune -a -f`, reclaimed 13.26 GB and
+  preserved all 56 volumes. A stopped container can pin an additional image.
+  Unprivileged `nix-store --gc` subsequently deleted 1,134 paths and reported
+  23.3 GiB freed, with the system-generation symlinks verified unchanged.
+  Concurrent builds caused free-space changes between measurements; report tool
+  totals separately from the overall `df` change.
 - Prefer `sudo -n` first so cleanup runs fail fast instead of hanging on password prompts.
 - On macOS, a successful Xcode archive can still fail during `-exportArchive` with a generic `Copy failed` when the APFS data volume is full. Inspect the generated `.xcdistributionlogs` for `No space left on device`, and preserve several GiB of extra staging headroom for `XcodeDistPipeline` beyond the archive itself.
 - If root is still tight after these, run app cache cleaners before proposing raw `rm -rf`:
@@ -175,6 +183,14 @@ safe_ncdu open /srv/disk-space-assessments/latest-root.json.zst
 ```
 
 Only fall back to raw, non-persistent `ncdu -x "$HOME"` / `sudo ncdu -x /` for a quick interactive look when `safe_ncdu` itself is broken — never use it as the recorded evidence for an assessment. If `ncdu` is missing entirely, use `nix run nixpkgs#ncdu -- -x "$HOME"` the same way, as a one-off, not as a substitute for a `safe_ncdu` snapshot.
+
+On 2026-10-20, `/srv/disk-space-assessments` on `jimi-hendnix` was
+`root:users` mode `2750`: group-readable but not group-writable. Without sudo,
+`safe_ncdu` failed to create its export and sidecars. Use an explicit persistent
+fallback such as `SAFE_NCDU_DIR="$HOME/disk-space-assessments" safe_ncdu "$HOME"`
+and report that exact location. For a snapshot rooted at home, query its top
+level with `safe_ncdu top <snapshot> 30` (omit PATH); PATH traverses relative
+to the snapshot root, so passing the absolute home path returns no rows.
 
 For quick, non-blocking triage on very large trees, prefer bounded probes:
 
@@ -292,6 +308,14 @@ Machine-specific heavy hitters seen in practice:
   - A `/tmp/rmk-bughunt.*` dir mixed build subdirs with irreplaceable repro material (`README.md`, `reproduce.sh`, crate copies, `capacities*.toml`). List each scratch dir's top level and delete only the large build subdirs instead of the whole dir. The other `/tmp/rmk-judgment-*-build` and `moergo-rmk-*-cargo` dirs were pure Cargo output (`CACHEDIR.TAG`, `debug/`) and went entirely.
   - `bc` isn't on PATH, and zsh mangles multi-field `printf` loops. Run survey loops under `bash -c` with integer `du -m`.
   - `~/projects/paseo/.worktrees`: these may be Paseo-registered workspaces, so keep the worktrees and drop only their dependencies. Run `git -C <wt> clean -fdxq -- <each node_modules path>` (8–10 per worktree in the monorepo). With user approval, doing this in 13 clean worktrees whose last commit was 34+ days old freed 43G of measured `df` space against 44.8G apparent. Paseo uses npm, not pnpm, so nearly nothing is hard-link shared and the reclaim matches `du`. `assembled-voice` is detached on a commit no ref contains, so it's reflog-only.
+- 2026-10-22 `jimi-hendnix` worktree sweep (`/` 14G free -> 73.7G; peaked at 4.6G free mid-assessment while a keepbook Cargo build ran, so `nix-store --gc` went first for +23.6 GiB):
+  - Paseo's workspace registry is `~/.paseo/projects/workspaces.json`, and it lists only `~/.paseo/worktrees/<project-id>/<name>` paths, not `~/projects/paseo/.worktrees`. Treat `~/.paseo/worktrees/*` as Paseo-owned (drop `node_modules` only: 4 workspaces, 3.4G -> ~125M each). Ordinary `~/projects/*/.worktrees` are safe to `git worktree remove`.
+  - Rank by unshared bytes (`find <wt> -xdev -type f -links 1 -printf '%b\n'`), not `du`. t3code pnpm worktrees showed 4.5G apparent but 0.4–1.5G unshared. npm/Gradle worktrees (paseo, eva) were ~85–100% unshared.
+  - A clean `git status` hides gitignored files. Run `git status --porcelain --ignored=matching` and filter out build/dependency names to catch `.env`, local DBs, or IaC state (for example an `infra/relay/.alchemy/` dir) before removal. Here the hits were all generated.
+  - Submodule worktrees (`t3code-assembly/t3code/.worktrees`, `glove80-config/.worktrees/rmk-*`) don't appear in the superproject's `git worktree list`; their `.git` file points into `.git/modules/.../worktrees`. Get the owning main worktree from the first line of `git -C <wt> worktree list --porcelain` and run `worktree remove --force` from there.
+  - Directories inside a `.worktrees/` container that lack `.git` are not always junk. `rmk/.worktrees/{prompts,asm-tools}` held hand-written agent prompts and helper scripts; keep them unless the user says otherwise.
+  - `find` in the agent's zsh is `bfs`, which rejects `-newermt '-2 days'` ("Invalid timestamp"). Use `command find ... -mmin -2880`.
+  - Run the `nix-store --gc`/`nix-collect-garbage -d` follow-up anyway, but here it freed only 3.8 GiB, because worktree dev shells shared nearly everything with the main checkouts. `pnpm store prune` (pnpm 11 via `nix run nixpkgs#pnpm_11`, store `~/.local/share/pnpm/store/v11`) freed about 2.7G.
 - 2026-10-20 `jimi-hendnix` zero-free-space failure mode inside Claude Code: with `/` at 100% (83M free), **every Bash tool call failed before running anything** (even `mkdir`), because the harness captures stdout under `/tmp/claude-1000/<project>/<session>/tasks/` and the ENOSPC write aborted the call. `run_in_background` and T3 `delegate_task` (returned `parent_not_active`) did not help either. Reads still worked, so a bare `df -h /tmp` eventually got through once a few MB freed up. The unblock was the unprivileged `nix-store --gc` (no sudo in the agent shell): 13,902 dead paths, 39.2 GiB, `/` 100% -> 95% (49G free) in under two minutes. `/tmp` itself was 12G and left untouched.
 - 2026-07-19 cleanup: inactive `/tmp/rmk-*`, `/tmp/glove80-*`, and `/tmp/codex-asar.*` build/extraction directories accumulated about 85G in one day. Before deleting these explicit top-level patterns, scan `/proc/*/{cwd,root,exe,fd/*}` for references and check the candidates for nested `.git` entries; with neither present, removing them reduced `/tmp` from 63G to 4.2G and restored 85G of filesystem headroom.
 - 2026-07-22 T3 Code review-worktree unblock: many detached `.worktrees/pr-*` checkouts each materialized about 2.7G of `node_modules` while repeated PR review cycles were running. After checking `/proc/*/cwd` and selecting only completed, inactive worktrees, `git -C <worktree> clean -fdx -- node_modules` on five explicit targets restored about 1.9G of physical space. Preserve source and foreign/active worktrees, and prefer relinking the repository's existing dependencies over creating another independent install.
