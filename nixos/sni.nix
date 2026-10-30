@@ -10,6 +10,29 @@
   isFull = cfg.profile == "full";
   system = pkgs.stdenv.hostPlatform.system;
   kanshiSniPackage = inputs.kanshi-sni.packages.${system}.default;
+  # appConfig.json is owned by the app (it rejects partial files), so settings
+  # are applied through its CLI once it is up. systemd owns startup and Nix
+  # owns updates; tailscale0 lets peers be paired by tailnet address.
+  crosspasteConfigure = pkgs.writeShellScript "crosspaste-configure" ''
+    crosspaste() { ${pkgs.crosspaste}/bin/crosspaste --no-start "$@"; }
+
+    for _ in $(seq 1 60); do
+      crosspaste status >/dev/null 2>&1 && break
+      sleep 1
+    done
+
+    crosspaste config set enableAutoStartUp false >/dev/null
+    crosspaste config set autoDownloadUpdate false >/dev/null
+    rm -f "''${XDG_CONFIG_HOME:-$HOME/.config}/autostart/crosspaste.desktop"
+
+    if [ -e /sys/class/net/tailscale0 ]; then
+      interfaces="$(crosspaste --json config | ${pkgs.jq}/bin/jq -c '.useNetworkInterfaces | fromjson')"
+      if ! ${pkgs.jq}/bin/jq -e 'index("tailscale0")' <<<"$interfaces" >/dev/null; then
+        crosspaste config set useNetworkInterfaces \
+          "$(${pkgs.jq}/bin/jq -c '. + ["tailscale0"]' <<<"$interfaces")" >/dev/null
+      fi
+    fi
+  '';
   enabledModule = makeEnable config "myModules.sni" true {
     systemd.user.services.blueman-applet.serviceConfig.ExecStart = lib.mkIf isFull (lib.mkForce [
       ""
@@ -36,15 +59,16 @@
           };
         };
 
-        systemd.user.services.localsend = {
+        systemd.user.services.crosspaste = {
           Unit = {
-            Description = "LocalSend tray app";
+            Description = "CrossPaste tray app";
             After = ["graphical-session.target" "tray.target"];
             PartOf = ["graphical-session.target"];
             Requires = ["tray.target"];
           };
           Service = {
-            ExecStart = "${pkgs.localsend}/bin/localsend_app --hidden";
+            ExecStart = "${pkgs.crosspaste}/bin/crosspaste-desktop";
+            ExecStartPost = "-${crosspasteConfigure}";
             Restart = "on-failure";
             RestartSec = 3;
           };
@@ -94,7 +118,7 @@ in
         type = lib.types.enum ["minimal" "full"];
         default = "full";
         description = ''
-          Select core tray services (NetworkManager, udiskie, LocalSend) or
+          Select core tray services (NetworkManager, udiskie, CrossPaste) or
           the complete workstation tray set.
         '';
       };

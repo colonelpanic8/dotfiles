@@ -25,9 +25,9 @@ Singleton {
     }
 
     function activate(item) {
-        if (item?.id !== "localsend_app" && !(item?.title || "").endsWith("localsend_app"))
+        if (item?.title !== "CrossPaste")
             return false;
-        Quickshell.execDetached(["hyprctl", "eval", "_G.im_hyprland_toggle_localsend_scratchpad()"]);
+        Quickshell.execDetached(["hyprctl", "eval", "_G.im_hyprland_open_crosspaste_search()"]);
         return true;
     }
 

@@ -166,6 +166,7 @@
           computer-use-linux = final.callPackage ./packages/computer-use-linux {
             src = inputs.computer-use-linux;
           };
+          crosspaste = final.callPackage ./packages/crosspaste {};
           elegant-grub2-theme = final.callPackage ./packages/elegant-grub2-theme {};
           kef = final.callPackage ./packages/kef {};
           pykefcontrol = final.python3Packages.callPackage ./packages/pykefcontrol {};

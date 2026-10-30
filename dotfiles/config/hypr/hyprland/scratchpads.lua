@@ -56,12 +56,6 @@ function M.setup(ctx)
       command = "google-messages-desktop",
       class = "google-messages-desktop",
     },
-    localsend = {
-      command = "localsend_scratchpad",
-      class = "localsend_app",
-      allow_tiling = false,
-      autostart_hidden = true,
-    },
     x_com = {
       command = "x-com-pwa",
       classes = { "x-com-pwa", "chrome-x.com" },
@@ -645,9 +639,6 @@ function M.setup(ctx)
 
   _G.im_hyprland_toggle_ai_scratchpad = toggle_active_ai_scratchpad
   _G.im_hyprland_show_ai_scratchpad = show_active_ai_scratchpad
-  _G.im_hyprland_toggle_localsend_scratchpad = function()
-    toggle_scratchpad("localsend")
-  end
 
   ctx.lower_contains = lower_contains
   ctx.lower_contains_any = lower_contains_any

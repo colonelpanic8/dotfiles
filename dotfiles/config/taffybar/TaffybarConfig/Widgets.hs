@@ -416,16 +416,16 @@ usageSectionWidget klass iconFile tooltip stackBuilder =
 sniPriorityVisibilityThresholdDefault :: Int
 sniPriorityVisibilityThresholdDefault = 0
 
-localSendTrayMatcher :: SNITray.TrayItemMatcher
-localSendTrayMatcher = SNITray.trayMatchIconTitleEquals "localsend_app"
+crossPasteTrayMatcher :: SNITray.TrayItemMatcher
+crossPasteTrayMatcher = SNITray.trayMatchIconTitleEquals "CrossPaste"
 
-localSendTrayClickHook :: SNITray.TrayClickHook
-localSendTrayClickHook clickContext
+crossPasteTrayClickHook :: SNITray.TrayClickHook
+crossPasteTrayClickHook clickContext
   | SNITray.trayClickButton clickContext == 1,
     SNITray.trayItemMatcherPredicate
-      localSendTrayMatcher
+      crossPasteTrayMatcher
       (SNITray.trayClickItemInfo clickContext) = do
-      void $ forkIO $ callProcess "hyprctl" ["eval", "_G.im_hyprland_toggle_localsend_scratchpad()"]
+      void $ forkIO $ callProcess "hyprctl" ["eval", "_G.im_hyprland_open_crosspaste_search()"]
       pure SNITray.ConsumeClick
   | otherwise = pure SNITray.UseDefaultClickAction
 
@@ -449,7 +449,7 @@ sniTrayWidget = do
             SNITray.trayOverlayScale = 1 % 3,
             SNITray.trayEventHooks =
               SNITray.defaultTrayEventHooks
-                { SNITray.trayClickHook = Just localSendTrayClickHook
+                { SNITray.trayClickHook = Just crossPasteTrayClickHook
                 }
           }
       sniTrayConfig =

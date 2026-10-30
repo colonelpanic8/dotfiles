@@ -402,7 +402,7 @@
         ghostty
         file-roller
         libnotify
-        localsend
+        crosspaste
         lxappearance
         networkmanagerapplet
         pinentry-gnome3

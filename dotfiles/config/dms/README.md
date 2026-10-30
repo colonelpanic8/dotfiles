@@ -42,7 +42,7 @@ remaining usage and both providers visible.
 The tray reads the existing `~/.config/taffybar/sni-priorities.yaml`, including
 its collapse threshold and maximum visible icons. Hover expands hidden icons.
 Shift-scroll over an icon adjusts its priority and preserves the shared policy
-file. LocalSend's left click opens the existing scratchpad. Menus, icon loading,
+file. CrossPaste's left click opens its search window. Menus, icon loading,
 and overlay rendering use upstream DMS and the custom Quickshell build.
 
 `settings.json`, `plugin-settings.json`, and `session.json` seed writable user

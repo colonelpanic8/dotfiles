@@ -455,6 +455,14 @@ function M.setup(ctx)
       stay_focused = true,
     })
     hl.window_rule({ match = { title = "^(Confirm)$" }, float = true })
+    -- CrossPaste's AWT windows all report the class java-lang-Thread.
+    hl.window_rule({
+      name = "crosspaste",
+      match = { title = "^(CrossPaste|CrossPaste Search)$" },
+      float = true,
+      center = true,
+      focus_on_activate = true,
+    })
 
     -- The AI desktop apps fire xdg-activation requests while streaming
     -- responses; with misc:focus_on_activate=true that steals focus from

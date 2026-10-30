@@ -38,16 +38,6 @@ final: prev: {
     doCheck = false;
   });
 
-  localsend = prev.localsend.overrideAttrs (oldAttrs: {
-    patches = (oldAttrs.patches or []) ++ [
-      (final.fetchpatch {
-        url = "https://github.com/colonelpanic8/localsend/commit/c4660fe19d1b462f3e8b2ff41c139ea773de6040.patch";
-        hash = "sha256-d7JUcmKPZzSE3/nsHAqhc0HDe/YTYoK5Rok3Bx7wHyA=";
-      })
-    ];
-    patchFlags = (oldAttrs.patchFlags or []) ++ [ "-p2" ];
-  });
-
   heroic-unwrapped = prev.heroic-unwrapped.overrideAttrs (oldAttrs: {
     nativeBuildInputs = (oldAttrs.nativeBuildInputs or []) ++ [final.makeWrapper];
     postFixup = (oldAttrs.postFixup or "") + ''
