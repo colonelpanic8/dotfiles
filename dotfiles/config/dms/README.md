@@ -1,7 +1,10 @@
 # Dank Material Shell
 
-The NixOS module installs upstream DMS (now Dux Shell), the pinned
-`colonelpanic8/quickshell` tray build, and the upstream DankAIUsage plugin.
+The NixOS module installs DMS (now Dux Shell) from the `dotfiles` branch of
+`colonelpanic8/dux-shell`, the `colonelpanic8/quickshell` tray build assembled
+by `~/projects/quickshell-assembly`, and the upstream DankAIUsage plugin. The
+fork branch carries the workspace and tray changes below as commits on top of
+upstream; rebase it to pick up upstream changes.
 DMS is the default Hyprland shell. Taffybar remains installed. In a Hyprland
 session:
 
@@ -24,7 +27,7 @@ active workspace on each monitor. Clicking an icon focuses its window;
 clicking the workspace background switches workspaces. Hover and drag behavior
 come from upstream.
 
-The small carried patch groups special-workspace windows into one `M` bucket
+The fork groups special-workspace windows into one `M` bucket
 per monitor, like the Taffybar configuration. Clicking the bucket background
 does nothing. Clicking an actually minimized window restores it to the active
 workspace before focusing it. Other scratchpad windows use upstream focus.
@@ -40,17 +43,20 @@ in the small DesktopExtras plugin. AI quotas use upstream DankAIUsage with
 remaining usage and both providers visible.
 
 The tray reads the existing `~/.config/taffybar/sni-priorities.yaml`, including
-its collapse threshold and maximum visible icons. Hover expands hidden icons.
-Shift-scroll over an icon adjusts its priority and preserves the shared policy
-file. CrossPaste's left click opens its search window. Menus, icon loading,
+its collapse threshold and maximum visible icons. Priority decreases away from
+the screen edge, and hidden icons (below the threshold, or Passive) continue
+that order past the caret. Hover expands hidden icons; clicking the caret pins
+them open. Tray icons use the maximized bar icon size, and icons drawn mostly
+in colors close to the bar background get an outline. Right-clicking an icon
+shows steppers for its priority and the shared threshold; shift-scroll over an
+icon also adjusts its priority. Edits preserve the shared policy file.
+CrossPaste's left click opens its search window. Menus, icon loading,
 and overlay rendering use upstream DMS and the custom Quickshell build.
 
 `settings.json`, `plugin-settings.json`, and `session.json` seed writable user
 configuration on first activation. Changes made through DMS survive restarts and
 rebuilds. The NixOS module owns packaging, plugin registration, and systemd
-integration. The upstream shell
-is packaged separately from the carried QML patch so configuration edits do not
-recompile its Go backend.
+integration.
 
 ## Checks
 

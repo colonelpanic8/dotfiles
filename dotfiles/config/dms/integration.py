@@ -31,18 +31,40 @@ def read_policy(path):
         return {}, {}
 
 
-def adjust_priority(path, key, delta):
+def update_policy(path, change):
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.with_suffix(".lock").open("w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         policy, priorities = read_policy(path)
-        priorities[key] = max(-10, min(10, priorities.get(key, 0) + delta))
-        policy["priorities"] = priorities
+        change(policy, priorities)
+        # Match taffybar's format_version 2 layout.
+        policy["priorities"] = [
+            {"key": key, "priority": priority}
+            for key, priority in sorted(
+                priorities.items(), key=lambda item: (-item[1], item[0])
+            )
+        ]
         with tempfile.NamedTemporaryFile(
             mode="w", dir=path.parent, delete=False
         ) as out:
             yaml.safe_dump(policy, out, sort_keys=False)
         os.replace(out.name, path)
+
+
+def adjust_priority(path, key, delta):
+    def change(policy, priorities):
+        priorities[key] = max(-10, min(10, priorities.get(key, 0) + delta))
+
+    update_policy(path, change)
+
+
+def set_threshold(path, value):
+    def change(policy, priorities):
+        policy["visibility_threshold"] = (
+            None if value == "none" else max(-10, min(10, int(value)))
+        )
+
+    update_policy(path, change)
 
 
 def process_key(pid):
@@ -57,7 +79,7 @@ def process_key(pid):
         return ""
 
 
-def tray_metadata(bus):
+def tray_metadata(bus, known):
     watcher = bus.get_object(
         "org.kde.StatusNotifierWatcher", "/StatusNotifierWatcher", introspect=False
     )
@@ -69,6 +91,9 @@ def tray_metadata(bus):
     )
     entries = {}
     for registration in registrations:
+        if str(registration) in known:
+            entries[str(registration)] = known[str(registration)]
+            continue
         service, _, suffix = str(registration).partition("/")
         path = "/" + suffix if suffix else "/StatusNotifierItem"
         try:
@@ -137,41 +162,47 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--watch", action="store_true")
     parser.add_argument("--priority", nargs=2, metavar=("KEY", "DELTA"))
+    parser.add_argument("--threshold", metavar="VALUE|none")
     args = parser.parse_args()
     if args.priority:
         adjust_priority(priority_path(), args.priority[0], int(args.priority[1]))
+        return
+    if args.threshold:
+        set_threshold(priority_path(), args.threshold)
         return
 
     bus = dbus.SessionBus()
     power = PowerSampler()
     metadata = {}
     refreshed = 0
+    published = None
+    sampled = 0
     while True:
         policy, priorities = read_policy(priority_path())
+        # Pick up new registrations every tick; re-read existing items' properties less often.
         if time.monotonic() - refreshed >= 15:
-            try:
-                metadata = tray_metadata(bus)
-            except dbus.DBusException:
-                metadata = {}
+            metadata = {}
             refreshed = time.monotonic()
+        try:
+            metadata = tray_metadata(bus, metadata)
+        except dbus.DBusException:
+            metadata = {}
         items = {}
         for identity, keys in metadata.items():
             key = next((key for key in keys if key in priorities), keys[0] or keys[2])
             items[identity] = {"key": key, "priority": priorities.get(key, 0)}
-        print(
-            json.dumps(
-                {
-                    "tray": items,
-                    "threshold": policy.get("visibility_threshold", 0),
-                    "maxVisible": policy.get("max_visible_icons", 0),
-                    "cpuWatts": power.sample(),
-                }
-            ),
-            flush=True,
-        )
+        tray = {
+            "tray": items,
+            "threshold": policy.get("visibility_threshold", 0),
+            "maxVisible": policy.get("max_visible_icons", 0),
+        }
+        if tray != published or time.monotonic() - sampled >= 5:
+            print(json.dumps({**tray, "cpuWatts": power.sample()}), flush=True)
+            published = tray
+            sampled = time.monotonic()
         if not args.watch:
             return
-        time.sleep(5)
+        time.sleep(1)
 
 
 if __name__ == "__main__":

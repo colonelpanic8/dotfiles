@@ -316,15 +316,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1793299219,
-        "narHash": "sha256-y9KzsNx4E13ir9sewXeY+hFsQxrtQhqXVf2LSlmPgrg=",
-        "owner": "duxlabs-dev",
+        "lastModified": 1793396477,
+        "narHash": "sha256-z7MDOHyxOBLdyo1mqW+1FuhVFPyfe9EM77x1l27Tg7A=",
+        "owner": "colonelpanic8",
         "repo": "dux-shell",
-        "rev": "8ce37501bd9c4dcbac04d1deb4e57d50f3e2c94f",
+        "rev": "818912538a3e3f9daee656b67bc41cf3aa608008",
         "type": "github"
       },
       "original": {
-        "owner": "duxlabs-dev",
+        "owner": "colonelpanic8",
+        "ref": "dotfiles",
         "repo": "dux-shell",
         "type": "github"
       }
@@ -2769,17 +2770,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1792202936,
-        "narHash": "sha256-roG7Qb8cYTTHUA+bkW86JY5OvACEt8UxIW5Y289gXpc=",
+        "lastModified": 1793396147,
+        "narHash": "sha256-A4DgWu1B1k3ffOBPIrU7Z0tlieHyT+ne91HgF2GVgjI=",
         "owner": "colonelpanic8",
         "repo": "quickshell",
-        "rev": "d9e94c150ba9286d21df7df6ee6a4dea350f9309",
+        "rev": "6f9dde3589dd14e1a66be715e2a85fb563611d08",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
         "repo": "quickshell",
-        "rev": "d9e94c150ba9286d21df7df6ee6a4dea350f9309",
+        "rev": "6f9dde3589dd14e1a66be715e2a85fb563611d08",
         "type": "github"
       }
     },

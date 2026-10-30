@@ -27,6 +27,15 @@ class IntegrationTests(unittest.TestCase):
             self.assertEqual(policy["max_visible_icons"], 4)
             integration.adjust_priority(path, "item-id:test", 20)
             self.assertEqual(integration.read_policy(path)[1]["item-id:test"], 10)
+            self.assertIn("- key: item-id:test\n  priority: 10\n", path.read_text())
+            integration.set_threshold(path, "none")
+            policy, priorities = integration.read_policy(path)
+            self.assertIsNone(policy["visibility_threshold"])
+            self.assertEqual(priorities["item-id:test"], 10)
+            integration.set_threshold(path, "-12")
+            self.assertEqual(
+                integration.read_policy(path)[0]["visibility_threshold"], -10
+            )
 
     def test_shell_failure_restores_taffybar_and_session_fallback(self):
         with tempfile.TemporaryDirectory() as directory:

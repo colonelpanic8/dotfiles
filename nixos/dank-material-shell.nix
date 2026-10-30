@@ -6,14 +6,7 @@
   ...
 }: let
   cfg = config.myModules.dank-material-shell;
-  quickshellBase = inputs.quickshell-tray.packages.${pkgs.stdenv.hostPlatform.system}.default;
-  quickshellUnwrapped = quickshellBase.unwrapped.overrideAttrs (old: {
-    patches = (old.patches or []) ++ [./patches/quickshell-tray-watcher-address.patch];
-  });
-  quickshellPackage = quickshellBase.overrideAttrs (old: {
-    installPhase = builtins.replaceStrings ["${quickshellBase.unwrapped}"] ["${quickshellUnwrapped}"] old.installPhase;
-    passthru = old.passthru // {unwrapped = quickshellUnwrapped;};
-  });
+  quickshellPackage = inputs.quickshell-tray.packages.${pkgs.stdenv.hostPlatform.system}.default;
   aiUsage = pkgs.callPackage "${inputs.dank-ai-usage}/default.nix" {
     revision = inputs.dank-ai-usage.rev;
   };
@@ -39,22 +32,18 @@
     exec ${config.hardware.nvidia.package.bin}/bin/nvidia-smi "$@"
   '';
   runtimePackages = [quickshellPackage aiUsage integration] ++ lib.optional config.myModules.nvidia.enable nvidiaSmi;
-  upstreamShell = inputs.dank-material-shell.lib.mkDmsShell pkgs;
+  forkShell = inputs.dank-material-shell.lib.mkDmsShell pkgs;
   shellPackage = pkgs.symlinkJoin {
-    name = "dms-shell-dotfiles-${upstreamShell.version}";
-    paths = [upstreamShell];
-    nativeBuildInputs = [pkgs.patch pkgs.makeWrapper];
+    name = "dms-shell-dotfiles-${forkShell.version}";
+    paths = [forkShell];
+    nativeBuildInputs = [pkgs.makeWrapper];
     postBuild = ''
-      rm -rf "$out/share/quickshell/dms"
-      cp -R --no-preserve=mode ${upstreamShell}/share/quickshell/dms "$out/share/quickshell/dms"
-      patch -d "$out/share/quickshell/dms" -p1 < ${./patches/dms-dotfiles-integration.patch}
-      install -m644 ${../dotfiles/config/dms/DotfilesService.qml} "$out/share/quickshell/dms/Services/DotfilesService.qml"
       rm "$out/bin/dms"
-      makeWrapper ${upstreamShell}/bin/dms "$out/bin/dms" \
-        --add-flags "-c $out/share/quickshell/dms" \
+      makeWrapper ${forkShell}/bin/dms "$out/bin/dms" \
+        --add-flags "-c ${forkShell}/share/quickshell/dms" \
         --prefix PATH : ${lib.makeBinPath runtimePackages}
     '';
-    inherit (upstreamShell) meta;
+    inherit (forkShell) meta;
   };
 in {
   options.myModules.dank-material-shell.enable =
