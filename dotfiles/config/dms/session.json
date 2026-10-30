@@ -1,0 +1,9 @@
+{
+  "nightModeEnabled": true,
+  "nightModeAutoEnabled": true,
+  "nightModeAutoMode": "location",
+  "nightModeTemperature": 4000,
+  "nightModeHighTemperature": 6500,
+  "latitude": 37.7,
+  "longitude": -122.4
+}

@@ -64,6 +64,7 @@ in {
         '';
     }
     // lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
+      dms-workspaces = import ../checks/dms-workspaces.nix {inherit pkgs inputs;};
       hyprNStack = hyprlandStuffPackages.hyprNStack;
       hyprexpo-lua = hyprlandStuffPackages.hyprexpo;
       hyprwinview = hyprlandStuffPackages.hyprwinview;

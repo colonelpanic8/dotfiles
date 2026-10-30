@@ -88,3 +88,6 @@ gotools
 /gen-gh-pages/t3code/index.html
 /gen-gh-pages/t3code/fleet.age
 /gen-gh-pages/t3code/settings.age
+
+# DMS generates compositor fragments beside the live Hyprland configuration.
+/dotfiles/config/hypr/dms/

@@ -38,6 +38,21 @@
 
     systems = {url = "github:nix-systems/default";};
 
+    dank-material-shell = {
+      url = "github:duxlabs-dev/dux-shell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    quickshell-tray = {
+      url = "github:colonelpanic8/quickshell/d9e94c150ba9286d21df7df6ee6a4dea350f9309";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    dank-ai-usage = {
+      url = "github:alcxyz/DankAIUsage";
+      flake = false;
+    };
+
     git-ignore-nix = {
       url = "github:hercules-ci/gitignore.nix";
       inputs.nixpkgs.follows = "nixpkgs";

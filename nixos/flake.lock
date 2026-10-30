@@ -291,6 +291,60 @@
         "type": "github"
       }
     },
+    "dank-ai-usage": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1792664102,
+        "narHash": "sha256-DmMKHQ+1pWOvwcAW126SiMr/+4ug2Feo/s997P/uPmc=",
+        "owner": "alcxyz",
+        "repo": "DankAIUsage",
+        "rev": "3180a7e7ae3ec911473d24b0614993541b064ed7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "alcxyz",
+        "repo": "DankAIUsage",
+        "type": "github"
+      }
+    },
+    "dank-material-shell": {
+      "inputs": {
+        "dank-qml-common": "dank-qml-common",
+        "flake-compat": "flake-compat",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793299219,
+        "narHash": "sha256-y9KzsNx4E13ir9sewXeY+hFsQxrtQhqXVf2LSlmPgrg=",
+        "owner": "duxlabs-dev",
+        "repo": "dux-shell",
+        "rev": "8ce37501bd9c4dcbac04d1deb4e57d50f3e2c94f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "duxlabs-dev",
+        "repo": "dux-shell",
+        "type": "github"
+      }
+    },
+    "dank-qml-common": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793299210,
+        "narHash": "sha256-dIMMcnrSsgP6mYKgUAxejnDVbNLb3q1m3/VHIPEGVLA=",
+        "owner": "duxlabs-dev",
+        "repo": "dux-qml-common",
+        "rev": "dbf7e6c3d4f52e2558da191905f6de5daa32547b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "duxlabs-dev",
+        "repo": "dux-qml-common",
+        "type": "github"
+      }
+    },
     "darwin": {
       "inputs": {
         "nixpkgs": [
@@ -394,6 +448,22 @@
     "flake-compat_2": {
       "flake": false,
       "locked": {
+        "lastModified": 1767039857,
+        "narHash": "sha256-vNpUSpF5Nuw8xvDLj2KCwwksIbjua2LZCqhV1LNRDns=",
+        "owner": "NixOS",
+        "repo": "flake-compat",
+        "rev": "5edf11c44bc78a0d334f6334cdaf7d60d732daab",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "flake-compat",
+        "type": "github"
+      }
+    },
+    "flake-compat_3": {
+      "flake": false,
+      "locked": {
         "lastModified": 1696426674,
         "narHash": "sha256-kvjfFW7WAETZlt09AgDn1MrtKzP7t90Vf7vypd3OL1U=",
         "owner": "edolstra",
@@ -407,7 +477,7 @@
         "type": "github"
       }
     },
-    "flake-compat_3": {
+    "flake-compat_4": {
       "flake": false,
       "locked": {
         "lastModified": 1767039857,
@@ -423,7 +493,7 @@
         "type": "github"
       }
     },
-    "flake-compat_4": {
+    "flake-compat_5": {
       "flake": false,
       "locked": {
         "lastModified": 1733328505,
@@ -1830,7 +1900,7 @@
     },
     "nix-appimage": {
       "inputs": {
-        "flake-compat": "flake-compat_4",
+        "flake-compat": "flake-compat_5",
         "flake-utils": "flake-utils_8",
         "nixpkgs": [
           "rlru",
@@ -1979,7 +2049,7 @@
     },
     "nixos-wsl": {
       "inputs": {
-        "flake-compat": "flake-compat_3",
+        "flake-compat": "flake-compat_4",
         "nixpkgs": [
           "nixpkgs"
         ]
@@ -2551,7 +2621,7 @@
     },
     "pre-commit-hooks": {
       "inputs": {
-        "flake-compat": "flake-compat",
+        "flake-compat": "flake-compat_2",
         "nixpkgs": [
           "hyprland",
           "nixpkgs"
@@ -2573,7 +2643,7 @@
     },
     "pre-commit-hooks_2": {
       "inputs": {
-        "flake-compat": "flake-compat_2",
+        "flake-compat": "flake-compat_3",
         "gitignore": "gitignore",
         "nixpkgs": [
           "imalison-taffybar",
@@ -2692,6 +2762,27 @@
         "type": "github"
       }
     },
+    "quickshell-tray": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1792202936,
+        "narHash": "sha256-roG7Qb8cYTTHUA+bkW86JY5OvACEt8UxIW5Y289gXpc=",
+        "owner": "colonelpanic8",
+        "repo": "quickshell",
+        "rev": "d9e94c150ba9286d21df7df6ee6a4dea350f9309",
+        "type": "github"
+      },
+      "original": {
+        "owner": "colonelpanic8",
+        "repo": "quickshell",
+        "rev": "d9e94c150ba9286d21df7df6ee6a4dea350f9309",
+        "type": "github"
+      }
+    },
     "railbird-secrets": {
       "inputs": {
         "agenix": [
@@ -2791,6 +2882,8 @@
         "codex-desktop-linux": "codex-desktop-linux",
         "computer-use-linux": "computer-use-linux",
         "cua-driver": "cua-driver",
+        "dank-ai-usage": "dank-ai-usage",
+        "dank-material-shell": "dank-material-shell",
         "eva": "eva",
         "fenix": "fenix",
         "flake-utils": "flake-utils_4",
@@ -2845,6 +2938,7 @@
         "paseo": "paseo",
         "pyproject-build-systems": "pyproject-build-systems_2",
         "pyproject-nix": "pyproject-nix_2",
+        "quickshell-tray": "quickshell-tray",
         "railbird-secrets": "railbird-secrets",
         "repowise": "repowise",
         "rlru": "rlru",

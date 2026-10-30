@@ -1,0 +1,74 @@
+{
+  "configVersion": 42,
+  "use24HourClock": false,
+  "clockDateFormat": "ddd MMM d",
+  "showSeconds": false,
+  "runDmsMatugenTemplates": false,
+  "loginctlLockIntegration": false,
+  "customPowerActionLock": "loginctl lock-session",
+  "osdVolumeEnabled": false,
+  "osdBrightnessEnabled": false,
+  "osdWorkspaceEnabled": false,
+  "barConfigs": [
+    {
+      "id": "main",
+      "name": "Desktop",
+      "enabled": true,
+      "position": 0,
+      "screenPreferences": ["all"],
+      "showOnLastDisplay": true,
+      "leftWidgets": [
+        "launcherButton",
+        {
+          "id": "workspaceSwitcher",
+          "enabled": true,
+          "showWorkspaceIndex": false,
+          "showWorkspaceName": true,
+          "showWorkspaceApps": true,
+          "showOccupiedWorkspacesOnly": true,
+          "showSpecialWorkspaces": true,
+          "groupWorkspaceApps": false,
+          "maxWorkspaceIcons": 30,
+          "workspaceActiveAppHighlightEnabled": true
+        }
+      ],
+      "centerWidgets": ["clock"],
+      "rightWidgets": [
+        "music",
+        "desktopExtras",
+        {"id": "diskUsage", "enabled": true, "mountPath": "/", "diskUsageMode": 0},
+        {"id": "memUsage", "enabled": true, "showSwap": true},
+        "cpuTemp",
+        "gpuTemp",
+        "cpuUsage",
+        "dankAIUsage",
+        {
+          "id": "controlCenterButton",
+          "enabled": true,
+          "showAudioPercent": true,
+          "showBrightnessIcon": true,
+          "showBrightnessPercent": true,
+          "showNetworkIcon": true,
+          "showBluetoothIcon": true
+        },
+        {
+          "id": "battery",
+          "enabled": true,
+          "showBatteryPercent": true,
+          "showBatteryPowerCharging": true,
+          "showBatteryPowerDischarging": true
+        },
+        {"id": "systemTray", "enabled": true, "trayUseInlineExpansion": true, "trayAutoOverflow": false},
+        "notificationButton"
+      ],
+      "spacing": 2,
+      "innerPadding": 2,
+      "widgetPadding": 5,
+      "attachToScreenEdge": true,
+      "autoHide": false,
+      "visible": true,
+      "hideOnFullscreen": false,
+      "scrollEnabled": false
+    }
+  ]
+}

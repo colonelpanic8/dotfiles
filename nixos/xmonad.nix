@@ -34,7 +34,7 @@
   };
 in
   makeEnable config "myModules.xmonad" true {
-    myModules.taffybar.enable = lib.mkDefault (config.myModules.desktop.shellUi == "taffybar");
+    myModules.taffybar.enable = lib.mkDefault true;
 
     services.rumno.enable = true;
 

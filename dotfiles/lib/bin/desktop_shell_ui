@@ -9,6 +9,9 @@ normalize_shell_ui() {
     taffybar|rofi)
       printf '%s\n' "taffybar"
       ;;
+    dms|dank)
+      printf '%s\n' "dms"
+      ;;
     *)
       return 1
       ;;
@@ -17,6 +20,13 @@ normalize_shell_ui() {
 
 current_shell_ui() {
   local configured=""
+
+  case "${XDG_SESSION_TYPE:-}:${XDG_CURRENT_DESKTOP:-}" in
+    x11:*|*KDE*|*Plasma*)
+      printf '%s\n' taffybar
+      return
+      ;;
+  esac
 
   if [[ -r "$state_file" ]]; then
     IFS= read -r configured < "$state_file" || true
@@ -29,8 +39,11 @@ current_shell_ui() {
 
 write_shell_ui() {
   local shell_ui="$1"
+  local temporary
   mkdir -p "$(dirname "$state_file")"
-  printf '%s\n' "$shell_ui" > "$state_file"
+  temporary="$(mktemp "${state_file}.XXXXXX")"
+  printf '%s\n' "$shell_ui" > "$temporary"
+  mv "$temporary" "$state_file"
 }
 
 apply_shell_ui() {
@@ -41,7 +54,19 @@ apply_shell_ui() {
 
   case "$shell_ui" in
     taffybar)
+      systemctl --user stop dms.service 2>/dev/null || true
       systemctl --user start taffybar.service
+      systemctl --user start rumno.service wlsunset.service 2>/dev/null || true
+      ;;
+    dms)
+      systemctl --user stop taffybar.service
+      systemctl --user stop rumno.service dunst.service mako.service wlsunset.service 2>/dev/null || true
+      if ! systemctl --user start dms.service || ! systemctl --user is-active --quiet dms.service; then
+        echo "DMS failed to start; restoring Taffybar." >&2
+        write_shell_ui taffybar
+        apply_shell_ui taffybar
+        return 1
+      fi
       ;;
   esac
 }
@@ -49,9 +74,20 @@ apply_shell_ui() {
 set_shell_ui() {
   local shell_ui
   shell_ui="$(normalize_shell_ui "${1:-}")" || {
-    echo "usage: desktop_shell_ui set taffybar" >&2
+    echo "usage: desktop_shell_ui set {taffybar|dms}" >&2
     exit 2
   }
+
+  if [[ "$shell_ui" == dms ]]; then
+    if [[ "${XDG_SESSION_TYPE:-}" != wayland || -z "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
+      echo "DMS requires the Hyprland Wayland session." >&2
+      exit 1
+    fi
+    if ! systemctl --user cat dms.service >/dev/null 2>&1; then
+      echo "DMS is not installed; activate the NixOS configuration first." >&2
+      exit 1
+    fi
+  fi
 
   write_shell_ui "$shell_ui"
   apply_shell_ui "$shell_ui"
@@ -65,13 +101,20 @@ case "${1:-current}" in
     set_shell_ui "${2:-}"
     ;;
   toggle)
-    set_shell_ui taffybar
+    if [[ "$(current_shell_ui)" == dms ]]; then
+      set_shell_ui taffybar
+    else
+      set_shell_ui dms
+    fi
     ;;
   apply)
     apply_shell_ui "$(current_shell_ui)"
     ;;
   exec-condition)
     [[ "$(current_shell_ui)" == "$(normalize_shell_ui "${2:-}")" ]]
+    if [[ "$(current_shell_ui)" == dms ]]; then
+      [[ "${XDG_SESSION_TYPE:-}" == wayland && -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]
+    fi
     ;;
   *)
     echo "usage: desktop_shell_ui {current|set|toggle|apply|exec-condition}" >&2

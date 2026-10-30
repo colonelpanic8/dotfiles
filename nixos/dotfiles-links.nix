@@ -74,6 +74,8 @@
 
   configEntries = builtins.readDir srcConfig;
   configDirExclusions = [
+    # The DMS module manages settings and plugin files individually.
+    "dms"
     # Home Manager writes generated fontconfig fragments under this tree.
     "fontconfig"
     # Home Manager's gtk module writes settings.ini and gtk.css here.

@@ -21,6 +21,7 @@
     ./code.nix
     ./cua.nix
     ./desktop.nix
+    ./dank-material-shell.nix
     ./electron.nix
     ./environment.nix
     ../nix-shared/system/essential.nix

@@ -14,6 +14,9 @@ run_launcher() {
     taffybar|rofi)
       exec rofi -show drun -show-icons
       ;;
+    dms)
+      exec dms ipc call spotlight toggle
+      ;;
     *)
       echo "unknown IM_HYPRLAND_SHELL_UI: $shell_ui" >&2
       exit 2
@@ -43,9 +46,15 @@ case "${1:-}" in
     exec rofi -show run
     ;;
   control-center)
+    if [[ "$shell_ui" == dms ]]; then
+      exec dms ipc call control-center toggle
+    fi
     exit 0
     ;;
   settings)
+    if [[ "$shell_ui" == dms ]]; then
+      exec dms ipc call settings toggle
+    fi
     exit 0
     ;;
   window)

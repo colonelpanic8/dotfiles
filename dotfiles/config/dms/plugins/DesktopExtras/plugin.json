@@ -1,0 +1,11 @@
+{
+  "id": "desktopExtras",
+  "name": "Desktop controls",
+  "description": "CPU history, frequency and package power, plus desktop actions",
+  "version": "1.0.0",
+  "author": "Ivan Malison",
+  "type": "widget",
+  "capabilities": ["dankbar-widget"],
+  "component": "./DesktopExtras.qml",
+  "permissions": ["process"]
+}

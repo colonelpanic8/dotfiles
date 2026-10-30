@@ -1,0 +1,14 @@
+{
+  "dankAIUsage": {
+    "enabled": true,
+    "showUsed": false,
+    "showCodex": true,
+    "showClaude": true,
+    "refreshInterval": 900,
+    "compactPill": true,
+    "barLabelRight": "percent",
+    "publicResetAnnouncements": false,
+    "systemNotifications": false
+  },
+  "desktopExtras": {"enabled": true}
+}
