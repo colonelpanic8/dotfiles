@@ -87,7 +87,6 @@
 	email = IvanMalison@gmail.com
 
 [include]
-	path = ~/.gitconfig.custom
 	path = ~/.gitconfig.this-machine
 
 [rerere]
