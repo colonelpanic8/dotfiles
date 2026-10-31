@@ -4,13 +4,14 @@
 ARG="${1:-}"
 
 # Log the incoming arguments for debugging
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] brightness.sh called with: '$ARG' (all args: $@)" >> /tmp/brightness_bash.log
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] brightness.sh called with: '$ARG' (all args: $*)" >> /tmp/brightness_bash.log
 
 # Function to get current brightness percentage
 get_brightness_percentage() {
+    local devices device_count info
     # Get list of display backlight devices only (filter by class 'backlight')
-    local devices=$(brightnessctl --list 2>/dev/null | grep 'class.*backlight' | cut -d' ' -f2 | cut -d"'" -f2)
-    local device_count=$(echo "$devices" | wc -w)
+    devices=$(brightnessctl --list 2>/dev/null | grep 'class.*backlight' | cut -d' ' -f2 | cut -d"'" -f2)
+    device_count=$(echo "$devices" | wc -w)
 
     if [ "$device_count" -eq 0 ]; then
         echo "50"  # Default fallback
@@ -19,7 +20,7 @@ get_brightness_percentage() {
 
     if [ "$device_count" -eq 1 ]; then
         # Single device - just output its percentage
-        local info=$(brightnessctl 2>/dev/null | grep -oP '\d+%' | head -1 | tr -d '%')
+        info=$(brightnessctl 2>/dev/null | grep -oP '\d+%' | head -1 | tr -d '%')
         if [ -n "$info" ]; then
             echo "$info"
         else
@@ -30,7 +31,7 @@ get_brightness_percentage() {
         local total=0
         local count=0
         for device in $devices; do
-            local info=$(brightnessctl -d "$device" 2>/dev/null | grep -oP '\d+%' | head -1 | tr -d '%')
+            info=$(brightnessctl -d "$device" 2>/dev/null | grep -oP '\d+%' | head -1 | tr -d '%')
             if [ -n "$info" ]; then
                 total=$((total + info))
                 count=$((count + 1))
