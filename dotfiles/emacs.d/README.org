@@ -2324,7 +2324,8 @@ bind-key and global-set-key forms.
   :ensure nil
   :config
   (progn
-    (setq auth-sources '("~/.authinfo.gpg"))))
+    (setq auth-sources nil)
+    (auth-source-pass-enable)))
 #+end_src
 
 * Major Modes
