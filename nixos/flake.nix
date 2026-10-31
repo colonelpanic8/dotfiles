@@ -43,6 +43,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    dux-greeter = {
+      url = "github:duxlabs-dev/dux-greeter";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     quickshell-tray = {
       url = "github:colonelpanic8/quickshell/6f9dde3589dd14e1a66be715e2a85fb563611d08";
       inputs.nixpkgs.follows = "nixpkgs";

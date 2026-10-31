@@ -59,6 +59,7 @@ in {
   myModules.ntfy.enable = true;
   myModules.nvidia.enable = true;
   myModules.hyprland.ultrawideRefreshRate = 99.98;
+  myModules.displayManager.greeter = "dms";
   environment.systemPackages = [pkgs.wayvnc];
   security.pam.services.wayvnc = {};
 
