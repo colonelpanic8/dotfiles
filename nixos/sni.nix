@@ -12,7 +12,8 @@
   kanshiSniPackage = inputs.kanshi-sni.packages.${system}.default;
   # appConfig.json is owned by the app (it rejects partial files), so settings
   # are applied through its CLI once it is up. systemd owns startup and Nix
-  # owns updates; tailscale0 lets peers be paired by tailnet address.
+  # owns updates; tailscale0 lets peers be paired by tailnet address, and relay
+  # forwards pastes to devices that are only paired with this one.
   crosspasteConfigure = pkgs.writeShellScript "crosspaste-configure" ''
     crosspaste() { ${pkgs.crosspaste}/bin/crosspaste --no-start "$@"; }
 
@@ -23,6 +24,7 @@
 
     crosspaste config set enableAutoStartUp false >/dev/null
     crosspaste config set autoDownloadUpdate false >/dev/null
+    crosspaste config set enableClipboardRelay true >/dev/null
     rm -f "''${XDG_CONFIG_HOME:-$HOME/.config}/autostart/crosspaste.desktop"
 
     if [ -e /sys/class/net/tailscale0 ]; then
@@ -33,6 +35,12 @@
       fi
     fi
   '';
+  crosspasteTailnetSync = pkgs.writeShellApplication {
+    name = "crosspaste-tailnet-sync";
+    runtimeInputs = with pkgs; [avahi coreutils crosspaste curl gnugrep jq openssh tailscale];
+    bashOptions = ["nounset" "pipefail"];
+    text = builtins.readFile ./crosspaste/tailnet-sync.sh;
+  };
   enabledModule = makeEnable config "myModules.sni" true {
     systemd.user.services.blueman-applet.serviceConfig.ExecStart = lib.mkIf isFull (lib.mkForce [
       ""
@@ -74,6 +82,22 @@
           };
           Install = {
             WantedBy = ["graphical-session.target"];
+          };
+        };
+
+        systemd.user.services.crosspaste-tailnet-sync = {
+          Unit = {
+            Description = "Discover and pair CrossPaste peers over Tailscale";
+            After = ["crosspaste.service"];
+            BindsTo = ["crosspaste.service"];
+          };
+          Service = {
+            ExecStart = lib.getExe crosspasteTailnetSync;
+            Restart = "on-failure";
+            RestartSec = 10;
+          };
+          Install = {
+            WantedBy = ["crosspaste.service"];
           };
         };
 
