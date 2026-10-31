@@ -31,8 +31,6 @@ makeEnable config "myModules.base" true {
     };
   };
   services.pcscd.enable = true;
-  # Eight intermediates under this root leaked their keys (GHSA-6q48-6c7w-9gw2).
-  security.pki.caCertificateBlacklist = ["emSign ECC Root CA - G3"];
   # nixpkgs' certifi bundles unfiltered cacert, so point requests at the system store.
   environment.variables.REQUESTS_CA_BUNDLE = config.security.pki.caBundle;
 
