@@ -43,14 +43,13 @@ frequency, optional readable RAPL package power, and a few desktop commands live
 in the small DesktopExtras plugin. AI quotas use upstream DankAIUsage with
 remaining usage and both providers visible.
 
-The tray reads the existing `~/.config/taffybar/sni-priorities.yaml`, including
-its collapse threshold and maximum visible icons. Priority decreases away from
-the screen edge, and hidden icons (below the threshold, or Passive) continue
-that order past the caret. Hover expands hidden icons; clicking the caret pins
-them open. Tray icons use the maximized bar icon size, and icons drawn mostly
-in colors close to the bar background get an outline. Right-clicking an icon
-shows steppers for its priority and the shared threshold; shift-scroll over an
-icon also adjusts its priority. Edits preserve the shared policy file.
+The tray orders icons by the priorities in the existing
+`~/.config/taffybar/sni-priorities.yaml`, decreasing away from the screen edge.
+DMS never hides tray icons; the policy's threshold and maximum visible count
+only apply to Taffybar. Tray icons use the maximized bar icon size, and icons
+drawn mostly in colors close to the bar background get an outline.
+Right-clicking an icon shows a priority stepper; shift-scroll over an icon also
+adjusts its priority. Edits preserve the shared policy file.
 CrossPaste's left click opens its search window. Menus, icon loading,
 and overlay rendering use upstream DMS and the custom Quickshell build.
 

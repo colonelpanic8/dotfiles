@@ -58,15 +58,6 @@ def adjust_priority(path, key, delta):
     update_policy(path, change)
 
 
-def set_threshold(path, value):
-    def change(policy, priorities):
-        policy["visibility_threshold"] = (
-            None if value == "none" else max(-10, min(10, int(value)))
-        )
-
-    update_policy(path, change)
-
-
 def process_key(pid):
     try:
         args = Path(f"/proc/{pid}/cmdline").read_bytes().decode().split("\0")
@@ -162,13 +153,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--watch", action="store_true")
     parser.add_argument("--priority", nargs=2, metavar=("KEY", "DELTA"))
-    parser.add_argument("--threshold", metavar="VALUE|none")
     args = parser.parse_args()
     if args.priority:
         adjust_priority(priority_path(), args.priority[0], int(args.priority[1]))
-        return
-    if args.threshold:
-        set_threshold(priority_path(), args.threshold)
         return
 
     bus = dbus.SessionBus()
@@ -178,7 +165,7 @@ def main():
     published = None
     sampled = 0
     while True:
-        policy, priorities = read_policy(priority_path())
+        _, priorities = read_policy(priority_path())
         # Pick up new registrations every tick; re-read existing items' properties less often.
         if time.monotonic() - refreshed >= 15:
             metadata = {}
@@ -191,11 +178,7 @@ def main():
         for identity, keys in metadata.items():
             key = next((key for key in keys if key in priorities), keys[0] or keys[2])
             items[identity] = {"key": key, "priority": priorities.get(key, 0)}
-        tray = {
-            "tray": items,
-            "threshold": policy.get("visibility_threshold", 0),
-            "maxVisible": policy.get("max_visible_icons", 0),
-        }
+        tray = {"tray": items}
         if tray != published or time.monotonic() - sampled >= 5:
             print(json.dumps({**tray, "cpuWatts": power.sample()}), flush=True)
             published = tray
