@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2026-10-30 Fri 21:44 -->
+<!-- 2026-10-31 Sat 03:10 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -7414,7 +7414,8 @@ bind-key and global-set-key forms.
   <span class="org-builtin">:ensure</span> nil
   <span class="org-builtin">:config</span>
   (<span class="org-keyword">progn</span>
-    (<span class="org-keyword">setq</span> auth-sources '(<span class="org-string">"~/.authinfo.gpg"</span>))))
+    (<span class="org-keyword">setq</span> auth-sources nil)
+    (auth-source-pass-enable)))
 </pre>
 </div>
 </div>
