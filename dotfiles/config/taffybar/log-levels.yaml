@@ -15,4 +15,5 @@
 # StatusNotifier.Host.Service: DEBUG
 # System.Taffybar.Widget.SNITray.PrioritizedCollapsible: DEBUG
 System.Taffybar.LogLevels: INFO
-# System.Taffybar.Context: DEBUG
+# NOTICE surfaces lifecycle events such as Hyprland-triggered restarts.
+System.Taffybar.Context: NOTICE
