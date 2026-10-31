@@ -58,8 +58,6 @@ in {
     system.build.dms = shellPackage;
     system.build.quickshell-tray = quickshellPackage;
 
-    systemd.user.services.rumno.serviceConfig.ExecCondition = "${pkgs.bash}/bin/bash ${../dotfiles/lib/bin/desktop_shell_ui} exec-condition taffybar";
-
     home-manager.sharedModules = [
       inputs.dank-material-shell.homeModules.dank-material-shell
       ({lib, ...}: {

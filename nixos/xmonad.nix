@@ -36,8 +36,6 @@ in
   makeEnable config "myModules.xmonad" true {
     myModules.taffybar.enable = lib.mkDefault true;
 
-    services.rumno.enable = true;
-
     services.xserver = {
       windowManager = {
         session = [

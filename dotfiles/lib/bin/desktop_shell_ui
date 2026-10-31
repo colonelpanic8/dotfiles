@@ -56,11 +56,11 @@ apply_shell_ui() {
     taffybar)
       systemctl --user stop dms.service 2>/dev/null || true
       systemctl --user start taffybar.service
-      systemctl --user start rumno.service wlsunset.service 2>/dev/null || true
+      systemctl --user start wlsunset.service 2>/dev/null || true
       ;;
     dms)
       systemctl --user stop taffybar.service
-      systemctl --user stop rumno.service dunst.service mako.service wlsunset.service 2>/dev/null || true
+      systemctl --user stop dunst.service mako.service wlsunset.service 2>/dev/null || true
       if ! systemctl --user start dms.service || ! systemctl --user is-active --quiet dms.service; then
         echo "DMS failed to start; restoring Taffybar." >&2
         write_shell_ui taffybar

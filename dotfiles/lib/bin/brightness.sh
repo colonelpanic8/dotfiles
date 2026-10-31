@@ -82,13 +82,4 @@ if [ -n "$ARG" ]; then
     fi
 fi
 
-# Get current brightness percentage for display
-BRIGHTNESS=$(get_brightness_percentage)
-RUMNO_TIMEOUT="${RUMNO_TIMEOUT:-2.5}"
-
-# Show notification if rumno is available
-if command -v rumno &> /dev/null; then
-    rumno -t "$RUMNO_TIMEOUT" -b "$BRIGHTNESS"
-else
-    echo "$BRIGHTNESS"
-fi
+get_brightness_percentage

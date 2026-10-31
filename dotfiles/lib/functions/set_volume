@@ -1,8 +1,25 @@
 #!/usr/bin/env sh
 
 function set_volume {
+  if command -v desktop_shell_ui >/dev/null 2>&1 &&
+      [ "$(desktop_shell_ui current)" = dms ]; then
+    case "$*" in
+      '--unmute --change-volume +5')
+        dms ipc call audio increment 5
+        return $?
+        ;;
+      '--unmute --change-volume -5')
+        dms ipc call audio decrement 5
+        return $?
+        ;;
+      '--toggle-mute')
+        dms ipc call audio mute
+        return $?
+        ;;
+    esac
+  fi
+
   pulsemixer "$@"
-  pashowvolume
 }
 
 set_volume "$@"

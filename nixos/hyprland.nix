@@ -508,8 +508,6 @@
       withUWSM = true;
     };
 
-    services.rumno.enable = !cfg.portable;
-
     environment.sessionVariables = {
       IMALISON_HYPRLAND_GAPS = hyprlandGapsEnabledString;
       IMALISON_HYPRLAND_CURSOR_SIZE = hyprlandCursorSizeString;

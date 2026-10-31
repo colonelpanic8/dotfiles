@@ -6,8 +6,8 @@
   "runDmsMatugenTemplates": false,
   "loginctlLockIntegration": false,
   "customPowerActionLock": "loginctl lock-session",
-  "osdVolumeEnabled": false,
-  "osdBrightnessEnabled": false,
+  "osdVolumeEnabled": true,
+  "osdBrightnessEnabled": true,
   "osdWorkspaceEnabled": false,
   "barConfigs": [
     {

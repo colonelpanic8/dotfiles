@@ -2,7 +2,6 @@
 
 import System.Environment (getArgs)
 import System.Process
-import System.Exit
 import Data.List (isPrefixOf, isSuffixOf)
 import Data.Maybe (mapMaybe, fromMaybe)
 import Text.Read (readMaybe)
@@ -127,18 +126,6 @@ getAverageBrightness = do
                 then return 50
                 else return $ sum validValues `div` length validValues
 
--- Send notification using rumno if available
-sendNotification :: Int -> IO ()
-sendNotification brightness = do
-    let timeoutSeconds = "2.5"
-    rumnoExists <- (== ExitSuccess) <$>
-                   rawSystem "sh" ["-c", "command -v rumno >/dev/null 2>&1"]
-    if rumnoExists
-        then do
-            _ <- readProcess "rumno" ["-t", timeoutSeconds, "-b", show brightness] ""
-            return ()
-        else putStrLn (show brightness)
-
 -- Check if a string contains another
 isInfixOf :: String -> String -> Bool
 isInfixOf needle haystack = any (isPrefixOf needle) (tails haystack)
@@ -160,6 +147,5 @@ main = do
     let cmd = parseArg arg
     applyBrightness cmd
 
-    -- Get current brightness and notify
     brightness <- getAverageBrightness
-    sendNotification brightness
+    print brightness

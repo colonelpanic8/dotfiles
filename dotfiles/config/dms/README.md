@@ -15,9 +15,10 @@ desktop_shell_ui toggle
 ```
 
 The selection persists across logins. X11 and Plasma sessions use Taffybar.
-A failed DMS startup restores Taffybar. Switching also hands notifications and
-color temperature between rumno/wlsunset and DMS. The existing window picker
-and its go/bring/replace actions keep working through `hypr_shell_ui`.
+A failed DMS startup restores Taffybar. Switching also hands notification and
+color-temperature services to the selected shell. DMS provides the volume and
+brightness overlays. The existing window picker and its go/bring/replace actions
+keep working through `hypr_shell_ui`.
 
 ## Workspaces
 
