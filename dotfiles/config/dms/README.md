@@ -28,10 +28,10 @@ active workspace on each monitor. Clicking an icon focuses its window;
 clicking the workspace background switches workspaces. Hover and drag behavior
 come from upstream.
 
-The fork groups special-workspace windows into one `M` bucket
-per monitor, like the Taffybar configuration. Clicking the bucket background
-does nothing. Clicking an actually minimized window restores it to the active
-workspace before focusing it. Other scratchpad windows use upstream focus.
+The fork hides special workspaces and the `scratch-hidden-*` scratchpad
+workspaces, and shows minimized windows in one `M` bucket per monitor, like the
+Taffybar configuration. Clicking the bucket background does nothing. Clicking a
+minimized window restores it to the active workspace before focusing it.
 Chrome windows currently use application icons instead of tab favicons.
 
 ## Widgets and tray
