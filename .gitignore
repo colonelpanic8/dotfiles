@@ -91,3 +91,5 @@ gotools
 
 # DMS generates compositor fragments beside the live Hyprland configuration.
 /dotfiles/config/hypr/dms/
+/dotfiles/config/taffybar/sni-priorities.lock
+/dotfiles/config/hypr/hyprland.lua.backup*
