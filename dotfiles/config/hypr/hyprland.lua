@@ -85,3 +85,6 @@ setmetatable(ctx, { __index = _G })
 for i = 2, #modules do
   require(modules[i]).setup(ctx)
 end
+
+-- DMS Include Configs
+pcall(require, "dms.cursor")
