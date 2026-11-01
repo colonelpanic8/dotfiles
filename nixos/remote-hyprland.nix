@@ -57,7 +57,8 @@
     for_window [app_id=".*"] fullscreen enable
     exec ${nestedHyprland}
   '';
-  remoteHyprlandStartVnc = pkgs.writeShellScript "remote-hyprland-start-vnc" ''
+  # Runs a command against this service's Hyprland instance.
+  remoteHyprlandWithInstance = pkgs.writeShellScript "remote-hyprland-with-instance" ''
         set -euo pipefail
 
         export XDG_CURRENT_DESKTOP=Hyprland
@@ -112,6 +113,9 @@
           ${pkgs.coreutils}/bin/sleep 0.1
         done
 
+        exec "$@"
+  '';
+  remoteHyprlandStartVnc = pkgs.writeShellScript "remote-hyprland-start-vnc" ''
     ${
       if cfg.nested
       then ''
@@ -248,8 +252,8 @@
             Unit = {
               Description = "Headless Hyprland session for remote VNC access";
               After = ["default.target"];
-              # Bring VNC back whenever the session (re)starts.
-              Wants = ["remote-hyprland-wayvnc.service"];
+              # Bring VNC and the shell back whenever the session (re)starts.
+              Wants = ["remote-hyprland-wayvnc.service"] ++ lib.optional (cfg.shellCommand != null) "remote-hyprland-shell.service";
             };
             Service =
               if cfg.nested
@@ -295,7 +299,7 @@
             BindsTo = ["remote-hyprland.service"];
           };
           Service = {
-            ExecStart = "${remoteHyprlandStartVnc}";
+            ExecStart = "${remoteHyprlandWithInstance} ${remoteHyprlandStartVnc}";
             Restart = "always";
             RestartSec = 5;
             Environment = [
@@ -305,6 +309,26 @@
               "LIBSEAT_BACKEND=seatd"
               "PATH=${servicePath}"
             ];
+          };
+        };
+
+        remote-hyprland-shell = lib.mkIf (cfg.shellCommand != null) {
+          Unit = {
+            Description = "Desktop shell for the headless Hyprland session";
+            After = ["remote-hyprland.service"];
+            BindsTo = ["remote-hyprland.service"];
+          };
+          Service = {
+            ExecStart = "${remoteHyprlandWithInstance} ${cfg.shellCommand}";
+            Restart = "always";
+            RestartSec = 3;
+            Environment =
+              [
+                "XDG_CURRENT_DESKTOP=Hyprland"
+                "XDG_SESSION_DESKTOP=Hyprland"
+                "XDG_SESSION_TYPE=wayland"
+              ]
+              ++ cfg.shellEnvironment;
           };
         };
       };
@@ -395,6 +419,18 @@ in
           type = lib.types.str;
           default = "/dev/dri/renderD128";
           description = "DRM render node used by the nested session's host compositor.";
+        };
+
+        shellCommand = lib.mkOption {
+          type = lib.types.nullOr lib.types.str;
+          default = null;
+          description = "Desktop shell to run inside the remote session, bound to its lifetime.";
+        };
+
+        shellEnvironment = lib.mkOption {
+          type = lib.types.listOf lib.types.str;
+          default = [];
+          description = "Extra `Environment=` entries for the remote session's shell.";
         };
 
         configFile = lib.mkOption {

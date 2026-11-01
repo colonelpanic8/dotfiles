@@ -119,6 +119,9 @@ in {
       inherit user;
       bindAddress = "0.0.0.0";
       configFile = "/home/${user}/.config/hypr/hyprland.lua";
+      # The regular dms.service belongs to the physical graphical session.
+      shellCommand = "${config.system.build.dms}/bin/dms run";
+      shellEnvironment = config.home-manager.users.${user}.systemd.user.services.dms.Service.Environment;
     };
     networking.firewall.interfaces.tailscale0.allowedTCPPorts = [config.myModules.remote-hyprland.port];
 
