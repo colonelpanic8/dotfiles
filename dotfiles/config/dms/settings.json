@@ -56,7 +56,7 @@
           "id": "diskUsage",
           "enabled": true,
           "mountPath": "/",
-          "diskUsageMode": 0
+          "diskUsageMode": 4
         },
         {
           "id": "memUsage",
@@ -79,7 +79,8 @@
           "showPrinterIcon": false,
           "showScreenSharingIcon": false,
           "showIdleInhibitorIcon": false,
-          "showDoNotDisturbIcon": false
+          "showDoNotDisturbIcon": false,
+          "showNetworkName": true
         },
         {
           "id": "controlCenterButton",
@@ -99,19 +100,19 @@
         },
         "desktopBrightness",
         {
-          "id": "battery",
-          "enabled": true,
-          "showBatteryPercent": true,
-          "showBatteryPowerCharging": true,
-          "showBatteryPowerDischarging": true
-        },
-        {
           "id": "systemTray",
           "enabled": true,
           "trayUseInlineExpansion": true,
           "trayAutoOverflow": false
         },
-        "notificationButton"
+        "notificationButton",
+        {
+          "id": "battery",
+          "enabled": true,
+          "showBatteryPercent": true,
+          "showBatteryPowerCharging": true,
+          "showBatteryPowerDischarging": true
+        }
       ],
       "spacing": 2,
       "innerPadding": 6,

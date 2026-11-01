@@ -392,11 +392,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793522304,
-        "narHash": "sha256-rY8eloRSGQxotXvcplz9ze6lfGhwqYHDLxmATYY1kX8=",
+        "lastModified": 1793571964,
+        "narHash": "sha256-cRXgoU1uRrMutAFy2n/hQERpax34Jf5bZwPBXdfGscU=",
         "owner": "colonelpanic8",
         "repo": "dux-shell",
-        "rev": "5b572c84443fc20c6c2b0b596d260882825e9e29",
+        "rev": "89072cbf8fe70ef3f385dcc20f884285e3c32027",
         "type": "github"
       },
       "original": {
