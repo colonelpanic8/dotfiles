@@ -49,7 +49,7 @@
     };
 
     quickshell-tray = {
-      url = "github:colonelpanic8/quickshell/6f9dde3589dd14e1a66be715e2a85fb563611d08";
+      url = "github:colonelpanic8/quickshell/23b10e05227327c386d5f00abb9678323885bf7f";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
