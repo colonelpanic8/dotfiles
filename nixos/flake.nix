@@ -54,7 +54,7 @@
     };
 
     dank-ai-usage = {
-      url = "github:alcxyz/DankAIUsage";
+      url = "github:colonelpanic8/DankAIUsage/feat/bar-text-layout";
       flake = false;
     };
 

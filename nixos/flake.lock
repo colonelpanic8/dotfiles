@@ -294,15 +294,16 @@
     "dank-ai-usage": {
       "flake": false,
       "locked": {
-        "lastModified": 1792664102,
-        "narHash": "sha256-DmMKHQ+1pWOvwcAW126SiMr/+4ug2Feo/s997P/uPmc=",
-        "owner": "alcxyz",
+        "lastModified": 1793501756,
+        "narHash": "sha256-Jo1dlOvjuDRwE96qhOUYX1vJLDXE3hAsaGFQgjZ5z44=",
+        "owner": "colonelpanic8",
         "repo": "DankAIUsage",
-        "rev": "3180a7e7ae3ec911473d24b0614993541b064ed7",
+        "rev": "bf903a3ad2d6eff861a6086a52a41386cadbcefb",
         "type": "github"
       },
       "original": {
-        "owner": "alcxyz",
+        "owner": "colonelpanic8",
+        "ref": "feat/bar-text-layout",
         "repo": "DankAIUsage",
         "type": "github"
       }

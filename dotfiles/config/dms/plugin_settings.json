@@ -5,10 +5,12 @@
     "showCodex": true,
     "showClaude": true,
     "refreshInterval": 900,
-    "compactPill": true,
+    "compactPill": false,
     "barLabelRight": "percent",
     "publicResetAnnouncements": false,
-    "systemNotifications": false
+    "systemNotifications": false,
+    "barTextLabels": "day",
+    "barTextStacked": true
   },
   "desktopExtras": {"enabled": true}
 }
