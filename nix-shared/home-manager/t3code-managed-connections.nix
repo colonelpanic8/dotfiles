@@ -16,10 +16,7 @@
   familySecret = host: "t3code-managed-access-token.${host.hostName}";
   # Servers reachable only on their own loopback get an SSH tunnel to a local port.
   tunneled = lib.filterAttrs (_: host: host ? sshHost) family;
-  address = host:
-    if host ? address
-    then host.address
-    else "127.0.0.1:${toString host.localPort}";
+  url = host: host.url or "http://127.0.0.1:${toString host.localPort}/";
   knownHosts = pkgs.writeText "t3code-family-known-hosts" (
     lib.concatStringsSep "\n" (lib.mapAttrsToList (_: host: "${host.sshHost} ${host.hostKey}") tunneled) + "\n"
   );
@@ -98,8 +95,8 @@ in
           ++ lib.mapAttrsToList (_: host: {
             environmentId = "fleet:${host.hostName}";
             label = host.hostName;
-            httpBaseUrl = "http://${address host}/";
-            wsBaseUrl = "ws://${address host}/";
+            httpBaseUrl = url host;
+            wsBaseUrl = "ws" + lib.removePrefix "http" (url host);
             token."$file" = config.age.secrets.${familySecret host}.path;
           })
           family;

@@ -11,16 +11,11 @@ in {
         localPort = 13774;
       };
       # Not managed here; its server listens on its Tailscale address.
-      msi-elliott.address = "msi-elliott.tail40f15e.ts.net:3773";
+      msi-elliott.url = "http://msi-elliott.tail40f15e.ts.net:3773/";
     };
   };
   kat = {
     label = "Kat";
-    hosts.kats-macbook-neo = {
-      sshHost = "kats-macbook-neo.taileb3aad.ts.net";
-      sshUser = "kat";
-      hostKey = keys.katsMacbookNeoHostKey;
-      localPort = 13775;
-    };
+    hosts.kats-macbook-neo.url = "https://kats-macbook-neo.taileb3aad.ts.net/";
   };
 }
