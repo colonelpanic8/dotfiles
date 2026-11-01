@@ -80,6 +80,10 @@ managed T3 connection registry. Each connection reads its own agenix credential;
 no pairing step is required. Group membership and hidden defaults derive from
 the same declaration. Session visibility switches do not change these files.
 The Air's server listens on loopback and is reached through the SSH tunnel.
+A member can list several hosts. Hosts with an `address` are reached directly
+over Tailscale without a tunnel. Alex's `msi-elliott` is one: it is not managed
+here, and its credential is a bearer session minted there with
+`t3 auth session issue` (365-day TTL).
 
 ## Private camera and microphone feeds
 

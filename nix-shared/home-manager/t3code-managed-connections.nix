@@ -8,12 +8,22 @@
   keys = import ../keys.nix;
   credentialPath = config.age.secrets.t3code-managed-access-token.path;
   registryPath = "${config.xdg.configHome}/t3code/managed-connections.json";
-  family = lib.optionalAttrs (config.home.username == "imalison") (import ../t3code-family.nix);
-  familySecret = member: "t3code-managed-access-token.${member.hostName}";
-  knownHosts = pkgs.writeText "t3code-family-known-hosts" (
-    lib.concatStringsSep "\n" (lib.mapAttrsToList (_: member: "${member.sshHost} ${member.hostKey}") family) + "\n"
+  family = lib.optionalAttrs (config.home.username == "imalison") (
+    lib.concatMapAttrs (_: member:
+      lib.mapAttrs (hostName: host: host // {inherit hostName;}) member.hosts)
+    (import ../t3code-family.nix)
   );
-  sshArguments = member: [
+  familySecret = host: "t3code-managed-access-token.${host.hostName}";
+  # Servers reachable only on their own loopback get an SSH tunnel to a local port.
+  tunneled = lib.filterAttrs (_: host: host ? sshHost) family;
+  address = host:
+    if host ? address
+    then host.address
+    else "127.0.0.1:${toString host.localPort}";
+  knownHosts = pkgs.writeText "t3code-family-known-hosts" (
+    lib.concatStringsSep "\n" (lib.mapAttrsToList (_: host: "${host.sshHost} ${host.hostKey}") tunneled) + "\n"
+  );
+  sshArguments = host: [
     "${pkgs.openssh}/bin/ssh"
     "-N"
     "-T"
@@ -30,8 +40,8 @@
     "-o"
     "UserKnownHostsFile=${knownHosts}"
     "-L"
-    "127.0.0.1:${toString member.localPort}:127.0.0.1:3774"
-    "${member.sshUser}@${member.sshHost}"
+    "127.0.0.1:${toString host.localPort}:127.0.0.1:3774"
+    "${host.sshUser}@${host.sshHost}"
   ];
 in
   lib.mkIf (lib.elem config.home.username ["imalison" "kat"]) {
@@ -43,36 +53,36 @@ in
           path = "${config.xdg.stateHome}/t3code/managed-access-token";
         };
       }
-      // lib.mapAttrs' (_: member:
-        lib.nameValuePair (familySecret member) {
-          file = ../../nixos/secrets + "/${familySecret member}.age";
-          path = "${config.xdg.stateHome}/t3code/managed-access-token.${member.hostName}";
+      // lib.mapAttrs' (_: host:
+        lib.nameValuePair (familySecret host) {
+          file = ../../nixos/secrets + "/${familySecret host}.age";
+          path = "${config.xdg.stateHome}/t3code/managed-access-token.${host.hostName}";
         })
       family;
 
-    systemd.user.services = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux (lib.mapAttrs' (name: member:
+    systemd.user.services = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux (lib.mapAttrs' (name: host:
       lib.nameValuePair "t3code-family-${name}" {
-        Unit.Description = "T3 Code connection to ${member.label}'s machine";
+        Unit.Description = "T3 Code connection to ${name}";
         Service = {
-          ExecStart = lib.escapeShellArgs (sshArguments member);
+          ExecStart = lib.escapeShellArgs (sshArguments host);
           Restart = "always";
           RestartSec = 5;
         };
         Install.WantedBy = ["default.target"];
       })
-    family);
-    launchd.agents = lib.optionalAttrs pkgs.stdenv.hostPlatform.isDarwin (lib.mapAttrs' (name: member:
+    tunneled);
+    launchd.agents = lib.optionalAttrs pkgs.stdenv.hostPlatform.isDarwin (lib.mapAttrs' (name: host:
       lib.nameValuePair "t3code-family-${name}" {
         enable = true;
         config = {
-          ProgramArguments = sshArguments member;
+          ProgramArguments = sshArguments host;
           RunAtLoad = true;
           KeepAlive = true;
           ThrottleInterval = 5;
           StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/t3code-family-${name}.log";
         };
       })
-    family);
+    tunneled);
 
     home.sessionVariables.T3CODE_MANAGED_CONNECTIONS_FILE = registryPath;
     xdg.configFile."t3code/environment-groups.json".text = builtins.toJSON {
@@ -85,12 +95,12 @@ in
         version = 1;
         connections =
           map (member: member // {token."$file" = credentialPath;}) environments
-          ++ lib.mapAttrsToList (_: member: {
-            environmentId = "fleet:${member.hostName}";
-            label = member.hostName;
-            httpBaseUrl = "http://127.0.0.1:${toString member.localPort}/";
-            wsBaseUrl = "ws://127.0.0.1:${toString member.localPort}/";
-            token."$file" = config.age.secrets.${familySecret member}.path;
+          ++ lib.mapAttrsToList (_: host: {
+            environmentId = "fleet:${host.hostName}";
+            label = host.hostName;
+            httpBaseUrl = "http://${address host}/";
+            wsBaseUrl = "ws://${address host}/";
+            token."$file" = config.age.secrets.${familySecret host}.path;
           })
           family;
       };

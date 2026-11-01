@@ -1,5 +1,5 @@
 builtins.mapAttrs (_: member: {
   inherit (member) label;
-  environmentIds = ["fleet:${member.hostName}"];
+  environmentIds = map (hostName: "fleet:${hostName}") (builtins.attrNames member.hosts);
   defaultVisible = false;
 }) (import ./t3code-family.nix)

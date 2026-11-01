@@ -38,6 +38,7 @@ in {
   "tailscale-authkey.kats-macbook-neo.age".publicKeys = [keys.katsMacbookNeoHostKey] ++ keys.katKeys;
   "t3code-managed-access-token.kats-macbook-neo.age".publicKeys = keys.sshClientKeys ++ keys.katKeys ++ [keys.katsMacbookNeoHostKey];
   "t3code-managed-access-token.alexanders-macbook-air.age".publicKeys = keys.sshClientKeys ++ keys.alexKeys ++ [keys.alexandersMacbookAirHostKey];
+  "t3code-managed-access-token.msi-elliott.age".publicKeys = keys.sshClientKeys;
   "paseo-password-environment.age".publicKeys = keys.agenixKeys;
   "t3code-managed-access-token.age".publicKeys = keys.agenixKeys;
   "t3code-fleet-enrollment.age".publicKeys = keys.agenixKeys ++ keys.t3codeFleetEnrollmentRecipients;
