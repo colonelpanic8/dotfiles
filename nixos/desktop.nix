@@ -24,6 +24,18 @@
       exec ${../dotfiles/lib/bin/desktop_shell_ui} "$@"
     '';
   };
+  desktopDmenu = pkgs.writeShellApplication {
+    name = "desktop_dmenu";
+    runtimeInputs = [
+      desktopShellUi
+      pkgs.bash
+      pkgs.rofi
+      pkgs.systemd
+    ];
+    text = ''
+      exec ${../dotfiles/lib/bin/desktop_dmenu} "$@"
+    '';
+  };
   chromeCommandLineFlags =
     [
       "--disable-features=WaylandFractionalScaleV1"
@@ -390,6 +402,7 @@
 
     environment.systemPackages =
       (with pkgs; [
+        desktopDmenu
         desktopShellUi
 
         # Lightweight personal desktop baseline.
