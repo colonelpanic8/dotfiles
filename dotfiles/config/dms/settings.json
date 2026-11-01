@@ -3,9 +3,10 @@
   "clockDateFormat": "ddd MMM d",
   "showSeconds": false,
   "runDmsMatugenTemplates": false,
-  "loginctlLockIntegration": true,
-  "osdVolumeEnabled": false,
-  "osdBrightnessEnabled": false,
+  "loginctlLockIntegration": false,
+  "customPowerActionLock": "loginctl lock-session",
+  "osdVolumeEnabled": true,
+  "osdBrightnessEnabled": true,
   "osdWorkspaceEnabled": false,
   "barConfigs": [
     {
@@ -22,14 +23,22 @@
         {
           "id": "workspaceSwitcher",
           "enabled": true,
-          "showWorkspaceIndex": false,
-          "showWorkspaceName": true,
+          "showWorkspaceIndex": true,
+          "showWorkspaceName": false,
           "showWorkspaceApps": true,
           "showOccupiedWorkspacesOnly": true,
-          "showSpecialWorkspaces": true,
+          "showSpecialWorkspaces": false,
           "groupWorkspaceApps": false,
           "maxWorkspaceIcons": 30,
-          "workspaceActiveAppHighlightEnabled": true
+          "workspaceActiveAppHighlightEnabled": true,
+          "workspaceIndicatorStyle": "pills",
+          "workspaceAppIconSizeOffset": 10,
+          "workspaceIndicatorCompact": true,
+          "workspaceIndicatorRoundness": 47,
+          "workspaceUnfocusedColorMode": "sc",
+          "workspaceFocusedBorderEnabled": true,
+          "workspaceColorMode": "s",
+          "workspaceFocusedBorderThickness": 3
         }
       ],
       "centerWidgets": [
@@ -85,14 +94,57 @@
       "visible": true,
       "hideOnFullscreen": false,
       "scrollEnabled": false,
+      "shadowIntensity": 0,
+      "squareCorners": false,
+      "gothCornersEnabled": false,
+      "borderEnabled": false,
       "island": true,
       "dot": false,
-      "islandCompactThickness": 42
+      "islandCompactThickness": 42,
+      "islandSatelliteGap": 16,
+      "islandNotch": true,
+      "islandReserveThickness": 49,
+      "islandRouteLauncher": "follow",
+      "islandRouteClipboard": "follow"
     }
   ],
   "clockFormat": "12h",
   "dmsWindowsFloatingSeeded": [
     "hyprland"
   ],
-  "lockBeforeSuspend": true
+  "builtInPluginSettings": {
+    "dms_qr_generator": {
+      "trigger": "qrg"
+    },
+    "dms_power": {
+      "trigger": "pw"
+    },
+    "dms_clipboard_search": {
+      "trigger": "cb"
+    },
+    "dms_settings_search": {
+      "trigger": "?"
+    }
+  },
+  "osdPosition": 5,
+  "widgetColorMode": "colorful",
+  "connectedFrameBarStyleBackups": {},
+  "frameEnabled": false,
+  "launcherStyle": "island",
+  "radiusStrength": 31,
+  "radiusMode": "scale",
+  "blurBorderEnabled": true,
+  "blurEnabled": false,
+  "blurBorderSeeded": true,
+  "blurLayerOutlineOpacity": 0,
+  "density": "spacious",
+  "interfaceStyle": "expressive",
+  "currentThemeName": "blue",
+  "dankLauncherV2Size": "large",
+  "appLauncherGridColumns": 5,
+  "dankLauncherV2BorderEnabled": true,
+  "dankLauncherV2BorderColor": "secondary",
+  "useFahrenheit": true,
+  "useAutoLocation": true,
+  "currentThemeCategory": "registry"
 }
