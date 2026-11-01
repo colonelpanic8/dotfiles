@@ -351,6 +351,7 @@
           text = ''
             confirm-close-surface = false
             shell-integration-features = cursor,no-sudo,no-title,no-ssh-env,no-ssh-terminfo,path
+            keybind = ctrl+enter=unbind
           '';
         };
 
