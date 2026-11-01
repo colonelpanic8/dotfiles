@@ -33,6 +33,7 @@
     ./scrobble-scrubber.nix
     ./gitea-runner.nix
     ./gitea.nix
+    ./google-calendar.nix
     ./google-messages.nix
     ./gnome.nix
     ./home-assistant.nix
