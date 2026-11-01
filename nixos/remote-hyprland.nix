@@ -10,10 +10,18 @@
   hyprlandUnwrapped = hyprlandPackage.passthru.unwrapped or hyprlandPackage;
   geometry = "${toString cfg.width}x${toString cfg.height}@${toString cfg.refreshRate}";
   monitorRule = "${cfg.output},${geometry},0x0,${toString cfg.scale}";
+  # A Lua config without a monitor rule gets Hyprland's automatic scale, which
+  # picks 2 for the remote output. Load it, then pin the configured geometry.
+  luaConfigWithMonitor = pkgs.writeText "remote-hyprland.lua" ''
+    dofile(${builtins.toJSON (toString cfg.configFile)})
+    hl.monitor({ output = "", mode = "${geometry}", position = "0x0", scale = ${toString cfg.scale} })
+  '';
   hyprlandConfigFile =
-    if cfg.configFile != null
-    then cfg.configFile
-    else remoteHyprlandConfig;
+    if cfg.configFile == null
+    then remoteHyprlandConfig
+    else if lib.hasSuffix ".lua" (toString cfg.configFile)
+    then luaConfigWithMonitor
+    else cfg.configFile;
   # wayvnc 0.10 waits for an output power "on" event before capturing, which
   # neither Hyprland nor headless sway ever sends, so no frames are delivered.
   wayvncPackage = pkgs.wayvnc.overrideAttrs (old: {
