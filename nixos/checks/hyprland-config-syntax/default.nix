@@ -20,5 +20,7 @@ pkgs.runCommand "hyprland-config-syntax" {
   fi
 
   lua ${./smoke-test.lua} ./hyprland.lua
+  mkdir runtime
+  XDG_RUNTIME_DIR="$PWD/runtime" HYPRLAND_INSTANCE_SIGNATURE=policy-test lua ${./layout-policy-test.lua} .
   touch "$out"
 ''

@@ -338,9 +338,9 @@ function M.setup(ctx)
   end
 
   local function setup_layout_and_window_state_bindings()
-    bind(main_mod .. " + Space", cycle_layout_or_restore_tabbed_group, desc("Cycle workspace layout"))
+    bind(main_mod .. " + Space", cycle_layout_or_exit_focus, desc("Cycle workspace layout"))
     bind(main_mod .. " + SHIFT + Space", force_columns_layout, desc("Force columns layout"))
-    bind(main_mod .. " + CTRL + Space", gather_workspace_into_tabbed_group, desc("Gather workspace into tabbed group"))
+    bind(main_mod .. " + CTRL + Space", toggle_focus_layout, desc("Toggle workspace focus mode"))
     bind(main_mod .. " + bracketright", monocle_next, desc("Focus next monocle window"))
     bind(main_mod .. " + bracketleft", monocle_prev, desc("Focus previous monocle window"))
     bind(main_mod .. " + F", toggle_active_window_real_fullscreen, desc("Toggle active window real fullscreen"))

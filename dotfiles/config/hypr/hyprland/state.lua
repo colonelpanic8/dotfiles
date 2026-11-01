@@ -36,6 +36,7 @@ return {
   grid_layout = grid_layout,
   quadrants_layout = quadrants_layout,
   monocle_layout = monocle_layout,
+  tabbed_layout = "tabbed",
   layout_cycle = { columns_layout, large_main_layout, quadrants_layout, grid_layout },
   layout_names = {
     [columns_layout] = "Columns",
@@ -43,6 +44,7 @@ return {
     [quadrants_layout] = "Quadrants",
     [grid_layout] = "Grid",
     [monocle_layout] = "Monocle",
+    tabbed = "Focus",
   },
   inactive_opacity_override_tag = "no-inactive-opacity",
   gaming_window_tag = "gaming",
@@ -57,7 +59,6 @@ return {
     "^Heroic Games Launcher$",
     "^Steam$",
   },
-  tabbed_group_restore_workspace_prefix = "special:tabbed-monocle-restore-",
   current_layout = columns_layout,
   enable_nstack = true,
   -- Disabled 2026-06-11: live-preview backend SEGVs Hyprland (shouldRenderWindow
@@ -77,7 +78,6 @@ return {
   hypr_visual_performance_mode = false,
   configure_nstack_plugin_from_lua = false,
   workspace_layouts = {},
-  tabbed_workspace_groups = {},
   quadrants_arranging = false,
   window_picker_mode = nil,
   window_picker_candidates = {},

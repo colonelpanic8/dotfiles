@@ -278,7 +278,7 @@ function M.setup(ctx)
           background = "rgba(10101400)",
           background_blur = 1,
           border_col = "rgba(ffffff33)",
-          hover_border_col = "rgba(66ccffee)",
+          hover_border_col = theme.rgba("primary", 0.93),
           border_size = 3,
           window_order = "application",
           keys_default_action = "return,enter,space,g,f",
@@ -296,7 +296,7 @@ function M.setup(ctx)
           app_icon_backplate_col = "rgba(00000066)",
           app_icon_backplate_padding = 6,
           show_window_text = 1,
-          window_text_font = "Sans",
+          window_text_font = theme.font_family,
           window_text_size = 14,
           window_text_color = "rgba(ffffffff)",
           window_text_backplate_col = "rgba(00000099)",
@@ -351,10 +351,10 @@ function M.setup(ctx)
   end
 
   local function current_workspace_layout()
-    return workspace_layouts[workspace_key()] or columns_layout
+    return workspace_layout(active_workspace())
   end
 
-  local function write_layout_state()
+  local function write_layout_state(workspace)
     local runtime_dir = os.getenv("XDG_RUNTIME_DIR")
     if not runtime_dir then
       return
@@ -365,7 +365,7 @@ function M.setup(ctx)
       return
     end
 
-    local workspace = active_workspace()
+    workspace = workspace or active_workspace()
     file:write("workspace=", workspace_key(workspace), "\n")
     file:write("layout=", current_layout, "\n")
     for key, layout in pairs(workspace_layouts) do
@@ -523,29 +523,6 @@ function M.setup(ctx)
     end)
   end
 
-  local function grouping_direction(window, anchor)
-    local wx, wy = window_center(window)
-    local ax, ay = window_center(anchor)
-    local dx = wx - ax
-    local dy = wy - ay
-
-    if math.abs(dx) >= math.abs(dy) then
-      return dx >= 0 and "left" or "right"
-    end
-    return dy >= 0 and "up" or "down"
-  end
-
-  local function grouping_directions(window, anchor)
-    local primary = grouping_direction(window, anchor)
-    local directions = { primary }
-    for _, direction in ipairs({ "left", "right", "up", "down" }) do
-      if direction ~= primary then
-        directions[#directions + 1] = direction
-      end
-    end
-    return directions
-  end
-
   local function workspace_window_count(workspace_id)
     local workspace = hl.get_workspace(tostring(workspace_id))
     if not workspace then
@@ -612,8 +589,6 @@ function M.setup(ctx)
   ctx.tiled_window_geometry = tiled_window_geometry
   ctx.window_distance_squared = window_distance_squared
   ctx.sort_windows_by_visual_position = sort_windows_by_visual_position
-  ctx.grouping_direction = grouping_direction
-  ctx.grouping_directions = grouping_directions
   ctx.workspace_window_count = workspace_window_count
   ctx.find_empty_workspace = find_empty_workspace
 end

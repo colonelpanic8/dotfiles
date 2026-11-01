@@ -15,12 +15,15 @@
   hyprlandStdenv = pkgs.gcc16Stdenv;
   hyprlockPackage = inputs.hyprlock.packages.${system}.default;
   xdgDesktopPortalHyprlandPackage = inputs.xdg-desktop-portal-hyprland.packages.${system}.default;
-  baseHyprlandPackage = hyprlandInput.packages.${system}.hyprland.override {
-    stdenv = hyprlandStdenv;
-    hyprland-guiutils = hyprlandInput.inputs.hyprland-guiutils.packages.${system}.default.override {
+  baseHyprlandPackage =
+    (hyprlandInput.packages.${system}.hyprland.override {
       stdenv = hyprlandStdenv;
-    };
-  };
+      hyprland-guiutils = hyprlandInput.inputs.hyprland-guiutils.packages.${system}.default.override {
+        stdenv = hyprlandStdenv;
+      };
+    }).overrideAttrs (old: {
+      patches = (old.patches or []) ++ [./patches/hyprland-focus-targets.patch];
+    });
   hyprlandGcc16Overlay = final: prev: {
     hyprland = baseHyprlandPackage;
     hyprland-unwrapped = final.hyprland.override {wrapRuntimeDeps = false;};
@@ -360,8 +363,10 @@
       platforms = baseHyprlandPackage.meta.platforms;
     };
   };
+  hyprfocus = pkgs.callPackage ./packages/hyprfocus {hyprland = baseHyprlandPackage;};
   hyprlandPluginPackages =
     [
+      hyprfocus
       hyprNStack
       hyprwinview
       hyprWorkspaceHistory

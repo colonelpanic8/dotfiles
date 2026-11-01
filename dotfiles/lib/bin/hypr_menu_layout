@@ -39,6 +39,7 @@ layouts=(
   "quadrants	Quadrants"
   "grid	Grid"
   "monocle	Monocle"
+  "tabbed	Focus"
 )
 
 current="$(current_layout || true)"
