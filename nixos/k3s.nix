@@ -177,15 +177,6 @@ in {
       device-name-strategy = "uuid";
       mount-nvidia-executables = true;
     };
-    virtualisation.containers = {
-      containersConf.cniPlugins = [
-        pkgs.cni-plugins
-        pkgs.calico-cni-plugin
-        pkgs.calico-kube-controllers
-        pkgs.cni-plugin-flannel
-      ];
-    };
-
     systemd.services = {
       # k3s can sit in sd_notify startup indefinitely while waiting for remote
       # etcd peers. Treat it as a long-running service so nixos-rebuild switch
