@@ -5,6 +5,7 @@
   ...
 }: {
   imports = [
+    ./agent-thread-backup.nix
     ./agent-workspace.nix
     ./android.nix
     ./base.nix

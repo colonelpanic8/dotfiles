@@ -20,6 +20,7 @@
   myModules.hermesAgent.enable = true;
   myModules.kubelet.enable = false;
   myModules.nvidia.enable = true;
+  myModules.agentThreadBackup.enable = true;
   myModules.paseo.enable = true;
   myModules.t3codeServer.settings.providerInstances = {
     claudeAgent_dean = {
