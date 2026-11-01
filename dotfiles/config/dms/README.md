@@ -1,10 +1,11 @@
 # Dank Material Shell
 
-The NixOS module installs DMS (now Dux Shell) from the `dotfiles` branch of
+The NixOS module installs DMS (now Dux Shell) from the `assembled` branch of
 `colonelpanic8/dux-shell`, the `colonelpanic8/quickshell` tray build assembled
 by `~/projects/quickshell-assembly`, and the upstream DankAIUsage plugin. The
-fork branch carries the workspace and tray changes below as commits on top of
-upstream; rebase it to pick up upstream changes.
+workspace and tray changes below are topic branches carried on upstream by the
+fork-assembler stack in `~/projects/dux-shell-assembly`; its `BUILDING.md`
+covers changing topics and releasing.
 DMS is the default Hyprland shell. Taffybar remains installed. In a Hyprland
 session:
 
