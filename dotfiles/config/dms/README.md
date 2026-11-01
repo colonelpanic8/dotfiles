@@ -37,12 +37,16 @@ Chrome windows currently use application icons instead of tab favicons.
 
 ## Widgets and tray
 
-Clock, media controls, audio, brightness, networking, Bluetooth, CPU usage and
-temperatures, GPU temperature, RAM/swap, disk space, battery power, notifications,
-night mode, and system controls use upstream widgets and services. CPU history,
-frequency, optional readable RAPL package power, and a few desktop commands live
-in the small DesktopExtras plugin. AI quotas use upstream DankAIUsage with
-remaining usage and both providers visible.
+Clock, media controls, audio, networking, Bluetooth, CPU temperatures, GPU
+temperature, RAM, disk space, battery power, notifications, night mode, and
+system controls use upstream widgets and services. Networking (with VPN and
+Bluetooth) and audio are separate control center button instances, each showing
+one group. CPU history with usage drawn over the graph, frequency, optional
+readable RAPL package power, and a few desktop commands live in the small
+DesktopExtras plugin. DesktopBrightness and DesktopSwap show brightness and swap
+as their own pills and hide on machines without a controllable display or swap;
+upstream's control center button would show a placeholder icon instead. AI
+quotas use upstream DankAIUsage with remaining usage and both providers visible.
 
 The tray orders icons by the priorities in the existing
 `~/.config/taffybar/sni-priorities.yaml`, decreasing away from the screen edge.
@@ -65,7 +69,9 @@ and overlay rendering use upstream DMS and the custom Quickshell build.
 files here, so changes made through the DMS settings UI are written into the
 repository; commit them to share them across machines. `session.json` holds
 per-machine runtime state (location, last media player, dock pins) and only
-seeds `~/.local/state/dms/session.json` on first activation. The NixOS module
+seeds `~/.local/state/dms/session.json` on first activation. The local plugins
+are linked the same way, so editing their QML needs only `systemctl --user
+restart dms`. The NixOS module
 owns packaging, plugin registration, and systemd integration.
 
 ## Checks

@@ -10,6 +10,8 @@ PluginComponent {
     id: root
 
     readonly property var history: DgopService.cpuHistory
+    readonly property real usage: DgopService.cpuUsage
+    readonly property color usageColor: usage > 80 ? Theme.tempDanger : usage > 60 ? Theme.tempWarning : Theme.widgetTextColor
     readonly property real frequency: DgopService.cpuFrequency
     readonly property var watts: DotfilesService.state.cpuWatts
     readonly property string powerText: watts === null || watts === undefined ? "" : "  " + watts.toFixed(1) + " W"
@@ -22,31 +24,51 @@ PluginComponent {
             spacing: Theme.spacingS
             height: root.widgetThickness
 
-            Canvas {
-                id: graph
-                width: root.iconSize * 2
+            Item {
+                width: root.iconSize * 2.5
                 height: root.widgetThickness
-                readonly property var samples: root.history
-                readonly property color graphColor: Theme.primary
-                onSamplesChanged: requestPaint()
-                onGraphColorChanged: requestPaint()
-                onPaint: {
-                    const ctx = getContext("2d");
-                    ctx.reset();
-                    if (samples.length < 2)
-                        return;
-                    ctx.strokeStyle = graphColor;
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    for (let i = 0; i < samples.length; i++) {
-                        const x = i * width / (samples.length - 1);
-                        const y = height - 2 - Math.min(100, samples[i]) * (height - 4) / 100;
-                        if (i === 0)
-                            ctx.moveTo(x, y);
-                        else
-                            ctx.lineTo(x, y);
+
+                Canvas {
+                    id: graph
+                    anchors.fill: parent
+                    readonly property var samples: root.history
+                    readonly property color graphColor: Theme.primary
+                    onSamplesChanged: requestPaint()
+                    onGraphColorChanged: requestPaint()
+                    onPaint: {
+                        const ctx = getContext("2d");
+                        ctx.reset();
+                        if (samples.length < 2)
+                            return;
+                        const yAt = sample => height - 2 - Math.min(100, sample) * (height - 4) / 100;
+                        ctx.beginPath();
+                        ctx.moveTo(0, height);
+                        for (let i = 0; i < samples.length; i++)
+                            ctx.lineTo(i * width / (samples.length - 1), yAt(samples[i]));
+                        ctx.lineTo(width, height);
+                        ctx.closePath();
+                        ctx.fillStyle = Theme.withAlpha(graphColor, 0.25);
+                        ctx.fill();
+                        ctx.strokeStyle = Theme.withAlpha(graphColor, 0.7);
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        for (let i = 0; i < samples.length; i++) {
+                            const x = i * width / (samples.length - 1);
+                            if (i === 0)
+                                ctx.moveTo(x, yAt(samples[i]));
+                            else
+                                ctx.lineTo(x, yAt(samples[i]));
+                        }
+                        ctx.stroke();
                     }
-                    ctx.stroke();
+                }
+
+                StyledText {
+                    anchors.centerIn: parent
+                    text: root.usage.toFixed(0) + "%"
+                    font.pixelSize: root.textSize
+                    font.weight: Font.Bold
+                    color: root.usageColor
                 }
             }
 
