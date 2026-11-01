@@ -87,13 +87,10 @@ function M.setup(ctx)
 
   local function schedule_nstack_count_update()
     if stack_update_timer then
-      stack_update_timer:set_timeout(25)
-      return
+      stack_update_timer:set_enabled(false)
     end
-    stack_update_timer = hl.timer(function()
-      stack_update_timer = nil
-      update_nstack_count()
-    end, { timeout = 25, type = "oneshot" })
+
+    stack_update_timer = hl.timer(update_nstack_count, { timeout = 25, type = "oneshot" })
   end
 
   local function dismiss_monocle_notice()
@@ -103,13 +100,13 @@ function M.setup(ctx)
     monocle_notice = nil
   end
 
-  local function update_monocle_notice(workspace)
+  local function update_monocle_notice()
     if current_layout ~= monocle_layout then
       dismiss_monocle_notice()
       return
     end
 
-    workspace = workspace or hl.get_active_workspace()
+    local workspace = hl.get_active_workspace()
     local count = tiled_window_count(workspace)
     if count <= 1 then
       dismiss_monocle_notice()
@@ -148,10 +145,9 @@ function M.setup(ctx)
   end
 
   local function set_layout(layout)
-    if not apply_workspace_layout(active_workspace(), layout) then
-      return false
-    end
+    workspace_layouts[workspace_key()] = layout
     current_layout = layout
+    hl.config({ general = { layout = hyprland_layout(layout) } })
     write_layout_state()
 
     if layout == quadrants_layout then
@@ -163,7 +159,6 @@ function M.setup(ctx)
     else
       update_monocle_notice()
     end
-    return true
   end
 
   _G.im_hyprland_set_layout = function(layout)
@@ -178,15 +173,14 @@ function M.setup(ctx)
       return
     end
 
-    if set_layout(layout) then
-      notify_layout(layout)
-    end
+    set_layout(layout)
+    notify_layout(layout)
   end
 
-  local function sync_layout_for_active_workspace(workspace)
-    workspace = workspace or active_workspace()
-    current_layout = workspace_layout(workspace)
-    write_layout_state(workspace)
+  local function sync_layout_for_active_workspace()
+    current_layout = current_workspace_layout()
+    hl.config({ general = { layout = hyprland_layout(current_layout) } })
+    write_layout_state()
 
     if current_layout == quadrants_layout then
       dismiss_monocle_notice()
@@ -195,7 +189,7 @@ function M.setup(ctx)
       dismiss_monocle_notice()
       schedule_nstack_count_update()
     else
-      update_monocle_notice(workspace)
+      update_monocle_notice()
     end
   end
 
@@ -210,9 +204,8 @@ function M.setup(ctx)
 
     local next_index = ((current_index - 1 + delta) % #layout_cycle) + 1
     local next_layout = layout_cycle[next_index]
-    if set_layout(next_layout) then
-      notify_layout(next_layout)
-    end
+    set_layout(next_layout)
+    notify_layout(next_layout)
   end
 
   local function toggle_columns_monocle()
@@ -232,7 +225,7 @@ function M.setup(ctx)
     local window = hl.get_active_window()
     if window and window.group and window.group.size and window.group.size > 1 then
       dispatch(hl.dsp.group.next({ window = window_selector(window) }))
-    elseif current_layout == monocle_layout or current_layout == tabbed_layout then
+    elseif current_layout == monocle_layout then
       dispatch(hl.dsp.layout("cyclenext"))
       update_monocle_notice()
     else
@@ -244,7 +237,7 @@ function M.setup(ctx)
     local window = hl.get_active_window()
     if window and window.group and window.group.size and window.group.size > 1 then
       dispatch(hl.dsp.group.prev({ window = window_selector(window) }))
-    elseif current_layout == monocle_layout or current_layout == tabbed_layout then
+    elseif current_layout == monocle_layout then
       dispatch(hl.dsp.layout("cycleprev"))
       update_monocle_notice()
     else
@@ -254,7 +247,7 @@ function M.setup(ctx)
 
   local function focus_direction(direction)
     overview_trace("focus_direction " .. direction)
-    if active_group_size() > 1 or current_layout == monocle_layout or current_layout == tabbed_layout then
+    if active_group_size() > 1 or current_layout == monocle_layout then
       if direction == "up" or direction == "left" then
         monocle_prev()
       else
@@ -267,10 +260,6 @@ function M.setup(ctx)
   end
 
   local function swap_direction(direction)
-    if current_layout == tabbed_layout then
-      dispatch(hl.dsp.layout("movetab " .. ((direction == "left" or direction == "up") and "-1" or "1")))
-      return
-    end
     if enable_nstack and is_nstack_layout(current_layout) and active_group_size() <= 1 then
       dispatch(hl.dsp.layout("swapdirection " .. direction))
       return
@@ -295,21 +284,286 @@ function M.setup(ctx)
     end
   end
 
-  local function toggle_focus_layout()
+  local function notify_tabbed_group(text)
+    hl.notification.create({
+      text = text,
+      duration = 1800,
+      icon = notification_icons.info,
+      color = "rgba(edb443ff)",
+      font_size = 13,
+    })
+  end
+
+  local function active_workspace_tiled_group_candidates(workspace)
+    local candidates = tiled_windows(workspace)
+    sort_windows_by_focus_history(candidates)
+    return candidates
+  end
+
+  local function move_window_into_group(window, anchor)
+    local selector = window_selector(window)
+    if not selector then
+      return false
+    end
+
+    for _, direction in ipairs(grouping_directions(window, anchor)) do
+      dispatch(hl.dsp.focus({ window = selector }))
+      dispatch(hl.dsp.window.move({ into_group = direction, window = selector }))
+
+      local active = hl.get_active_window()
+      if active and active.group and active.group.size and active.group.size > 1 then
+        return true
+      end
+    end
+
+    return false
+  end
+
+  local function window_contains_point(window, x, y)
+    local at = window and window.at
+    local size = window and window.size
+    if not at or not size then
+      return false
+    end
+
+    local left = tonumber(at.x or at[1])
+    local top = tonumber(at.y or at[2])
+    local width = tonumber(size.x or size[1])
+    local height = tonumber(size.y or size[2])
+    if not left or not top or not width or not height then
+      return false
+    end
+
+    return x >= left and x < left + width and y >= top and y < top + height
+  end
+
+  -- With follow_mouse=1, a bare focus dispatch does not survive the next
+  -- pointer motion unless the cursor already sits inside the target window,
+  -- so warp the cursor into the window when needed.
+  local function focus_window_with_cursor(window)
+    local selector = window_selector(window)
+    if not selector then
+      return false
+    end
+
+    local live = type(hl.get_window) == "function" and hl.get_window(selector) or window
+    if not live then
+      return false
+    end
+
+    dispatch(hl.dsp.focus({ window = selector }))
+
+    local cursor = hl.get_cursor_pos and hl.get_cursor_pos()
+    if cursor and window_contains_point(live, cursor.x, cursor.y) then
+      return true
+    end
+
+    local center_x, center_y = window_center(live)
+    dispatch(hl.dsp.cursor.move({ x = math.floor(center_x), y = math.floor(center_y) }))
+    return true
+  end
+
+  local function find_tabbed_group_anchor(state)
+    local active = hl.get_active_window()
+    if active and active.group and active.group.size and active.group.size > 1 then
+      return active
+    end
+
+    if not state then
+      return nil
+    end
+
     local workspace = active_workspace()
-    set_layout(workspace_layout(workspace) == tabbed_layout and focus_return_layout(workspace) or tabbed_layout)
+    for _, window in ipairs(hl.get_windows()) do
+      if
+        window
+        and window.address == state.anchor
+        and same_workspace(window.workspace, workspace)
+        and window.group
+        and window.group.size
+        and window.group.size > 1
+      then
+        return window
+      end
+    end
+
+    return nil
+  end
+
+  local function ordered_windows_for_tabbed_group_restore(state, workspace_id)
+    local ordered = {}
+    local seen = {}
+    local live_windows = windows_by_address()
+    local workspace = workspace_id and hl.get_workspace(tostring(workspace_id)) or active_workspace()
+
+    if state and state.order then
+      for _, address in ipairs(state.order) do
+        local window = live_windows[address]
+        if window and not window.floating and not window.hidden and (not workspace or same_workspace(window.workspace, workspace)) then
+          ordered[#ordered + 1] = window
+          seen[address] = true
+        end
+      end
+    end
+
+    if workspace then
+      for _, window in ipairs(tiled_windows(workspace)) do
+        if window and window.address and not seen[window.address] then
+          ordered[#ordered + 1] = window
+          seen[window.address] = true
+        end
+      end
+    end
+
+    return ordered
+  end
+
+  local function restore_tabbed_group_window_order(state, workspace_id)
+    local ordered = ordered_windows_for_tabbed_group_restore(state, workspace_id)
+    if #ordered <= 1 or not workspace_id then
+      return
+    end
+
+    local restore_workspace = tabbed_group_restore_workspace_prefix .. tostring(workspace_id)
+    for _, window in ipairs(ordered) do
+      move_window_to_workspace(restore_workspace, false, window)
+    end
+
+    for _, window in ipairs(ordered) do
+      move_window_to_workspace(workspace_id, false, window)
+    end
+  end
+
+  local function restore_workspace_tabbed_group()
+    local key = workspace_key()
+    local state = tabbed_workspace_groups[key]
+    local entry_focused = hl.get_active_window()
+    local anchor = find_tabbed_group_anchor(state)
+    local anchor_selector = window_selector(anchor)
+    local target_workspace_id = anchor and anchor.workspace and anchor.workspace.id
+
+    if not anchor_selector then
+      tabbed_workspace_groups[key] = nil
+      set_layout(columns_layout)
+      notify_tabbed_group("No tabbed group to restore")
+      return
+    end
+
+    dispatch(hl.dsp.focus({ window = anchor_selector }))
+    dispatch(hl.dsp.group.toggle({ window = anchor_selector }))
+    tabbed_workspace_groups[key] = nil
+    set_layout(columns_layout)
+    restore_tabbed_group_window_order(state, target_workspace_id)
+    if not focus_window_with_cursor(entry_focused) then
+      focus_window_with_cursor(anchor)
+    end
+    schedule_nstack_count_update()
+  end
+
+  local function gather_workspace_into_tabbed_group()
+    local workspace = active_workspace()
+    if not is_normal_workspace(workspace) then
+      return
+    end
+
+    local key = workspace_key(workspace)
+    if tabbed_workspace_groups[key] or active_group_size() > 1 then
+      restore_workspace_tabbed_group()
+      return
+    end
+
+    local original_windows = tiled_windows(workspace)
+    sort_windows_by_visual_position(original_windows)
+    local original_order = window_address_list(original_windows)
+    local candidates = active_workspace_tiled_group_candidates(workspace)
+    if #candidates <= 1 then
+      set_layout(columns_layout)
+      return
+    end
+
+    local candidate_addresses = window_address_set(candidates)
+    local focused = hl.get_active_window()
+    local anchor = nil
+    if focused and not focused.floating and not focused.group and window_address_in_set(focused, candidate_addresses) then
+      anchor = focused
+    end
+
+    if not anchor then
+      for _, window in ipairs(candidates) do
+        if not window.group then
+          anchor = window
+          break
+        end
+      end
+    end
+
+    local anchor_selector = window_selector(anchor)
+    if not anchor_selector then
+      notify_tabbed_group("Current tiled windows are already grouped")
+      return
+    end
+
+    set_layout(columns_layout)
+
+    dispatch(hl.dsp.focus({ window = anchor_selector }))
+    dispatch(hl.dsp.group.toggle({ window = anchor_selector }))
+
+    local group_windows = {}
+    for _, window in ipairs(candidates) do
+      if window ~= anchor and not window.group then
+        group_windows[#group_windows + 1] = window
+      end
+    end
+
+    local anchor_x, anchor_y = window_center(anchor)
+    table.sort(group_windows, function(left, right)
+      return window_distance_squared(left, anchor_x, anchor_y) < window_distance_squared(right, anchor_x, anchor_y)
+    end)
+
+    local grouped_count = 1
+    for _, window in ipairs(group_windows) do
+      if move_window_into_group(window, anchor) then
+        grouped_count = grouped_count + 1
+      end
+    end
+
+    if grouped_count <= 1 then
+      dispatch(hl.dsp.focus({ window = anchor_selector }))
+      dispatch(hl.dsp.group.toggle({ window = anchor_selector }))
+      notify_tabbed_group("Unable to group tiled windows")
+      if not focus_window_with_cursor(focused) then
+        focus_window_with_cursor(anchor)
+      end
+      return
+    elseif grouped_count < #candidates then
+      notify_tabbed_group("Grouped " .. tostring(grouped_count) .. " of " .. tostring(#candidates) .. " tiled windows")
+    end
+
+    tabbed_workspace_groups[key] = {
+      anchor = anchor.address,
+      order = original_order,
+      windows = candidate_addresses,
+    }
+    if not focus_window_with_cursor(focused) then
+      focus_window_with_cursor(anchor)
+    end
   end
 
   local function force_columns_layout()
-    set_layout(columns_layout)
+    if active_group_size() > 1 or tabbed_workspace_groups[workspace_key()] then
+      restore_workspace_tabbed_group()
+    else
+      set_layout(columns_layout)
+    end
   end
 
-  local function cycle_layout_or_exit_focus()
-    if current_layout == tabbed_layout then
-      set_layout(focus_return_layout(active_workspace()))
-    else
-      cycle_layout(1)
+  local function cycle_layout_or_restore_tabbed_group()
+    if active_group_size() > 1 or tabbed_workspace_groups[workspace_key()] then
+      restore_workspace_tabbed_group()
+      return
     end
+
+    cycle_layout(1)
   end
 
   local function copy_windows(workspace)
@@ -438,9 +692,16 @@ function M.setup(ctx)
   ctx.swap_direction = swap_direction
   ctx.focus_workspace = focus_workspace
   ctx.move_window_to_workspace = move_window_to_workspace
-  ctx.toggle_focus_layout = toggle_focus_layout
+  ctx.notify_tabbed_group = notify_tabbed_group
+  ctx.active_workspace_tiled_group_candidates = active_workspace_tiled_group_candidates
+  ctx.move_window_into_group = move_window_into_group
+  ctx.find_tabbed_group_anchor = find_tabbed_group_anchor
+  ctx.ordered_windows_for_tabbed_group_restore = ordered_windows_for_tabbed_group_restore
+  ctx.restore_tabbed_group_window_order = restore_tabbed_group_window_order
+  ctx.restore_workspace_tabbed_group = restore_workspace_tabbed_group
+  ctx.gather_workspace_into_tabbed_group = gather_workspace_into_tabbed_group
   ctx.force_columns_layout = force_columns_layout
-  ctx.cycle_layout_or_exit_focus = cycle_layout_or_exit_focus
+  ctx.cycle_layout_or_restore_tabbed_group = cycle_layout_or_restore_tabbed_group
   ctx.copy_windows = copy_windows
   ctx.swap_current_workspace_with = swap_current_workspace_with
   ctx.enter_workspace_swap_mode = enter_workspace_swap_mode

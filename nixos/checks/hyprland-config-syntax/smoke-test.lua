@@ -135,7 +135,6 @@ hl = {
     callback()
     return {
       set_enabled = noop,
-      set_timeout = noop,
     }
   end,
 }
@@ -145,11 +144,3 @@ dofile(config_path)
 for _, callback in ipairs(callbacks) do
   callback()
 end
-
-local state = package.loaded["hyprland.state"]
-state.sync_layout_for_active_workspace({id = 2, tiled_layout = "master", special = false})
-assert(state.current_layout == "master", "monitor focus must use the event workspace before global focus changes")
-
-workspace.tiled_layout = "tabbed"
-dofile(config_path)
-assert(package.loaded["hyprland.state"].current_layout == "tabbed", "reload must initialise keybindings from the live workspace layout")

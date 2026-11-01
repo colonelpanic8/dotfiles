@@ -26,8 +26,7 @@ function M.setup(ctx)
     }
     fullscreen_states[address] = current
 
-    local layout = workspace_layout(window.workspace)
-    if window.floating or layout == tabbed_layout or layout == monocle_layout or is_game_like_window(window) then
+    if window.floating or current_layout == monocle_layout or is_game_like_window(window) then
       return
     end
 
@@ -77,17 +76,13 @@ function M.setup(ctx)
   hl.on("window.destroy", schedule_nstack_count_update)
   hl.on("window.kill", schedule_nstack_count_update)
   hl.on("window.move_to_workspace", schedule_nstack_count_update)
-  hl.on("workspace.destroyed", forget_workspace_layout)
-  hl.on("workspace.layout_changed", workspace_layout_changed)
   hl.on("workspace.active", sync_layout_for_active_workspace)
-  hl.on("monitor.focused", function(monitor)
-    sync_layout_for_active_workspace(monitor and monitor.active_workspace)
-  end)
+  hl.on("monitor.focused", sync_layout_for_active_workspace)
 
-  hl.on("window.open", function() update_monocle_notice() end)
-  hl.on("window.destroy", function() update_monocle_notice() end)
-  hl.on("window.kill", function() update_monocle_notice() end)
-  hl.on("window.move_to_workspace", function() update_monocle_notice() end)
+  hl.on("window.open", update_monocle_notice)
+  hl.on("window.destroy", update_monocle_notice)
+  hl.on("window.kill", update_monocle_notice)
+  hl.on("window.move_to_workspace", update_monocle_notice)
   hl.on("window.fullscreen", reconcile_fullscreen_state)
   hl.on("window.update_rules", reconcile_fullscreen_state)
   hl.on("window.open", adopt_matching_scratchpad_window)

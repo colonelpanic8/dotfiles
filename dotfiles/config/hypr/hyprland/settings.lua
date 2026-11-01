@@ -81,10 +81,6 @@ function M.setup(ctx)
     end, { timeout = timeout or 50, type = "oneshot" })
   end
 
-  if not verify_config then
-    hl.plugin.load("/run/current-system/sw/lib/libhyprfocus.so")
-  end
-
   if enable_nstack and not verify_config then
     hl.plugin.load("/run/current-system/sw/lib/libhyprNStack.so")
   end
@@ -140,7 +136,7 @@ function M.setup(ctx)
       gaps_out = hyprland_gaps_enabled and 10 or 0,
       border_size = 2,
       col = {
-        active_border = theme.rgba("primary"),
+        active_border = { colors = { "rgba(3b82f6ee)", "rgba(33ccffee)" }, angle = 45 },
         inactive_border = "rgba(00000000)",
       },
       layout = columns_layout,
@@ -172,39 +168,26 @@ function M.setup(ctx)
     group = {
       group_on_movetoworkspace = false,
       col = {
-        border_active = theme.rgba("primary"),
-        border_inactive = theme.rgba("outline_variant"),
-        border_locked_active = theme.rgba("error"),
-        border_locked_inactive = theme.rgba("outline_variant"),
+        border_active = "rgba(edb443ff)",
+        border_inactive = "rgba(091f2eff)",
       },
       groupbar = {
         enabled = true,
         blur = true,
-        font_family = theme.font_family,
         font_size = 13,
-        font_weight_active = "semibold",
-        font_weight_inactive = "normal",
         gradients = true,
-        height = 24,
-        gaps_in = 4,
-        gaps_out = 4,
+        height = 26,
         indicator_gap = 0,
-        indicator_height = 0,
-        rounding = 10,
-        gradient_rounding = 10,
-        round_only_edges = false,
-        gradient_round_only_edges = false,
-        text_padding = 10,
+        indicator_height = 1,
+        rounding = 5,
+        gradient_rounding = 5,
+        text_padding = 8,
         col = {
-          active = theme.rgba("primary_container"),
-          inactive = theme.rgba("surface_container_high", 0.85),
-          locked_active = theme.rgba("error"),
-          locked_inactive = theme.rgba("surface_container_high", 0.85),
+          active = "rgba(edb443ff)",
+          inactive = "rgba(101820f2)",
         },
-        text_color = theme.rgba("on_primary_container"),
-        text_color_inactive = theme.rgba("on_surface_variant"),
-        text_color_locked_active = theme.rgba("on_error"),
-        text_color_locked_inactive = theme.rgba("on_surface_variant"),
+        text_color = "rgba(091018ff)",
+        text_color_inactive = "rgba(f2f5f7ff)",
       },
     },
     misc = {
@@ -554,7 +537,7 @@ function M.setup(ctx)
       name = "subtle-pinned-window-border",
       match = { pin = true },
       border_size = 2,
-      border_color = theme.rgba("primary") .. " " .. theme.rgba("error", 0.8),
+      border_color = "rgba(edb443ff) rgba(ff4d5dcc)",
     })
     -- Codex's pet is a separate floating surface from the main ChatGPT
     -- window. Keep it available across workspaces, but preserve the surface's

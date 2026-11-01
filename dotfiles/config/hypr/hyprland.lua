@@ -26,10 +26,6 @@ end
 local function module_load_phase(name)
   if name == "state" then
     return 0
-  elseif name == "theme" then
-    return 5
-  elseif name == "layout_policy" then
-    return 6
   elseif name == "binds" then
     return 20
   elseif name == "events" then
@@ -89,9 +85,6 @@ setmetatable(ctx, { __index = _G })
 for i = 2, #modules do
   require(modules[i]).setup(ctx)
 end
-
-ctx.restore_layout_policy()
-ctx.sync_layout_for_active_workspace()
 
 -- DMS Include Configs
 pcall(require, "dms.cursor")
