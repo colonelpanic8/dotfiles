@@ -47,7 +47,7 @@ in {
         inherit config lib makeEnable inputs;
         pkgs = inputs.hyprland.inputs.nixpkgs.legacyPackages.x86_64-linux;
       })
-    ../dank-material-shell.nix
+    ../dux-shell.nix
     ../fonts.nix
     ../electron.nix
     ../remote-hyprland.nix

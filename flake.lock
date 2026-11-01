@@ -146,7 +146,23 @@
         "type": "github"
       }
     },
-    "dank-material-shell": {
+    "dank-qml-common": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793458706,
+        "narHash": "sha256-3knmPhn6zXbSzKA46Z93J+iaX4ha4OtgiKdg00qC6PA=",
+        "owner": "duxlabs-dev",
+        "repo": "dux-qml-common",
+        "rev": "8ca55f0a40c4913e82d4fb063fd72de04086dd3b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "duxlabs-dev",
+        "repo": "dux-qml-common",
+        "type": "github"
+      }
+    },
+    "dux-shell": {
       "inputs": {
         "dank-qml-common": "dank-qml-common",
         "flake-compat": "flake-compat",
@@ -155,33 +171,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1793480844,
-        "narHash": "sha256-0spjl7DQX+HcYCE9RC0G4LDwN2JNVnDvIWzrVz/9dtg=",
+        "lastModified": 1793497919,
+        "narHash": "sha256-ahbHrvCM04JVGHb/UATS+DlPZoJ+8cw+nyF4BY2QYco=",
         "owner": "colonelpanic8",
         "repo": "dux-shell",
-        "rev": "11215c153a318356e0549370291634ce52984168",
+        "rev": "f41db63895c60efbdb7c5f6b75c8dd80ad30922c",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
-        "ref": "dotfiles",
+        "ref": "assembled",
         "repo": "dux-shell",
-        "type": "github"
-      }
-    },
-    "dank-qml-common": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1793299210,
-        "narHash": "sha256-dIMMcnrSsgP6mYKgUAxejnDVbNLb3q1m3/VHIPEGVLA=",
-        "owner": "duxlabs-dev",
-        "repo": "dux-qml-common",
-        "rev": "dbf7e6c3d4f52e2558da191905f6de5daa32547b",
-        "type": "github"
-      },
-      "original": {
-        "owner": "duxlabs-dev",
-        "repo": "dux-qml-common",
         "type": "github"
       }
     },
@@ -1118,7 +1118,7 @@
         "codex-cli-nix": "codex-cli-nix",
         "codex-desktop-linux": "codex-desktop-linux",
         "dank-ai-usage": "dank-ai-usage",
-        "dank-material-shell": "dank-material-shell",
+        "dux-shell": "dux-shell",
         "flake-utils": "flake-utils_3",
         "home-manager": "home-manager",
         "hypr-dynamic-cursors": "hypr-dynamic-cursors",

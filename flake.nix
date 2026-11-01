@@ -11,8 +11,8 @@
     claude-desktop.url = "github:aaddrick/claude-desktop-debian/503165188dc96a166327dca2d1e8c04c5ac36c3c";
     claude-code-nix.url = "github:sadjow/claude-code-nix/4ce701aac994817823a05576fa3eb0ab06406e2f";
     t3code-integration.url = "github:colonelpanic8/t3code/9b42ff92929aaad77797487def6bfdc76df66dfb";
-    dank-material-shell = {
-      url = "github:colonelpanic8/dux-shell/dotfiles";
+    dux-shell = {
+      url = "github:colonelpanic8/dux-shell/assembled";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
