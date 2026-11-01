@@ -35,6 +35,8 @@ in {
   # This is safe to commit encrypted; default plaintext is "DISABLED".
   "tailscale-authkey.age".publicKeys = keys.sshClientKeys;
   "tailscale-authkey.alexanders-macbook-air.age".publicKeys = [keys.alexandersMacbookAirHostKey];
+  "github-cli-token.msi-elliott.age".publicKeys = [keys.msiElliottHostKey];
+  "tailscale-authkey.msi-elliott.age".publicKeys = [keys.msiElliottHostKey];
   "tailscale-authkey.kats-macbook-neo.age".publicKeys = [keys.katsMacbookNeoHostKey] ++ keys.katKeys;
   "t3code-managed-access-token.kats-macbook-neo.age".publicKeys = keys.sshClientKeys ++ keys.katKeys ++ [keys.katsMacbookNeoHostKey];
   "t3code-managed-access-token.alexanders-macbook-air.age".publicKeys = keys.sshClientKeys ++ keys.alexKeys ++ [keys.alexandersMacbookAirHostKey];
