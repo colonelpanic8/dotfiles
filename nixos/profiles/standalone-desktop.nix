@@ -291,6 +291,18 @@ in {
         };
         Install.WantedBy = ["default.target"];
       };
+      # The remote session starts from boot without a PAM login, so nothing
+      # unlocks the keyring. The login keyring has an empty password (the disk is
+      # unencrypted, so a stored one would add nothing), which unlocks without a
+      # prompt but still starts locked, and some apps give up on a locked keyring.
+      systemd.user.services.unlock-login-keyring = {
+        Unit.Description = "Unlock the passwordless login keyring";
+        Service = {
+          Type = "oneshot";
+          ExecStart = "${pkgs.systemd}/bin/busctl --user call org.freedesktop.secrets /org/freedesktop/secrets org.freedesktop.Secret.Service Unlock ao 1 /org/freedesktop/secrets/collection/login";
+        };
+        Install.WantedBy = ["default.target"];
+      };
       services.network-manager-applet.enable = true;
       services.blueman-applet.enable = true;
       services.hyprpolkitagent.enable = true;
