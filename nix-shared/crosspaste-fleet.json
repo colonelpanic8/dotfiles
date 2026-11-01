@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "members": [
+    {
+      "name": "jimi-hendnix",
+      "appInstanceId": "02ad6f9802464a61b0f4edacd61c29ea",
+      "platform": {
+        "name": "Linux",
+        "arch": "amd64",
+        "bitMode": 64,
+        "version": "NixOS"
+      },
+      "cryptPublicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEZ6GGCpeZ7zpWQVKK3EMnJndzW+RBkaLUmMPnMeET8gQqi5hcMKebplp/OLsraPwz0sevy01IglMC8apQtlFy6g==",
+      "hostAddresses": [
+        "100.114.206.79"
+      ],
+      "port": 13129
+    },
+    {
+      "name": "pixel-11-pro-fold",
+      "appInstanceId": "dbce7b643fdae55f",
+      "platform": {
+        "name": "Android",
+        "arch": "arm64-v8a",
+        "bitMode": 64,
+        "version": "17"
+      },
+      "cryptPublicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEjGk4Dsm59SA36IL3s0YjboJmmhjKwjaWH0vbs3+5hFKBIuLSnUQAEIpvLN89WLoPRCMYmoBSY8bLZYPUmh7oCw==",
+      "hostAddresses": [
+        "100.92.9.91"
+      ],
+      "port": 13129
+    },
+    {
+      "name": "ryzen-shine",
+      "appInstanceId": "3e280029bfa0418cac3ffbceaa5d01c3",
+      "platform": {
+        "name": "Linux",
+        "arch": "amd64",
+        "bitMode": 64,
+        "version": "NixOS"
+      },
+      "cryptPublicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEAVKn+M1bUgh2QKMbmsYUH1BQcOOrWRlu5sBv2MhVh9WTtvtHPqfTCWgs8qpQgxz6h16HL560nl171xCaAZFQ2Q==",
+      "hostAddresses": [
+        "100.90.1.42"
+      ],
+      "port": 13129
+    }
+  ]
+}
