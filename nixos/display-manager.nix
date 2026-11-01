@@ -18,7 +18,11 @@ in {
     enable = lib.mkEnableOption "the graphical display manager";
     greeter = lib.mkOption {
       type = lib.types.enum ["sddm" "dms"];
-      default = "sddm";
+      default =
+        if config.myModules.hyprland.enable
+        then "dms"
+        else "sddm";
+      defaultText = lib.literalExpression ''if config.myModules.hyprland.enable then "dms" else "sddm"'';
       description = ''
         Login greeter. "dms" runs the Dux Shell greeter under greetd, which
         only launches Wayland sessions.
