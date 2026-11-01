@@ -255,11 +255,11 @@
     "computer-use-linux": {
       "flake": false,
       "locked": {
-        "lastModified": 1793467918,
-        "narHash": "sha256-ebmjgaUAiBRd878joR7L6nGwopHErCwrVrUzYtqzNEw=",
+        "lastModified": 1793561136,
+        "narHash": "sha256-kjHCB65GgHIdpasdKZGI8r2iz3BqhF7Lk1U6dTBQexc=",
         "owner": "agent-sh",
         "repo": "computer-use-linux",
-        "rev": "3175c045a68011235bcefb8b60305204c7a14729",
+        "rev": "aed689cbcbaa8a04796125647297a97514061da1",
         "type": "github"
       },
       "original": {
@@ -278,11 +278,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793528833,
-        "narHash": "sha256-4Oyek0Uuz9MVUheneUaIoCcmLMUMtc5BqHhFA5dKtPc=",
+        "lastModified": 1793568421,
+        "narHash": "sha256-t63YLYIG3Zt7tGgOuIGkSbQAwYES1GbG1y5T0zWBIII=",
         "owner": "trycua",
         "repo": "cua",
-        "rev": "0cdcec94bc9988d41087d470b32f1fad2ba28691",
+        "rev": "a8c64ff3afaae3ccc78423378f1296281eb46c03",
         "type": "github"
       },
       "original": {
