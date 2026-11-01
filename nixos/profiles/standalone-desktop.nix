@@ -102,6 +102,7 @@ in {
     # Desktop agents download native binaries that need the standard ELF loader.
     programs.nix-ld.enable = true;
     hardware.uinput.enable = true;
+    users.users.${user}.extraGroups = ["input" "uinput"];
     programs.ydotool = {
       enable = true;
       group = "input";

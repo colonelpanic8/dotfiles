@@ -54,6 +54,9 @@
   nestedHyprland = pkgs.writeShellScript "remote-hyprland-nested" ''
     # sway sets these to its own name for its children.
     export XDG_CURRENT_DESKTOP=Hyprland XDG_SESSION_DESKTOP=Hyprland
+    # Only the host may open libinput. With a usable seat, Hyprland would read
+    # every device itself, physical ones included, alongside the host's copy.
+    unset LIBSEAT_BACKEND
     exec ${hyprlandUnwrapped}/bin/start-hyprland --path ${nestedHyprlandBin} -- --config ${hyprlandConfigFile}
   '';
   # An invisible headless wlroots host lets Hyprland run without DRM master,
@@ -63,6 +66,12 @@
     default_border none
     default_floating_border none
     for_window [app_id=".*"] fullscreen enable
+    # Nested Hyprland only sees input forwarded by this host. Take the uinput
+    # devices that ydotool and computer-use-linux synthesize, but never the
+    # physical keyboard and mouse, which belong to the local session.
+    input * events disabled
+    input "9011:26214:ydotoold_virtual_device" events enabled
+    input "4660:22136:computer-use-linux_absolute_pointer" events enabled
     exec ${nestedHyprland}
   '';
   # Runs a command against this service's Hyprland instance.
@@ -249,7 +258,11 @@
     };
 
     users.manageLingering = true;
-    users.users.${cfg.user}.linger = true;
+    users.users.${cfg.user} = {
+      linger = true;
+      # The nested host opens the synthetic uinput devices itself.
+      extraGroups = lib.mkIf cfg.nested ["input"];
+    };
 
     environment.systemPackages = [wayvncPackage];
 
@@ -274,8 +287,11 @@
                 TimeoutStopSec = 10;
                 UnsetEnvironment = ["WAYLAND_DISPLAY" "DISPLAY" "HYPRLAND_INSTANCE_SIGNATURE"];
                 Environment = [
-                  "WLR_BACKENDS=headless"
+                  "WLR_BACKENDS=headless,libinput"
                   "WLR_LIBINPUT_NO_DEVICES=1"
+                  # libinput needs a session; noop opens /dev/input directly
+                  # (the user is in the input group) without a logind seat.
+                  "LIBSEAT_BACKEND=noop"
                   "WLR_RENDERER=gles2"
                   "WLR_RENDER_DRM_DEVICE=${cfg.renderNode}"
                   "XDG_CURRENT_DESKTOP=Hyprland"
