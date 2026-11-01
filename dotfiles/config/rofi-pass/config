@@ -6,3 +6,7 @@ copy_pass="Alt+2"
 type_user="Alt+u"
 copy_name="Alt+0"
 help_color="#4872FF"
+
+_rofi () {
+	desktop_dmenu -no-auto-select -i "$@"
+}
