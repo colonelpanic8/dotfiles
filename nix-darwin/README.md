@@ -186,7 +186,11 @@ are left alone.
 The Air retains its existing Tailscale.app connection. Its optional daemon
 migration is described below; desktop and utility upgrades do not migrate its VPN.
 
-Authentication is separate from these settings:
+Authentication is selected per machine with `myModules.tailscale.enrollment`.
+NixOS and macOS share the [enrollment profile catalog and script](../nixos/tailscale.md).
+A null selection keeps manual authentication and provisions no enrollment secret.
+The Mini selects `ivan` (with expiry repair disabled), and the Neo selects `kat`.
+Their launchd enrollment job runs at load and every five minutes.
 
 - The Mini continues to use its existing agenix auth key. A missing, empty, or
   `DISABLED` key skips automatic enrollment.
@@ -212,9 +216,18 @@ also has incomplete Taildrop support and cannot use an exit node.
    Trash, and reboot, following
    [Tailscale's macOS variant migration guidance](https://tailscale.com/docs/concepts/macos-variants).
    Use a local terminal for this migration because the VPN will disconnect.
-2. Import `../tailscale.nix` in `machines/alexanders-macbook-air.nix`, passing
-   `authKeyFile = ../../nixos/secrets/tailscale-authkey.alexanders-macbook-air.age`,
-   and set `age.identityPaths = ["/etc/ssh/ssh_host_ed25519_key"]`.
+2. Import `../tailscale.nix` in `machines/alexanders-macbook-air.nix` and select
+   its enrollment profile with the host-scoped encrypted key:
+
+   ```nix
+   myModules.tailscale.enrollment = "alex";
+   myModules.tailscale.enrollmentProfiles.alex = {
+     authKeyFile = null;
+     authKeySecret = ../../nixos/secrets/tailscale-authkey.alexanders-macbook-air.age;
+   };
+   age.identityPaths = ["/etc/ssh/ssh_host_ed25519_key"];
+   ```
+
    Activate the configuration:
 
    ```sh
@@ -228,7 +241,7 @@ also has incomplete Taildrop support and cannot use an exit node.
    Check its logs if enrollment has not completed:
 
    ```sh
-   sudo tail -n 50 /var/log/tailscale-autoconnect.err.log
+   sudo tail -n 50 /var/log/tailscale-enroll.err.log
    ```
 
 4. Verify connectivity:
@@ -243,7 +256,7 @@ The new device may have a different Tailscale IP. Update any references to its
 old address and remove the old GUI client's device entry from the admin console
 once the new connection works.
 
-For unattended enrollment on another Mac, pass an encrypted file as
-`authKeyFile` when importing the module, encrypt it to that Mac's SSH host key,
-and configure its agenix identities separately. Never put a plaintext key in the
-Nix configuration.
+For unattended enrollment on another Mac, select an enrollment profile and set
+its `authKeySecret` to a file encrypted to that Mac's SSH host key. Configure
+its agenix identities separately. Never put a plaintext key in the Nix
+configuration.

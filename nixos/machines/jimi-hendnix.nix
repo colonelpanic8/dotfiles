@@ -35,6 +35,8 @@ in {
     ../rocket-sense-jimi.nix
   ];
 
+  myModules.tailscale.enrollment = "ivan";
+
   services.macos-ventura = {
     enable = false;
     openFirewall = true;
@@ -93,9 +95,11 @@ in {
   # v4l2loopback 0.15.4 installs depmod indexes that collide with the kernel's.
   boot.kernelPackages = pkgs.linuxPackages_latest.extend (_: super: {
     v4l2loopback = super.v4l2loopback.overrideAttrs (old: {
-      postInstall = (old.postInstall or "") + ''
-        rm -f $out/lib/modules/*/modules.*
-      '';
+      postInstall =
+        (old.postInstall or "")
+        + ''
+          rm -f $out/lib/modules/*/modules.*
+        '';
     });
   });
   boot.initrd.availableKernelModules = ["xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sd_mod"];

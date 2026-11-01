@@ -8,6 +8,8 @@
     ../configuration.nix
   ];
 
+  myModules.tailscale.enrollment = "ivan";
+
   services.synergy.server = {
     enable = true;
   };

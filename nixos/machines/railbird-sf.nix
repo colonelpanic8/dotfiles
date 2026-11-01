@@ -18,6 +18,8 @@ in {
     inputs.agenix.nixosModules.default
   ];
 
+  myModules.tailscale.enrollment = "ivan";
+
   networking.hostName = "railbird-sf";
   myModules.hostIdentity = {
     emoticon = "🐦";

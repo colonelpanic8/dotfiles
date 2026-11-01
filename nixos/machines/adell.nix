@@ -9,6 +9,8 @@
     inputs.nixos-hardware.nixosModules.dell-xps-17-9700-nvidia
   ];
 
+  myModules.tailscale.enrollment = "ivan";
+
   myModules.wyoming.enable = false;
   myModules.base.enable = true;
   myModules.desktop.enable = true;
