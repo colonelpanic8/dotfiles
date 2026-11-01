@@ -51,7 +51,14 @@ only apply to Taffybar. Tray icons use the maximized bar icon size, and icons
 drawn mostly in colors close to the bar background get an outline.
 Right-clicking an icon shows a priority stepper; shift-scroll over an icon also
 adjusts its priority. Edits preserve the shared policy file.
-CrossPaste's left click opens its search window. Menus, icon loading,
+CrossPaste's left click opens its search window.
+
+Each mouse button runs a configurable tray action: activate, secondary action,
+menu, or nothing. Settings → bar widgets → System Tray → Click actions sets the
+defaults (`systemTray{Left,Middle,Right}ClickAction`) and per-app overrides
+keyed by tray item id (`systemTrayItemClickActions`, e.g.
+`{"nm-applet": {"left": "menu"}}`). Activate falls back to the menu for items
+that declare themselves menu-only. Menus, icon loading,
 and overlay rendering use upstream DMS and the custom Quickshell build.
 
 `~/.config/dms/settings.json` and `plugin_settings.json` are symlinks to the
