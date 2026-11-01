@@ -6,26 +6,24 @@ The primary account is `alex`, and the existing disk layout is retained.
 
 ## Build and switch
 
-This machine uses the repository-root family flake. It pins the installed NixOS
-26.05 revision and Home Manager's corresponding release, and imports the shared
-shell environment with `nixos/profiles/family.nix`. It does not evaluate the
-workstation flake's private inputs or import its personal accounts and secrets.
-
-`msi-elliott` is the small shell-only profile. `msi-elliott-full` adds
-`nixos/profiles/family-desktop.nix`: SDDM, Hyprland with DMS, Plasma 6, the
-NVIDIA driver, and the desktop application set. The full profile is the one
-installed.
+This machine uses the repository-root standalone flake. It pins the installed
+NixOS 26.05 revision and Home Manager's corresponding release, and builds on
+`nixos/profiles/standalone.nix` (the shared shell environment) and
+`nixos/profiles/standalone-desktop.nix` (SDDM, Hyprland with DMS, Plasma 6, and
+the desktop application set), plus the NVIDIA driver from
+`nixos/hardware/msi-elliott/nvidia.nix`. It does not evaluate the workstation
+flake's private inputs or import its personal accounts and secrets.
 
 ```sh
 cd /srv/dotfiles
-nix build .#nixosConfigurations.msi-elliott-full.config.system.build.toplevel
+nix build .#nixosConfigurations.msi-elliott.config.system.build.toplevel
 cd nixos
 just switch
 ```
 
-The full profile exports `DOTFILES_SYSTEM_FLAKE=/srv/dotfiles#msi-elliott-full`,
-which the normal `just switch` recipe uses. Activate only from this primary
-checkout. Keep `system.stateVersion` at `26.05` when updating inputs.
+The system exports `DOTFILES_SYSTEM_FLAKE=/srv/dotfiles#msi-elliott`, which the
+normal `just switch` recipe uses. Activate only from this primary checkout.
+Keep `system.stateVersion` at `26.05` when updating inputs.
 
 Alex gets the shared Zsh environment, Starship, Git, GitHub CLI, tmux, Zellij,
 direnv, Neovim, and common command-line tools. Home Manager links the shared

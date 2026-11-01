@@ -53,8 +53,7 @@ in {
     ../remote-hyprland.nix
   ];
 
-  # This is a separate build target. The small, running family profile remains
-  # available independently, and no workstation accounts or secrets are imported.
+  # Layered on the standalone profile; no workstation accounts or secrets are imported.
   options.myModules.taffybar.enable = lib.mkEnableOption "Taffybar";
 
   config = {
@@ -100,15 +99,6 @@ in {
       enable = true;
       enable32Bit = true;
     };
-    # AD106 / RTX 4060 Ti supports NVIDIA's open kernel module.
-    services.xserver.videoDrivers = ["nvidia"];
-    hardware.nvidia = {
-      open = true;
-      modesetting.enable = true;
-      nvidiaSettings = true;
-      package = config.boot.kernelPackages.nvidiaPackages.stable;
-    };
-    environment.variables.DOTFILES_SYSTEM_FLAKE = lib.mkForce "${worktree}#msi-elliott-full";
 
     # A second, VNC-only Hyprland session with the user's own config, running
     # from boot independently of the greeter and the physical session.

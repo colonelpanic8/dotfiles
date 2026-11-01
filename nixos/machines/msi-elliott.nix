@@ -9,7 +9,9 @@
   imports = [
     inputs.agenix.nixosModules.default
     ../hardware/msi-elliott/installed-configuration.nix
-    ../profiles/family.nix
+    ../hardware/msi-elliott/nvidia.nix
+    ../profiles/standalone.nix
+    ../profiles/standalone-desktop.nix
     ../tailscale.nix
     ../upterm-backup.nix
   ];
@@ -22,6 +24,10 @@
   };
   networking.hostName = lib.mkForce "msi-elliott";
   users.users.alex.openssh.authorizedKeys.keys = keys.userKeys.alex;
+  home-manager.users.alex.programs.git.settings.user = {
+    name = "Alexander Malison";
+    email = "alexmalison@gmail.com";
+  };
 
   # Keep this machine reachable regardless of desktop power-management settings.
   systemd.sleep.settings.Sleep = {

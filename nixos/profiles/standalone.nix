@@ -15,7 +15,7 @@ in {
   ];
 
   # The workstation entrypoint imports personal accounts, services, and secrets.
-  # Family systems reuse the shell module with a deliberately separate profile.
+  # Standalone systems reuse the shell module with a deliberately separate profile.
   dotfilesEnvironment.enableHostPythonCompletions = false;
   dotfiles-worktree = "/srv/dotfiles";
   nix.settings.experimental-features = ["nix-command" "flakes"];
@@ -80,8 +80,6 @@ in {
       programs.git = {
         enable = true;
         settings = {
-          user.name = "Alexander Malison";
-          user.email = "alexmalison@gmail.com";
           init.defaultBranch = "master";
           pull.rebase = false;
           core.excludesFile = "/home/${user}/.gitignore";
@@ -98,17 +96,17 @@ in {
   assertions = [
     {
       assertion = lib.all (u: !u.isNormalUser || u.name == user) (builtins.attrValues config.users.users);
-      message = "The family profile must contain only its primary human account.";
+      message = "The standalone profile must contain only its primary human account.";
     }
     {
       assertion = lib.all (
         name:
           builtins.elem name ["tailscale-authkey" "github-cli-token"]
-          && (config.myModules.tailscale.enrollment or null) == "alex"
-          && (name != "tailscale-authkey" || config.age.secrets.${name}.file == config.myModules.tailscale.enrollmentProfiles.alex.authKeySecret)
+          && !(builtins.elem (config.myModules.tailscale.enrollment or null) [null "ivan"])
+          && (name != "tailscale-authkey" || config.age.secrets.${name}.file == config.myModules.tailscale.enrollmentProfiles.${config.myModules.tailscale.enrollment}.authKeySecret)
           && lib.hasSuffix ".${config.networking.hostName}.age" (toString config.age.secrets.${name}.file)
       ) (builtins.attrNames (config.age.secrets or {}));
-      message = "The family profile permits only its own host-scoped Alex Tailscale and GitHub credentials, never workstation secrets.";
+      message = "The standalone profile permits only its own host-scoped Tailscale and GitHub credentials, never workstation secrets.";
     }
   ];
 }

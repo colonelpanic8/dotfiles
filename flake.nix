@@ -1,5 +1,5 @@
 {
-  description = "Family NixOS systems using shared dotfiles without private workstation inputs";
+  description = "Standalone NixOS systems using shared dotfiles without private workstation inputs";
 
   inputs = {
     agenix = {
@@ -158,20 +158,9 @@
       specialArgs = {
         inherit inputs;
         keys = import ./nix-shared/keys.nix;
-      };
-      modules = [./nixos/machines/msi-elliott.nix];
-    };
-    nixosConfigurations.msi-elliott-full = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      specialArgs = {
-        inherit inputs;
-        keys = import ./nix-shared/keys.nix;
         makeEnable = import ./nixos/make-enable.nix nixpkgs.lib;
       };
-      modules = [
-        ./nixos/machines/msi-elliott.nix
-        ./nixos/profiles/family-desktop.nix
-      ];
+      modules = [./nixos/machines/msi-elliott.nix];
     };
   };
 }
