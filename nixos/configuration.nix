@@ -19,6 +19,7 @@
     ./claude-mcp.nix
     ./claude-remote-control.nix
     ./code.nix
+    ./computer-use-linux.nix
     ./cua.nix
     ./desktop.nix
     ./dux-shell.nix
