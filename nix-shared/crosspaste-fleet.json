@@ -45,6 +45,21 @@
         "100.90.1.42"
       ],
       "port": 13129
+    },
+    {
+      "name": "strixi-minaj",
+      "appInstanceId": "1b365d1f0ec64c419a625d221c37082d",
+      "platform": {
+        "name": "Linux",
+        "arch": "amd64",
+        "bitMode": 64,
+        "version": "NixOS"
+      },
+      "cryptPublicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEk07VeXYD+LnbUeVBxxYF0nhyopEFjUDs9wphR+e+WkNJecOfsfo5gjYFBjTztqxAkUkG8HzMXJx6x6nVVapr8w==",
+      "hostAddresses": [
+        "100.75.140.44"
+      ],
+      "port": 13129
     }
   ]
 }

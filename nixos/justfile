@@ -36,3 +36,7 @@ rescue-usb-image:
 
 rescue-usb-build:
     nix build .#nixosConfigurations.rescue-usb.config.system.build.toplevel --out-link result-rescue-usb
+
+# Add a device to the CrossPaste fleet, e.g. `just crosspaste-enroll HOST --import-ssh`.
+crosspaste-enroll *args:
+    nix shell --impure --expr 'with import <nixpkgs> {}; [age tailscale (python3.withPackages (ps: [ps.cryptography]))]' --command python3 crosspaste/enroll.py {{args}}

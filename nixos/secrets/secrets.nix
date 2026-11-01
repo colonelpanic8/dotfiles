@@ -1,54 +1,61 @@
 let
   keys = import ../../nix-shared/keys.nix;
-in {
-  "rocket-sense.env.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
-  "dawarich-secret-key-base.age".publicKeys = keys.agenixKeys;
-  "google-places-api-key.age".publicKeys = keys.agenixKeys;
-  "gpg-keys.age".publicKeys = keys.agenixKeys;
-  "gpg-passphrase.age".publicKeys = keys.agenixKeys;
-  "gws-client-secret.json.age".publicKeys = keys.agenixKeys;
-  "cache-priv-key.pem.age".publicKeys = keys.agenixKeys;
-  "gitea-runner-token.biskcomp.age".publicKeys = keys.agenixKeys;
-  "gitea-runner-token.ryzen-shine.age".publicKeys = keys.agenixKeys;
-  "gitea-runner-token.nixquick.age".publicKeys = keys.agenixKeys;
-  "gitea-runner-token.jimi-hendnix.age".publicKeys = keys.agenixKeys;
-  "gitea-runner-token.adele.age".publicKeys = keys.agenixKeys;
-  "gitea-runner-token.railbird-sf.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
-  "gitea-runner-token.mac-demarco-mini.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
-  "gitea-runner-token.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
-  "nextcloud-admin.age".publicKeys = keys.agenixKeys;
-  "ryzen-shine-kubernetes-token.age".publicKeys = keys.agenixKeys;
-  "1896Folsom-k3s-token.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
-  "api_service_account_key.json.age".publicKeys = keys.agenixKeys;
-  "k3s-registry.yaml.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
-  "duckdns-token.railbird-sf.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
-  "discourse-admin-password.age".publicKeys = keys.hostKeys;
-  "discourse-secret-key-base.age".publicKeys = keys.hostKeys;
-  "vaultwarden-environment-file.age".publicKeys = keys.hostKeys;
-  "org-api-passwords.age".publicKeys = keys.hostKeys ++ keys.sshClientKeys ++ keys.railbird-sf;
-  "org-api-auth-password.age".publicKeys = keys.hostKeys ++ keys.sshClientKeys ++ keys.railbird-sf;
-  "org-api-ssh-key.age".publicKeys = keys.hostKeys ++ keys.sshClientKeys ++ keys.railbird-sf;
-  "google-assistant-integration-service-key.age".publicKeys = keys.hostKeys ++ keys.sshClientKeys;
-  "zwave-js.json.age".publicKeys = keys.hostKeys ++ keys.sshClientKeys;
+in
+  {
+    "rocket-sense.env.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
+    "dawarich-secret-key-base.age".publicKeys = keys.agenixKeys;
+    "google-places-api-key.age".publicKeys = keys.agenixKeys;
+    "gpg-keys.age".publicKeys = keys.agenixKeys;
+    "gpg-passphrase.age".publicKeys = keys.agenixKeys;
+    "gws-client-secret.json.age".publicKeys = keys.agenixKeys;
+    "cache-priv-key.pem.age".publicKeys = keys.agenixKeys;
+    "gitea-runner-token.biskcomp.age".publicKeys = keys.agenixKeys;
+    "gitea-runner-token.ryzen-shine.age".publicKeys = keys.agenixKeys;
+    "gitea-runner-token.nixquick.age".publicKeys = keys.agenixKeys;
+    "gitea-runner-token.jimi-hendnix.age".publicKeys = keys.agenixKeys;
+    "gitea-runner-token.adele.age".publicKeys = keys.agenixKeys;
+    "gitea-runner-token.railbird-sf.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
+    "gitea-runner-token.mac-demarco-mini.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
+    "gitea-runner-token.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
+    "nextcloud-admin.age".publicKeys = keys.agenixKeys;
+    "ryzen-shine-kubernetes-token.age".publicKeys = keys.agenixKeys;
+    "1896Folsom-k3s-token.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
+    "api_service_account_key.json.age".publicKeys = keys.agenixKeys;
+    "k3s-registry.yaml.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
+    "duckdns-token.railbird-sf.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
+    "discourse-admin-password.age".publicKeys = keys.hostKeys;
+    "discourse-secret-key-base.age".publicKeys = keys.hostKeys;
+    "vaultwarden-environment-file.age".publicKeys = keys.hostKeys;
+    "org-api-passwords.age".publicKeys = keys.hostKeys ++ keys.sshClientKeys ++ keys.railbird-sf;
+    "org-api-auth-password.age".publicKeys = keys.hostKeys ++ keys.sshClientKeys ++ keys.railbird-sf;
+    "org-api-ssh-key.age".publicKeys = keys.hostKeys ++ keys.sshClientKeys ++ keys.railbird-sf;
+    "google-assistant-integration-service-key.age".publicKeys = keys.hostKeys ++ keys.sshClientKeys;
+    "zwave-js.json.age".publicKeys = keys.hostKeys ++ keys.sshClientKeys;
 
-  # Optional Tailscale pre-auth key for unattended enrollment.
-  # This is safe to commit encrypted; default plaintext is "DISABLED".
-  "tailscale-authkey.age".publicKeys = keys.sshClientKeys;
-  "tailscale-authkey.alexanders-macbook-air.age".publicKeys = [keys.alexandersMacbookAirHostKey];
-  "github-cli-token.msi-elliott.age".publicKeys = [keys.msiElliottHostKey];
-  "tailscale-authkey.msi-elliott.age".publicKeys = [keys.msiElliottHostKey];
-  "tailscale-authkey.kats-macbook-neo.age".publicKeys = [keys.katsMacbookNeoHostKey] ++ keys.katKeys;
-  "t3code-managed-access-token.kats-macbook-neo.age".publicKeys = keys.sshClientKeys ++ keys.katKeys ++ [keys.katsMacbookNeoHostKey];
-  "t3code-managed-access-token.alexanders-macbook-air.age".publicKeys = keys.sshClientKeys ++ keys.alexKeys ++ [keys.alexandersMacbookAirHostKey];
-  "t3code-managed-access-token.msi-elliott.age".publicKeys = keys.sshClientKeys;
-  "paseo-password-environment.age".publicKeys = keys.agenixKeys;
-  "t3code-managed-access-token.age".publicKeys = keys.agenixKeys;
-  "t3code-fleet-enrollment.age".publicKeys = keys.agenixKeys ++ keys.t3codeFleetEnrollmentRecipients;
-  "t3code-mobile-settings.age".publicKeys = keys.agenixKeys ++ keys.t3codeFleetEnrollmentRecipients;
-  "paseo-password-alexanders-macbook-air.age".publicKeys = keys.agenixKeys ++ keys.alexKeys ++ [keys.alexandersMacbookAirHostKey];
-  "hermes-environment.age".publicKeys = keys.agenixKeys;
-  "google-messages-bridge-api-token.age".publicKeys = keys.agenixKeys;
-  "google-messages-bridge-storage-key.age".publicKeys = keys.agenixKeys;
-  "whatsapp-bridge-api-token.age".publicKeys = keys.agenixKeys;
-  "whatsapp-bridge-storage-key.age".publicKeys = keys.agenixKeys;
-}
+    # Optional Tailscale pre-auth key for unattended enrollment.
+    # This is safe to commit encrypted; default plaintext is "DISABLED".
+    "tailscale-authkey.age".publicKeys = keys.sshClientKeys;
+    "tailscale-authkey.alexanders-macbook-air.age".publicKeys = [keys.alexandersMacbookAirHostKey];
+    "github-cli-token.msi-elliott.age".publicKeys = [keys.msiElliottHostKey];
+    "tailscale-authkey.msi-elliott.age".publicKeys = [keys.msiElliottHostKey];
+    "tailscale-authkey.kats-macbook-neo.age".publicKeys = [keys.katsMacbookNeoHostKey] ++ keys.katKeys;
+    "t3code-managed-access-token.kats-macbook-neo.age".publicKeys = keys.sshClientKeys ++ keys.katKeys ++ [keys.katsMacbookNeoHostKey];
+    "t3code-managed-access-token.alexanders-macbook-air.age".publicKeys = keys.sshClientKeys ++ keys.alexKeys ++ [keys.alexandersMacbookAirHostKey];
+    "t3code-managed-access-token.msi-elliott.age".publicKeys = keys.sshClientKeys;
+    "paseo-password-environment.age".publicKeys = keys.agenixKeys;
+    "t3code-managed-access-token.age".publicKeys = keys.agenixKeys;
+    "t3code-fleet-enrollment.age".publicKeys = keys.agenixKeys ++ keys.t3codeFleetEnrollmentRecipients;
+    "t3code-mobile-settings.age".publicKeys = keys.agenixKeys ++ keys.t3codeFleetEnrollmentRecipients;
+    "paseo-password-alexanders-macbook-air.age".publicKeys = keys.agenixKeys ++ keys.alexKeys ++ [keys.alexandersMacbookAirHostKey];
+    "hermes-environment.age".publicKeys = keys.agenixKeys;
+    "google-messages-bridge-api-token.age".publicKeys = keys.agenixKeys;
+    "google-messages-bridge-storage-key.age".publicKeys = keys.agenixKeys;
+    "whatsapp-bridge-api-token.age".publicKeys = keys.agenixKeys;
+    "whatsapp-bridge-storage-key.age".publicKeys = keys.agenixKeys;
+  }
+  # One identity per CrossPaste fleet host, written by `just crosspaste-enroll`.
+  // builtins.listToAttrs (map (name: {
+      inherit name;
+      value.publicKeys = keys.agenixKeys;
+    }) (builtins.filter (name: builtins.match "crosspaste-identity\\..*\\.age" name != null)
+      (builtins.attrNames (builtins.readDir ./.))))

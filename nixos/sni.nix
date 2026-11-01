@@ -12,8 +12,8 @@
   kanshiSniPackage = inputs.kanshi-sni.packages.${system}.default;
   # appConfig.json is owned by the app (it rejects partial files), so settings
   # are applied through its CLI once it is up. systemd owns startup and Nix
-  # owns updates; tailscale0 lets peers be paired by tailnet address, and relay
-  # forwards pastes to devices that are only paired with this one.
+  # owns updates; tailscale0 lets peers be reached by tailnet address, and
+  # relay forwards pastes to devices that only trust this one.
   crosspasteConfigure = pkgs.writeShellScript "crosspaste-configure" ''
     crosspaste() { ${pkgs.crosspaste}/bin/crosspaste --no-start "$@"; }
 
@@ -35,13 +35,44 @@
       fi
     fi
   '';
-  crosspasteTailnetSync = pkgs.writeShellApplication {
-    name = "crosspaste-tailnet-sync";
-    runtimeInputs = with pkgs; [avahi coreutils crosspaste curl gnugrep jq openssh tailscale];
-    bashOptions = ["nounset" "pipefail"];
-    text = builtins.readFile ./crosspaste/tailnet-sync.sh;
-  };
+  # Fleet devices trust each other from a shared list instead of PIN pairing;
+  # `just crosspaste-enroll` adds members and seals each host's identity.
+  crosspasteFleetApply = pkgs.writers.writePython3 "crosspaste-fleet-apply" {
+    flakeIgnore = ["E501"];
+  } (builtins.readFile ./crosspaste/fleet-apply.py);
+  crosspasteIdentity = ./secrets + "/crosspaste-identity.${config.networking.hostName}.age";
+  hasCrosspasteIdentity = builtins.pathExists crosspasteIdentity;
+  crosspasteFleetArgs = "--fleet ${../nix-shared/crosspaste-fleet.json} --data-dir %h/.local/share/.crosspaste";
   enabledModule = makeEnable config "myModules.sni" true {
+    age.secrets.crosspaste-identity = lib.mkIf hasCrosspasteIdentity {
+      file = crosspasteIdentity;
+      owner = "imalison";
+    };
+
+    # Only this user's clipboard joins the fleet.
+    home-manager.users.imalison.systemd.user.services = {
+      crosspaste.Service.ExecStartPre = lib.concatStringsSep " " (
+        [crosspasteFleetApply crosspasteFleetArgs]
+        ++ lib.optionals hasCrosspasteIdentity ["--identity" config.age.secrets.crosspaste-identity.path]
+      );
+
+      # The app drops a peer's key after a heartbeat key mismatch, e.g. while
+      # that peer has not picked up the fleet yet, so keep re-applying it.
+      crosspaste-fleet = {
+        Unit = {
+          Description = "Keep CrossPaste trusting the fleet";
+          After = ["crosspaste.service"];
+          BindsTo = ["crosspaste.service"];
+        };
+        Service = {
+          ExecStart = "${crosspasteFleetApply} ${crosspasteFleetArgs} --interval 60";
+          Restart = "on-failure";
+          RestartSec = 10;
+        };
+        Install.WantedBy = ["crosspaste.service"];
+      };
+    };
+
     systemd.user.services.blueman-applet.serviceConfig.ExecStart = lib.mkIf isFull (lib.mkForce [
       ""
       "${pkgs.blueman}/bin/blueman-applet"
@@ -82,22 +113,6 @@
           };
           Install = {
             WantedBy = ["graphical-session.target"];
-          };
-        };
-
-        systemd.user.services.crosspaste-tailnet-sync = {
-          Unit = {
-            Description = "Discover and pair CrossPaste peers over Tailscale";
-            After = ["crosspaste.service"];
-            BindsTo = ["crosspaste.service"];
-          };
-          Service = {
-            ExecStart = lib.getExe crosspasteTailnetSync;
-            Restart = "on-failure";
-            RestartSec = 10;
-          };
-          Install = {
-            WantedBy = ["crosspaste.service"];
           };
         };
 
