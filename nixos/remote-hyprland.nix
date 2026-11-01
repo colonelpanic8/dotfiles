@@ -269,6 +269,9 @@
                 ExecStart = "${pkgs.sway}/bin/sway --config ${nestedHostConfig}";
                 Restart = "on-failure";
                 RestartSec = 5;
+                # start-hyprland aborts in its SIGTERM handler and leaves the
+                # nested Hyprland running without a host.
+                TimeoutStopSec = 10;
                 UnsetEnvironment = ["WAYLAND_DISPLAY" "DISPLAY" "HYPRLAND_INSTANCE_SIGNATURE"];
                 Environment = [
                   "WLR_BACKENDS=headless"
