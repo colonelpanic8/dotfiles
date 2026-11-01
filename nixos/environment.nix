@@ -127,6 +127,11 @@ in
           # Enable bracketed paste
           autoload -Uz bracketed-paste-magic
           zle -N bracketed-paste bracketed-paste-magic
+          # A stray Escape keypress leaves zle waiting on an ESC-prefixed
+          # binding, which swallows the ESC of the paste start marker and
+          # inserts a literal "[200~...~" (plus "sudo" via the ESC ESC binding).
+          bindkey -M emacs '\e\e[200~' bracketed-paste
+          bindkey -M viins '\e\e[200~' bracketed-paste
         '';
         promptInit = lib.mkBefore (optionalString environmentConfig.enableHostPythonCompletions ''
           eval "$(register-python-argcomplete prb)"
