@@ -16,7 +16,19 @@
           --add-flags "--password-store=gnome-libsecret"
       '';
   });
-  t3Base = inputs.t3code-integration.packages.${pkgs.stdenv.hostPlatform.system}.t3code;
+  # The t3code flake wraps the codex from its own nixpkgs into PATH, which lags
+  # codex-cli-nix and hides newer models. Build the same package against that
+  # nixpkgs with the system's codex swapped in.
+  t3Base =
+    (import "${inputs.t3code-integration}/nix/package.nix" {
+      buildCommit = inputs.t3code-integration.rev or "";
+      pkgs = import inputs.t3code-integration.inputs.nixpkgs {
+        system = pkgs.stdenv.hostPlatform.system;
+        config.allowUnfree = true;
+        overlays = [(_: _: {codex = codexCli;})];
+      };
+      self = inputs.t3code-integration;
+    }).t3code;
   t3Unwrapped = t3Base.unwrapped.overrideAttrs (previous: {
     # Avoid overwhelming the Wi-Fi/router DNS resolver during the large fetch.
     # The upstream fixed-output hash remains unchanged.
@@ -47,6 +59,8 @@ in {
         inherit config lib makeEnable inputs;
         pkgs = inputs.hyprland.inputs.nixpkgs.legacyPackages.x86_64-linux;
       })
+    ../claude-mcp.nix
+    ../computer-use-linux.nix
     ../dux-shell.nix
     ../fonts.nix
     ../electron.nix
@@ -61,6 +75,19 @@ in {
       (final: _: {
         playwright-cli = final.callPackage ../packages/playwright-cli {};
       })
+      # On this nixpkgs pin, fastmcp's stateful proxy tests fail deterministically
+      # (anyio cancel-scope errors), which blocks building mcp-nixos.
+      (_: prev: {
+        pythonPackagesExtensions =
+          prev.pythonPackagesExtensions
+          ++ [
+            (_: python: {
+              fastmcp = python.fastmcp.overridePythonAttrs (previous: {
+                disabledTestPaths = (previous.disabledTestPaths or []) ++ ["tests/server/providers/proxy/test_stateful_proxy_client.py"];
+              });
+            })
+          ];
+      })
     ];
     myModules.taffybar.enable = lib.mkForce false;
     myModules.hyprland = {
@@ -69,6 +96,7 @@ in {
       portable = true;
     };
     myModules.fonts.enable = true;
+    myModules.computerUseLinux.enable = true;
     myModules.electron.enable = true;
 
     # Desktop agents download native binaries that need the standard ELF loader.
@@ -218,6 +246,7 @@ in {
         computerUseUi.enable = true;
         linuxFeatures = ["shallow-repository-watches"];
       };
+      home.file.".claude/skills/computer-use-linux".source = link "${worktree}/dotfiles/agents/skills/computer-use-linux";
       systemd.user.sessionVariables.YDOTOOL_SOCKET = "/run/ydotoold/socket";
       xdg.configFile = {
         "hypr".source = link "${worktree}/dotfiles/config/hypr";

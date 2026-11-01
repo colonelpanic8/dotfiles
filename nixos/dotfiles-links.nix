@@ -126,7 +126,7 @@ in {
   # and ~/.codex/skills/* dangle when the checkout lives outside ~/dotfiles.
   myModules.codexGeneratedSkills.worktreeCodexDir = "${worktreeDotfiles}/codex";
   myModules.codexGeneratedSkills.computerUseLinuxPackage =
-    if nixos.config.myModules.desktop.enable
+    if nixos.config.myModules.computerUseLinux.enable
     then pkgs.computer-use-linux
     else null;
   myModules.codexGeneratedSkills.cuaDriverPackage =

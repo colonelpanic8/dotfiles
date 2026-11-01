@@ -130,6 +130,23 @@
         "type": "github"
       }
     },
+    "computer-use-linux": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793293586,
+        "narHash": "sha256-sNldf5RYDAZd/tIoUG1LeyrgIdTMzYs5pSNhdLbwhpU=",
+        "owner": "agent-sh",
+        "repo": "computer-use-linux",
+        "rev": "ab17e476319bf42662138751a81a8125cee54255",
+        "type": "github"
+      },
+      "original": {
+        "owner": "agent-sh",
+        "repo": "computer-use-linux",
+        "rev": "ab17e476319bf42662138751a81a8125cee54255",
+        "type": "github"
+      }
+    },
     "dank-ai-usage": {
       "flake": false,
       "locked": {
@@ -1117,6 +1134,7 @@
         "claude-desktop": "claude-desktop",
         "codex-cli-nix": "codex-cli-nix",
         "codex-desktop-linux": "codex-desktop-linux",
+        "computer-use-linux": "computer-use-linux",
         "dank-ai-usage": "dank-ai-usage",
         "dux-shell": "dux-shell",
         "flake-utils": "flake-utils_3",

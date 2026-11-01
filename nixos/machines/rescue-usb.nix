@@ -55,6 +55,7 @@ in {
     ../taffybar.nix
     ../sni.nix
     ../chrome-favicon-dbus.nix
+    ../computer-use-linux.nix
     ../waybar.nix
     ../tailscale.nix
   ];
@@ -94,16 +95,6 @@ in {
   image.repart.name = "imalison-nixos-rescue-usb";
 
   nixpkgs.config.allowUnfree = true;
-  # This machine skips configuration.nix, and with it the overlay in nix.nix.
-  # Enabling myModules.desktop still makes dotfiles-links.nix reach for
-  # pkgs.computer-use-linux, so provide just that package.
-  nixpkgs.overlays = [
-    (final: _prev: {
-      computer-use-linux = final.callPackage ../packages/computer-use-linux {
-        src = inputs.computer-use-linux;
-      };
-    })
-  ];
 
   boot.loader.systemd-boot = {
     # MemTest86 reports which DIMM slot holds a failing address; memtest86+

@@ -10,6 +10,10 @@
     codex-desktop-linux.url = "github:ilysenko/codex-desktop-linux/f9b973bc03ea60fc971bd227948541fe84bce635";
     claude-desktop.url = "github:aaddrick/claude-desktop-debian/503165188dc96a166327dca2d1e8c04c5ac36c3c";
     claude-code-nix.url = "github:sadjow/claude-code-nix/4ce701aac994817823a05576fa3eb0ab06406e2f";
+    computer-use-linux = {
+      url = "github:agent-sh/computer-use-linux/ab17e476319bf42662138751a81a8125cee54255";
+      flake = false;
+    };
     t3code-integration.url = "github:colonelpanic8/t3code/9b42ff92929aaad77797487def6bfdc76df66dfb";
     dux-shell = {
       url = "github:colonelpanic8/dux-shell/assembled";

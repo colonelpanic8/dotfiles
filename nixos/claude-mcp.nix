@@ -25,14 +25,14 @@
         command = mcpNixosBin;
       };
     }
-    // lib.optionalAttrs config.myModules.desktop.enable {
+    // lib.optionalAttrs config.myModules.computerUseLinux.enable {
       "computer-use-linux" = {
         type = "stdio";
         command = "${lib.getExe pkgs.computer-use-linux}";
         args = ["mcp"];
       };
     }
-    // lib.optionalAttrs config.services.cua-driver.enable {
+    // lib.optionalAttrs (config.services.cua-driver.enable or false) {
       cua-driver = {
         type = "stdio";
         command = lib.getExe config.services.cua-driver.package;
@@ -40,7 +40,7 @@
       };
     }
     # Read-only; sending stays with the `gmessages send` CLI.
-    // lib.optionalAttrs config.myModules.googleMessages.enable {
+    // lib.optionalAttrs (config.myModules.googleMessages.enable or false) {
       gmessages = {
         type = "stdio";
         command = "${lib.getExe' pkgs.google-messages-multidevice-bridge "gmessages"}";
@@ -53,11 +53,11 @@ in
     # Also expose the pinned binary on PATH for manual `claude mcp` use / Codex.
     environment.systemPackages =
       [pkgs.mcp-nixos]
-      ++ lib.optional config.myModules.desktop.enable pkgs.computer-use-linux;
+      ++ lib.optional config.myModules.computerUseLinux.enable pkgs.computer-use-linux;
 
     # Use a module function so `lib` here is home-manager's lib (which carries
     # `lib.hm.dag`), not the plain NixOS lib.
-    home-manager.users.imalison = {lib, ...}: {
+    home-manager.users.${config.myModules.primaryUser} = {lib, ...}: {
       # ~/.claude.json is mutable state owned by Claude Code, so it can't be
       # managed as a whole file. Instead idempotently merge our server into it
       # on every switch with jq, preserving all other (per-project, user-added)
