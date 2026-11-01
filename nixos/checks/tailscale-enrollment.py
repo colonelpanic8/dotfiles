@@ -66,6 +66,7 @@ class EnrollmentTest(unittest.TestCase):
         }
 
     def run_enrollment(self, status, **env):
+        self.calls.unlink(missing_ok=True)
         result = subprocess.run(
             ["bash", str(SCRIPT)],
             env={**self.env, "STATUS": json.dumps(status), **env},
@@ -85,6 +86,18 @@ class EnrollmentTest(unittest.TestCase):
     def test_running_needs_no_credential_even_if_expiry_is_in_the_past(self):
         self.key.unlink()
         self.assert_unchanged({"BackendState": "Running", "Self": {"KeyExpiry": "2000-01-01"}})
+
+    def test_persisted_node_key_without_netmap_is_not_reenrolled(self):
+        self.assert_unchanged({
+            "BackendState": "NeedsLogin", "HaveNodeKey": True,
+            "Self": None, "CurrentTailnet": None, "TailscaleIPs": None,
+        })
+
+    def test_malformed_status_fields_do_not_authorize_enrollment(self):
+        for field in ["HaveNodeKey", "Self", "CurrentTailnet", "TailscaleIPs"]:
+            with self.subTest(field=field):
+                value = "false" if field == "HaveNodeKey" else False
+                self.assert_unchanged({"BackendState": "NeedsLogin", field: value})
 
     def test_existing_needs_login_is_not_reenrolled(self):
         self.assert_unchanged({"BackendState": "NeedsLogin", "Self": {"ID": "existing-node"}})

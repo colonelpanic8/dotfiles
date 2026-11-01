@@ -80,7 +80,7 @@ primary `/srv/dotfiles/nixos` checkout. Retain machine-level restart safeguards 
 adopting this configuration over a remote connection.
 
 The shared job checks status before opening a credential. By default it enrolls
-only a new `NeedsLogin` node without an existing node ID, assigned address, or
+only a new `NeedsLogin` node without a persisted node key, node ID, assigned address, or
 tailnet. Running nodes, existing expired logins, approval-pending nodes, stopped
 nodes, and unknown/starting states remain unchanged. A missing bootstrap key
 does not invalidate a persisted login. No logout, reset, or daemon restart is
@@ -90,7 +90,11 @@ performed by the enrollment script.
 or NeedsLogin node reports a node-key expiry in the past. Use a valid renewable
 credential for the same tailnet. This preserves Ivan's NixOS expiry-repair policy;
 new profiles default to bootstrap-only behavior. Stopped and approval-pending
-nodes are left alone even with expiry repair enabled.
+nodes are left alone even with expiry repair enabled. As with the previous
+autoconnect job, `tailscale up` can reject repair when existing non-default
+settings (for example, advertised routes or Tailscale SSH) are not supplied by
+the profile. Those nodes require manual reauthentication with their full settings;
+the job never uses `--reset` to bypass that protection.
 
 NixOS runs the job at boot and retries after two minutes, then every thirty
 minutes. macOS runs a launchd enrollment job at load and every five minutes;

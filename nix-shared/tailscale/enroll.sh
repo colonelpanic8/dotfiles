@@ -40,10 +40,11 @@ case "$state" in
     # An expired existing node can also report NeedsLogin. Do not force reauth,
     # replace its account, or create another node during a remote rebuild.
     if [[ "$reauth" != true ]] && ! printf '%s' "$status_json" | "$JQ" -e '
-      (((.Self // {}) | type) == "object") and
-      (((.CurrentTailnet // {}) | type) == "object") and
-      (((.TailscaleIPs // []) | type) == "array") and
-      (((.Self.TailscaleIPs // []) | type) == "array") and
+      (.HaveNodeKey == null or .HaveNodeKey == false) and
+      (.Self == null or (.Self | type) == "object") and
+      (.CurrentTailnet == null or (.CurrentTailnet | type) == "object") and
+      (.TailscaleIPs == null or (.TailscaleIPs | type) == "array") and
+      (.Self.TailscaleIPs == null or (.Self.TailscaleIPs | type) == "array") and
       ((.Self.ID // "") == "") and
       (((.TailscaleIPs // []) | length) == 0) and
       (((.Self.TailscaleIPs // []) | length) == 0) and

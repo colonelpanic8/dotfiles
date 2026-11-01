@@ -84,6 +84,20 @@
   hasEnrollmentUnit = system: system.config.systemd.services ? tailscale-autoconnect;
   env = system: system.config.myModules.tailscale.enrollmentEnvironment;
   encrypted = evaluate [agenix.nixosModules.default {myModules.tailscale.enrollment = "ivan";}];
+  encryptedHostKeys = evaluate [
+    agenix.nixosModules.default
+    {
+      services.openssh.enable = true;
+      myModules.tailscale.enrollment = "kat";
+    }
+  ];
+  encryptedExplicitIdentity = evaluate [
+    agenix.nixosModules.default
+    {
+      age.identityPaths = ["/host-specific-identity"];
+      myModules.tailscale.enrollment = "kat";
+    }
+  ];
   encryptedAlex = evaluate [agenix.nixosModules.default {myModules.tailscale.enrollment = "alex";}];
   encryptedManual = evaluate [agenix.nixosModules.default {}];
   darwinEval = settings:
@@ -141,6 +155,13 @@
       encryptedProfileUsesSelectedSecret = encrypted.config.age.secrets.tailscale-authkey.file == ../secrets/tailscale-authkey.age;
       encryptedProfileUsesDecryptedPath = (env encrypted).AUTH_KEY_FILE == encrypted.config.age.secrets.tailscale-authkey.path;
       encryptedProfileKeepsExpiryRepair = (env encrypted).REAUTHENTICATE_EXPIRED == "true";
+      encryptedProfileKeepsDefaultHostKeys =
+        encryptedHostKeys.config.age.identityPaths
+        == [
+          "/etc/ssh/ssh_host_rsa_key"
+          "/etc/ssh/ssh_host_ed25519_key"
+        ];
+      encryptedProfileKeepsExplicitIdentity = encryptedExplicitIdentity.config.age.identityPaths == ["/host-specific-identity"];
       encryptedProfileIncludesIdentity = builtins.elem "/home/imalison/.ssh/id_ed25519" encrypted.config.age.identityPaths;
       runtimeProfileDoesNotProvisionSecrets = encryptedAlex.config.age.secrets == {};
       runtimeProfileDoesNotAddIvanIdentity = !(builtins.elem "/home/imalison/.ssh/id_ed25519" encryptedAlex.config.age.identityPaths);

@@ -131,7 +131,7 @@ in {
           mode = "0400";
         };
       };
-      age.identityPaths = lib.mkIf encrypted (lib.mkAfter profile.identityPaths);
+      age.identityPaths = lib.mkIf (encrypted && profile.identityPaths != []) (lib.mkAfter profile.identityPaths);
     })
   ];
 }
