@@ -81,7 +81,7 @@ function M.setup(ctx)
       exclude_classes = { "getpaseo-desktop" },
     },
     dropdown = {
-      command = "ghostty --config-file=/home/imalison/.config/ghostty/dropdown",
+      command = "ghostty --config-file=\"$HOME/.config/ghostty/dropdown\"",
       class = "com.mitchellh.ghostty.dropdown",
       dropdown = true,
       allow_tiling = false,

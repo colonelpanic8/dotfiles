@@ -6,6 +6,15 @@
   hostIdentity = config.myModules.hostIdentity;
 in {
   options = {
+    myModules.desktop.shellUi = lib.mkOption {
+      type = lib.types.enum ["taffybar" "dms"];
+      default = "dms";
+      description = ''
+        Desktop shell UI used by Hyprland-oriented bindings. This controls
+        the active shell service and Hyprland launcher/window picker dispatch.
+      '';
+    };
+
     myModules.primaryUser = lib.mkOption {
       type = lib.types.str;
       default = "imalison";

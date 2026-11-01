@@ -32,7 +32,7 @@
     fi
     exec ${config.hardware.nvidia.package.bin}/bin/nvidia-smi "$@"
   '';
-  runtimePackages = [quickshellPackage aiUsage integration] ++ lib.optional config.myModules.nvidia.enable nvidiaSmi;
+  runtimePackages = [quickshellPackage aiUsage integration] ++ lib.optional (config.myModules.nvidia.enable or false) nvidiaSmi;
   forkShell = inputs.dux-shell.lib.mkDmsShell pkgs;
   shellPackage = pkgs.symlinkJoin {
     name = "dms-shell-dotfiles-${forkShell.version}";
@@ -55,6 +55,7 @@ in {
 
   config = lib.mkIf cfg.enable {
     myModules.desktop.shellUi = lib.mkDefault "dms";
+    environment.sessionVariables.IM_HYPRLAND_SHELL_UI = lib.mkDefault config.myModules.desktop.shellUi;
     environment.systemPackages = [shellPackage quickshellPackage integration aiUsage];
     system.build.dms = shellPackage;
     system.build.quickshell-tray = quickshellPackage;

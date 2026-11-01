@@ -2,7 +2,7 @@
 set -euo pipefail
 
 state_file="${IM_DESKTOP_SHELL_UI_STATE:-${XDG_STATE_HOME:-$HOME/.local/state}/imalison/desktop-shell-ui}"
-default_shell_ui="${IM_HYPRLAND_SHELL_UI:-taffybar}"
+default_shell_ui="${IM_HYPRLAND_SHELL_UI:-dms}"
 
 normalize_shell_ui() {
   case "${1:-}" in
@@ -59,7 +59,7 @@ apply_shell_ui() {
       systemctl --user start wlsunset.service 2>/dev/null || true
       ;;
     dms)
-      systemctl --user stop taffybar.service
+      systemctl --user stop taffybar.service 2>/dev/null || true
       systemctl --user stop dunst.service mako.service wlsunset.service 2>/dev/null || true
       if ! systemctl --user start dms.service || ! systemctl --user is-active --quiet dms.service; then
         echo "DMS failed to start; restoring Taffybar." >&2

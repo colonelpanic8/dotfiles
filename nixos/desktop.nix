@@ -493,14 +493,6 @@ in
   enabledModule
   // {
     options = lib.recursiveUpdate enabledModule.options {
-      myModules.desktop.shellUi = lib.mkOption {
-        type = lib.types.enum ["taffybar" "dms"];
-        default = "taffybar";
-        description = ''
-          Desktop shell UI used by Hyprland-oriented bindings. This controls
-          the active shell service and Hyprland launcher/window picker dispatch.
-        '';
-      };
       myModules.desktop.profile = lib.mkOption {
         type = lib.types.enum ["minimal" "full"];
         default = "full";
