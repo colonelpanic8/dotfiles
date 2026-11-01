@@ -1,2 +1,0 @@
-#!/usr/bin/env bash
-exec rofi -dmenu -i -theme-str '* { font: "Hack 12"; }' "$@"

@@ -113,10 +113,10 @@ def icon_for(mapping, class_name):
     return mapping.get(class_key, class_key or "application-x-executable")
 
 
-def rofi_index(entries, prompt):
+def pick_index(entries, prompt):
     menu = b"".join(entry.encode("utf-8", errors="replace") for entry in entries)
     result = subprocess.run(
-        ["rofi", "-dmenu", "-i", "-show-icons", "-p", prompt, "-format", "i"],
+        ["desktop_dmenu", "-i", "-show-icons", "-p", prompt, "-format", "i"],
         input=menu,
         check=False,
         capture_output=True,
@@ -216,7 +216,7 @@ def activate(mode, window, active_workspace, active_window):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Rofi window go/bring/replace for Hyprland.")
+    parser = argparse.ArgumentParser(description="Window go/bring/replace menu for Hyprland.")
     parser.add_argument("mode", choices=sorted(PROMPTS))
     parser.add_argument("--print-candidates", action="store_true")
     parser.add_argument("--select-index", type=int)
@@ -239,7 +239,7 @@ def main():
     if args.select_index is None:
         icons = icon_map()
         entries = [menu_entry(window, icons) for window in windows]
-        index = rofi_index(entries, PROMPTS[args.mode])
+        index = pick_index(entries, PROMPTS[args.mode])
     else:
         index = args.select_index
 

@@ -387,7 +387,7 @@ Required behavior:
 - `Super+q` reloads the window manager config.
 - `Super+Shift+c` closes the focused window.
 - `Super+Shift+q` exits the window manager session.
-- `Super+x` opens the command picker with `rofi_command.sh`.
+- `Super+x` opens the command picker with `menu_command.sh`.
 - `Super+g` opens the go-to-window picker.
 - `Super+b` opens the bring-window picker.
 - `Super+Shift+b` opens the replace-window picker.
@@ -478,23 +478,23 @@ Required behavior:
   screenshot command.
 - `Hyper+n` opens a Codex Desktop project picker and starts a new thread in
   the selected saved project root.
-- `Hyper+c` opens the Codex launcher with `rofi_tmcodex.sh`.
+- `Hyper+c` opens the Codex launcher with `menu_tmcodex.sh`.
 - `Hyper+Shift+c` opens the Codex launcher with `tmcodex resume`.
-- `Hyper+k` opens the process killer with `rofi_kill_process.sh`.
+- `Hyper+k` opens the process killer with `menu_kill_process.sh`.
 - `Hyper+Shift+k` opens the kill-all/process-tree killer with
-  `rofi_kill_all.sh`.
+  `menu_kill_all.sh`.
 - `Hyper+r` opens the systemd/service menu with `rofi-systemd`.
 - `Hyper+slash` toggles the status bar with the status-bar-appropriate command.
 - `Hyper+backslash` toggles the monitor input with `mpg341cx_input toggle`.
-- `Hyper+i` opens the audio input selector with `rofi_select_input.hs`.
-- `Hyper+o` opens the audio output selector with `rofi_paswitch`.
-- `Hyper+y` opens the agentic skill picker with `rofi_agentic_skill`.
+- `Hyper+i` opens the audio input selector with `menu_select_input.hs`.
+- `Hyper+o` opens the audio output selector with `menu_paswitch`.
+- `Hyper+y` opens the agentic skill picker with `menu_agentic_skill`.
 - `Hyper+Shift+l` locks the session with the compositor/session-appropriate
   locker.
 
 Important behavior:
 
-- Wallpaper selection is available under `Hyper` via `rofi_wallpaper.sh`, but
+- Wallpaper selection is available under `Hyper` via `menu_wallpaper.sh`, but
   its exact key must avoid the required `Hyper+w/a/s/d` directional monitor
   bindings.
 - Expose-style overview remains available as a utility binding using the

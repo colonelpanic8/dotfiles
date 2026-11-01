@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ "${1:-}" == --dmenu ]]; then
+  shift
+  exec desktop_dmenu -i -theme-str '* { font: "Hack 12"; }' "$@"
+fi
+
+export ROFI_SYSTEMD_ROFI_COMMAND="$0 --dmenu -p"
+exec rofi-systemd "$@"

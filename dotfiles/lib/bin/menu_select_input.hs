@@ -18,7 +18,7 @@ main = do
       entries = map buildEntry matches
   (exitCode, selection, _) <-
     readCreateProcessWithExitCode
-    (shell "rofi -dmenu -i -kb-custom-1 'Alt-o'") $ intercalate "\n" entries
+    (shell "desktop_dmenu -i -kb-custom-1 'Alt+o'") $ intercalate "\n" entries
   let selectedSink = head $ splitOn " " selection
       unMuteSelected = setMuteAction "0" selectedSink
       selectedIsMuted =

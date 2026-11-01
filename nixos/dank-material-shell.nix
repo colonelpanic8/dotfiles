@@ -57,6 +57,9 @@ in {
     environment.systemPackages = [shellPackage quickshellPackage integration aiUsage];
     system.build.dms = shellPackage;
     system.build.quickshell-tray = quickshellPackage;
+    # Without a system service the lock screen falls back to a user PAM file
+    # that pins store paths.
+    security.pam.services.dankshell = {};
 
     home-manager.sharedModules = [
       inputs.dank-material-shell.homeModules.dank-material-shell

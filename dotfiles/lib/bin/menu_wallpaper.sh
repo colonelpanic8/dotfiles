@@ -35,8 +35,8 @@ notify() {
   fi
 }
 
-if ! command -v rofi >/dev/null 2>&1; then
-  notify "rofi is not installed"
+if ! command -v desktop_dmenu >/dev/null 2>&1; then
+  notify "desktop_dmenu is not installed"
   exit 1
 fi
 
@@ -59,7 +59,7 @@ fi
 selection=$(
   for wallpaper in "${wallpapers[@]}"; do
     printf '%s\n' "${wallpaper#"$wallpaper_dir"/}"
-  done | rofi -dmenu -i -p "Wallpaper"
+  done | desktop_dmenu -i -p "Wallpaper"
 )
 
 if [ -z "${selection:-}" ]; then

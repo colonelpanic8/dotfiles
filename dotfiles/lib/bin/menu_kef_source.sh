@@ -8,7 +8,7 @@ notify() {
   fi
 }
 
-for dependency in rofi kef timeout; do
+for dependency in desktop_dmenu kef timeout; do
   if ! command -v "$dependency" >/dev/null 2>&1; then
     notify "$dependency is not installed"
     exit 1
@@ -16,7 +16,7 @@ for dependency in rofi kef timeout; do
 done
 
 choice=$(printf '%s\n' "Wi-Fi" "Bluetooth" "TV" "Optical" "Coaxial" "Analog / AUX" "Standby" |
-  rofi -dmenu -i -no-custom -p "KEF source") || exit 0
+  desktop_dmenu -i -no-custom -p "KEF source") || exit 0
 
 case "$choice" in
   "Wi-Fi") source=wifi ;;

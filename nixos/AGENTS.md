@@ -32,9 +32,14 @@ Avoid dropping scripts in `~/bin` or `~/.local/bin` unless the user explicitly a
   which finishes regardless of the caller. Afterwards, confirm with
   `readlink /run/current-system` and `just switch-log`.
 
-## Rofi/Tmux Integration Pointers
+## Menu/Tmux Integration Pointers
 
-- Existing rofi scripts live in `../dotfiles/lib/bin/` (e.g. `rofi_command.sh`).
+- Menu scripts (`menu_*`, `hypr_menu_*`) live in `../dotfiles/lib/bin/` and
+  `../dotfiles/lib/functions/` (e.g. `menu_command.sh`).
+- Menus call `desktop_dmenu`, never `rofi -dmenu` directly. It takes rofi
+  `-dmenu` flags and shows the DMS launcher when `desktop_shell_ui current` is
+  `dms` and `dms.service` is running, otherwise rofi. `IM_DMENU_BACKEND=rofi|dms`
+  forces a backend; `desktop_dmenu --prompt-only` is a free-text box.
 - Keybind locations:
   - Hyprland: `../dotfiles/config/hypr/hyprland/binds.lua`
   - XMonad: `../dotfiles/config/xmonad/xmonad.hs`

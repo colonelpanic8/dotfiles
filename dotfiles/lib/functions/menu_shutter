@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+function menu_shutter {
+	desktop_dmenu --prompt-only -p "Shutter" | xargs shutter -n -e
+}
+
+menu_shutter

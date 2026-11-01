@@ -1,0 +1,129 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# dmenu-style picker that takes rofi -dmenu flags and shows them in the DMS
+# launcher when DMS is the active shell UI, or in rofi otherwise.
+#
+#   desktop_dmenu [rofi -dmenu flags...]   pick a line from stdin
+#   desktop_dmenu --prompt-only [flags...] free-text entry, no list
+#   desktop_dmenu --backend                print the backend that would be used
+#
+# IM_DMENU_BACKEND=rofi|dms forces a backend.
+
+backend() {
+  case "${IM_DMENU_BACKEND:-auto}" in
+    rofi|dms)
+      printf '%s\n' "$IM_DMENU_BACKEND"
+      return
+      ;;
+  esac
+
+  if command -v desktop_shell_ui >/dev/null 2>&1 \
+    && [[ "$(desktop_shell_ui current 2>/dev/null || true)" == dms ]] \
+    && systemctl --user is-active --quiet dms.service 2>/dev/null; then
+    printf '%s\n' dms
+  else
+    printf '%s\n' rofi
+  fi
+}
+
+# Accept both rofi's -flag and --flag spellings.
+normalize_flag() {
+  case "$1" in
+    --?*) printf '%s\n' "${1#-}" ;;
+    *) printf '%s\n' "$1" ;;
+  esac
+}
+
+run_rofi() {
+  local args=(-dmenu) prompt_only=0 arg
+
+  while (($#)); do
+    arg="$(normalize_flag "$1")"
+    case "$arg" in
+      -dmenu) ;;
+      -prompt-only) prompt_only=1 ;;
+      *) args+=("$arg") ;;
+    esac
+    shift
+  done
+
+  if ((prompt_only)); then
+    exec rofi "${args[@]}" -l 0 < /dev/null
+  fi
+  exec rofi "${args[@]}"
+}
+
+dms_keyspec() {
+  local spec="${1,,}"
+  printf '%s\n' "${spec//-/+}"
+}
+
+run_dms() {
+  local args=() selected_row="" arg
+
+  while (($#)); do
+    arg="$(normalize_flag "$1")"
+    case "$arg" in
+      -dmenu|-i|-show-icons|-normal-window|-no-fixed-num-lines|-auto-select|-no-auto-select|-no-sort) ;;
+      -theme|-theme-str|-matching|-font|-filter|-window-title|-monitor|-location|-width)
+        shift
+        ;;
+      -p|-l|-a|-u)
+        args+=("$arg" "$2")
+        shift
+        ;;
+      -lines)
+        args+=(-l "$2")
+        shift
+        ;;
+      -selected-row)
+        selected_row="$2"
+        shift
+        ;;
+      -kb-custom-[0-9]*)
+        if [[ -n "$2" ]]; then
+          args+=(--keybind "${arg#-kb-custom-}=$(dms_keyspec "$2")")
+        fi
+        shift
+        ;;
+      -kb-*)
+        shift
+        ;;
+      -format|-mesg|-select|-sep|-input|-placeholder)
+        args+=("-$arg" "$2")
+        shift
+        ;;
+      -*)
+        args+=("-$arg")
+        ;;
+      *)
+        args+=("$arg")
+        ;;
+    esac
+    shift
+  done
+
+  if [[ -z "$selected_row" ]]; then
+    exec dms dmenu "${args[@]}"
+  fi
+
+  # DMS preselects by text rather than row index.
+  local items=()
+  mapfile -t items
+  ((${#items[@]})) || exit 1
+  if ((selected_row >= 0 && selected_row < ${#items[@]})); then
+    args+=(--select "${items[selected_row]}")
+  fi
+  printf '%s\n' "${items[@]}" | dms dmenu "${args[@]}"
+}
+
+if [[ "${1:-}" == --backend ]]; then
+  backend
+  exit 0
+fi
+
+case "$(backend)" in
+  dms) run_dms "$@" ;;
+  *) run_rofi "$@" ;;
+esac

@@ -12,11 +12,11 @@ notify() {
   fi
 }
 
-select_rofi() {
+select_option() {
   local prompt="$1"
   shift
 
-  printf '%s\n' "$@" | rofi -dmenu -i -p "$prompt"
+  printf '%s\n' "$@" | desktop_dmenu -i -p "$prompt"
 }
 
 require_command() {
@@ -37,11 +37,11 @@ $output"
   fi
 }
 
-require_command rofi
+require_command desktop_dmenu
 require_command roborock-control
 
 room_choice=$(
-  select_rofi "Roborock room" \
+  select_option "Roborock room" \
     "Kitchen / Dining" \
     "Living Room" \
     "Entryway / Hallway" \
@@ -67,7 +67,7 @@ case "$room_choice" in
 esac
 
 cleaning_choice=$(
-  select_rofi "Cleaning type" \
+  select_option "Cleaning type" \
     "Vacuum + mop" \
     "Vacuum only" \
     "Mop only"
@@ -85,7 +85,7 @@ case "$cleaning_choice" in
 esac
 
 suction_choice=$(
-  select_rofi "Suction level" \
+  select_option "Suction level" \
     "Balanced" \
     "Quiet" \
     "Turbo" \

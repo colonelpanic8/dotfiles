@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-function rofi_agentic_skill {
+function menu_agentic_skill {
   local skills_dir_default skills_dir agent_system terminal
   skills_dir_default="${CODEX_HOME:-$HOME/.codex}/skills"
   skills_dir="${AGENTIC_SKILLS_DIR:-$skills_dir_default}"
@@ -42,14 +42,14 @@ function rofi_agentic_skill {
   skills=("${(@ou)skills}")
   selected_skill="$(
     printf '%s\n' "${skills[@]}" |
-      rofi -dmenu -i -p "Agentic Skill" || true
+      desktop_dmenu -i -p "Agentic Skill" || true
   )"
 
   if [[ -z "$selected_skill" ]]; then
     return 0
   fi
 
-  extra_prompt="$(printf '' | rofi -dmenu -p "Task (optional)" || true)"
+  extra_prompt="$(desktop_dmenu --prompt-only -p "Task (optional)" || true)"
   initial_prompt="Use the ${selected_skill} skill for this session."
   if [[ -n "$extra_prompt" ]]; then
     initial_prompt="${initial_prompt} ${extra_prompt}"
@@ -90,4 +90,4 @@ function rofi_agentic_skill {
   ("${terminal_argv[@]}" -e "${tmux_cmd[@]}" >/dev/null 2>&1 &!)
 }
 
-rofi_agentic_skill "$@"
+menu_agentic_skill "$@"

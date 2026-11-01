@@ -21,7 +21,7 @@ for i in {1..${#names}}; do
   menu+="${marker}${labels[$i]}\n"
 done
 
-index="$(printf "$menu" | rofi -dmenu -i -p "AI scratchpad" -format i)" || exit 0
+index="$(printf "$menu" | desktop_dmenu -i -p "AI scratchpad" -format i)" || exit 0
 [[ -n "$index" ]] || exit 0
 
 selected="${names[$((index + 1))]}"

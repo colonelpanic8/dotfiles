@@ -171,7 +171,7 @@
           kef = final.callPackage ./packages/kef {};
           pykefcontrol = final.python3Packages.callPackage ./packages/pykefcontrol {};
           roborock-control = final.callPackage ./packages/roborock-control {};
-          rofi-roborock = final.callPackage ./packages/rofi-roborock {};
+          menu-roborock = final.callPackage ./packages/menu-roborock {};
         })
       ]
       ++ (

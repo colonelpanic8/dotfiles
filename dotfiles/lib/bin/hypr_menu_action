@@ -35,10 +35,10 @@ def actions_path():
     return Path(os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}")) / "hyprland-actions.tsv"
 
 
-def rofi_index(entries):
+def pick_index(entries):
     menu = "".join(f"{entry}\n" for entry in entries)
     result = subprocess.run(
-        ["rofi", "-dmenu", "-i", "-p", PROMPT, "-format", "i"],
+        ["desktop_dmenu", "-i", "-p", PROMPT, "-format", "i"],
         input=menu,
         check=False,
         text=True,
@@ -133,7 +133,7 @@ def main():
 
     width = min(max(len(action["description"]) for action in actions), 48)
     labels = [f"{action['description']:<{width}}  {display_keys(action['keys'])}" for action in actions]
-    index = rofi_index(labels)
+    index = pick_index(labels)
     if index is None:
         return 0
     if index < 0 or index >= len(actions):

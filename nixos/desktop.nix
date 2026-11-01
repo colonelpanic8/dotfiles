@@ -24,6 +24,18 @@
       exec ${../dotfiles/lib/bin/desktop_shell_ui} "$@"
     '';
   };
+  desktopDmenu = pkgs.writeShellApplication {
+    name = "desktop_dmenu";
+    runtimeInputs = [
+      desktopShellUi
+      pkgs.bash
+      pkgs.rofi
+      pkgs.systemd
+    ];
+    text = ''
+      exec ${../dotfiles/lib/bin/desktop_dmenu} "$@"
+    '';
+  };
   chromeCommandLineFlags =
     [
       "--disable-features=WaylandFractionalScaleV1"
@@ -45,7 +57,7 @@
       googleChromeCommandWrappers
       pkgs.gawk
       pkgs.jq
-      pkgs.rofi
+      desktopDmenu
     ];
     text = ''
       if [ "$#" -gt 0 ]; then
@@ -79,7 +91,7 @@
         exec google-chrome-stable --new-window
       fi
 
-      selection="$(printf '%s\n' "$profiles" | rofi -dmenu -i -p 'Chrome profile' || true)"
+      selection="$(printf '%s\n' "$profiles" | desktop_dmenu -i -p 'Chrome profile' || true)"
       if [ -z "$selection" ]; then
         exit 0
       fi
@@ -390,6 +402,7 @@
 
     environment.systemPackages =
       (with pkgs; [
+        desktopDmenu
         desktopShellUi
 
         # Lightweight personal desktop baseline.

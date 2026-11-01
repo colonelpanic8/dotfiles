@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 set -euo pipefail
 
-# Pick a directory via rofi, then start tmcodex there.
+# Pick a directory via desktop_dmenu, then start tmcodex there.
 # Candidate dirs come from previous tmcodex launches and Codex session metadata.
 # tmcodex launch history is stored in:
 #   ${XDG_STATE_HOME:-~/.local/state}/rofi-tmcodex/dirs
@@ -28,7 +28,7 @@ emit_candidates() {
   cat -- "$history_file" 2>/dev/null || true
 
   # 2) A few common roots. Keep these before slow/best-effort discovery so
-  # rofi still has useful entries if a metadata scan breaks.
+  # The menu still has useful entries if a metadata scan breaks.
   for d in \
     "$dotfiles_root" \
     "$dotfiles_root/nixos" \
@@ -95,13 +95,13 @@ fi
 
 debug "script=$0 codex_home=$codex_home history_file=$history_file terminal=$terminal args=${tmcodex_args[*]}"
 selected_dir="$(
-  emit_candidates | dedup | existing_dirs | rofi -dmenu -i -p 'tmcodex dir' || true
+  emit_candidates | dedup | existing_dirs | desktop_dmenu -i -p 'tmcodex dir' || true
 )"
 debug "selected_dir=$selected_dir"
 
 [[ -n "${selected_dir}" ]] || exit 0
 
-# Expand ~ manually (rofi doesn't).
+# Expand ~ manually (the menu doesn't).
 case "$selected_dir" in
   "~"|"~/"*)
     selected_dir="$HOME${selected_dir:1}"
