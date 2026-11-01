@@ -141,7 +141,7 @@ in {
       shellCommand = "${config.system.build.dms}/bin/dms run";
       shellEnvironment = config.home-manager.users.${user}.systemd.user.services.dms.Service.Environment;
     };
-    networking.firewall.interfaces.tailscale0.allowedTCPPorts = [config.myModules.remote-hyprland.port];
+    networking.firewall.interfaces.tailscale0.allowedTCPPorts = [config.myModules.remote-hyprland.port 3773];
 
     # The shared portable developer toolset plus the regular desktop, office,
     # communications, creative, browser, and media applications.
@@ -263,6 +263,21 @@ in {
           gtk-single-instance = false
           window-decoration = none
         '';
+      };
+      # The T3 Code server that phones pair with over the tailnet; the firewall
+      # admits it only on tailscale0.
+      systemd.user.services.t3code-mobile = {
+        Unit = {
+          Description = "T3 Code server for mobile over Tailscale";
+          StartLimitIntervalSec = 0;
+        };
+        Service = {
+          ExecStart = "${t3Package}/bin/t3 serve --host 0.0.0.0 --port 3773";
+          WorkingDirectory = "%h";
+          Restart = "on-failure";
+          RestartSec = 5;
+        };
+        Install.WantedBy = ["default.target"];
       };
       services.network-manager-applet.enable = true;
       services.blueman-applet.enable = true;
