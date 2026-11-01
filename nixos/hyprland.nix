@@ -497,9 +497,6 @@
       group = "video";
     };
 
-    # Capabilities must target the ELF, while session launchers keep their setup.
-    security.wrappers.Hyprland.source = lib.mkForce "${baseHyprlandPackage}/bin/.Hyprland-wrapped";
-
     programs.hyprland = {
       enable = true;
       # Keep Hyprland and plugins on a matched flake input for ABI compatibility.
