@@ -78,13 +78,16 @@
         "notificationButton"
       ],
       "spacing": 2,
-      "innerPadding": 2,
+      "innerPadding": 6,
       "widgetPadding": 5,
       "attachToScreenEdge": true,
       "autoHide": false,
       "visible": true,
       "hideOnFullscreen": false,
-      "scrollEnabled": false
+      "scrollEnabled": false,
+      "island": true,
+      "dot": false,
+      "islandCompactThickness": 42
     }
   ],
   "clockFormat": "12h",
