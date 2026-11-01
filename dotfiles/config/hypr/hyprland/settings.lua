@@ -319,7 +319,7 @@ function M.setup(ctx)
   end
 
   local function apply_hyprtasking_config()
-    if verify_config or not enable_hyprtasking then
+    if verify_config or not enable_hyprtasking or enable_hyprwinview then
       return
     end
 
