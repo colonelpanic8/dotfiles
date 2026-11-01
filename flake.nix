@@ -14,7 +14,7 @@
       url = "github:agent-sh/computer-use-linux/ab17e476319bf42662138751a81a8125cee54255";
       flake = false;
     };
-    t3code-integration.url = "github:colonelpanic8/t3code/9b42ff92929aaad77797487def6bfdc76df66dfb";
+    t3code.url = "github:colonelpanic8/t3code/9b42ff92929aaad77797487def6bfdc76df66dfb";
     dux-shell = {
       url = "github:colonelpanic8/dux-shell/assembled";
       inputs.nixpkgs.follows = "nixpkgs";

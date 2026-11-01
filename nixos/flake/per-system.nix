@@ -30,7 +30,7 @@ in {
   formatter = pkgs.alejandra;
 
   apps = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
-    t3code-apk = inputs.t3code-integration.apps.${system}.build-android;
+    t3code-apk = inputs.t3code.apps.${system}.build-android;
   };
 
   packages =

@@ -113,10 +113,10 @@
         (import ../nix-shared/overlays)
         (final: _prev: {
           t3code =
-            (import "${inputs.t3code-integration}/nix/package.nix" {
-              buildCommit = inputs.t3code-integration.rev or "";
+            (import "${inputs.t3code}/nix/package.nix" {
+              buildCommit = inputs.t3code.rev or "";
               pkgs = final;
-              self = inputs.t3code-integration;
+              self = inputs.t3code;
             }).client;
         })
         inputs.google-messages-bridge.overlays.default

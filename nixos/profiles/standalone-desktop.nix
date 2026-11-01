@@ -20,14 +20,14 @@
   # codex-cli-nix and hides newer models. Build the same package against that
   # nixpkgs with the system's codex swapped in.
   t3Base =
-    (import "${inputs.t3code-integration}/nix/package.nix" {
-      buildCommit = inputs.t3code-integration.rev or "";
-      pkgs = import inputs.t3code-integration.inputs.nixpkgs {
+    (import "${inputs.t3code}/nix/package.nix" {
+      buildCommit = inputs.t3code.rev or "";
+      pkgs = import inputs.t3code.inputs.nixpkgs {
         system = pkgs.stdenv.hostPlatform.system;
         config.allowUnfree = true;
         overlays = [(_: _: {codex = codexCli;})];
       };
-      self = inputs.t3code-integration;
+      self = inputs.t3code;
     }).t3code;
   t3Unwrapped = t3Base.unwrapped.overrideAttrs (previous: {
     # Avoid overwhelming the Wi-Fi/router DNS resolver during the large fetch.

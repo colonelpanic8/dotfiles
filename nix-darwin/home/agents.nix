@@ -5,7 +5,7 @@
   ...
 }: {
   imports = [
-    inputs.t3code-integration.homeManagerModules.t3code-server
+    inputs.t3code.homeManagerModules.t3code-server
     ../../nix-shared/home-manager/t3code-server-config.nix
   ];
 

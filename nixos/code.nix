@@ -95,7 +95,7 @@
       # The option only exists when the module is imported, so the settings
       # must be gated the same way; mkIf alone still references the option.
       imports = lib.optionals t3codeEnabled [
-        inputs.t3code-integration.homeManagerModules.t3code-client
+        inputs.t3code.homeManagerModules.t3code-client
         {
           programs.t3code-client = {
             enable = true;

@@ -28,7 +28,7 @@ in the checkout.
 | Authoritative build guide | `BUILDING.md` in the assembly repository |
 | Manifests, locks, patches, tools | Assembly repository root |
 | Integration branch (artifact) | `fork/t3code/assembled` + dated tags |
-| Flake input | `t3code-integration` in `/srv/dotfiles/nixos/flake.nix` |
+| Flake input | `t3code` in `/srv/dotfiles/nixos/flake.nix` |
 | Dotfiles consumer | `overlays.client` applied in `/srv/dotfiles/nixos/nix.nix` |
 
 The integration branch is a build artifact: never commit to it, base work on

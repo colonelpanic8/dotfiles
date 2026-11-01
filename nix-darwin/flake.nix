@@ -78,7 +78,7 @@
 
     # Pin the assembled integration by revision; its flake owns packaging,
     # desktop integration, and the persistent server module.
-    t3code-integration = {
+    t3code = {
       url = "github:colonelpanic8/t3code/f99f7b480270f853da604c39100f7e11366e8603";
       inputs = {
         nixpkgs.follows = "nixpkgs";
@@ -194,7 +194,7 @@
 
       nixpkgs.overlays = [
         (import ../nix-shared/overlays)
-        inputs.t3code-integration.overlays.client
+        inputs.t3code.overlays.client
         (import ./t3code-overlay.nix)
         # Use codex and claude-code from dedicated flakes with cachix
         (final: prev: {

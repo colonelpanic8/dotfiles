@@ -2984,7 +2984,7 @@
         "rlru": "rlru",
         "rynkbench": "rynkbench",
         "systems": "systems_12",
-        "t3code-integration": "t3code-integration",
+        "t3code": "t3code_2",
         "uv2nix": "uv2nix_2",
         "voxtype": "voxtype",
         "vscode-server": "vscode-server",
@@ -3280,7 +3280,7 @@
         "type": "github"
       }
     },
-    "t3code-integration": {
+    "t3code_2": {
       "inputs": {
         "flake-utils": [
           "flake-utils"

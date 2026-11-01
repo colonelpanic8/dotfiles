@@ -1166,7 +1166,7 @@
         "nixpkgs": "nixpkgs_6",
         "quickshell-tray": "quickshell-tray",
         "systems": "systems_6",
-        "t3code-integration": "t3code-integration",
+        "t3code": "t3code",
         "xdg-desktop-portal-hyprland": "xdg-desktop-portal-hyprland"
       }
     },
@@ -1275,7 +1275,7 @@
         "type": "github"
       }
     },
-    "t3code-integration": {
+    "t3code": {
       "inputs": {
         "flake-utils": "flake-utils_4",
         "nixpkgs": "nixpkgs_7"

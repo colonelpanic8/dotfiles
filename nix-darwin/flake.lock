@@ -551,7 +551,7 @@
         "pyproject-build-systems": "pyproject-build-systems",
         "pyproject-nix": "pyproject-nix",
         "repowise": "repowise",
-        "t3code-integration": "t3code-integration",
+        "t3code": "t3code",
         "uv2nix": "uv2nix"
       }
     },
@@ -685,7 +685,7 @@
         "type": "github"
       }
     },
-    "t3code-integration": {
+    "t3code": {
       "inputs": {
         "flake-utils": [
           "flake-utils"

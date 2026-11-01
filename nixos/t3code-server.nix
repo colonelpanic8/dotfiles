@@ -39,7 +39,7 @@
         nss
       ];
     };
-    home-manager.sharedModules = [inputs.t3code-integration.homeManagerModules.t3code-server];
+    home-manager.sharedModules = [inputs.t3code.homeManagerModules.t3code-server];
     home-manager.users.imalison = {config, ...}: {
       imports = [../nix-shared/home-manager/t3code-server-config.nix];
 

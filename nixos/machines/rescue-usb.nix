@@ -88,7 +88,7 @@ in {
     tailscale.ephemeral = false;
   };
   familyInstaller.agentTools.packages = [
-    inputs.t3code-integration.packages.${system}.t3code
+    inputs.t3code.packages.${system}.t3code
     codexCli
     inputs.claude-code-nix.packages.${system}.default
   ];
