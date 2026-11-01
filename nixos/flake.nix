@@ -38,7 +38,7 @@
 
     systems = {url = "github:nix-systems/default";};
 
-    dank-material-shell = {
+    dux-shell = {
       url = "github:colonelpanic8/dux-shell/assembled";
       inputs.nixpkgs.follows = "nixpkgs";
     };

@@ -5,7 +5,7 @@
   pkgs,
   ...
 }: let
-  cfg = config.myModules.dank-material-shell;
+  cfg = config.myModules.dux-shell;
   dmsConfigDir = "${config.dotfiles-worktree}/dotfiles/config/dms";
   quickshellPackage = inputs.quickshell-tray.packages.${pkgs.stdenv.hostPlatform.system}.default;
   aiUsage = pkgs.callPackage "${inputs.dank-ai-usage}/default.nix" {
@@ -33,7 +33,7 @@
     exec ${config.hardware.nvidia.package.bin}/bin/nvidia-smi "$@"
   '';
   runtimePackages = [quickshellPackage aiUsage integration] ++ lib.optional config.myModules.nvidia.enable nvidiaSmi;
-  forkShell = inputs.dank-material-shell.lib.mkDmsShell pkgs;
+  forkShell = inputs.dux-shell.lib.mkDmsShell pkgs;
   shellPackage = pkgs.symlinkJoin {
     name = "dms-shell-dotfiles-${forkShell.version}";
     paths = [forkShell];
@@ -47,8 +47,8 @@
     inherit (forkShell) meta;
   };
 in {
-  options.myModules.dank-material-shell.enable =
-    lib.mkEnableOption "Dank Material Shell with the personal desktop integrations"
+  options.myModules.dux-shell.enable =
+    lib.mkEnableOption "Dux Shell with the personal desktop integrations"
     // {
       default = config.myModules.hyprland.enable;
     };
@@ -63,7 +63,7 @@ in {
     security.pam.services.dankshell = {};
 
     home-manager.sharedModules = [
-      inputs.dank-material-shell.homeModules.dank-material-shell
+      inputs.dux-shell.homeModules.dank-material-shell
       ({
         config,
         lib,

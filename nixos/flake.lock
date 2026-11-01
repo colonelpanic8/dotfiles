@@ -307,29 +307,6 @@
         "type": "github"
       }
     },
-    "dank-material-shell": {
-      "inputs": {
-        "dank-qml-common": "dank-qml-common",
-        "flake-compat": "flake-compat",
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1793497919,
-        "narHash": "sha256-ahbHrvCM04JVGHb/UATS+DlPZoJ+8cw+nyF4BY2QYco=",
-        "owner": "colonelpanic8",
-        "repo": "dux-shell",
-        "rev": "f41db63895c60efbdb7c5f6b75c8dd80ad30922c",
-        "type": "github"
-      },
-      "original": {
-        "owner": "colonelpanic8",
-        "ref": "assembled",
-        "repo": "dux-shell",
-        "type": "github"
-      }
-    },
     "dank-qml-common": {
       "flake": false,
       "locked": {
@@ -402,6 +379,29 @@
       "original": {
         "owner": "duxlabs-dev",
         "repo": "dux-greeter",
+        "type": "github"
+      }
+    },
+    "dux-shell": {
+      "inputs": {
+        "dank-qml-common": "dank-qml-common",
+        "flake-compat": "flake-compat",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793497919,
+        "narHash": "sha256-ahbHrvCM04JVGHb/UATS+DlPZoJ+8cw+nyF4BY2QYco=",
+        "owner": "colonelpanic8",
+        "repo": "dux-shell",
+        "rev": "f41db63895c60efbdb7c5f6b75c8dd80ad30922c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "colonelpanic8",
+        "ref": "assembled",
+        "repo": "dux-shell",
         "type": "github"
       }
     },
@@ -2921,8 +2921,8 @@
         "computer-use-linux": "computer-use-linux",
         "cua-driver": "cua-driver",
         "dank-ai-usage": "dank-ai-usage",
-        "dank-material-shell": "dank-material-shell",
         "dux-greeter": "dux-greeter",
+        "dux-shell": "dux-shell",
         "eva": "eva",
         "fenix": "fenix",
         "flake-utils": "flake-utils_4",
