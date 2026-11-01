@@ -497,6 +497,13 @@
       group = "video";
     };
 
+    # Before 26.11 nixpkgs grants SCHED_RR through a capability wrapper (later
+    # releases use rtkit). Capabilities must target the ELF, while session
+    # launchers keep their setup.
+    security.wrappers = lib.mkIf (lib.versionOlder lib.trivial.release "26.11") {
+      Hyprland.source = lib.mkForce "${baseHyprlandPackage}/bin/.Hyprland-wrapped";
+    };
+
     programs.hyprland = {
       enable = true;
       # Keep Hyprland and plugins on a matched flake input for ABI compatibility.
