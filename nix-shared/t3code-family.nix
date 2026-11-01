@@ -10,8 +10,12 @@ in {
         hostKey = keys.alexandersMacbookAirHostKey;
         localPort = 13774;
       };
-      # Not managed here; its server listens on its Tailscale address.
-      msi-elliott.url = "http://msi-elliott.tail40f15e.ts.net:3773/";
+      # Not managed here: its server listens on its Tailscale address and keeps
+      # its own environment ID.
+      msi-elliott = {
+        url = "http://msi-elliott.tail40f15e.ts.net:3773/";
+        environmentId = "60c44129-b35f-42bf-bb1f-346511391eee";
+      };
     };
   };
   kat = {

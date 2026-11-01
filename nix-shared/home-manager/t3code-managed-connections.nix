@@ -93,7 +93,7 @@ in
         connections =
           map (member: member // {token."$file" = credentialPath;}) environments
           ++ lib.mapAttrsToList (_: host: {
-            environmentId = "fleet:${host.hostName}";
+            environmentId = host.environmentId or "fleet:${host.hostName}";
             label = host.hostName;
             httpBaseUrl = url host;
             wsBaseUrl = "ws" + lib.removePrefix "http" (url host);
