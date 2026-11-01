@@ -1,13 +1,11 @@
 {
   "configVersion": 42,
-  "use24HourClock": false,
   "clockDateFormat": "ddd MMM d",
   "showSeconds": false,
   "runDmsMatugenTemplates": false,
   "loginctlLockIntegration": true,
-  "lockBeforeSuspend": true,
-  "osdVolumeEnabled": true,
-  "osdBrightnessEnabled": true,
+  "osdVolumeEnabled": false,
+  "osdBrightnessEnabled": false,
   "osdWorkspaceEnabled": false,
   "barConfigs": [
     {
@@ -15,7 +13,9 @@
       "name": "Desktop",
       "enabled": true,
       "position": 0,
-      "screenPreferences": ["all"],
+      "screenPreferences": [
+        "all"
+      ],
       "showOnLastDisplay": true,
       "leftWidgets": [
         "launcherButton",
@@ -32,12 +32,23 @@
           "workspaceActiveAppHighlightEnabled": true
         }
       ],
-      "centerWidgets": ["clock"],
+      "centerWidgets": [
+        "clock"
+      ],
       "rightWidgets": [
         "music",
         "desktopExtras",
-        {"id": "diskUsage", "enabled": true, "mountPath": "/", "diskUsageMode": 0},
-        {"id": "memUsage", "enabled": true, "showSwap": true},
+        {
+          "id": "diskUsage",
+          "enabled": true,
+          "mountPath": "/",
+          "diskUsageMode": 0
+        },
+        {
+          "id": "memUsage",
+          "enabled": true,
+          "showSwap": true
+        },
         "cpuTemp",
         "gpuTemp",
         "cpuUsage",
@@ -58,7 +69,12 @@
           "showBatteryPowerCharging": true,
           "showBatteryPowerDischarging": true
         },
-        {"id": "systemTray", "enabled": true, "trayUseInlineExpansion": true, "trayAutoOverflow": false},
+        {
+          "id": "systemTray",
+          "enabled": true,
+          "trayUseInlineExpansion": true,
+          "trayAutoOverflow": false
+        },
         "notificationButton"
       ],
       "spacing": 2,
@@ -70,5 +86,10 @@
       "hideOnFullscreen": false,
       "scrollEnabled": false
     }
-  ]
+  ],
+  "clockFormat": "12h",
+  "dmsWindowsFloatingSeeded": [
+    "hyprland"
+  ],
+  "lockBeforeSuspend": true
 }

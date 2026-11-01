@@ -54,10 +54,12 @@ adjusts its priority. Edits preserve the shared policy file.
 CrossPaste's left click opens its search window. Menus, icon loading,
 and overlay rendering use upstream DMS and the custom Quickshell build.
 
-`settings.json`, `plugin-settings.json`, and `session.json` seed writable user
-configuration on first activation. Changes made through DMS survive restarts and
-rebuilds. The NixOS module owns packaging, plugin registration, and systemd
-integration.
+`~/.config/dms/settings.json` and `plugin_settings.json` are symlinks to the
+files here, so changes made through the DMS settings UI are written into the
+repository; commit them to share them across machines. `session.json` holds
+per-machine runtime state (location, last media player, dock pins) and only
+seeds `~/.local/state/dms/session.json` on first activation. The NixOS module
+owns packaging, plugin registration, and systemd integration.
 
 ## Checks
 

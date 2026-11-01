@@ -6,6 +6,7 @@
   ...
 }: let
   cfg = config.myModules.dank-material-shell;
+  dmsConfigDir = "${config.dotfiles-worktree}/dotfiles/config/dms";
   quickshellPackage = inputs.quickshell-tray.packages.${pkgs.stdenv.hostPlatform.system}.default;
   aiUsage = pkgs.callPackage "${inputs.dank-ai-usage}/default.nix" {
     revision = inputs.dank-ai-usage.rev;
@@ -63,7 +64,11 @@ in {
 
     home-manager.sharedModules = [
       inputs.dank-material-shell.homeModules.dank-material-shell
-      ({lib, ...}: {
+      ({
+        config,
+        lib,
+        ...
+      }: {
         programs.dank-material-shell = {
           enable = true;
           package = shellPackage;
@@ -83,14 +88,13 @@ in {
           managePluginSettings = false;
         };
 
+        # DMS saves through Qt's QSaveFile, which writes to a symlink's
+        # target, so UI edits land in the repo.
+        xdg.configFile."dms/settings.json".source = config.lib.file.mkOutOfStoreSymlink "${dmsConfigDir}/settings.json";
+        xdg.configFile."dms/plugin_settings.json".source = config.lib.file.mkOutOfStoreSymlink "${dmsConfigDir}/plugin_settings.json";
+
         home.activation.seedDms = lib.hm.dag.entryAfter ["linkGeneration"] ''
-          mkdir -p "$HOME/.config/dms" "$HOME/.local/state/dms"
-          if [ ! -e "$HOME/.config/dms/settings.json" ]; then
-            install -m600 ${../dotfiles/config/dms/settings.json} "$HOME/.config/dms/settings.json"
-          fi
-          if [ ! -e "$HOME/.config/dms/plugin_settings.json" ]; then
-            install -m600 ${../dotfiles/config/dms/plugin-settings.json} "$HOME/.config/dms/plugin_settings.json"
-          fi
+          mkdir -p "$HOME/.local/state/dms"
           if [ ! -e "$HOME/.local/state/dms/session.json" ]; then
             install -m600 ${../dotfiles/config/dms/session.json} "$HOME/.local/state/dms/session.json"
           fi
