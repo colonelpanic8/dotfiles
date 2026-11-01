@@ -151,7 +151,7 @@ function M.setup(ctx)
   end
 
   local function scratchpad_workspace(name)
-    return "name:scratch-hidden-" .. name
+    return "special:scratch-" .. name
   end
 
   local function mark_window_as_floating_scratchpad(window, name)
