@@ -77,12 +77,22 @@ in {
           systemd.enable = true;
           enableAudioWavelength = false;
           enableCalendarEvents = false;
+          # Local plugins link into the repo like settings.json, so QML edits
+          # need only a shell restart.
           plugins = {
             dankAIUsage = {
               src = "${aiUsage}/share/dms-plugins/DankAIUsage";
             };
             desktopExtras = {
-              src = ../dotfiles/config/dms/plugins/DesktopExtras;
+              src = config.lib.file.mkOutOfStoreSymlink "${dmsConfigDir}/plugins/DesktopExtras";
+              settings = {};
+            };
+            desktopBrightness = {
+              src = config.lib.file.mkOutOfStoreSymlink "${dmsConfigDir}/plugins/DesktopBrightness";
+              settings = {};
+            };
+            desktopSwap = {
+              src = config.lib.file.mkOutOfStoreSymlink "${dmsConfigDir}/plugins/DesktopSwap";
               settings = {};
             };
           };

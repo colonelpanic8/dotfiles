@@ -43,7 +43,8 @@
           "workspaceFocusedBorderEnabled": true,
           "workspaceColorMode": "s",
           "workspaceFocusedBorderThickness": 3
-        }
+        },
+        "dankAIUsage"
       ],
       "centerWidgets": [
         "clock"
@@ -60,21 +61,43 @@
         {
           "id": "memUsage",
           "enabled": true,
-          "showSwap": true
+          "showSwap": false
         },
+        "desktopSwap",
         "cpuTemp",
         "gpuTemp",
-        "cpuUsage",
-        "dankAIUsage",
         {
           "id": "controlCenterButton",
           "enabled": true,
-          "showAudioPercent": true,
-          "showBrightnessIcon": true,
-          "showBrightnessPercent": true,
           "showNetworkIcon": true,
-          "showBluetoothIcon": true
+          "showVpnIcon": true,
+          "showBluetoothIcon": true,
+          "showAudioIcon": false,
+          "showMicIcon": false,
+          "showBrightnessIcon": false,
+          "showBatteryIcon": false,
+          "showPrinterIcon": false,
+          "showScreenSharingIcon": false,
+          "showIdleInhibitorIcon": false,
+          "showDoNotDisturbIcon": false
         },
+        {
+          "id": "controlCenterButton",
+          "enabled": true,
+          "showNetworkIcon": false,
+          "showVpnIcon": false,
+          "showBluetoothIcon": false,
+          "showAudioIcon": true,
+          "showMicIcon": false,
+          "showBrightnessIcon": false,
+          "showBatteryIcon": false,
+          "showPrinterIcon": false,
+          "showScreenSharingIcon": false,
+          "showIdleInhibitorIcon": false,
+          "showDoNotDisturbIcon": false,
+          "showAudioPercent": true
+        },
+        "desktopBrightness",
         {
           "id": "battery",
           "enabled": true,

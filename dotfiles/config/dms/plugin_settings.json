@@ -12,5 +12,7 @@
     "barTextLabels": "day",
     "barTextStacked": true
   },
-  "desktopExtras": {"enabled": true}
+  "desktopExtras": {"enabled": true},
+  "desktopBrightness": {"enabled": true},
+  "desktopSwap": {"enabled": true}
 }
