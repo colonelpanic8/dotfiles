@@ -153,7 +153,7 @@ spawnBindings =
   , key (super .|. ctrl) xK_e (shiftFocusedToNextEmptyWorkspace False)
   , key (super .|. shift) xK_e (shiftFocusedToNextEmptyWorkspace True)
   , key super xK_v (spawnAction "wl-paste | wtype -")
-  , key super xK_x (spawnAction "rofi_command.sh")
+  , key super xK_x (spawnAction "menu_command.sh")
   , key hyper xK_e viewNextEmptyWorkspace
   , key hyper xK_v (spawnAction "rofi -modi 'clipboard:greenclip print' -show clipboard")
   , key hyper xK_p (spawnAction "rofi-pass")
@@ -162,16 +162,16 @@ spawnBindings =
   , key hyper xK_c (spawnAction "shell_command.sh")
   , key hyper xK_g gatherFocusedAppId
   , key (hyper .|. shift) xK_l (spawnAction "loginctl lock-session")
-  , key hyper xK_k (spawnAction "rofi_kill_process.sh")
-  , key (hyper .|. shift) xK_k (spawnAction "rofi_kill_all.sh")
-  , key hyper xK_r (spawnAction "rofi_systemd_mono")
+  , key hyper xK_k (spawnAction "menu_kill_process.sh")
+  , key (hyper .|. shift) xK_k (spawnAction "menu_kill_all.sh")
+  , key hyper xK_r (spawnAction "menu_systemd")
   , key hyper xK_9 (spawnAction "start_synergy.sh")
   , key hyper xK_backslash (spawnAction "mpg341cx_input toggle")
-  , key hyper xK_i (spawnAction "rofi_select_input.hs")
-  , key hyper xK_o (spawnAction "rofi_paswitch")
-  , key hyper xK_comma (spawnAction "rofi_wallpaper.sh")
+  , key hyper xK_i (spawnAction "menu_select_input.hs")
+  , key hyper xK_o (spawnAction "menu_paswitch")
+  , key hyper xK_comma (spawnAction "menu_wallpaper.sh")
   , key hyper xK_slash (spawnAction "toggle_taffybar")
-  , key hyper xK_y (spawnAction "rofi_agentic_skill")
+  , key hyper xK_y (spawnAction "menu_agentic_skill")
   ]
 
 mediaBindings

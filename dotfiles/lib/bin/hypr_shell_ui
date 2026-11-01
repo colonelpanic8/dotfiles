@@ -35,7 +35,7 @@ run_window_picker() {
       ;;
   esac
 
-  exec hypr_rofi_window "$mode"
+  exec hypr_menu_window "$mode"
 }
 
 case "${1:-}" in

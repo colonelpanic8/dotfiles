@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 function zcodex {
-    # Record launch directories so rofi_tmcodex can offer good defaults.
+    # Record launch directories so menu_tmcodex can offer good defaults.
     state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/rofi-tmcodex"
     history_file="$state_dir/dirs"
     mkdir -p "$state_dir" 2>/dev/null || true

@@ -376,29 +376,29 @@
       exec nm "$@"
     '';
   };
-  hyprRofiWindow = pkgs.writeShellApplication {
-    name = "hypr_rofi_window";
+  hyprMenuWindow = pkgs.writeShellApplication {
+    name = "hypr_menu_window";
     runtimeInputs = [
       pkgs.python3
       pkgs.rofi
       hyprlandPackage
     ];
     text = ''
-      exec python3 ${../dotfiles/lib/bin/hypr_rofi_window} "$@"
+      exec python3 ${../dotfiles/lib/bin/hypr_menu_window} "$@"
     '';
   };
   hyprShellUi = pkgs.writeShellApplication {
     name = "hypr_shell_ui";
     runtimeInputs = [
       pkgs.rofi
-      hyprRofiWindow
+      hyprMenuWindow
     ];
     text = ''
       exec ${../dotfiles/lib/bin/hypr_shell_ui} "$@"
     '';
   };
-  hyprRofiLayout = pkgs.writeShellApplication {
-    name = "hypr_rofi_layout";
+  hyprMenuLayout = pkgs.writeShellApplication {
+    name = "hypr_menu_layout";
     runtimeInputs = [
       pkgs.coreutils
       pkgs.findutils
@@ -407,11 +407,11 @@
       hyprlandPackage
     ];
     text = ''
-      exec ${../dotfiles/lib/bin/hypr_rofi_layout} "$@"
+      exec ${../dotfiles/lib/bin/hypr_menu_layout} "$@"
     '';
   };
-  hyprRofiAction = pkgs.writeShellApplication {
-    name = "hypr_rofi_action";
+  hyprMenuAction = pkgs.writeShellApplication {
+    name = "hypr_menu_action";
     runtimeInputs = [
       pkgs.libnotify
       pkgs.python3
@@ -419,7 +419,7 @@
       hyprlandPackage
     ];
     text = ''
-      exec python3 ${../dotfiles/lib/bin/hypr_rofi_action} "$@"
+      exec python3 ${../dotfiles/lib/bin/hypr_menu_action} "$@"
     '';
   };
   screenRecord = pkgs.writeShellApplication {
@@ -674,9 +674,9 @@
         llvmNmCompat # Hyprland's Clang-built plugin API shells out to llvm-nm
 
         # For scripts
-        hyprRofiLayout
-        hyprRofiAction
-        hyprRofiWindow
+        hyprMenuLayout
+        hyprMenuAction
+        hyprMenuWindow
         hyprShellUi
         jq
         lua5_4 # lua/luac for validating Hyprland Lua config

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-function rofi_paswitch {
+function menu_paswitch {
 	local default_sink entries choice sink_id script_dir
 
 	script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
@@ -20,4 +20,4 @@ function rofi_paswitch {
 	[ -n "$sink_id" ] && "$script_dir/pahelper" "$sink_id"
 }
 
-rofi_paswitch
+menu_paswitch

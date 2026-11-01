@@ -82,7 +82,7 @@
     {
       environment.systemPackages = with pkgs; [
         roborock-control
-        rofi-roborock
+        menu-roborock
       ];
       system.autoUpgrade.flake = "github:colonelpanic8/dotfiles?dir=nixos#${config.networking.hostName}";
     }

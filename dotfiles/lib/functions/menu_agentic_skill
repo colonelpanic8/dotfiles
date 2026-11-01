@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-function rofi_agentic_skill {
+function menu_agentic_skill {
   local skills_dir_default skills_dir agent_system terminal
   skills_dir_default="${CODEX_HOME:-$HOME/.codex}/skills"
   skills_dir="${AGENTIC_SKILLS_DIR:-$skills_dir_default}"
@@ -90,4 +90,4 @@ function rofi_agentic_skill {
   ("${terminal_argv[@]}" -e "${tmux_cmd[@]}" >/dev/null 2>&1 &!)
 }
 
-rofi_agentic_skill "$@"
+menu_agentic_skill "$@"

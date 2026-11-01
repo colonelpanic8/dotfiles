@@ -3,7 +3,7 @@
 -- | Configurable OpenAI and Anthropic usage sections.
 --
 -- The Hyprland config (scratchpads.lua) lets SUPER+ALT+C toggle whichever AI
--- app is currently selected via rofi_ai_scratchpad.sh, which records the
+-- app is currently selected via menu_ai_scratchpad.sh, which records the
 -- choice in $XDG_STATE_HOME/hypr/ai-scratchpad. By default, this widget reads
 -- the same state file and shows the matching provider's usage section (OpenAI
 -- for "codex", Anthropic for "claude"), switching live when the file changes.

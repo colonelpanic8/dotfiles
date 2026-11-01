@@ -587,7 +587,7 @@ function M.setup(ctx)
   end
 
   -- Which AI scratchpad SUPER+ALT+C targets. Selected at runtime (no reload)
-  -- by rofi_ai_scratchpad.sh, which writes the chosen name to this file.
+  -- by menu_ai_scratchpad.sh, which writes the chosen name to this file.
   local ai_scratchpad_default = "codex"
 
   local function ai_scratchpad_state_path()
@@ -625,7 +625,7 @@ function M.setup(ctx)
     toggle_scratchpad(backup_ai_scratchpad())
   end
 
-  -- Used by rofi_ai_scratchpad.sh after a selection: bring the chosen
+  -- Used by menu_ai_scratchpad.sh after a selection: bring the chosen
   -- scratchpad into view if it isn't already, without hiding it when it is.
   local function show_active_ai_scratchpad()
     local name = active_ai_scratchpad()

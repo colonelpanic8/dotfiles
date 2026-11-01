@@ -34,7 +34,7 @@ Avoid dropping scripts in `~/bin` or `~/.local/bin` unless the user explicitly a
 
 ## Rofi/Tmux Integration Pointers
 
-- Existing rofi scripts live in `../dotfiles/lib/bin/` (e.g. `rofi_command.sh`).
+- Existing rofi scripts live in `../dotfiles/lib/bin/` (e.g. `menu_command.sh`).
 - Keybind locations:
   - Hyprland: `../dotfiles/config/hypr/hyprland/binds.lua`
   - XMonad: `../dotfiles/config/xmonad/xmonad.hs`
