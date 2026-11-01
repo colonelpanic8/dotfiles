@@ -171,6 +171,8 @@
           kef = final.callPackage ./packages/kef {};
           pykefcontrol = final.python3Packages.callPackage ./packages/pykefcontrol {};
           roborock-control = final.callPackage ./packages/roborock-control {};
+          agent-device = final.callPackage ./packages/agent-device {};
+          simlock = final.callPackage ./packages/simlock {};
           menu-roborock = final.callPackage ./packages/menu-roborock {};
         })
       ]

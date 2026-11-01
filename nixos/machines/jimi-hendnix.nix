@@ -32,6 +32,7 @@ in {
   imports = [
     ../configuration.nix
     ../vaultwarden-jimi.nix
+    ../simlock-jimi.nix
     ../rocket-sense-jimi.nix
   ];
 
