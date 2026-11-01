@@ -239,14 +239,25 @@ in {
     home-manager.users.${user} = {config, ...}: let
       link = config.lib.file.mkOutOfStoreSymlink;
     in {
-      imports = [inputs.codex-desktop-linux.homeManagerModules.default];
+      imports = [
+        inputs.codex-desktop-linux.homeManagerModules.default
+        ../../nix-shared/home-manager/codex-generated-skills.nix
+      ];
+      # Only the managed MCP servers; the shared Codex config is personal.
+      myModules.codexGeneratedSkills = {
+        enable = true;
+        sharedDotfiles = false;
+        computerUseLinuxPackage = pkgs.computer-use-linux;
+      };
       programs.codexDesktopLinux = {
         enable = true;
         cliPackage = codexCli;
         computerUseUi.enable = true;
         linuxFeatures = ["shallow-repository-watches"];
       };
-      home.file.".claude/skills/computer-use-linux".source = link "${worktree}/dotfiles/agents/skills/computer-use-linux";
+      home.file = lib.genAttrs [".claude/skills/computer-use-linux" ".codex/skills/computer-use-linux"] (_: {
+        source = link "${worktree}/dotfiles/agents/skills/computer-use-linux";
+      });
       systemd.user.sessionVariables.YDOTOOL_SOCKET = "/run/ydotoold/socket";
       xdg.configFile = {
         "hypr".source = link "${worktree}/dotfiles/config/hypr";

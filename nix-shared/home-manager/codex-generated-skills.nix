@@ -6,6 +6,7 @@
 }: let
   cfg = config.myModules.codexGeneratedSkills;
   oos = config.lib.file.mkOutOfStoreSymlink;
+  emptyConfig = pkgs.writeText "codex-empty-config.toml" "";
   managedConfig = pkgs.writeText "codex-managed-config.toml" ''
     [mcp_servers.nixos]
     command = "${lib.getExe pkgs.mcp-nixos}"
@@ -34,6 +35,16 @@ in {
       type = lib.types.str;
       default = "${config.home.homeDirectory}/.codex";
       description = "Codex home directory.";
+    };
+
+    sharedDotfiles = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = ''
+        Build Codex home from the shared dotfiles: their config.toml as the base,
+        AGENTS.md, agents, skills, and the generated system skills. When false,
+        config.toml holds only the managed MCP servers and Codex's own sections.
+      '';
     };
 
     worktreeCodexDir = lib.mkOption {
@@ -92,7 +103,7 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    home.file = {
+    home.file = lib.mkIf cfg.sharedDotfiles {
       # NB: ~/.codex/.gitignore is intentionally NOT managed here. Codex owns
       # its runtime state, and Home Manager should not replace its local ignore
       # rules with an out-of-store symlink.
@@ -150,8 +161,16 @@ in {
 
     home.activation.generateCodexConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
       codex_home=${lib.escapeShellArg cfg.codexHome}
-      base=${lib.escapeShellArg "${cfg.worktreeCodexDir}/config.toml"}
-      source_base=${lib.escapeShellArg "${cfg.sourceCodexDir}/config.toml"}
+      base=${lib.escapeShellArg (
+        if cfg.sharedDotfiles
+        then "${cfg.worktreeCodexDir}/config.toml"
+        else emptyConfig
+      )}
+      source_base=${lib.escapeShellArg (
+        if cfg.sharedDotfiles
+        then "${cfg.sourceCodexDir}/config.toml"
+        else emptyConfig
+      )}
       managed_config=${lib.escapeShellArg managedConfig}
       local_config=${lib.escapeShellArg cfg.localConfig}
       local_state_config=${lib.escapeShellArg cfg.generatedStateConfig}
@@ -274,7 +293,7 @@ in {
       fi
     '';
 
-    home.activation.linkCodexDotfileSkills = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    home.activation.linkCodexDotfileSkills = lib.mkIf cfg.sharedDotfiles (lib.hm.dag.entryAfter ["writeBoundary"] ''
       skills_dir=${lib.escapeShellArg cfg.skillsDir}
       worktree_skills=${lib.escapeShellArg "${cfg.worktreeCodexDir}/skills"}
       source_skills=${lib.escapeShellArg "${cfg.sourceCodexDir}/skills"}
@@ -308,9 +327,9 @@ in {
           fi
         done
       fi
-    '';
+    '');
 
-    home.activation.setupCodexGeneratedSkills = lib.hm.dag.entryAfter ["linkCodexDotfileSkills"] ''
+    home.activation.setupCodexGeneratedSkills = lib.mkIf cfg.sharedDotfiles (lib.hm.dag.entryAfter ["linkCodexDotfileSkills"] ''
       codex_home=${lib.escapeShellArg cfg.codexHome}
       skills_dir=${lib.escapeShellArg cfg.skillsDir}
       runtime_skills_root=${lib.escapeShellArg "${cfg.primaryRuntimeDir}/skills/skills"}
@@ -343,6 +362,6 @@ in {
       else
         echo "setupCodexGeneratedSkills: runtime skills not found at $runtime_skills_root; skipping codex-primary-runtime" >&2
       fi
-    '';
+    '');
   };
 }
