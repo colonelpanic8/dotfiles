@@ -248,6 +248,8 @@
             Unit = {
               Description = "Headless Hyprland session for remote VNC access";
               After = ["default.target"];
+              # Bring VNC back whenever the session (re)starts.
+              Wants = ["remote-hyprland-wayvnc.service"];
             };
             Service =
               if cfg.nested
@@ -286,28 +288,25 @@
           }
           // autostartInstall;
 
-        remote-hyprland-wayvnc =
-          {
-            Unit = {
-              Description = "VNC server for the headless Hyprland session";
-              After = ["remote-hyprland.service"];
-              Requires = ["remote-hyprland.service"];
-              PartOf = ["remote-hyprland.service"];
-            };
-            Service = {
-              ExecStart = "${remoteHyprlandStartVnc}";
-              Restart = "on-failure";
-              RestartSec = 5;
-              Environment = [
-                "XDG_CURRENT_DESKTOP=Hyprland"
-                "XDG_SESSION_DESKTOP=Hyprland"
-                "XDG_SESSION_TYPE=wayland"
-                "LIBSEAT_BACKEND=seatd"
-                "PATH=${servicePath}"
-              ];
-            };
-          }
-          // autostartInstall;
+        remote-hyprland-wayvnc = {
+          Unit = {
+            Description = "VNC server for the headless Hyprland session";
+            After = ["remote-hyprland.service"];
+            BindsTo = ["remote-hyprland.service"];
+          };
+          Service = {
+            ExecStart = "${remoteHyprlandStartVnc}";
+            Restart = "always";
+            RestartSec = 5;
+            Environment = [
+              "XDG_CURRENT_DESKTOP=Hyprland"
+              "XDG_SESSION_DESKTOP=Hyprland"
+              "XDG_SESSION_TYPE=wayland"
+              "LIBSEAT_BACKEND=seatd"
+              "PATH=${servicePath}"
+            ];
+          };
+        };
       };
     };
   };
