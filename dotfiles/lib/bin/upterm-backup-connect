@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -euo pipefail
+machine=${1:?Usage: upterm-backup-connect MACHINE [COMMAND ...]}
+shift
+case "$machine" in
+  *[!a-zA-Z0-9_-]*|'') printf '%s\n' 'Invalid machine name.' >&2; exit 1 ;;
+esac
+state=${XDG_STATE_HOME:-$HOME/.local/state}/upterm-backup/$machine
+record=$state/connection.json
+test -r "$record" || { printf 'No saved backup connection: %s\n' "$record" >&2; exit 1; }
+session=$(jq -er .session "$record")
+relay=$(jq -er .relay "$record")
+user=$(jq -er .user "$record")
+host_key_alias=$(jq -er .hostKeyAlias "$record")
+if [ -x "$state/client/bin/upterm" ]; then
+  upterm=$state/client/bin/upterm
+else
+  upterm=$(command -v upterm) || { printf '%s\n' 'Install the Upterm client first.' >&2; exit 1; }
+fi
+port=$(python3 -c 'import socket; s=socket.socket(); s.bind(("127.0.0.1",0)); print(s.getsockname()[1]); s.close()')
+work=$(mktemp -d "$state/connect.XXXXXX")
+control=$work/control
+cleanup() {
+  ssh -S "$control" -O exit backup-relay >/dev/null 2>&1 || true
+  rm -f "$control"
+  rmdir "$work" 2>/dev/null || true
+}
+trap cleanup EXIT
+printf -v proxy '%q proxy %q' "$upterm" "wss://$session@$relay"
+ssh -fNT -M -S "$control" \
+  -o ForwardAgent=no -o ConnectTimeout=15 -o ExitOnForwardFailure=yes \
+  -o ServerAliveInterval=30 -o ServerAliveCountMax=3 \
+  -o "HostKeyAlias=$relay" -o "UserKnownHostsFile=$state/known_hosts" \
+  -o StrictHostKeyChecking=yes -o "ProxyCommand=$proxy" \
+  -L "127.0.0.1:$port:127.0.0.1:22" "$session@$relay:443"
+args=(ssh -p "$port" -o ForwardAgent=no -o ConnectTimeout=15
+  -o "HostKeyAlias=$host_key_alias" -o "UserKnownHostsFile=$state/known_hosts"
+  -o StrictHostKeyChecking=yes)
+if [ "$#" -eq 0 ]; then args+=(-t); fi
+"${args[@]}" "$user@127.0.0.1" "$@"

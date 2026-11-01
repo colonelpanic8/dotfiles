@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+"""Save a relay address while ordinary SSH still works, for later recovery."""
+import datetime
+import json
+import os
+from pathlib import Path
+import re
+import subprocess
+import sys
+
+if len(sys.argv) != 3:
+    sys.exit("Usage: upterm-backup-refresh MACHINE USER@SSH_HOST")
+machine, target = sys.argv[1:]
+if not re.fullmatch(r"[A-Za-z0-9_-]+", machine) or target.startswith("-"):
+    sys.exit("Invalid machine name or SSH target.")
+command = (
+    "set -eu; upterm-backup-info; "
+    "printf '\\n__SSH_HOST_KEY__\\n'; cat /etc/ssh/ssh_host_ed25519_key.pub; "
+    "printf '__SSH_USER__\\n'; id -un"
+)
+data = subprocess.check_output(
+    ["ssh", "-o", "ForwardAgent=no", "-o", "ConnectTimeout=10", target, command],
+    text=True,
+)
+info, remainder = data.split("\n__SSH_HOST_KEY__\n", 1)
+public_key, username = remainder.split("__SSH_USER__\n", 1)
+match = re.search(r"wss://([^@\s'\"]+)@uptermd\.upterm\.dev", info)
+if not match:
+    sys.exit("No public relay connection found in the session information.")
+key = public_key.split()
+if len(key) < 2 or key[0] != "ssh-ed25519":
+    sys.exit("Unexpected SSH host public key format.")
+os.umask(0o077)
+state = Path(os.environ.get("XDG_STATE_HOME", str(Path.home() / ".local/state")))
+state = state / "upterm-backup" / machine
+state.mkdir(parents=True, exist_ok=True, mode=0o700)
+state.chmod(0o700)
+alias = machine + "-backup-target"
+record = {
+    "session": match.group(1),
+    "relay": "uptermd.upterm.dev",
+    "user": username.strip(),
+    "hostKeyAlias": alias,
+    "sourceHost": target,
+    "savedAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+}
+relay_keys = (
+    Path(__file__).resolve().parents[3] / "nixos/assets/upterm-known-hosts"
+).read_text()
+(state / "known_hosts").write_text(relay_keys + alias + " " + " ".join(key[:2]) + "\n")
+(state / "connection.json").write_text(json.dumps(record, indent=2) + "\n")
+for name in ["known_hosts", "connection.json"]:
+    (state / name).chmod(0o600)
+print(f"Saved backup access. Connect with: upterm-backup-connect {machine}")

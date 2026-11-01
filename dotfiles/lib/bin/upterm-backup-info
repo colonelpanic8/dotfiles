@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+export XDG_RUNTIME_DIR=/run/upterm-backup
+shopt -s nullglob
+for socket in "$XDG_RUNTIME_DIR"/upterm/*.sock; do
+  session=${socket##*/}
+  exec upterm session info "${session%.sock}"
+done
+printf '%s\n' 'No backup relay session is ready. Check systemctl status upterm-backup.' >&2
+exit 1
