@@ -347,8 +347,8 @@
       };
 
       launchd.daemons.t3code = {
+        command = "${t3codeDaemon}";
         serviceConfig = {
-          ProgramArguments = ["${t3codeDaemon}"];
           UserName = user;
           GroupName = "staff";
           WorkingDirectory = homeForUser user;
