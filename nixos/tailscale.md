@@ -142,8 +142,8 @@ and a fake CLI; they perform no live enrollment, activation, or reboot:
 
 ```sh
 python3 nixos/checks/tailscale-enrollment.py
-nix eval --json --impure --expr 'import ./nixos/checks/tailscale-module.nix { nixpkgs = (builtins.getFlake (toString ./nix-darwin)).inputs.nixpkgs; }'
-nix eval --json --impure --expr 'let f = builtins.getFlake (toString ./nix-darwin); in import ./nixos/checks/tailscale-module.nix { nixpkgs = f.inputs.nixpkgs; agenix = f.inputs.agenix; darwin = f.inputs.nix-darwin; }'
+nix eval --json --impure --expr 'import ./nixos/checks/tailscale-module.nix { nixpkgs = (builtins.getFlake ("git+file://" + toString ./. + "?dir=nix-darwin")).inputs.nixpkgs; }'
+nix eval --json --impure --expr 'let f = builtins.getFlake ("git+file://" + toString ./. + "?dir=nix-darwin"); in import ./nixos/checks/tailscale-module.nix { nixpkgs = f.inputs.nixpkgs; agenix = f.inputs.agenix; darwin = f.inputs.nix-darwin; }'
 ```
 
 Sources: [Tailscale auth keys](https://tailscale.com/docs/features/access-control/auth-keys),

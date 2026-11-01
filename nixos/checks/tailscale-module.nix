@@ -1,5 +1,5 @@
 # Run from the repository root (runtime-only checks need only nixpkgs):
-# nix eval --json --impure --expr 'import ./nixos/checks/tailscale-module.nix { nixpkgs = (builtins.getFlake (toString ./nix-darwin)).inputs.nixpkgs; }'
+# nix eval --json --impure --expr 'import ./nixos/checks/tailscale-module.nix { nixpkgs = (builtins.getFlake ("git+file://" + toString ./. + "?dir=nix-darwin")).inputs.nixpkgs; }'
 {
   nixpkgs,
   agenix ? null,
