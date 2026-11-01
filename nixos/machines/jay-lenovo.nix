@@ -131,6 +131,11 @@ in {
   services.power-profiles-daemon.enable = false;
   services.tlp.enable = true;
 
+  system.autoUpgrade = {
+    enable = true;
+    dates = "daily";
+  };
+
   system.stateVersion = "23.05";
 
   home-manager.sharedModules = [

@@ -25,15 +25,15 @@
   wayland,
   zlib,
 }: let
-  build = "2767";
+  build = "2781";
   tarballs = {
     x86_64-linux = {
       arch = "amd64";
-      hash = "sha256-r4b3Hu6mrAgJxeEZVugX9n5h5TZwAtC1k76wpV6JU0o=";
+      hash = "sha256-WRLpz8pF4+iIwc7afbIwth+hsoB6Xm+77iJ/MZJGhDM=";
     };
     aarch64-linux = {
       arch = "aarch64";
-      hash = "sha256-1Ups7TDCeWi+bhjPtIVpVc6miDkPRRd848j+vuQ4Nn8=";
+      hash = "sha256-CIV63kpBlJwhhv69iRxum637K20Soaa02fiLiO8n0i0=";
     };
   };
   tarball =
@@ -42,7 +42,7 @@
 in
   stdenv.mkDerivation (finalAttrs: {
     pname = "crosspaste";
-    version = "2.3.0";
+    version = "2.3.1";
 
     # Upstream's Linux release bundles its own JBR runtime and native libraries.
     src = fetchurl {

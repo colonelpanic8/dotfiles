@@ -2,6 +2,21 @@
   "version": 1,
   "members": [
     {
+      "name": "jay-lenovo",
+      "appInstanceId": "0dbf1e80b2634bc3b8674be1f0200cfb",
+      "platform": {
+        "name": "Linux",
+        "arch": "amd64",
+        "bitMode": 64,
+        "version": "NixOS"
+      },
+      "cryptPublicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAErGhDkxvEMJ96gDVd1nnj/tgrnODyG7gMr51IU/cth6U/PgQqa5+J0im8t5/iC4bPhdc7/FHfueNs4WIpQ+szEw==",
+      "hostAddresses": [
+        "100.68.113.84"
+      ],
+      "port": 13129
+    },
+    {
       "name": "jimi-hendnix",
       "appInstanceId": "02ad6f9802464a61b0f4edacd61c29ea",
       "platform": {
@@ -28,6 +43,21 @@
       "cryptPublicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEjGk4Dsm59SA36IL3s0YjboJmmhjKwjaWH0vbs3+5hFKBIuLSnUQAEIpvLN89WLoPRCMYmoBSY8bLZYPUmh7oCw==",
       "hostAddresses": [
         "100.92.9.91"
+      ],
+      "port": 13129
+    },
+    {
+      "name": "railbird-sf",
+      "appInstanceId": "3b24c3e8704643d889d7c643745eb0a4",
+      "platform": {
+        "name": "Linux",
+        "arch": "amd64",
+        "bitMode": 64,
+        "version": "NixOS"
+      },
+      "cryptPublicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEvMpUcFr5XJ84iDdfpGT/J4RwKt4Px3kaBOev9iZH4Z7ZjLXgcvtch1krwEOMRXE6Q0qRhnMVzZAEvghUqAdjrQ==",
+      "hostAddresses": [
+        "100.100.183.40"
       ],
       "port": 13129
     },
