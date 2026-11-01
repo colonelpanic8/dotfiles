@@ -454,6 +454,7 @@
         kdePackages.okular
         quassel
         remmina
+        rustdesk-flutter
         rofi-pass
         scrobbleScrubberApp
         scrobbleScrubber
