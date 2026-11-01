@@ -21,16 +21,16 @@ get_all_history () {
 
 
 selected=$({ get_all_executables; get_all_aliases; get_all_functions; get_all_history; } |
-			   rofi -dmenu -i -kb-custom-1 "Alt+c" -kb-custom-2 "Alt+t")
+			   desktop_dmenu -i -kb-custom-1 "Alt+c" -kb-custom-2 "Alt+t")
 
-rofi_exit="$?"
+menu_exit="$?"
 args=""
-case "$rofi_exit" in
+case "$menu_exit" in
 	1)
 		exit
 		;;
 	10)
-		args=$(echo "" | rofi -dmenu)
+		args=$(desktop_dmenu --prompt-only -p "$selected")
 		;;
 	11)
 		urxvt --hold -e "$selected"

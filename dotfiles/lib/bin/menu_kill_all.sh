@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 
 
-echo "" | rofi -dmenu -i | xargs pkill -9
+desktop_dmenu --prompt-only -p "pkill -9" | xargs pkill -9

@@ -18,7 +18,7 @@
   '';
 
   meta = {
-    description = "Rofi menu for dispatching Roborock room cleaning";
+    description = "Menu for dispatching Roborock room cleaning";
     license = lib.licenses.mit;
     maintainers = with lib.maintainers; [imalison];
     mainProgram = "menu_roborock.sh";

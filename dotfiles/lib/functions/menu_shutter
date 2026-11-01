@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 function menu_shutter {
-	rofi -i -dmenu | xargs shutter -n -e
+	desktop_dmenu --prompt-only -p "Shutter" | xargs shutter -n -e
 }
 
 menu_shutter

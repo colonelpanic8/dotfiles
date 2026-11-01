@@ -57,7 +57,7 @@ done
 
 selection="$(
   printf '%s\n' "${labels[@]}" |
-    rofi -dmenu -i -p "Layout" -selected-row "$selected_row"
+    desktop_dmenu -i -p "Layout" -selected-row "$selected_row"
 )" || exit 0
 
 for entry in "${layouts[@]}"; do

@@ -385,7 +385,7 @@ selectWindowAction
   -> (Window -> RiverWMState l -> ([RiverWMRequest], RiverWMState l))
   -> RiverWMWaylandAction l
 selectWindowAction prompt action state = do
-  selected <- rofiSelectWindow prompt state
+  selected <- menuSelectWindow prompt state
   pure $ maybe ([], state) (`action` state) selected
 
 focusSelectedWindow :: Window -> RiverWMState l -> ([RiverWMRequest], RiverWMState l)
@@ -430,15 +430,15 @@ gatherFocusedAppId state@RiverWMState{riverWMStackSet, riverWMWindowIds, riverWM
         Just _ ->
           foldl' (\acc window -> W.shiftWin (W.currentTag acc) window acc) stackSet matchingWindows
 
-rofiSelectWindow :: String -> RiverWMState l -> IO (Maybe Window)
-rofiSelectWindow prompt state =
+menuSelectWindow :: String -> RiverWMState l -> IO (Maybe Window)
+menuSelectWindow prompt state =
   case windowEntries state of
     [] ->
       pure Nothing
     entries -> do
       (exitCode, selected, _stderr) <-
         readCreateProcessWithExitCode
-          (shell $ "rofi -dmenu -i -show-icons -p " ++ shellQuote prompt)
+          (shell $ "desktop_dmenu -i -show-icons -p " ++ shellQuote prompt)
           (concatMap formatWindowEntry entries)
       pure $ case exitCode of
         ExitSuccess -> parseSelectedWindow selected

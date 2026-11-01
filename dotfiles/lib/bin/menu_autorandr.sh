@@ -1,3 +1,3 @@
 #!/usr/bin/env zsh
 
-autorandr 2>&1 | rofi -dmenu -i | get_cols 1 | xargs autorandr -l
+autorandr 2>&1 | desktop_dmenu -i | get_cols 1 | xargs autorandr -l

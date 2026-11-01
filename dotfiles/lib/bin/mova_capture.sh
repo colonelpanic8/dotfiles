@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Quick-capture a task/note into mova (org-agenda-api) via rofi.
+# Quick-capture a task/note into mova (org-agenda-api) via desktop_dmenu.
 #
 # Fire-and-forget: the note is written to a persistent on-disk queue and a
 # background systemd user service (mova-capture-drain) POSTs it to the API,
@@ -10,14 +10,14 @@
 # Modes:
 #   mova_capture.sh                 Fast text box. Enter -> Today/NEXT
 #                                   (capture-n), Alt+i -> Inbox (capture-i).
-#   mova_capture.sh --pick          Pick any capture template from a rofi
+#   mova_capture.sh --pick          Pick any capture template from a menu
 #                                   list (fetched live, cached for offline),
 #                                   then fill in its fields.
 #   mova_capture.sh <template-key>  Skip the picker; capture straight to that
 #                                   template, e.g. `mova_capture.sh capture-z`.
 #
 # Templates with several required fields (e.g. capture-v, the vocabulary card:
-# Word / Definition / Original sentence) walk the fields in order, one rofi box
+# Word / Definition / Original sentence) walk the fields in order, one text box
 # each. Single-field templates keep the one-box fast path.
 
 set -uo pipefail
@@ -35,9 +35,8 @@ notify() {
   command -v notify-send >/dev/null 2>&1 && notify-send -a "mova capture" "$@" || true
 }
 
-# Read a single line of text from a rofi text box. Empty dmenu input makes rofi
-# a plain input field: Enter returns the typed text; custom keybindings return
-# it with exit 10/11/...
+# Read a single line of text from a desktop_dmenu text box: Enter returns the
+# typed text; custom keybindings return it with exit 10/11/...
 #
 # Results land in the globals `input_text` / `input_code` rather than on stdout.
 # Returning the text via command substitution would run this in a subshell and
@@ -48,7 +47,7 @@ input_text=""
 read_text() {
   local prompt="$1"
   shift
-  input_text="$(printf '' | rofi -dmenu -p "$prompt" -lines 0 "$@")"
+  input_text="$(desktop_dmenu --prompt-only -p "$prompt" "$@")"
   input_code=$?
   # Collapse newlines and trim surrounding whitespace.
   input_text="${input_text//$'\n'/ }"
@@ -111,7 +110,7 @@ fetch_templates() {
   printf '%s' '{"capture-n":{"name":"Next (Scheduled Today)"},"capture-i":{"name":"Inbox"},"default":{"name":"GTD Todo"}}'
 }
 
-# Prompt for every required field of a template and queue the result. One rofi
+# Prompt for every required field of a template and queue the result. One text
 # box per field, in declaration order; cancelling or leaving any field empty
 # aborts the whole capture rather than sending a half-filled entry.
 collect_and_enqueue() {
@@ -186,7 +185,7 @@ case "$mode" in
     templates="$(fetch_templates)"
     selection="$(printf '%s' "$templates" \
       | jq -r 'to_entries[] | "\(.value.name)\t\(.key)"' \
-      | rofi -dmenu -i -p "Template")"
+      | desktop_dmenu -i -p "Template")"
     [[ -n "$selection" ]] || exit 0
     template="${selection##*$'\t'}"
     label="${selection%%$'\t'*}"

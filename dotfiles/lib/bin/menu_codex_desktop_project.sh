@@ -1,8 +1,8 @@
 #!/usr/bin/env zsh
 set -euo pipefail
 
-# Pick a saved Codex Desktop project root via rofi, then start a new desktop
-# thread in that project using the documented codex:// deep link.
+# Pick a saved Codex Desktop project root via desktop_dmenu, then start a new
+# desktop thread in that project using the documented codex:// deep link.
 
 codex_home="${CODEX_HOME:-$HOME/.codex}"
 state_file="${CODEX_DESKTOP_STATE_FILE:-$codex_home/.codex-global-state.json}"
@@ -51,7 +51,7 @@ if [[ "${1:-}" == "--print-candidates" ]]; then
 fi
 
 selected_dir="$(
-  emit_candidates | dedup | existing_dirs | rofi -dmenu -i -p "$prompt" || true
+  emit_candidates | dedup | existing_dirs | desktop_dmenu -i -p "$prompt" || true
 )"
 
 [[ -n "$selected_dir" ]] || exit 0
