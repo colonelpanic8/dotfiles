@@ -83,6 +83,11 @@ in {
   ];
   boot.kernelModules = ["kvm-amd"];
   boot.extraModulePackages = [];
+  # The MT7922 data path silently stalls (still associated, no traffic) until
+  # reboot; ASPM L1 power saving is the usual culprit.
+  boot.extraModprobeConfig = ''
+    options mt7921e disable_aspm=1
+  '';
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.systemd-boot.configurationLimit = 1;
