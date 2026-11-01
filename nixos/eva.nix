@@ -3,6 +3,7 @@
   config,
   pkgs,
   lib,
+  makeEnable,
   ...
 }: let
   evaDesktop = inputs.eva.packages.${pkgs.stdenv.hostPlatform.system}.eva-desktop;
@@ -19,8 +20,8 @@
         meta = evaDesktop.meta;
       }
     else evaDesktop;
-in {
-  config = lib.mkIf (pkgs.stdenv.hostPlatform.system == "x86_64-linux") {
+in
+  makeEnable config "myModules.eva" false (lib.mkIf (pkgs.stdenv.hostPlatform.system == "x86_64-linux") {
     environment.systemPackages = [evaPackage pkgs.computer-use-linux];
 
     home-manager.sharedModules = [
@@ -67,5 +68,4 @@ in {
         };
       })
     ];
-  };
-}
+  })
