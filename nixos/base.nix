@@ -154,5 +154,5 @@ makeEnable config "myModules.base" true {
 
   programs.dconf.enable = true;
 
-  nix.settings.trusted-users = ["imalison" "gitea-runner"];
+  nix.settings.trusted-users = lib.unique ["imalison" config.myModules.primaryUser "gitea-runner"];
 }

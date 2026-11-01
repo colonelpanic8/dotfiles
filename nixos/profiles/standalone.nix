@@ -19,6 +19,7 @@ in {
   dotfilesEnvironment.enableHostPythonCompletions = false;
   dotfiles-worktree = "/srv/dotfiles";
   nix.settings.experimental-features = ["nix-command" "flakes"];
+  nix.settings.trusted-users = [user];
   nix.registry.nixpkgs.flake = inputs.nixpkgs;
   nix.nixPath = ["nixpkgs=${inputs.nixpkgs}"];
 
