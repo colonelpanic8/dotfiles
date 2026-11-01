@@ -105,6 +105,7 @@
         (package.passthru or {})
         // {
           providedSessions = package.passthru.providedSessions or ["hyprland"];
+          unwrapped = package;
         };
       postBuild = ''
         mkdir -p "$out/bin" "$out/share/wayland-sessions"

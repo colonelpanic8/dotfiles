@@ -7,8 +7,56 @@
 }: let
   cfg = config.myModules.remote-hyprland;
   hyprlandPackage = config.programs.hyprland.package;
+  hyprlandUnwrapped = hyprlandPackage.passthru.unwrapped or hyprlandPackage;
   geometry = "${toString cfg.width}x${toString cfg.height}@${toString cfg.refreshRate}";
   monitorRule = "${cfg.output},${geometry},0x0,${toString cfg.scale}";
+  hyprlandConfigFile =
+    if cfg.configFile != null
+    then cfg.configFile
+    else remoteHyprlandConfig;
+  # wayvnc 0.10 waits for an output power "on" event before capturing, which
+  # neither Hyprland nor headless sway ever sends, so no frames are delivered.
+  wayvncPackage = pkgs.wayvnc.overrideAttrs (old: {
+    postPatch =
+      (old.postPatch or "")
+      + ''
+        substituteInPlace src/main.c --replace-fail \
+          "int rc = image_source_acquire_power_on(self->image_source);" \
+          "int rc = -1;"
+      '';
+  });
+  # Hyprland's nested Wayland backend binds xdg_wm_base at version 6, which
+  # wlroots compositors (version 5) reject. Bind whatever the host offers.
+  aquamarineForNesting = (lib.findFirst (p: (p.pname or "") == "aquamarine")
+    (throw "remote-hyprland: aquamarine not found in Hyprland's buildInputs")
+    hyprlandUnwrapped.buildInputs).overrideAttrs (old: {
+    postPatch =
+      (old.postPatch or "")
+      + ''
+        substituteInPlace src/backend/Wayland.cpp --replace-fail \
+          "&xdg_wm_base_interface, 6)" \
+          "&xdg_wm_base_interface, std::min<uint32_t>(version, 6))"
+      '';
+  });
+  nestedHyprlandBin = pkgs.writeShellScript "remote-hyprland-nested-bin" ''
+    echo $$ > "$XDG_RUNTIME_DIR/remote-hyprland.pid"
+    export LD_LIBRARY_PATH=${aquamarineForNesting.out}/lib
+    exec ${hyprlandUnwrapped}/bin/Hyprland "$@"
+  '';
+  nestedHyprland = pkgs.writeShellScript "remote-hyprland-nested" ''
+    # sway sets these to its own name for its children.
+    export XDG_CURRENT_DESKTOP=Hyprland XDG_SESSION_DESKTOP=Hyprland
+    exec ${hyprlandUnwrapped}/bin/start-hyprland --path ${nestedHyprlandBin} -- --config ${hyprlandConfigFile}
+  '';
+  # An invisible headless wlroots host lets Hyprland run without DRM master,
+  # alongside the display manager and any physical session on the same GPU.
+  nestedHostConfig = pkgs.writeText "remote-hyprland-host.conf" ''
+    output HEADLESS-1 resolution ${toString cfg.width}x${toString cfg.height} bg #000000 solid_color
+    default_border none
+    default_floating_border none
+    for_window [app_id=".*"] fullscreen enable
+    exec ${nestedHyprland}
+  '';
   remoteHyprlandStartVnc = pkgs.writeShellScript "remote-hyprland-start-vnc" ''
         set -euo pipefail
 
@@ -17,17 +65,23 @@
         export XDG_SESSION_TYPE=wayland
         export LIBSEAT_BACKEND=seatd
 
+        wanted_pid=""
         for _ in $(${pkgs.coreutils}/bin/seq 1 50); do
+          ${lib.optionalString cfg.nested ''
+      # Pick this service's nested instance, not a physical session's.
+      wanted_pid="$(${pkgs.coreutils}/bin/cat "$XDG_RUNTIME_DIR/remote-hyprland.pid" 2>/dev/null || echo none)"
+    ''}
           instance="$(
             ${hyprlandPackage}/bin/hyprctl instances \
-              | ${pkgs.gawk}/bin/awk '
+              | ${pkgs.gawk}/bin/awk -v wanted_pid="$wanted_pid" '
                   /^instance / {
                     sig = $2
                     sub(/:$/, "", sig)
                   }
                   /^[[:space:]]*time:/ { time = $2 }
+                  /^[[:space:]]*pid:/ { pid = $2 }
                   /^[[:space:]]*wl socket:/ {
-                    if (sig != "" && time != "") {
+                    if (sig != "" && time != "" && (wanted_pid == "" || pid == wanted_pid)) {
                       print time " " sig " " $3
                     }
                   }
@@ -58,15 +112,27 @@
           ${pkgs.coreutils}/bin/sleep 0.1
         done
 
+    ${
+      if cfg.nested
+      then ''
+        # The nested instance has a single output sized by the host.
+        exec ${wayvncPackage}/bin/wayvnc \
+          --log-level=info \
+          --socket="$XDG_RUNTIME_DIR/wayvncctl-remote-hyprland" \
+          ${cfg.bindAddress} ${toString cfg.port}
+      ''
+      else ''
         # Give wayvnc a stable output name instead of relying on Hyprland's
         # fallback HEADLESS-* naming.
         ${hyprlandPackage}/bin/hyprctl -i "$HYPRLAND_INSTANCE_SIGNATURE" output create headless ${cfg.output} >/dev/null 2>&1 || true
         ${hyprlandPackage}/bin/hyprctl -i "$HYPRLAND_INSTANCE_SIGNATURE" keyword monitor '${monitorRule}' >/dev/null 2>&1 || true
 
-        exec ${pkgs.wayvnc}/bin/wayvnc \
+        exec ${wayvncPackage}/bin/wayvnc \
           --log-level=info \
           --output ${cfg.output} \
           ${cfg.bindAddress} ${toString cfg.port}
+      ''
+    }
   '';
   remoteHyprlandConfig = pkgs.writeText "remote-hyprland.conf" ''
     monitor=${monitorRule}
@@ -155,7 +221,7 @@
   enabledModule = makeEnable config "myModules.remote-hyprland" false {
     myModules.hyprland.enable = true;
 
-    services.seatd = {
+    services.seatd = lib.mkIf (!cfg.nested) {
       enable = true;
       group = "video";
     };
@@ -166,12 +232,14 @@
     # tearing down /run/seatd.sock on every cycle and breaking any libseat
     # client (e.g. a headless Hyprland). seatd creates its socket immediately on
     # startup, so Type=simple is sufficient and stays active.
-    systemd.services.seatd.serviceConfig.Type = lib.mkForce "simple";
+    systemd.services.seatd = lib.mkIf (!cfg.nested) {
+      serviceConfig.Type = lib.mkForce "simple";
+    };
 
     users.manageLingering = true;
     users.users.${cfg.user}.linger = true;
 
-    environment.systemPackages = [pkgs.wayvnc];
+    environment.systemPackages = [wayvncPackage];
 
     home-manager.users.${cfg.user} = {
       systemd.user.services = {
@@ -181,18 +249,40 @@
               Description = "Headless Hyprland session for remote VNC access";
               After = ["default.target"];
             };
-            Service = {
-              ExecStart = "${hyprlandPackage}/bin/start-hyprland --path ${hyprlandPackage}/bin/Hyprland -- --config ${remoteHyprlandConfig}";
-              Restart = "on-failure";
-              RestartSec = 5;
-              Environment = [
-                "XDG_CURRENT_DESKTOP=Hyprland"
-                "XDG_SESSION_DESKTOP=Hyprland"
-                "XDG_SESSION_TYPE=wayland"
-                "LIBSEAT_BACKEND=seatd"
-                "PATH=${servicePath}"
-              ];
-            };
+            Service =
+              if cfg.nested
+              then {
+                ExecStart = "${pkgs.sway}/bin/sway --config ${nestedHostConfig}";
+                Restart = "on-failure";
+                RestartSec = 5;
+                UnsetEnvironment = ["WAYLAND_DISPLAY" "DISPLAY" "HYPRLAND_INSTANCE_SIGNATURE"];
+                Environment = [
+                  "WLR_BACKENDS=headless"
+                  "WLR_LIBINPUT_NO_DEVICES=1"
+                  "WLR_RENDERER=gles2"
+                  "WLR_RENDER_DRM_DEVICE=${cfg.renderNode}"
+                  "XDG_CURRENT_DESKTOP=Hyprland"
+                  "XDG_SESSION_DESKTOP=Hyprland"
+                  "XDG_SESSION_TYPE=wayland"
+                  # Keep this instance out of the user manager's session environment.
+                  "HYPRLAND_NO_SD_NOTIFY=1"
+                  "HYPRLAND_NO_SD_VARS=1"
+                  "HYPRLAND_NO_SD_TARGET=1"
+                  "PATH=/run/wrappers/bin:/etc/profiles/per-user/${cfg.user}/bin:/run/current-system/sw/bin:${servicePath}"
+                ];
+              }
+              else {
+                ExecStart = "${hyprlandPackage}/bin/start-hyprland --path ${hyprlandPackage}/bin/Hyprland -- --config ${hyprlandConfigFile}";
+                Restart = "on-failure";
+                RestartSec = 5;
+                Environment = [
+                  "XDG_CURRENT_DESKTOP=Hyprland"
+                  "XDG_SESSION_DESKTOP=Hyprland"
+                  "XDG_SESSION_TYPE=wayland"
+                  "LIBSEAT_BACKEND=seatd"
+                  "PATH=${servicePath}"
+                ];
+              };
           }
           // autostartInstall;
 
@@ -285,9 +375,34 @@ in
           default = false;
           description = ''
             Whether to start the remote Hyprland session automatically with the
-            user's systemd manager. Keep this disabled on single-GPU hosts with
-            an active display manager, because Hyprland needs DRM master.
+            user's systemd manager. Unless `nested` is set, keep this disabled on
+            single-GPU hosts with an active display manager, because Hyprland
+            needs DRM master.
           '';
+        };
+
+        nested = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+          description = ''
+            Run Hyprland as the fullscreen client of an invisible headless sway
+            that renders on `renderNode`. This needs neither seatd nor DRM
+            master, so it coexists with a display manager and a physical
+            session on the same GPU.
+          '';
+        };
+
+        renderNode = lib.mkOption {
+          type = lib.types.str;
+          default = "/dev/dri/renderD128";
+          description = "DRM render node used by the nested session's host compositor.";
+        };
+
+        configFile = lib.mkOption {
+          type = lib.types.nullOr (lib.types.either lib.types.path lib.types.str);
+          default = null;
+          example = "/home/alice/.config/hypr/hyprland.lua";
+          description = "Hyprland config to load instead of the built-in minimal one.";
         };
       };
     };
