@@ -11,6 +11,8 @@
     ../nixified.ai.nix
   ];
 
+  myModules.tailscale.enrollment = "ivan";
+
   features.full.enable = true;
   myModules.claudeRemoteControl.enable = true;
   myModules.taffybar.aiUsageMode = "both";

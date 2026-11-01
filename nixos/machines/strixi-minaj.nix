@@ -111,6 +111,8 @@ in {
     inputs.nixos-hardware.nixosModules.asus-rog-strix-g834jzr
   ];
 
+  myModules.tailscale.enrollment = "ivan";
+
   myModules.base.enable = true;
   myModules.cache-server = {
     enable = true;

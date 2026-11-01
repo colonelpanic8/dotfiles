@@ -41,6 +41,8 @@ in {
     ../configuration.nix
   ];
 
+  myModules.tailscale.enrollment = "ivan";
+
   myModules.wyoming.enable = false;
   features.full.enable = true;
 

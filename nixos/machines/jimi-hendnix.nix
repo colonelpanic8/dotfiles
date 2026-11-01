@@ -35,6 +35,8 @@ in {
     ../rocket-sense-jimi.nix
   ];
 
+  myModules.tailscale.enrollment = "ivan";
+
   services.macos-ventura = {
     enable = false;
     openFirewall = true;

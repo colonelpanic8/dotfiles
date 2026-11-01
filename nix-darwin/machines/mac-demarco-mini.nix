@@ -17,10 +17,12 @@ in {
     ../persistent-desktop.nix
     (import ../gitea-actions-runner.nix)
     (import ../gitea-runner-external-storage.nix)
-    (import ../tailscale.nix {
-      authKeyFile = ../../nixos/secrets/tailscale-authkey.age;
-    })
+    ../tailscale.nix
   ];
+
+  myModules.tailscale.enrollment = "ivan";
+  # Preserve this Mac's bootstrap-only authentication policy.
+  myModules.tailscale.enrollmentProfiles.ivan.reauthenticateExpired = false;
   age = {
     identityPaths = [
       "${config.users.users.${primaryUser}.home}/.ssh/id_ed25519"

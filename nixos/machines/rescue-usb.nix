@@ -59,6 +59,8 @@ in {
     ../tailscale.nix
   ];
 
+  myModules.tailscale.enrollment = "ivan";
+
   # A deliberately small, portable module set on top of the shared stick. Do
   # not import configuration.nix here: that would enable many
   # workstation/server assumptions that do not belong on a USB stick.

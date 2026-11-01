@@ -8,6 +8,8 @@
     ../configuration.nix
   ];
 
+  myModules.tailscale.enrollment = "ivan";
+
   myModules.base.enable = true;
   myModules.desktop.enable = true;
   myModules.xmonad.enable = false;

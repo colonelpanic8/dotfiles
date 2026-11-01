@@ -6,10 +6,10 @@
   imports = [
     ../persistent-desktop.nix
     ../auto-upgrade.nix
-    (import ../tailscale.nix {
-      authKeyFile = ../../nixos/secrets/tailscale-authkey.kats-macbook-neo.age;
-    })
+    ../tailscale.nix
   ];
+
+  myModules.tailscale.enrollment = "kat";
 
   nix.enable = false;
   nixpkgs.hostPlatform = "aarch64-darwin";
