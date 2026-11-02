@@ -23,6 +23,7 @@
     ./computer-use-linux.nix
     ./cua.nix
     ./desktop.nix
+    ./dux-calendar.nix
     ./dux-shell.nix
     ./electron.nix
     ./environment.nix

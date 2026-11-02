@@ -43,6 +43,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Topic branch adding external providers and declarative external accounts.
+    dux-calendar = {
+      url = "github:colonelpanic8/dux-calendar/external-provider";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     dux-greeter = {
       url = "github:duxlabs-dev/dux-greeter";
       inputs.nixpkgs.follows = "nixpkgs";

@@ -327,6 +327,22 @@
     "dank-qml-common_2": {
       "flake": false,
       "locked": {
+        "lastModified": 1793444058,
+        "narHash": "sha256-YL9pm7n++0r6uXMQDg4CmB0++JGUezXIlgmp87KiUxM=",
+        "owner": "duxlabs-dev",
+        "repo": "dux-qml-common",
+        "rev": "934de22f3e246dff16ab06368582c5ae8cbdc304",
+        "type": "github"
+      },
+      "original": {
+        "owner": "duxlabs-dev",
+        "repo": "dux-qml-common",
+        "type": "github"
+      }
+    },
+    "dank-qml-common_3": {
+      "flake": false,
+      "locked": {
         "lastModified": 1793471402,
         "narHash": "sha256-gJCBIHwoKYkr9ueOZCt78GeUXuVNhgaStcRRi5p7zRE=",
         "owner": "duxlabs-dev",
@@ -362,9 +378,31 @@
         "type": "github"
       }
     },
-    "dux-greeter": {
+    "dux-calendar": {
       "inputs": {
         "dank-qml-common": "dank-qml-common",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793598224,
+        "narHash": "sha256-pq5W+GkOQl4mP9tUKIuQq5bkbpq+brJGE+fYGylbVoQ=",
+        "owner": "colonelpanic8",
+        "repo": "dux-calendar",
+        "rev": "034becde333298f4af302c3d0ab721047b24541e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "colonelpanic8",
+        "ref": "external-provider",
+        "repo": "dux-calendar",
+        "type": "github"
+      }
+    },
+    "dux-greeter": {
+      "inputs": {
+        "dank-qml-common": "dank-qml-common_2",
         "nixpkgs": [
           "nixpkgs"
         ]
@@ -385,7 +423,7 @@
     },
     "dux-shell": {
       "inputs": {
-        "dank-qml-common": "dank-qml-common_2",
+        "dank-qml-common": "dank-qml-common_3",
         "flake-compat": "flake-compat",
         "nixpkgs": [
           "nixpkgs"
@@ -2546,11 +2584,11 @@
         "org-window-habit": "org-window-habit"
       },
       "locked": {
-        "lastModified": 1793519179,
-        "narHash": "sha256-4FDvkTR3qFdWxzhaPgWXwpZEPpEwxLSZ+VNDDDfdmQk=",
+        "lastModified": 1793598067,
+        "narHash": "sha256-XOzMwLKrPg6VR8HTkDdtp6eRBnk9FX4qH02JLbZHU2Q=",
         "owner": "colonelpanic8",
         "repo": "org-agenda-api",
-        "rev": "fa1236941cfe501c0fd336d9dfd47fbbd10032ef",
+        "rev": "848ff6a02ef5335ec782e33c8176455bc3a14d8e",
         "type": "github"
       },
       "original": {
@@ -2922,6 +2960,7 @@
         "computer-use-linux": "computer-use-linux",
         "cua-driver": "cua-driver",
         "dank-ai-usage": "dank-ai-usage",
+        "dux-calendar": "dux-calendar",
         "dux-greeter": "dux-greeter",
         "dux-shell": "dux-shell",
         "eva": "eva",
