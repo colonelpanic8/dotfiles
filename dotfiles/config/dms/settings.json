@@ -189,7 +189,7 @@
     {
       "id": "notifications",
       "w": 3,
-      "h": 5
+      "h": 2
     },
     {
       "id": "calendar",
@@ -199,7 +199,7 @@
     {
       "id": "plugin_orgAgenda",
       "w": 3,
-      "h": 4
+      "h": 3
     },
     {
       "id": "media",

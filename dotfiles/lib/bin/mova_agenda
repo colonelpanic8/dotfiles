@@ -28,11 +28,15 @@ request() {
 }
 
 today() {
-  local habits=false
+  local habits=false done_states
   [[ "${1:-}" == "--habits" ]] && habits=true
-  request "$url/agenda?span=day&include_overdue=true" | jq -c --argjson habits "$habits" '
+  # The agenda also lists entries closed today; the card shows open work only.
+  done_states="$(request "$url/todo-states" | jq -c '.done // []')"
+  request "$url/agenda?span=day&include_overdue=true" \
+    | jq -c --argjson habits "$habits" --argjson doneStates "$done_states" '
     (.date) as $today
     | [.entries[]
+       | select(.todo as $t | $doneStates | index($t) | not)
        | select($habits or ((.isWindowHabit // false) | not))
        | (.scheduled // {}) as $s | (.deadline // {}) as $d
        | {

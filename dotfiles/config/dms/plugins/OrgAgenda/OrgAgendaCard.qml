@@ -184,7 +184,7 @@ DashCardComponent {
         id: errorText
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.top: header.bottom
+        anchors.top: captureInput.bottom
         anchors.margins: Theme.spacingXS
         visible: root.error !== ""
         text: root.error
@@ -199,10 +199,9 @@ DashCardComponent {
         id: list
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.top: errorText.visible ? errorText.bottom : header.bottom
-        anchors.bottom: captureInput.top
-        anchors.topMargin: Theme.spacingXS
-        anchors.bottomMargin: Theme.spacingS
+        anchors.top: errorText.visible ? errorText.bottom : captureInput.bottom
+        anchors.bottom: parent.bottom
+        anchors.topMargin: Theme.spacingS
         clip: true
         spacing: Theme.spacingXXS
         model: root.entries
@@ -268,7 +267,8 @@ DashCardComponent {
         anchors.left: parent.left
         anchors.right: destinationButton.left
         anchors.rightMargin: Theme.spacingXS
-        anchors.bottom: parent.bottom
+        anchors.top: header.bottom
+        anchors.topMargin: Theme.spacingXS
         height: DashMetrics.taskInputHeight
         cornerRadius: Theme.fullRadius(width, height)
         font.pixelSize: Theme.fontSizeSmall
