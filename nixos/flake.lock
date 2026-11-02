@@ -343,11 +343,11 @@
     "dank-qml-common_3": {
       "flake": false,
       "locked": {
-        "lastModified": 1793653448,
-        "narHash": "sha256-loUtYrvNODMU5TccpDTRb8wqw5jN1HXTY/tiuSc6rCg=",
+        "lastModified": 1793654716,
+        "narHash": "sha256-Mw9GEGsxSxxCGQFoovMfbtLQFEnHrXfjBmTLHGXa7qA=",
         "owner": "colonelpanic8",
         "repo": "dux-qml-common",
-        "rev": "885e3c27454cd19d9129683c25cfea9ba7fe0f43",
+        "rev": "05b955e92f7d775817bd3190db420964346ff935",
         "type": "github"
       },
       "original": {
@@ -431,11 +431,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793653592,
-        "narHash": "sha256-5VuRSHkS9lwocnNOjX+ip5K3MurzLCeV2VkLLB0p9D4=",
+        "lastModified": 1793654449,
+        "narHash": "sha256-Vu+G5jLAzb2AQ4sOieML4x2civXX/DNTUZhNfTl2Ybg=",
         "owner": "colonelpanic8",
         "repo": "dux-shell",
-        "rev": "5ff3a1b4c851b94729011e93e30ce21090c622d4",
+        "rev": "3978c3ccfd757bb7e3faa2afa029ced0bdb9b5aa",
         "type": "github"
       },
       "original": {
