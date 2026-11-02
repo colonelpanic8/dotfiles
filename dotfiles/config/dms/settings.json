@@ -174,5 +174,37 @@
   "dankLauncherV2BorderColor": "secondary",
   "useFahrenheit": true,
   "useAutoLocation": true,
-  "currentThemeCategory": "registry"
+  "currentThemeCategory": "registry",
+  "dashCards": [
+    {
+      "id": "clock",
+      "w": 2,
+      "h": 1
+    },
+    {
+      "id": "weather",
+      "w": 1,
+      "h": 1
+    },
+    {
+      "id": "notifications",
+      "w": 3,
+      "h": 5
+    },
+    {
+      "id": "calendar",
+      "w": 3,
+      "h": 3
+    },
+    {
+      "id": "plugin_orgAgenda",
+      "w": 3,
+      "h": 4
+    },
+    {
+      "id": "media",
+      "w": 3,
+      "h": 1
+    }
+  ]
 }

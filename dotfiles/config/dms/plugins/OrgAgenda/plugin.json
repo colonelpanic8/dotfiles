@@ -1,0 +1,29 @@
+{
+  "id": "orgAgenda",
+  "name": "Org agenda",
+  "description": "Today's org agenda from org-agenda-api, with completion and quick capture",
+  "version": "1.0.0",
+  "author": "Ivan Malison",
+  "type": "dashCard",
+  "capabilities": ["dash-card"],
+  "component": "./OrgAgendaCard.qml",
+  "icon": "checklist",
+  "permissions": ["process"],
+  "dash": {
+    "card": {
+      "title": "Agenda",
+      "w": 3,
+      "h": 4,
+      "minW": 2,
+      "minH": 2
+    },
+    "options": [
+      {
+        "key": "habits",
+        "text": "Show habits",
+        "type": "toggle",
+        "def": false
+      }
+    ]
+  }
+}

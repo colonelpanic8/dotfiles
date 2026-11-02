@@ -7,6 +7,9 @@
 }: let
   cfg = config.myModules.dux-shell;
   dmsConfigDir = "${config.dotfiles-worktree}/dotfiles/config/dms";
+  # Local plugins call repo scripts (e.g. mova_agenda) like the plugins
+  # themselves, out of the store so edits apply on a shell restart.
+  dotfilesBin = "${config.dotfiles-worktree}/dotfiles/lib/bin";
   quickshellPackage = inputs.quickshell-tray.packages.${pkgs.stdenv.hostPlatform.system}.default;
   aiUsage = pkgs.callPackage "${inputs.dank-ai-usage}/default.nix" {
     revision = inputs.dank-ai-usage.rev;
@@ -42,7 +45,8 @@
       rm "$out/bin/dms"
       makeWrapper ${forkShell}/bin/dms "$out/bin/dms" \
         --add-flags "-c ${forkShell}/share/quickshell/dms" \
-        --prefix PATH : ${lib.makeBinPath runtimePackages}
+        --prefix PATH : ${lib.makeBinPath runtimePackages} \
+        --suffix PATH : ${dotfilesBin}
     '';
     inherit (forkShell) meta;
   };
@@ -93,6 +97,10 @@ in {
             };
             desktopSwap = {
               src = config.lib.file.mkOutOfStoreSymlink "${dmsConfigDir}/plugins/DesktopSwap";
+              settings = {};
+            };
+            orgAgenda = {
+              src = config.lib.file.mkOutOfStoreSymlink "${dmsConfigDir}/plugins/OrgAgenda";
               settings = {};
             };
           };

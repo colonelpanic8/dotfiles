@@ -9,8 +9,8 @@
 #
 # Designed to be run by a systemd user service triggered on enqueue (.path),
 # on a retry timer (.timer), and directly by the front-end for immediacy.
-# Credentials come from `pass` at runtime; if gpg-agent is locked the drain
-# exits quietly and leaves the queue for a later run.
+# Credentials come from mova_api_password (the agenix secret, else pass); if
+# neither is available the drain exits quietly and leaves the queue for later.
 
 set -uo pipefail
 
@@ -20,7 +20,6 @@ failed_dir="$state_dir/failed"
 
 url="${MOVA_API_URL:-https://org-agenda-api.rocket-sense.duckdns.org}"
 api_user="${MOVA_API_USER:-imalison}"
-pass_entry="${MOVA_API_PASS_ENTRY:-org-agenda-api.duckdns.org/imalison}"
 
 mkdir -p "$queue_dir"
 
@@ -42,9 +41,9 @@ flock -n 9 || exit 0
 jobs=("$queue_dir"/*.json)
 ((${#jobs[@]})) || exit 0
 
-password="$(pass show "$pass_entry" 2>/dev/null | head -1)"
+password="$("${BASH_SOURCE[0]%/*}/mova_api_password")"
 if [[ -z "$password" ]]; then
-  # gpg-agent likely locked or pass unavailable; keep the queue for later.
+  # No agenix secret and pass is locked or unavailable; keep the queue.
   exit 0
 fi
 

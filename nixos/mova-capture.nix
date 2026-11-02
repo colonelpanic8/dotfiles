@@ -19,6 +19,7 @@
     pkgs.coreutils
     pkgs.curl
     pkgs.jq
+    pkgs.gnused # mova_api_password
     pkgs.pass
     pkgs.gnupg
     pkgs.util-linux # flock

@@ -15,6 +15,10 @@
 #                                   then fill in its fields.
 #   mova_capture.sh <template-key>  Skip the picker; capture straight to that
 #                                   template, e.g. `mova_capture.sh capture-z`.
+#   mova_capture.sh --text TEXT [--inbox]
+#                                   No prompt: queue TEXT to Today/NEXT, or to
+#                                   the Inbox with --inbox (for other front
+#                                   ends, e.g. the Dux Shell agenda card).
 #
 # Templates with several required fields (e.g. capture-v, the vocabulary card:
 # Word / Definition / Original sentence) walk the fields in order, one text box
@@ -29,7 +33,6 @@ mkdir -p "$queue_dir"
 
 url="${MOVA_API_URL:-https://org-agenda-api.rocket-sense.duckdns.org}"
 api_user="${MOVA_API_USER:-imalison}"
-pass_entry="${MOVA_API_PASS_ENTRY:-org-agenda-api.duckdns.org/imalison}"
 
 notify() {
   command -v notify-send >/dev/null 2>&1 && notify-send -a "mova capture" "$@" || true
@@ -94,7 +97,7 @@ enqueue() {
 # built-in set so the picker still works fully offline.
 fetch_templates() {
   local pw json
-  pw="$(pass show "$pass_entry" 2>/dev/null | head -1)"
+  pw="$("${BASH_SOURCE[0]%/*}/mova_api_password")"
   if [[ -n "$pw" ]]; then
     json="$(curl -sS -m 8 -u "$api_user:$pw" "$url/capture-templates" 2>/dev/null)"
     if [[ -n "$json" ]] && printf '%s' "$json" | jq -e 'type == "object"' >/dev/null 2>&1; then
@@ -157,6 +160,11 @@ forced_template=""
 case "${1-}" in
   "") mode="default" ;;
   --pick | -p | pick) mode="pick" ;;
+  --text)
+    mode="text"
+    text="${2-}"
+    [[ "${3-}" == "--inbox" ]] && mode="text-inbox"
+    ;;
   -h | --help)
     sed -n '3,25p' "$0"
     exit 0
@@ -179,6 +187,18 @@ case "$mode" in
       0) enqueue "capture-n" "Today · NEXT" "$(jq -n --arg t "$text" '{Title: $t}')" "$text" ;;
       10) enqueue "capture-i" "Inbox" "$(jq -n --arg t "$text" '{Title: $t}')" "$text" ;;
     esac
+    ;;
+
+  text | text-inbox)
+    text="${text//$'\n'/ }"
+    text="${text#"${text%%[![:space:]]*}"}"
+    text="${text%"${text##*[![:space:]]}"}"
+    [[ -n "$text" ]] || exit 1
+    if [[ "$mode" == "text-inbox" ]]; then
+      enqueue "capture-i" "Inbox" "$(jq -n --arg t "$text" '{Title: $t}')" "$text"
+    else
+      enqueue "capture-n" "Today · NEXT" "$(jq -n --arg t "$text" '{Title: $t}')" "$text"
+    fi
     ;;
 
   pick)

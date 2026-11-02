@@ -20,5 +20,8 @@
   },
   "desktopSwap": {
     "enabled": true
+  },
+  "orgAgenda": {
+    "enabled": true
   }
 }

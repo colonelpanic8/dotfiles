@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+#
+# Today's org agenda from org-agenda-api, for the Dux Shell agenda card.
+#
+#   mova_agenda today [--habits]   JSON list of today's entries, overdue
+#                                  included (habits only with --habits)
+#   mova_agenda complete JSON      Complete an entry; JSON has id, or
+#                                  file/pos/title for headings without an ID
+#
+# Captures go through `mova_capture.sh --text`, which queues them for the
+# retrying drain worker.
+set -uo pipefail
+
+url="${MOVA_API_URL:-https://org-agenda-api.rocket-sense.duckdns.org}"
+api_user="${MOVA_API_USER:-imalison}"
+
+die() {
+  jq -nc --arg error "$1" '{error: $error}'
+  exit 1
+}
+
+request() {
+  local password
+  password="$("${BASH_SOURCE[0]%/*}/mova_api_password")"
+  [[ -n "$password" ]] || die "no org-agenda-api password (agenix secret or pass)"
+  curl -sS -m 60 --fail-with-body -u "$api_user:$password" -H 'Accept: application/json' "$@" \
+    || die "org-agenda-api request failed"
+}
+
+today() {
+  local habits=false
+  [[ "${1:-}" == "--habits" ]] && habits=true
+  request "$url/agenda?span=day&include_overdue=true" | jq -c --argjson habits "$habits" '
+    (.date) as $today
+    | [.entries[]
+       | select($habits or ((.isWindowHabit // false) | not))
+       | (.scheduled // {}) as $s | (.deadline // {}) as $d
+       | {
+           id, file, pos, title, todo, priority,
+           category: .effectiveCategory,
+           habit: (.isWindowHabit // false),
+           time: ($s.time // $d.time // null),
+           scheduled: ($s.date // null),
+           deadline: ($d.date // null),
+           overdue: ((($s.date // "9999") < $today) or (($d.date // "9999") < $today)),
+           dueToday: (($d.date // "") == $today)
+         }]
+    | sort_by([
+        (if .time and (.overdue | not) then 0 elif .dueToday then 1 elif .overdue then 3 else 2 end),
+        (if .overdue then "" else .time // "99:99" end),
+        ({"A": 0, "B": 1, "C": 2}[.priority // ""] // 3),
+        (.scheduled // .deadline // "")
+      ])'
+}
+
+complete() {
+  local body
+  body="$(printf '%s' "${1:-}" | jq -c '
+    if (.id // "") != "" then {id} else {file, pos, title} end' 2>/dev/null)" \
+    || die "complete needs a JSON entry"
+  request -X POST -H 'Content-Type: application/json' -d "$body" "$url/complete" \
+    | jq -c '{status, title, newState}'
+}
+
+case "${1:-}" in
+today) shift; today "$@" ;;
+complete) shift; complete "$@" ;;
+*) die "usage: mova_agenda today [--habits] | complete JSON" ;;
+esac
