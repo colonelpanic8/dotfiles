@@ -76,17 +76,28 @@ owns packaging, plugin registration, and systemd integration.
 
 ## Org agenda and calendar
 
-The dash overview has an Agenda card (the local `OrgAgenda` plugin) with
-today's org agenda from org-agenda-api, overdue items included. Its checkboxes
-complete entries in org. Its capture box queues an entry for today, or for the
-Inbox via the button beside it, through `mova_capture.sh --text`, the same
-retrying queue that Hyper+T uses. Habits appear when the card's "Show habits"
-option is on. The card runs `mova_agenda`, which reads the API password from
-the agenix secret through `mova_api_password`.
+The local `OrgAgenda` plugin shows today's org agenda from org-agenda-api,
+overdue items included. It has three surfaces sharing one view: a bar pill
+(right section; the island ignores `centerWidgets`) whose popout holds the
+agenda, a desktop widget (instance `dw_orgAgenda`; drag it in the desktop
+widget editor), and a dash card that the default dash layout leaves out.
+
+Checkboxes complete entries in org. The capture row has a template chip that
+lists every org-agenda-api capture template (`mova_capture.sh --templates`,
+cached for offline use); templates with more prompts grow extra fields, and
+date prompts accept `today`, `tomorrow`, weekday names, `+N` or an ISO date,
+optionally with `HH:MM`. Enter moves to the next empty required field, then
+queues the capture through `mova_capture.sh --values`, the same retrying queue
+Hyper+T uses. The last template used is kept in the plugin's state. Habits
+are hidden unless the dash card's "Show habits" option (or `"habits": true` in
+the plugin's settings, for the other surfaces) turns them on. The view runs `mova_agenda`,
+which reads the API password from the agenix secret through
+`mova_api_password`.
 
 The Calendar card reads Dux Calendar (`dcal`). `nixos/dux-calendar.nix` gives
 dcal the vdirsyncer Google feeds as a read-only account and the org TODOs as a
-task list through org-agenda-api's `org-agenda-dcal` provider.
+task list through org-agenda-api's `org-agenda-dcal` provider, so dated TODOs
+show as dots on their scheduled or deadline day.
 
 ## Checks
 

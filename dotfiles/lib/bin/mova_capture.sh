@@ -19,6 +19,12 @@
 #                                   No prompt: queue TEXT to Today/NEXT, or to
 #                                   the Inbox with --inbox (for other front
 #                                   ends, e.g. the Dux Shell agenda card).
+#   mova_capture.sh --templates     Print the template map as JSON (live,
+#                                   falling back to the cache).
+#   mova_capture.sh --values KEY JSON
+#                                   No prompt: queue a capture to template KEY
+#                                   with JSON prompt values, e.g.
+#                                   '{"Title":"x","When":"2026-11-03"}'.
 #
 # Templates with several required fields (e.g. capture-v, the vocabulary card:
 # Word / Definition / Original sentence) walk the fields in order, one text box
@@ -165,8 +171,14 @@ case "${1-}" in
     text="${2-}"
     [[ "${3-}" == "--inbox" ]] && mode="text-inbox"
     ;;
+  --templates) mode="templates" ;;
+  --values)
+    mode="values"
+    forced_template="${2-}"
+    values_json="${3-}"
+    ;;
   -h | --help)
-    sed -n '3,25p' "$0"
+    sed -n '3,31p' "$0"
     exit 0
     ;;
   *)
@@ -199,6 +211,19 @@ case "$mode" in
     else
       enqueue "capture-n" "Today · NEXT" "$(jq -n --arg t "$text" '{Title: $t}')" "$text"
     fi
+    ;;
+
+  templates)
+    fetch_templates
+    ;;
+
+  values)
+    [[ -n "$forced_template" ]] || exit 1
+    values="$(jq -ce 'select(type == "object" and length > 0)' <<<"$values_json" 2>/dev/null)" || exit 1
+    label=""
+    [[ -r "$cache_file" ]] && label="$(name_for_key "$(cat "$cache_file")" "$forced_template")"
+    [[ -n "$label" ]] || label="$forced_template"
+    enqueue "$forced_template" "$label" "$values" "$(jq -r 'to_entries[0].value | tostring' <<<"$values")"
     ;;
 
   pick)

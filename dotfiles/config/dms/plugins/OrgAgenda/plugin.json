@@ -1,12 +1,16 @@
 {
   "id": "orgAgenda",
   "name": "Org agenda",
-  "description": "Today's org agenda from org-agenda-api, with completion and quick capture",
-  "version": "1.0.0",
+  "description": "Today's org agenda from org-agenda-api, with completion and capture through any capture template",
+  "version": "1.1.0",
   "author": "Ivan Malison",
-  "type": "dashCard",
-  "capabilities": ["dash-card"],
-  "component": "./OrgAgendaCard.qml",
+  "type": "composite",
+  "capabilities": ["dankbar-widget", "desktop-widget", "dash-card"],
+  "components": {
+    "widget": "./OrgAgendaWidget.qml",
+    "desktop": "./OrgAgendaDesktop.qml",
+    "dashCard": "./OrgAgendaCard.qml"
+  },
   "icon": "checklist",
   "permissions": ["process"],
   "dash": {

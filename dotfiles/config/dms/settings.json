@@ -50,6 +50,7 @@
         "clock"
       ],
       "rightWidgets": [
+        "orgAgenda",
         "desktopExtras",
         {
           "id": "diskUsage",
@@ -175,36 +176,13 @@
   "useFahrenheit": true,
   "useAutoLocation": true,
   "currentThemeCategory": "registry",
-  "dashCards": [
+  "desktopWidgetInstances": [
     {
-      "id": "clock",
-      "w": 2,
-      "h": 1
-    },
-    {
-      "id": "weather",
-      "w": 1,
-      "h": 1
-    },
-    {
-      "id": "notifications",
-      "w": 3,
-      "h": 2
-    },
-    {
-      "id": "calendar",
-      "w": 3,
-      "h": 3
-    },
-    {
-      "id": "plugin_orgAgenda",
-      "w": 3,
-      "h": 3
-    },
-    {
-      "id": "media",
-      "w": 3,
-      "h": 1
+      "id": "dw_orgAgenda",
+      "widgetType": "orgAgenda",
+      "name": "Agenda",
+      "enabled": true,
+      "config": {}
     }
   ]
 }
