@@ -96,7 +96,6 @@ in {
   myModules.postgres.enable = true;
   myModules.kat.enable = true;
   myModules.hyprland.gaps.enable = false;
-  myModules.hyprland.cursorSize = 20;
   networking.networkmanager.enable = true;
   services.libinput.enable = true;
 
@@ -140,14 +139,24 @@ in {
 
   home-manager.sharedModules = [
     {
+      # Hyprland's automatic 1.6 makes this 340 mm panel ~10% larger than
+      # strixi-minaj's 1.25; 1920x1200 logical is the closest integer match.
+      services.kanshi.settings = lib.mkAfter [
+        {
+          profile.name = "internal-panel-only";
+          profile.outputs = [
+            {
+              criteria = "eDP-2";
+              status = "enable";
+              mode = "2560x1600@165Hz";
+              position = "0,0";
+              scale = 1.333333;
+            }
+          ];
+        }
+      ];
+
       home.stateVersion = "23.05";
-      gtk.font.size = lib.mkForce 9;
-      gtk.gtk3.extraConfig.gtk-cursor-theme-size = lib.mkForce 20;
-      dconf.settings."org/gnome/desktop/interface".text-scaling-factor = 0.9;
-      dconf.settings."org/gnome/desktop/interface".cursor-size = 20;
-      xdg.configFile."ghostty/config".text = lib.mkAfter ''
-        font-size = 11
-      '';
     }
   ];
 }
