@@ -12,6 +12,10 @@
 - `org-window-habit`: habit-tracking logic used by org workflows.
 - `org-wild-notifier`: org notification logic and scheduling behavior.
 - `dotfiles` (within mova-dev context): infra/config and deployment glue for org-agenda-api.
+- `org-agenda-dcal` (in org-agenda-api, `dcal_provider/`): Dux Calendar external
+  provider exposing dated TODOs as tasks; wired up in `nixos/dux-calendar.nix`
+  against the `dux-calendar` topic branch `colonelpanic8/dux-calendar:external-provider`
+  (local checkout `~/projects/dux-calendar`, link `./project-links/dux-calendar`).
 
 ## Symlink targets
 - `./project-links/mova-dev` -> mova constellation root.
