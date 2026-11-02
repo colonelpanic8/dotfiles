@@ -206,8 +206,8 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 height: parent.height
                 width: Math.min(Math.ceil(chipMetrics.advanceWidth) + chipIcon.size + Theme.spacingXXS + Theme.spacingM * 2, parent.width * 0.4)
-                radius: height / 2
-                color: root.picking || chipMouse.containsMouse ? Theme.chipSurface : "transparent"
+                radius: captureInput.cornerRadius
+                color: root.picking || chipMouse.containsMouse ? Qt.tint(Theme.chipSurface, Theme.withAlpha(root.accentColor, 0.12)) : Theme.chipSurface
                 border.width: 1
                 border.color: root.picking ? root.accentColor : Theme.outlineVariant
 
