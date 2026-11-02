@@ -1,8 +1,8 @@
 {
   pkgs,
   config,
+  lib,
   makeEnable,
-  realUsers,
   ...
 }:
 makeEnable config "myModules.postgres" true {
@@ -25,7 +25,7 @@ makeEnable config "myModules.postgres" true {
           createdb = true;
         };
       })
-      realUsers;
+      (lib.attrNames (lib.filterAttrs (_: user: user.enable) config.myUsers));
     # initialScript = pkgs.writeText "init-sql-script" ''
     #   CREATE DATABASE IF NOT EXISTS railbird;
     #   \c railbird

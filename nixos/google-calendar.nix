@@ -10,7 +10,7 @@
   # Must match the names in the secret.
   calendars = ["primary" "akumal" "family" "jj_cleaning" "org_mode"];
 in {
-  config = lib.mkIf config.myModules.dux-shell.enable {
+  config = lib.mkIf (config.myModules.dux-shell.enable && config.myUsers.imalison.has.full) {
     home-manager.users.imalison = {config, ...}: let
       urlsFile = config.age.secrets.google-calendar-ics-urls.path;
       basePath = "${config.xdg.dataHome}/calendars/google";

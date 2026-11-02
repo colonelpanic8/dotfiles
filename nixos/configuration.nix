@@ -9,7 +9,6 @@
     ./agent-workspace.nix
     ./android.nix
     ./base.nix
-    ./ben.nix
     ./bootloaders/grub.nix
     ./bootloaders/systemd-boot.nix
     ./cache-server.nix
@@ -30,7 +29,6 @@
     ../nix-shared/system/essential.nix
     ./extra.nix
     ./games.nix
-    ./git-sync.nix
     ./scrobble-scrubber.nix
     ./gitea-runner.nix
     ./gitea.nix
@@ -39,11 +37,9 @@
     ./gnome.nix
     ./home-assistant.nix
     ./hermes-agent.nix
-    ./imalison.nix
     ./input-resilience.nix
     ./internet-computer.nix
     ./k3s.nix
-    ./kat.nix
     ./keepbook-sync.nix
     ./keybase.nix
     ./kubelet.nix
@@ -59,7 +55,6 @@
     ./rabbitmq.nix
     ./remote-hyprland.nix
     ./river-xmonad.nix
-    ./secrets.nix
     ./ssh.nix
     ./sni.nix
     ./syncthing.nix
@@ -68,7 +63,7 @@
     ./t3code-server.nix
     ./tailscale.nix
     ./kokoro.nix
-    ./users.nix
+    ./users
     ./vscode.nix
     ./voxtype.nix
     ./waybar.nix
@@ -89,6 +84,10 @@
         menu-roborock
       ];
       system.autoUpgrade.flake = "github:colonelpanic8/dotfiles?dir=nixos#${config.networking.hostName}";
+      myUsers = lib.genAttrs ["imalison" "kat" "dean" "alex" "loewy" "ben"] (_: {
+        enable = lib.mkDefault true;
+        level = lib.mkDefault "full";
+      });
     }
     (lib.mkIf config.features.full.enable {
       myModules.base.enable = true;

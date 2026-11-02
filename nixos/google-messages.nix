@@ -51,7 +51,7 @@ let
     }
   );
 in
-makeEnable config "myModules.googleMessages" true {
+makeEnable config "myModules.googleMessages" config.myUsers.imalison.has.full {
   imports = [ inputs.google-messages-bridge.nixosModules.default ];
 
   # Encrypted to every host (keys.agenixKeys) so the client unlocks without

@@ -609,17 +609,6 @@
             inherit machineNames;
             makeEnable = (import ./make-enable.nix) nixpkgs.lib;
             keys = import ../nix-shared/keys.nix;
-            usersInfo = (import ./users.nix) {
-              pkgs = {zsh = "zsh";};
-              inherit keys system;
-              inputs = inputs';
-            };
-            realUsers = (
-              builtins.attrNames
-              (nixpkgs.lib.filterAttrs
-                (_: value: (builtins.elem "isNormalUser" (builtins.attrNames value)) && value.isNormalUser)
-                usersInfo.users.users)
-            );
           }
           // specialArgs;
       };

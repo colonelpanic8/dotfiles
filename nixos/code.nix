@@ -91,7 +91,7 @@
       }
     ];
 
-    home-manager.users.imalison = lib.mkIf config.myModules.desktop.enable {
+    home-manager.users.imalison = lib.mkIf (config.myModules.desktop.enable && config.myUsers.imalison.has.dotfiles) {
       # The option only exists when the module is imported, so the settings
       # must be gated the same way; mkIf alone still references the option.
       imports = lib.optionals t3codeEnabled [

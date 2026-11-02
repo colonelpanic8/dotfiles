@@ -13,7 +13,7 @@
   lib,
   ...
 }: {
-  home-manager.users.imalison = {...}: {
+  home-manager.users.imalison = lib.mkIf config.myUsers.imalison.has.full {
     imports = [inputs.lastfm-edit.homeManagerModules.scrobble-scrubber];
 
     services.scrobble-scrubber = lib.mkIf (config.networking.hostName == "ryzen-shine") {

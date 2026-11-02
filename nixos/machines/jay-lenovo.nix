@@ -94,7 +94,7 @@ in {
   boot.loader.efi.canTouchEfiVariables = true;
 
   myModules.postgres.enable = true;
-  myModules.kat.enable = true;
+  myUsers.kat.apps.enable = true;
   myModules.hyprland.gaps.enable = false;
   networking.networkmanager.enable = true;
   services.libinput.enable = true;

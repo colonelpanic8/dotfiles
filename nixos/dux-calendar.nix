@@ -19,7 +19,7 @@ in {
   options.myModules.dux-calendar.enable =
     lib.mkEnableOption "Dux Calendar with org-agenda-api and Google calendars"
     // {
-      default = config.myModules.dux-shell.enable;
+      default = config.myModules.dux-shell.enable && config.myUsers.imalison.has.full;
     };
 
   config = lib.mkIf cfg.enable {

@@ -35,7 +35,7 @@
     ];
   };
 in
-  makeEnable config "myModules.notifications-tray-icon" true {
+  makeEnable config "myModules.notifications-tray-icon" config.myUsers.imalison.has.dotfiles {
     home-manager.users.imalison = {config, ...}: let
       notificationsTrayIcon = notificationsTrayIconPkgs.haskellPackages.notifications-tray-icon;
       gmailExecStart = pkgs.writeShellScript "notifications-tray-icon-gmail" ''

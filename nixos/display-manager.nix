@@ -3,7 +3,6 @@
   inputs,
   lib,
   pkgs,
-  realUsers,
   ...
 }: let
   cfg = config.myModules.displayManager;
@@ -64,7 +63,7 @@ in {
           Theme = {
             # Breeze hides the user chooser when users exceed this threshold.
             # Keep it aligned with declared normal users so the list stays visible.
-            DisableAvatarsThreshold = (builtins.length realUsers) + 10;
+            DisableAvatarsThreshold = (builtins.length (builtins.attrNames (lib.filterAttrs (_: user: user.isNormalUser) config.users.users))) + 10;
           };
         };
         extraPackages = with pkgs; [
@@ -84,7 +83,7 @@ in {
         enable = true;
         compositor.name = "hyprland";
         quickshell.package = inputs.quickshell-tray.packages.${pkgs.stdenv.hostPlatform.system}.default;
-        configHome = config.users.users.imalison.home;
+        configHome = config.users.users.${config.myModules.primaryUser}.home;
       };
     })
   ]);

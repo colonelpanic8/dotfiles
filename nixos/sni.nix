@@ -41,7 +41,7 @@
     flakeIgnore = ["E501"];
   } (builtins.readFile ./crosspaste/fleet-apply.py);
   crosspasteIdentity = ./secrets + "/crosspaste-identity.${config.networking.hostName}.age";
-  hasCrosspasteIdentity = builtins.pathExists crosspasteIdentity;
+  hasCrosspasteIdentity = builtins.pathExists crosspasteIdentity && config.myUsers.imalison.has.full;
   crosspasteFleetArgs = "--fleet ${../nix-shared/crosspaste-fleet.json} --data-dir %h/.local/share/.crosspaste";
   enabledModule = makeEnable config "myModules.sni" true {
     age.secrets.crosspaste-identity = lib.mkIf hasCrosspasteIdentity {
@@ -50,7 +50,7 @@
     };
 
     # Only this user's clipboard joins the fleet.
-    home-manager.users.imalison.systemd.user.services = {
+    home-manager.users.imalison.systemd.user.services = lib.mkIf config.myUsers.imalison.has.dotfiles {
       crosspaste.Service.ExecStartPre = lib.concatStringsSep " " (
         [crosspasteFleetApply crosspasteFleetArgs]
         ++ lib.optionals hasCrosspasteIdentity ["--identity" config.age.secrets.crosspaste-identity.path]

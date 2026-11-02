@@ -3,7 +3,6 @@
   config,
   lib,
   makeEnable,
-  realUsers,
   ...
 }:
 makeEnable config "myModules.home-assistant" false {

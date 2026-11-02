@@ -38,7 +38,7 @@ in {
     };
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (cfg.enable && config.myUsers.imalison.has.dotfiles) {
     home-manager.users.imalison = {
       imports = [inputs.voxtype.homeManagerModules.default];
 

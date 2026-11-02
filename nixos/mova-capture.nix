@@ -26,7 +26,7 @@
     pkgs.libnotify
   ];
 in
-  makeEnable config "myModules.movaCapture" true {
+  makeEnable config "myModules.movaCapture" config.myUsers.imalison.has.full {
     home-manager.users.imalison = {
       systemd.user.services.mova-capture-drain = {
         Unit.Description = "Drain queued mova/org-agenda-api quick-captures";

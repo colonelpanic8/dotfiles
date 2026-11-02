@@ -2,7 +2,6 @@
   pkgs,
   config,
   makeEnable,
-  realUsers,
   ...
 }:
 makeEnable config "myModules.rabbitmq" false {

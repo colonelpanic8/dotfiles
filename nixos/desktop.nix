@@ -284,7 +284,7 @@
 
     services.gnome.gnome-keyring.enable = true;
 
-    home-manager.users.imalison = lib.mkIf isFull {
+    home-manager.users.imalison = lib.mkIf (isFull && config.myUsers.imalison.has.dotfiles) {
       imports = [
         inputs.rlru.homeManagerModules.default
       ];
