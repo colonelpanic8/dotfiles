@@ -50,26 +50,28 @@
     };
 
     # Only this user's clipboard joins the fleet.
-    home-manager.users.imalison.systemd.user.services = lib.mkIf config.myUsers.imalison.has.dotfiles {
-      crosspaste.Service.ExecStartPre = lib.concatStringsSep " " (
-        [crosspasteFleetApply crosspasteFleetArgs]
-        ++ lib.optionals hasCrosspasteIdentity ["--identity" config.age.secrets.crosspaste-identity.path]
-      );
+    home-manager.users.imalison = lib.mkIf config.myUsers.imalison.has.dotfiles {
+      systemd.user.services = {
+        crosspaste.Service.ExecStartPre = lib.concatStringsSep " " (
+          [crosspasteFleetApply crosspasteFleetArgs]
+          ++ lib.optionals hasCrosspasteIdentity ["--identity" config.age.secrets.crosspaste-identity.path]
+        );
 
-      # The app drops a peer's key after a heartbeat key mismatch, e.g. while
-      # that peer has not picked up the fleet yet, so keep re-applying it.
-      crosspaste-fleet = {
-        Unit = {
-          Description = "Keep CrossPaste trusting the fleet";
-          After = ["crosspaste.service"];
-          BindsTo = ["crosspaste.service"];
+        # The app drops a peer's key after a heartbeat key mismatch, e.g. while
+        # that peer has not picked up the fleet yet, so keep re-applying it.
+        crosspaste-fleet = {
+          Unit = {
+            Description = "Keep CrossPaste trusting the fleet";
+            After = ["crosspaste.service"];
+            BindsTo = ["crosspaste.service"];
+          };
+          Service = {
+            ExecStart = "${crosspasteFleetApply} ${crosspasteFleetArgs} --interval 60";
+            Restart = "on-failure";
+            RestartSec = 10;
+          };
+          Install.WantedBy = ["crosspaste.service"];
         };
-        Service = {
-          ExecStart = "${crosspasteFleetApply} ${crosspasteFleetArgs} --interval 60";
-          Restart = "on-failure";
-          RestartSec = 10;
-        };
-        Install.WantedBy = ["crosspaste.service"];
       };
     };
 

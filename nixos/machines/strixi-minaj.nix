@@ -287,6 +287,7 @@ in {
   ];
 
   networking.hostName = "strixi-minaj";
+  myUsers.imalison.level = "full";
   myModules.hostIdentity = {
     emoticon = "👩🏿";
     tmux.background = "#ea580c";

@@ -66,6 +66,7 @@
   swapDevices = [];
 
   networking.hostName = "adell";
+  myUsers.imalison.level = "full";
   myModules.hostIdentity = {
     emoticon = "💻";
     tmux.background = "#7c3aed";

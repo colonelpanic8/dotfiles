@@ -19,6 +19,7 @@
   myModules.wsl.enable = true;
 
   networking.hostName = "ryzen-shine-wsl";
+  myUsers.imalison.level = "full";
   myModules.hostIdentity = {
     emoticon = "☀️";
     tmux.background = "#f97316";

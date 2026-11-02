@@ -27,11 +27,11 @@
   enabledModule = makeEnable config "myModules.code" true {
     # Code-capable hosts run the persistent backend used by the client-only
     # T3 Code desktop wrapper. Individual hosts can still opt out explicitly.
-    myModules.t3codeServer.enable = lib.mkDefault t3codeEnabled;
+    myModules.t3codeServer.enable = lib.mkDefault (t3codeEnabled && config.myUsers.imalison.has.full);
 
     # The Paseo daemon is the same kind of always-on agent backend, and the
     # desktop client below is useless without one to pair with.
-    myModules.paseo.enable = lib.mkDefault true;
+    myModules.paseo.enable = lib.mkDefault config.myUsers.imalison.has.full;
 
     # Managed settings apply to every Claude config dir (~/.claude-dean etc.),
     # so transcripts (our token-usage history) are never pruned.

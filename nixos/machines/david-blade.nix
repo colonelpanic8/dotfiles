@@ -56,6 +56,7 @@
   ];
 
   networking.hostName = "david-blade";
+  myUsers.imalison.level = "full";
   myModules.hostIdentity = {
     emoticon = "🗡️";
     tmux.background = "#be123c";

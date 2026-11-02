@@ -21,6 +21,7 @@ in {
   myModules.tailscale.enrollment = "ivan";
 
   networking.hostName = "railbird-sf";
+  myUsers.imalison.level = "full";
   myModules.hostIdentity = {
     emoticon = "🐦";
     tmux.background = "#0891b2";

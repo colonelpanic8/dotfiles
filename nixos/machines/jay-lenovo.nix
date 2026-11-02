@@ -122,6 +122,8 @@ in {
   ];
 
   networking.hostName = "jay-lenovo";
+  myModules.primaryUser = "kat";
+  myUsers.imalison.level = "access";
   myModules.hostIdentity = {
     emoticon = "💼";
     tmux.background = "#16a34a";

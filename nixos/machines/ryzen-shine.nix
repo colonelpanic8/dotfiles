@@ -99,6 +99,7 @@
   };
 
   networking.hostName = "ryzen-shine";
+  myUsers.imalison.level = "full";
   myModules.hostIdentity = {
     emoticon = "☀️";
     tmux.background = "#2563eb";

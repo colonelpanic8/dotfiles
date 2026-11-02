@@ -19,6 +19,8 @@
   myModules.wsl.enable = true;
 
   networking.hostName = "bencbox";
+  myModules.primaryUser = "ben";
+  myUsers.imalison.level = "access";
   myModules.hostIdentity = {
     emoticon = "📦";
     tmux.background = "#b45309";

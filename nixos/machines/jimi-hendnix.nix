@@ -85,6 +85,7 @@ in {
   services.k3s.enable = lib.mkForce false;
 
   networking.hostName = "jimi-hendnix";
+  myUsers.imalison.level = "full";
   networking.networkmanager.wifi.powersave = false;
   myModules.hostIdentity = {
     emoticon = "🐩";

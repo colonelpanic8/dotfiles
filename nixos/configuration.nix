@@ -84,10 +84,12 @@
         menu-roborock
       ];
       system.autoUpgrade.flake = "github:colonelpanic8/dotfiles?dir=nixos#${config.networking.hostName}";
-      myUsers = lib.genAttrs ["imalison" "kat" "dean" "alex" "loewy" "ben"] (_: {
-        enable = lib.mkDefault true;
-        level = lib.mkDefault "full";
-      });
+      myUsers =
+        {imalison.enable = lib.mkDefault true;}
+        // lib.genAttrs ["kat" "dean" "alex" "loewy" "ben"] (_: {
+          enable = lib.mkDefault true;
+          level = lib.mkDefault "full";
+        });
     }
     (lib.mkIf config.features.full.enable {
       myModules.base.enable = true;
@@ -99,7 +101,7 @@
       myModules.electron.enable = true;
       myModules.code.enable = true;
       myModules.games.enable = false;
-      myModules."keepbook-sync".enable = true;
+      myModules."keepbook-sync".enable = config.myUsers.imalison.has.full;
       myModules.syncthing.enable = true;
       myModules.fonts.enable = true;
     })

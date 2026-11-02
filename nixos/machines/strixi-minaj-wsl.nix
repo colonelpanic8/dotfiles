@@ -12,6 +12,7 @@
   myModules.wsl.enable = true;
 
   networking.hostName = "strixi-minaj-wsl";
+  myUsers.imalison.level = "full";
   myModules.hostIdentity = {
     emoticon = "👩🏿";
     tmux.background = "#4338ca";

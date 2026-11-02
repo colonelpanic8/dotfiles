@@ -200,6 +200,7 @@
   swapDevices = [];
 
   networking.hostName = "justin-bieber-creek";
+  myUsers.imalison.level = "full";
   myModules.hostIdentity = {
     emoticon = "🎤";
     tmux.background = "#c026d3";
