@@ -74,6 +74,20 @@ are linked the same way, so editing their QML needs only `systemctl --user
 restart dms`. The NixOS module
 owns packaging, plugin registration, and systemd integration.
 
+## Org agenda and calendar
+
+The dash overview has an Agenda card (the local `OrgAgenda` plugin) with
+today's org agenda from org-agenda-api, overdue items included. Its checkboxes
+complete entries in org. Its capture box queues an entry for today, or for the
+Inbox via the button beside it, through `mova_capture.sh --text`, the same
+retrying queue that Hyper+T uses. Habits appear when the card's "Show habits"
+option is on. The card runs `mova_agenda`, which reads the API password from
+the agenix secret through `mova_api_password`.
+
+The Calendar card reads Dux Calendar (`dcal`). `nixos/dux-calendar.nix` gives
+dcal the vdirsyncer Google feeds as a read-only account and the org TODOs as a
+task list through org-agenda-api's `org-agenda-dcal` provider.
+
 ## Checks
 
 ```sh
