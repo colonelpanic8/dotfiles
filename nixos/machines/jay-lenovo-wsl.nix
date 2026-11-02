@@ -13,8 +13,7 @@
   myModules.wsl.enable = true;
 
   networking.hostName = "jay-lenovo-wsl";
-  myModules.primaryUser = "kat";
-  myUsers.imalison.level = "access";
+  myUsers.imalison.level = "full";
   myModules.hostIdentity = {
     emoticon = "💼";
     tmux.background = "#15803d";
