@@ -1,25 +1,12 @@
 {
   config,
-  inputs,
   lib,
   pkgs,
   ...
-}: let
-  t3codeEnabled = config.myModules.t3code.enable;
-in {
+}: {
   config = lib.mkIf config.myUsers.imalison.has.full {
     home-manager.users.imalison = {config, ...}: {
-      imports =
-        [
-          inputs.agenix.homeManagerModules.default
-          ../../../nix-shared/home-manager/gpg-trust.nix
-          ../../../nix-shared/home-manager/paseo-managed-hosts.nix
-        ]
-        ++ lib.optional t3codeEnabled ../../../nix-shared/home-manager/t3code-managed-connections.nix;
-      age.identityPaths = ["${config.home.homeDirectory}/.ssh/id_ed25519"];
-      home.packages = [
-        inputs.agenix.packages."${pkgs.stdenv.hostPlatform.system}".default
-      ];
+      imports = [../../../nix-shared/home-manager/gpg-trust.nix];
       age.secrets.gpg-keys.file = ../../secrets/gpg-keys.age;
       age.secrets.gpg-passphrase.file = ../../secrets/gpg-passphrase.age;
       age.secrets.gws-client-secret.file = ../../secrets/gws-client-secret.json.age;

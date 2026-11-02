@@ -10,6 +10,7 @@ in {
   imports = [
     ./dotfiles.nix
     ./secrets.nix
+    ./fleet.nix
     ./git-sync.nix
   ];
 

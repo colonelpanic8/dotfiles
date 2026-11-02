@@ -21,7 +21,10 @@ in {
   myModules.tailscale.enrollment = "ivan";
 
   networking.hostName = "railbird-sf";
-  myUsers.imalison.level = "full";
+  myUsers.imalison.level = "dotfiles";
+  # Agent backends stay even without the full personal setup.
+  myModules.paseo.enable = true;
+  myModules.t3codeServer.enable = true;
   myModules.hostIdentity = {
     emoticon = "🐦";
     tmux.background = "#0891b2";
@@ -121,7 +124,6 @@ in {
     enable = true;
     serverAddr = "";
   };
-  myModules."keepbook-sync".enable = true;
   # Keeps the claude/codex remote-control user services running without a login.
   users.users.imalison.linger = true;
 
