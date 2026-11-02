@@ -52,22 +52,24 @@ in {
         Wants = ["agenix.service"];
       };
 
-      # Idempotent. Runs before the daemon so the CLI is the only writer, and
-      # waits for vdirsyncer's first sync since an empty root gets a seeded
-      # default calendar.
+      # Read-only: vdirsyncer owns the tree and "remote wins". Idempotent; runs
+      # before the daemon starts and again after every vdirsyncer sync, so a
+      # fresh login registers the feeds once the first sync lands (and the
+      # daemon picks up each sync right away).
       systemd.user.services.dcal-google-calendars = lib.mkIf config.programs.khal.enable {
         Unit = {
           Description = "Register vdirsyncer Google calendars with Dux Calendar";
           Before = ["dcal.service"];
+          After = ["vdirsyncer.service"];
         };
         Service = {
           Type = "oneshot";
           ExecCondition = toString (pkgs.writeShellScript "google-calendars-synced" ''
             [[ -n $(${pkgs.findutils}/bin/find ${googleCalendars} -name '*.ics' -print -quit 2>/dev/null) ]]
           '');
-          ExecStart = "${dcal}/bin/dcal account add local ${googleCalendars} --name Google";
+          ExecStart = "${dcal}/bin/dcal account add local ${googleCalendars} --name Google --read-only";
         };
-        Install.WantedBy = ["dcal.service"];
+        Install.WantedBy = ["dcal.service" "vdirsyncer.service"];
       };
     };
   };

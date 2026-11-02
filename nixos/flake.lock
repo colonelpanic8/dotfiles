@@ -386,11 +386,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793598224,
-        "narHash": "sha256-pq5W+GkOQl4mP9tUKIuQq5bkbpq+brJGE+fYGylbVoQ=",
+        "lastModified": 1793602392,
+        "narHash": "sha256-2iIpl2meBs+uZOAhLVZUSk7hILhN2Hbv9qU2YbWlNSU=",
         "owner": "colonelpanic8",
         "repo": "dux-calendar",
-        "rev": "034becde333298f4af302c3d0ab721047b24541e",
+        "rev": "d4bd8452bdc9677a61a7408e8fb0f7543ed044ad",
         "type": "github"
       },
       "original": {
@@ -2584,11 +2584,11 @@
         "org-window-habit": "org-window-habit"
       },
       "locked": {
-        "lastModified": 1793598067,
-        "narHash": "sha256-XOzMwLKrPg6VR8HTkDdtp6eRBnk9FX4qH02JLbZHU2Q=",
+        "lastModified": 1793602608,
+        "narHash": "sha256-fdWba4p9rYIkndLX8TkgpCDf7U9IIKqQrHBR9a4Ee4A=",
         "owner": "colonelpanic8",
         "repo": "org-agenda-api",
-        "rev": "848ff6a02ef5335ec782e33c8176455bc3a14d8e",
+        "rev": "a29bffc9ffb12d19f9d048f96babbbce2332e7bf",
         "type": "github"
       },
       "original": {
