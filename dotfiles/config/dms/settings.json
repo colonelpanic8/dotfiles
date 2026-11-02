@@ -44,13 +44,12 @@
           "workspaceColorMode": "s",
           "workspaceFocusedBorderThickness": 3
         },
-        "dankAIUsage"
+        "music"
       ],
       "centerWidgets": [
         "clock"
       ],
       "rightWidgets": [
-        "music",
         "desktopExtras",
         {
           "id": "diskUsage",
@@ -66,6 +65,7 @@
         "desktopSwap",
         "cpuTemp",
         "gpuTemp",
+        "dankAIUsage",
         {
           "id": "controlCenterButton",
           "enabled": true,
