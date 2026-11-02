@@ -11,11 +11,10 @@ const empty = { id: 2, name: "empty", monitor };
 const other = { id: 3, name: "elsewhere", monitor: second };
 const minimized = { id: -99, name: "special:minimized", monitor };
 const remoteMinimized = { id: null, name: "special:minimized", monitor: second };
-const special = { id: null, name: "special:NSP", monitor };
-const scratchpad = { id: -1, name: "scratch-hidden-codex", address: "scratch-hidden-codex", monitor };
-const windows = [occupied, minimized, remoteMinimized, special, scratchpad].map(workspace => ({ workspace, wayland: {} }));
+const scratchpad = { id: null, name: "special:scratch-codex", monitor };
+const windows = [occupied, minimized, remoteMinimized, scratchpad].map(workspace => ({ workspace, wayland: {} }));
 const raw = {
-    workspaces: [occupied, empty, other, minimized, remoteMinimized, special, scratchpad],
+    workspaces: [occupied, empty, other, minimized, remoteMinimized, scratchpad],
     monitors: [{ name: monitor.name, activeWorkspace: occupied }, { name: second.name, activeWorkspace: other }],
     focusedWorkspace: occupied,
     toplevels: windows,
@@ -29,7 +28,6 @@ assert.deepEqual(list(monitor.name, false, false).map(ws => ws.name), ["work"]);
 const bucket = list(monitor.name).find(ws => ws.minimizedBucket);
 assert.equal(model.hyprlandWorkspaceMatches(minimized, bucket), true);
 assert.equal(model.hyprlandWorkspaceMatches(remoteMinimized, bucket), false);
-assert.equal(model.hyprlandWorkspaceMatches(special, bucket), false);
 assert.equal(model.hyprlandWorkspaceMatches(scratchpad, bucket), false);
 assert.equal(model.hyprlandWorkspaceMatches(occupied, bucket), false);
 assert.deepEqual(Array.from(model.hyprlandWindowsOnWorkspace(windows.map(w => w.wayland), bucket, windows)), [windows[1].wayland]);
