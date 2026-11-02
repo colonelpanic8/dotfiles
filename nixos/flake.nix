@@ -41,6 +41,8 @@
     dux-shell = {
       url = "github:colonelpanic8/dux-shell/assembled";
       inputs.nixpkgs.follows = "nixpkgs";
+      # Month grid task markers, needed by the calendar-task-markers topic.
+      inputs.dank-qml-common.url = "github:colonelpanic8/dux-qml-common/month-grid-task-markers";
     };
 
     # Topic branch adding external providers and declarative external accounts.
