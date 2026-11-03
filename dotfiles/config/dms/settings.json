@@ -183,54 +183,5 @@
   "useFahrenheit": true,
   "useAutoLocation": true,
   "currentThemeCategory": "registry",
-  "desktopWidgetInstances": [
-    {
-      "id": "dw_1793680129657_a5u9acjrw",
-      "widgetType": "systemMonitor",
-      "name": "System Monitor",
-      "enabled": true,
-      "config": {
-        "showHeader": true,
-        "transparency": 0.8,
-        "colorMode": "primary",
-        "customColor": "#ffffff",
-        "showCpu": true,
-        "showCpuGraph": true,
-        "showCpuTemp": true,
-        "showGpuTemp": false,
-        "gpuPciId": "",
-        "showMemory": true,
-        "showMemoryGraph": true,
-        "showNetwork": true,
-        "showNetworkGraph": true,
-        "showDisk": true,
-        "showTopProcesses": false,
-        "topProcessCount": 3,
-        "topProcessSortBy": "cpu",
-        "layoutMode": "auto",
-        "graphInterval": 60,
-        "displayPreferences": [
-          "all"
-        ]
-      }
-    },
-    {
-      "id": "dw_1793680151145_bcw11edio",
-      "widgetType": "desktopClock",
-      "name": "Clock",
-      "enabled": true,
-      "config": {
-        "style": "analog",
-        "transparency": 0.8,
-        "colorMode": "primary",
-        "customColor": "#ffffff",
-        "showDate": true,
-        "showAnalogNumbers": false,
-        "showAnalogSeconds": true,
-        "displayPreferences": [
-          "all"
-        ]
-      }
-    }
-  ]
+  "desktopWidgetInstances": []
 }
