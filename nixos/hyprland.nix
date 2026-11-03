@@ -474,7 +474,7 @@
     };
 
     dropdown = {
-      command = "ghostty --config-file=/home/imalison/.config/ghostty/dropdown";
+      command = "ghostty --config-file=${config.users.users.${config.myModules.primaryUser}.home}/.config/ghostty/dropdown";
       class = "com.mitchellh.ghostty.dropdown";
       options = "persist";
       rules = "float;size monitor_w monitor_h*0.5;move 0 60;noborder;noshadow;animation slide";

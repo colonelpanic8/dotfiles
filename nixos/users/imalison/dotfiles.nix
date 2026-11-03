@@ -13,15 +13,6 @@ in {
         ../../dotfiles-links.nix
       ];
 
-      # The GTK file-chooser right-click context menu (Show Hidden Files, etc.)
-      # is unreliable under Hyprland/wlroots (upstream popup-focus bug,
-      # hyprwm/Hyprland#6426), so set these toggles as defaults instead of
-      # relying on the broken menu. Ctrl+H still toggles hidden files live.
-      dconf.settings."org/gtk/settings/file-chooser" = {
-        show-hidden = true;
-        sort-directories-first = true;
-      };
-
       programs.git = {
         signing.format = "openpgp";
         settings = {
@@ -40,10 +31,6 @@ in {
             "~/projects/dotfiles/org-agenda-api/"
             "**/runtime/data/org/"
           ];
-      };
-      programs.gh = {
-        enable = true;
-        settings.git_protocol = "ssh";
       };
 
       # Rootless podman stores images/layers under ~/.local/share/containers.
@@ -113,25 +100,6 @@ in {
 
         Install = {
           WantedBy = ["hyprland-session.target"];
-        };
-      };
-
-      systemd.user.services.tailscale-systray = {
-        Unit = {
-          Description = "Tailscale systray";
-          After = ["graphical-session.target" "tray.target"];
-          PartOf = ["graphical-session.target"];
-          Requires = ["tray.target"];
-        };
-
-        Service = {
-          ExecStart = "${pkgs.tailscale}/bin/tailscale systray";
-          Restart = "on-failure";
-          RestartSec = 3;
-        };
-
-        Install = {
-          WantedBy = ["graphical-session.target"];
         };
       };
     };

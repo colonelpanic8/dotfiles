@@ -11,6 +11,7 @@ in {
   imports = [
     ../options.nix
     ../environment.nix
+    ../primary-user-home.nix
     inputs.home-manager.nixosModules.home-manager
   ];
 
