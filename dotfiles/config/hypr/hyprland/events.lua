@@ -47,7 +47,8 @@ function M.setup(ctx)
     apply_rules()
     if not dev_session then
       hl.exec_cmd("sh -lc '/run/current-system/sw/bin/uwsm finalize HYPRLAND_INSTANCE_SIGNATURE XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE XAUTHORITY IMALISON_SESSION_TYPE=wayland IMALISON_WINDOW_MANAGER=hyprland || dbus-update-activation-environment --systemd XDG_RUNTIME_DIR WAYLAND_DISPLAY DISPLAY XAUTHORITY HYPRLAND_INSTANCE_SIGNATURE XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE IMALISON_SESSION_TYPE IMALISON_WINDOW_MANAGER; systemctl --user start hyprland-session.target'")
-      hl.exec_cmd("hypridle")
+      -- DMS owns idle handling and needs the org.freedesktop.ScreenSaver name to see wake locks.
+      hl.exec_cmd([[sh -c '[ "$(desktop_shell_ui current)" = dms ] || exec hypridle']])
       hl.exec_cmd("wl-paste --type text --watch cliphist store")
       hl.exec_cmd("wl-paste --type image --watch cliphist store")
     end
