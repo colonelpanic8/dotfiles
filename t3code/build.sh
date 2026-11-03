@@ -1,6 +1,6 @@
 #!/bin/sh
-# Writes index.html, fleet.age, and settings.age next to this script for GitHub Pages.
-# Requires qrencode and jq.
+# Writes index.html, fleet.age, and settings.age next to this script for GitHub
+# Pages, and Alex's page and fleet.age under alex/. Requires qrencode and jq.
 set -eu
 
 BASE_URL=https://colonelpanic8.github.io/dotfiles/t3code/
@@ -10,23 +10,31 @@ APP_SCHEME=t3code-assembly
 APP_PACKAGE=com.t3tools.t3code.assembly
 
 here=$(cd "$(dirname "$0")" && pwd)
-enrollment="$here/../../nixos/secrets/t3code-fleet-enrollment.age"
+secrets="$here/../../nixos/secrets"
 
 uri() { jq -rn --arg v "$1" '$v|@uri'; }
 
-fleet_url="${BASE_URL}fleet.age"
+# usage: page <dir> <base url> <enrollment.age> [settings.age]
+page() {
+dir=$1 base_url=$2
+mkdir -p "$dir"
+fleet_url="${base_url}fleet.age"
 query="fleetEnrollment=$(uri "$fleet_url")"
-page_url="${BASE_URL}?${query}"
+page_url="${base_url}?${query}"
 deep_link="${APP_SCHEME}://connections/new?${query}"
 intent_url="intent://connections/new?${query}#Intent;scheme=${APP_SCHEME};package=${APP_PACKAGE};S.browser_fallback_url=$(uri "$FDROID_URL");end"
 
-cp "$enrollment" "$here/fleet.age"
-cp "$here/../../nixos/secrets/t3code-mobile-settings.age" "$here/settings.age"
-settings_url="${BASE_URL}settings.age"
+cp "$3" "$dir/fleet.age"
+settings_html=
+if [ $# -ge 4 ]; then
+  cp "$4" "$dir/settings.age"
+  settings_url="${base_url}settings.age"
+  settings_html="<p><small>Settings feed (Settings &rarr; Environments &rarr; Settings feed): <a href=\"$settings_url\">$settings_url</a></small></p>"
+fi
 
 qr_svg=$(qrencode -t SVG --inline --svg-path -l M -m 4 "$page_url")
 
-cat >"$here/index.html" <<EOF
+cat >"$dir/index.html" <<EOF
 <!doctype html>
 <html lang="en">
 <head>
@@ -57,7 +65,13 @@ $qr_svg
 <li><a href="$RELEASES_URL">GitHub releases</a></li>
 </ul>
 <p><small>Encrypted enrollment: <a href="$fleet_url">fleet.age</a></small></p>
-<p><small>Settings feed (Settings &rarr; Environments &rarr; Settings feed): <a href="$settings_url">$settings_url</a></small></p>
+$settings_html
 </body>
 </html>
 EOF
+}
+
+page "$here" "$BASE_URL" "$secrets/t3code-fleet-enrollment.age" "$secrets/t3code-mobile-settings.age"
+if [ -e "$secrets/t3code-fleet-enrollment.alex.age" ]; then
+  page "$here/alex" "${BASE_URL}alex/" "$secrets/t3code-fleet-enrollment.alex.age"
+fi

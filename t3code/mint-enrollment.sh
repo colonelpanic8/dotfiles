@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
-# Mints a reusable enrollment on every fleet host and writes one bundle, sealed
-# to the phone and agenix recipients, at nixos/secrets/t3code-fleet-enrollment.age.
-# Each host exports its entry to a throwaway age key, so credentials are only
-# ever plaintext in this process's memory.
+# Mints a reusable enrollment on every host of a fleet and writes one bundle,
+# sealed to the phone and agenix recipients, at
+# nixos/secrets/t3code-fleet-enrollment[.<fleet>].age. Each host exports its
+# entry to a throwaway age key, so credentials are only ever plaintext in this
+# process's memory.
 #
-# usage: mint-enrollment.sh [--ttl 365d] [host...]   (default: every fleet host)
+# usage: mint-enrollment.sh [--fleet ivan|alex] [--ttl 36500d] [host...]
+#        (default: Ivan's fleet, every host in it)
 set -euo pipefail
 
 if ! command -v age >/dev/null || ! command -v jq >/dev/null; then
@@ -13,21 +15,32 @@ fi
 
 here=$(cd "$(dirname "$0")" && pwd)
 root=$(cd "$here/../.." && pwd)
-output="$root/nixos/secrets/t3code-fleet-enrollment.age"
+fleet=ivan
+# The server requires a finite TTL; a century means the enrollment never
+# lapses, and `t3 auth pairing revoke` still withdraws it.
+ttl=36500d
+while [ $# -gt 0 ]; do
+  case $1 in
+    --fleet) fleet=$2; shift 2 ;;
+    --ttl) ttl=$2; shift 2 ;;
+    *) break ;;
+  esac
+done
 
-ttl=365d
-if [ "${1:-}" = --ttl ]; then
-  ttl=$2
-  shift 2
-fi
+case $fleet in
+  ivan) manifest_file=t3code-fleet.nix secret=t3code-fleet-enrollment.age ssh_user=imalison ;;
+  alex) manifest_file=t3code-fleet.alex.nix secret=t3code-fleet-enrollment.alex.age ssh_user=alex ;;
+  *) echo "unknown fleet: $fleet" >&2; exit 1 ;;
+esac
+output="$root/nixos/secrets/$secret"
 
-manifest=$(nix eval --json -f "$root/nix-shared/t3code-fleet.nix")
+manifest=$(nix eval --json -f "$root/nix-shared/$manifest_file")
 if [ $# -gt 0 ]; then
   hosts=("$@")
 else
   mapfile -t hosts < <(jq -r '.[].label' <<<"$manifest")
 fi
-recipients=$(nix eval --json -f "$root/nixos/secrets/secrets.nix" '"t3code-fleet-enrollment.age".publicKeys' | jq -r '.[]')
+recipients=$(nix eval --json -f "$root/nixos/secrets/secrets.nix" "\"$secret\".publicKeys" | jq -r '.[]')
 
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
@@ -47,7 +60,7 @@ trap 'rm -rf "$tmp"' EXIT
 IFS= read -r recipient
 printf '%s\n' "$recipient" >"$tmp/recipients"
 cat >"$tmp/manifest.json"
-T3CODE_ENVIRONMENT_ID="fleet:$HOST" "$t3" auth enrollment export \
+T3CODE_ENVIRONMENT_ID="$ENVIRONMENT_ID" "$t3" auth enrollment export \
   --recipients-file "$tmp/recipients" \
   --fleet-manifest "$tmp/manifest.json" \
   --output "$tmp/enrollment.age" \
@@ -61,11 +74,12 @@ EOF
 entries=()
 for host in "${hosts[@]}"; do
   jq -e --arg h "$host" 'any(.label == $h)' <<<"$manifest" >/dev/null ||
-    { echo "$host is not in nix-shared/t3code-fleet.nix" >&2; exit 1; }
+    { echo "$host is not in nix-shared/$manifest_file" >&2; exit 1; }
+  environment_id=$(jq -r --arg h "$host" '.[] | select(.label == $h) | .environmentId' <<<"$manifest")
   echo "minting on $host" >&2
   { printf '%s\n' "$ephemeral"; jq -c '{version: 1, environments: .}' <<<"$manifest"; } |
-    ssh -o BatchMode=yes "imalison@$host" \
-      "HOST=$host LABEL=$(printf %q "$label") TTL=$(printf %q "$ttl") bash -c $(printf %q "$remote")" \
+    ssh -o BatchMode=yes "$ssh_user@$host" \
+      "ENVIRONMENT_ID=$(printf %q "$environment_id") LABEL=$(printf %q "$label") TTL=$(printf %q "$ttl") bash -c $(printf %q "$remote")" \
       >"$work/$host.age"
   # Older servers still export a single-anchor v1 document.
   entries+=("$(age -d -i "$work/identity" "$work/$host.age" | jq -c '
