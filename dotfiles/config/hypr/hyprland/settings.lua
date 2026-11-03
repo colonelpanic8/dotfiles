@@ -319,7 +319,8 @@ function M.setup(ctx)
   end
 
   local function apply_hyprtasking_config()
-    if verify_config or not enable_hyprtasking or enable_hyprwinview then
+    -- hyprwinview embeds hyprtasking and reads the same plugin:hyprtasking options.
+    if verify_config or not (enable_hyprtasking or enable_hyprwinview) then
       return
     end
 
