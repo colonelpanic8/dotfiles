@@ -1,6 +1,10 @@
 - Never create, enter, or use a Git worktree for this repository. Work only in
   the primary checkout (usually at `/srv/dotfiles`).
 - Run NixOS activation only as `just switch` from `/srv/dotfiles/nixos`
+- To log out and back in at the seat, run the logout (`uwsm stop`) and
+  `greeter-login --pass-entry devices/razer-nix-disk` (imalison's login
+  password) together in one detached `systemd-run --user` unit, so the
+  sequence survives the session ending.
 - Do not add or modify anything in `nixos/imalison.nix` unless the user
   explicitly asks for the change to be made there. Put packages and
   configuration intended for every user in the appropriate shared NixOS or Home

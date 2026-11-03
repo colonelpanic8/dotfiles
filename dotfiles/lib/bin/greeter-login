@@ -7,8 +7,8 @@ session is scheduled greetd gives the running greeter 5 seconds to exit before
 killing it, then launches the session on the greeter's VTY.
 
 Works over SSH: `greeter-login [user]`. Re-runs itself under sudo, because the
-socket belongs to the greeter user. Passwords are read from the terminal, never
-from argv.
+socket belongs to the greeter user. Passwords are read from the terminal, or
+with --pass-entry from `pass` and handed over on stdin; never from argv.
 """
 import argparse
 import configparser
@@ -25,7 +25,8 @@ SESSION_DIRS = [
     "/run/current-system/sw/share/wayland-sessions",
     "/usr/share/wayland-sessions",
 ]
-DEFAULT_SESSION = "hyprland"
+# The greeter's normal choice; plain "hyprland" skips uwsm, so the session target and DMS never start.
+DEFAULT_SESSION = "hyprland-uwsm"
 
 
 def find_socket():
@@ -104,11 +105,13 @@ class Greetd:
         return json.loads(self._recv_exact(length))
 
 
-def authenticate(greetd, user):
+def authenticate(greetd, user, secret=None):
     reply = greetd.request("create_session", username=user)
     while reply["type"] == "auth_message":
         kind, text = reply["auth_message_type"], reply["auth_message"]
-        if kind == "secret":
+        if kind == "secret" and secret is not None:
+            response = secret
+        elif kind == "secret":
             response = getpass.getpass(text if text.endswith(" ") else text + " ")
         elif kind == "visible":
             response = input(text if text.endswith(" ") else text + " ")
@@ -127,6 +130,9 @@ def main():
     parser.add_argument("-s", "--session", default=DEFAULT_SESSION,
                         help=f"wayland session id (default: {DEFAULT_SESSION})")
     parser.add_argument("-l", "--list-sessions", action="store_true")
+    parser.add_argument("--pass-entry", metavar="ENTRY",
+                        help="answer the password prompt with the first line of this pass entry")
+    parser.add_argument("--password-stdin", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
 
     sessions = load_sessions()
@@ -138,15 +144,21 @@ def main():
         sys.exit(f"greeter-login: unknown session {args.session!r}; try --list-sessions")
 
     if os.geteuid() != 0:
-        os.execvp("sudo", ["sudo", "--", sys.executable, os.path.abspath(__file__),
-                           args.user, "--session", args.session])
+        # The PATH sudo is not setuid inside sandboxed agent shells.
+        sudo = "/run/wrappers/bin/sudo" if os.path.exists("/run/wrappers/bin/sudo") else "sudo"
+        cmd = [sudo, "--", sys.executable, os.path.abspath(__file__), args.user, "--session", args.session]
+        if not args.pass_entry:
+            os.execvp(sudo, cmd)
+        secret = subprocess.run(["pass", "show", args.pass_entry], capture_output=True,
+                                text=True, check=True).stdout.split("\n", 1)[0]
+        sys.exit(subprocess.run(cmd + ["--password-stdin"], input=secret + "\n", text=True, check=False).returncode)
 
     session = sessions[args.session]
     greetd = Greetd(find_socket())
     # Drop anything the greeter UI left half-configured (e.g. a pending
     # fingerprint prompt); greetd only allows one configuring session.
     greetd.request("cancel_session")
-    authenticate(greetd, args.user)
+    authenticate(greetd, args.user, sys.stdin.readline().rstrip("\n") if args.password_stdin else None)
     reply = greetd.request(
         "start_session",
         cmd=session["exec"].split(),
