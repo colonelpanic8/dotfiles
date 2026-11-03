@@ -61,3 +61,4 @@ org-fc-reviews.tsv
 /oauth2-auto.plist
 /.org-generic-id-locations
 /persist
+/themes/dank-emacs-theme.el
