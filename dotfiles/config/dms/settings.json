@@ -25,7 +25,6 @@
       ],
       "showOnLastDisplay": true,
       "leftWidgets": [
-        "idleCountdown",
         "launcherButton",
         {
           "id": "workspaceSwitcher",
@@ -53,6 +52,7 @@
         "clock"
       ],
       "rightWidgets": [
+        "idleCountdown",
         "orgAgenda",
         "desktopExtras",
         {
