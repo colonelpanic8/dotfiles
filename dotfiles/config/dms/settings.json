@@ -5,6 +5,8 @@
   "runDmsMatugenTemplates": false,
   "loginctlLockIntegration": true,
   "lockBeforeSuspend": true,
+  "acMonitorTimeout": 600,
+  "batteryMonitorTimeout": 600,
   "osdVolumeEnabled": true,
   "osdBrightnessEnabled": true,
   "osdWorkspaceEnabled": false,
@@ -106,6 +108,7 @@
           "trayUseInlineExpansion": true,
           "trayAutoOverflow": false
         },
+        "idleCountdown",
         "notificationButton",
         {
           "id": "battery",
