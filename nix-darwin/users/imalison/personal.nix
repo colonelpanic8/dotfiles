@@ -55,17 +55,16 @@
 in {
   imports = [
     inputs.agenix.homeManagerModules.default
-    ./agents.nix
-    ../../nix-shared/home-manager/codex-generated-skills.nix
-    ../../nix-shared/home-manager/t3code-managed-connections.nix
+    ../../../nix-shared/home-manager/codex-generated-skills.nix
+    ../../../nix-shared/home-manager/t3code-managed-connections.nix
     ./git-sync.nix
   ];
 
   dotfiles.personal = true;
 
   age.identityPaths = ["${config.home.homeDirectory}/.ssh/id_ed25519"];
-  age.secrets.gpg-keys.file = ../../nixos/secrets/gpg-keys.age;
-  age.secrets.gpg-passphrase.file = ../../nixos/secrets/gpg-passphrase.age;
+  age.secrets.gpg-keys.file = ../../../nixos/secrets/gpg-keys.age;
+  age.secrets.gpg-passphrase.file = ../../../nixos/secrets/gpg-passphrase.age;
 
   myModules.codexGeneratedSkills.enable = true;
   myModules.codexGeneratedSkills.worktreeCodexDir = "${config.dotfiles.worktreeDotfilesDir}/codex";
@@ -143,7 +142,7 @@ in {
     };
   };
 
-  xdg.configFile."ccusage-fleet/config.json".text = import ../../nix-shared/ccusage-fleet-config.nix {
+  xdg.configFile."ccusage-fleet/config.json".text = import ../../../nix-shared/ccusage-fleet-config.nix {
     localHost = "mac-demarco-mini";
   };
 }

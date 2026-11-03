@@ -5,14 +5,10 @@
   ...
 }: let
   primaryUser = config.system.primaryUser;
-  personalUsers = ["kat" "imalison"];
-  homeForUser = user: "/Users/${user}";
-  mkUserDescription = user:
-    if user == "imalison"
-    then "Ivan Malison"
-    else null;
 in {
   networking.hostName = "mac-demarco-mini";
+  myUsers.imalison.level = "full";
+  myUsers.kat.enable = true;
   imports = [
     ../persistent-desktop.nix
     (import ../gitea-actions-runner.nix)
@@ -76,19 +72,10 @@ in {
     XDG_CACHE_HOME = "/var/lib/gitea-runner/.cache";
     XDG_RUNTIME_DIR = "/var/lib/gitea-runner/tmp";
   };
-  users.users =
-    lib.genAttrs personalUsers (user: {
-      name = user;
-      home = homeForUser user;
-      description = mkUserDescription user;
-      openssh.authorizedKeys.keys = (import ../../nix-shared/keys.nix).userKeys.${user};
-    })
-    // {
-      gitea-runner = {
-        name = "gitea-runner";
-        isHidden = false;
-        home = "/Users/gitea-runner";
-        createHome = false;
-      };
-    };
+  users.users.gitea-runner = {
+    name = "gitea-runner";
+    isHidden = false;
+    home = "/Users/gitea-runner";
+    createHome = false;
+  };
 }

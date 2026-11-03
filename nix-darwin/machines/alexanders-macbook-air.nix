@@ -9,12 +9,6 @@
   environment.systemPackages = [pkgs.bitwarden-desktop];
   age.identityPaths = ["/etc/ssh/ssh_host_ed25519_key"];
 
-  users.users.alex = {
-    name = "alex";
-    home = "/Users/alex";
-    openssh.authorizedKeys.keys = (import ../../nix-shared/keys.nix).userKeys.alex;
-  };
-
   home-manager.users.alex = {
     services.t3code = {
       fleetManifest = lib.mkForce null;

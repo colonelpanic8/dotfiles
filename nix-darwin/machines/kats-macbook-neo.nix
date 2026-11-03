@@ -36,22 +36,11 @@
     (builtins.hashString "sha256" config.environment.etc."nix/nix.custom.conf".text)
   ];
 
-  users.users.kat = {
-    name = "kat";
-    home = "/Users/kat";
-    openssh.authorizedKeys.keys = let
-      keys = import ../../nix-shared/keys.nix;
-    in
-      keys.userKeys.kat ++ keys.katKeys;
-  };
+  users.users.kat.openssh.authorizedKeys.keys = (import ../../nix-shared/keys.nix).katKeys;
 
   programs.bash.enable = true;
 
   home-manager.users.kat = {
-    dotfiles.gitIdentity = {
-      name = "Kat Huang";
-      email = "kkathuang@gmail.com";
-    };
     services.t3code.fleetManifest = lib.mkForce null;
     home.sessionVariables.T3CODE_MANAGED_CONNECTIONS_FILE = "/Users/kat/.config/t3code/managed-connections.json";
     xdg.configFile."t3code/managed-connections.json".text = builtins.toJSON {

@@ -116,20 +116,7 @@
     ...
   }: let
     libDir = ../dotfiles/lib;
-    personalUsers = [
-      "kat"
-      "imalison"
-    ];
-    baseHomeModules = [./home/common.nix];
-    personalHomeModules = [
-      ./home/personal.nix
-      ./home/desktop.nix
-    ];
-    # Maps each Home Manager user to the modules layered over baseHomeModules.
-    homeManagerConfiguration = {
-      primaryUser,
-      users,
-    }: {lib, ...}: {
+    homeManagerConfiguration = {primaryUser}: {
       home-manager = {
         useGlobalPkgs = true;
         useUserPackages = true;
@@ -137,14 +124,8 @@
         extraSpecialArgs = {
           inherit inputs libDir primaryUser;
         };
-        sharedModules = baseHomeModules;
-        users = lib.mapAttrs (_: modules: {imports = modules;}) users;
+        sharedModules = [./home/common.nix];
       };
-      # Home Manager refuses to activate until the user's Nix profile
-      # directory exists, which a fresh account does not have yet.
-      system.activationScripts.preActivation.text = lib.concatMapStrings (user: ''
-        /usr/bin/sudo -u ${user} /bin/mkdir -p ${homeForUser user}/.local/state/nix/profiles
-      '') (builtins.attrNames users);
     };
     homeForUser = user: "/Users/${user}";
     sharedConfiguration = {
@@ -416,8 +397,6 @@
     };
     mkDarwinSystem = {
       primaryUser,
-      enabledHomeUsers ? [primaryUser],
-      homeModules ? personalHomeModules,
       machineModule,
       manageNix ? true,
       homebrewCleanup ? "zap",
@@ -438,10 +417,8 @@
               cleanup = homebrewCleanup;
             })
             (sharedConfiguration {inherit primaryUser manageNix;})
-            (homeManagerConfiguration {
-              inherit primaryUser;
-              users = nixpkgs.lib.genAttrs enabledHomeUsers (_: homeModules);
-            })
+            (homeManagerConfiguration {inherit primaryUser;})
+            ./users
             desktopConfiguration
             ./camera.nix
             ./keep-awake.nix
@@ -468,13 +445,11 @@
       machineModule = ./machines/kats-macbook-neo.nix;
       manageNix = false;
       homebrewCleanup = "none";
-      homeModules = [./home/agents.nix ./home/desktop.nix];
       t3codeTokenSecret = "t3code-managed-access-token.kats-macbook-neo";
     };
 
     darwinConfigurations."mac-demarco-mini" = mkDarwinSystem {
       primaryUser = "imalison";
-      enabledHomeUsers = personalUsers;
       machineModule = ./machines/mac-demarco-mini.nix;
     };
 
@@ -484,16 +459,6 @@
       homebrewCleanup = "none";
       extraCasks = ["google-chrome"];
       t3codeTokenSecret = "t3code-managed-access-token.alexanders-macbook-air";
-      homeModules = [
-        ./home/agents.nix
-        ./home/desktop.nix
-        {
-          dotfiles.gitIdentity = {
-            name = "Alexander Malison";
-            email = "alexmalison@gmail.com";
-          };
-        }
-      ];
     };
 
     # Expose the package set, including overlays, for convenience.
