@@ -64,6 +64,11 @@ rec {
   t3codeFleetEnrollmentRecipients = [
     "age17uve8xv09jpn4wsks2njc9nwpaqgvgnvwyxyvy5nfr50fkl0jynqf6tclu"
   ];
+  # Alex's phone; identity generated on msi-elliott, backed up in
+  # nixos/secrets/t3code-fleet-enrollment-key.alex.age.
+  alexT3codeFleetEnrollmentRecipients = [
+    "age1cc97qrx0xh90pcul525zl9jeteuct5g6etnpa9n8p29guct9dfzqf0zeq5"
+  ];
   allKeys = loewyKeys ++ mikeKeys ++ sshClientKeys ++ deanKeys ++ alexKeys ++ hostKeys;
   userKeys = {
     imalison = sshClientKeys;
