@@ -58,6 +58,7 @@ in {
   };
   myModules.gitea-runner.enable = false;
   myModules.vscode.enable = true;
+  myModules.games.enable = lib.mkForce true;
   myUsers.kat.apps.enable = true;
   myModules.ntfy.enable = true;
   myModules.nvidia.enable = true;
