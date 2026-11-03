@@ -52,6 +52,7 @@
     ./paseo.nix
     ./plasma.nix
     ./postgres.nix
+    ./primary-user-home.nix
     ./rabbitmq.nix
     ./remote-hyprland.nix
     ./river-xmonad.nix

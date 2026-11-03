@@ -72,8 +72,10 @@ in {
 
   config = {
     nixpkgs.overlays = [
-      (final: _: {
+      (final: prev: {
         playwright-cli = final.callPackage ../packages/playwright-cli {};
+        # Removed from nixpkgs; take only the workstation overlay's fork build.
+        inherit ((import ../../nix-shared/overlays) final prev) rofi-pass;
       })
       # On this nixpkgs pin, fastmcp's stateful proxy tests fail deterministically
       # (anyio cancel-scope errors), which blocks building mcp-nixos.
@@ -102,6 +104,7 @@ in {
     # Desktop agents download native binaries that need the standard ELF loader.
     programs.nix-ld.enable = true;
     hardware.uinput.enable = true;
+    users.users.${user}.extraGroups = ["input" "uinput"];
     programs.ydotool = {
       enable = true;
       group = "input";
@@ -239,14 +242,25 @@ in {
     home-manager.users.${user} = {config, ...}: let
       link = config.lib.file.mkOutOfStoreSymlink;
     in {
-      imports = [inputs.codex-desktop-linux.homeManagerModules.default];
+      imports = [
+        inputs.codex-desktop-linux.homeManagerModules.default
+        ../../nix-shared/home-manager/codex-generated-skills.nix
+      ];
+      # Only the managed MCP servers; the shared Codex config is personal.
+      myModules.codexGeneratedSkills = {
+        enable = true;
+        sharedDotfiles = false;
+        computerUseLinuxPackage = pkgs.computer-use-linux;
+      };
       programs.codexDesktopLinux = {
         enable = true;
         cliPackage = codexCli;
         computerUseUi.enable = true;
         linuxFeatures = ["shallow-repository-watches"];
       };
-      home.file.".claude/skills/computer-use-linux".source = link "${worktree}/dotfiles/agents/skills/computer-use-linux";
+      home.file = lib.genAttrs [".claude/skills/computer-use-linux" ".codex/skills/computer-use-linux"] (_: {
+        source = link "${worktree}/dotfiles/agents/skills/computer-use-linux";
+      });
       systemd.user.sessionVariables.YDOTOOL_SOCKET = "/run/ydotoold/socket";
       xdg.configFile = {
         "hypr".source = link "${worktree}/dotfiles/config/hypr";
@@ -276,6 +290,18 @@ in {
           WorkingDirectory = "%h";
           Restart = "on-failure";
           RestartSec = 5;
+        };
+        Install.WantedBy = ["default.target"];
+      };
+      # The remote session starts from boot without a PAM login, so nothing
+      # unlocks the keyring. The login keyring has an empty password (the disk is
+      # unencrypted, so a stored one would add nothing), which unlocks without a
+      # prompt but still starts locked, and some apps give up on a locked keyring.
+      systemd.user.services.unlock-login-keyring = {
+        Unit.Description = "Unlock the passwordless login keyring";
+        Service = {
+          Type = "oneshot";
+          ExecStart = "${pkgs.systemd}/bin/busctl --user call org.freedesktop.secrets /org/freedesktop/secrets org.freedesktop.Secret.Service Unlock ao 1 /org/freedesktop/secrets/collection/login";
         };
         Install.WantedBy = ["default.target"];
       };

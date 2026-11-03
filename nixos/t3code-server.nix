@@ -15,7 +15,7 @@
         message = "myModules.t3codeServer needs myModules.t3code for its managed-access token.";
       }
     ];
-    users.users.imalison.linger = true;
+    users.users.${config.myModules.primaryUser}.linger = true;
     # The server's preview browser is a generic-linux chrome-headless-shell it
     # downloads to ~/.t3/tools and runs through nix-ld.
     programs.nix-ld = {
@@ -40,7 +40,7 @@
       ];
     };
     home-manager.sharedModules = [inputs.t3code.homeManagerModules.t3code-server];
-    home-manager.users.imalison = {config, ...}: {
+    home-manager.users.${config.myModules.primaryUser} = {config, ...}: {
       imports = [../nix-shared/home-manager/t3code-server-config.nix];
 
       services.t3code = {

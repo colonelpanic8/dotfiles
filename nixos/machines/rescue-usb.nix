@@ -136,7 +136,11 @@ in {
     backupFileExtension = "hm-backup";
     extraSpecialArgs.nixos = {inherit config;};
     users.${user} = {
-      imports = [../dotfiles-links.nix];
+      imports = [../dotfiles-links.nix ../git-config.nix];
+      programs.git.settings.user = {
+        name = "Ivan Malison";
+        email = "IvanMalison@gmail.com";
+      };
       home = {
         username = user;
         homeDirectory = home;

@@ -49,7 +49,7 @@
       mv -- "$target_path" "$candidate"
     '';
     home-manager.backupFileExtension = "hm-backup";
-    home-manager.sharedModules = [./home-manager.nix];
+    home-manager.sharedModules = [./home-manager.nix ./git-config.nix];
 
     nix = rec {
       extraOptions = ''

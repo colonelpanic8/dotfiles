@@ -61,6 +61,19 @@ in {
   ];
 
   dotfiles.personal = true;
+  dotfiles.gitIdentity = lib.mkDefault {
+    name = "Ivan Malison";
+    email = "IvanMalison@gmail.com";
+  };
+  programs.git.includes =
+    map (gitdir: {
+      condition = "gitdir:${gitdir}";
+      path = "~/.gitconfig.org-agenda-api";
+    }) [
+      "~/projects/org-agenda-api/"
+      "~/projects/dotfiles/org-agenda-api/"
+      "**/runtime/data/org/"
+    ];
 
   age.identityPaths = ["${config.home.homeDirectory}/.ssh/id_ed25519"];
   age.secrets.gpg-keys.file = ../../../nixos/secrets/gpg-keys.age;

@@ -1,5 +1,9 @@
 let
   keys = import ./keys.nix;
+  alexFleet = builtins.listToAttrs (map (member: {
+    name = member.label;
+    value = member;
+  }) (import ./t3code-fleet.alex.nix));
 in {
   alex = {
     label = "Alex";
@@ -10,11 +14,11 @@ in {
         hostKey = keys.alexandersMacbookAirHostKey;
         localPort = 13774;
       };
-      # Not managed here: its server listens on its Tailscale address and keeps
-      # its own environment ID.
+      # Its server listens on its Tailscale address and keeps its own
+      # environment ID; both come from Alex's fleet manifest.
       msi-elliott = {
-        url = "http://msi-elliott.tail40f15e.ts.net:3773/";
-        environmentId = "60c44129-b35f-42bf-bb1f-346511391eee";
+        url = alexFleet.msi-elliott.httpBaseUrl;
+        inherit (alexFleet.msi-elliott) environmentId;
       };
     };
   };

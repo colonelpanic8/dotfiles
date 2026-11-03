@@ -72,20 +72,19 @@ in {
         };
       });
       default = null;
-      description = "Written to ~/.gitconfig.custom, which the shared gitconfig includes after its own [user].";
+      description = "Written to Home Manager's ~/.config/git/config; the shared ~/.gitconfig sets no identity.";
     };
   };
 
   config = {
     programs.home-manager.enable = true;
 
-    home.file =
-      dotfilesLinks
-      // lib.optionalAttrs (cfg.gitIdentity != null) {
-        ".gitconfig.custom".text = lib.generators.toGitINI {
-          user = {inherit (cfg.gitIdentity) name email;};
-        };
-      };
+    home.file = dotfilesLinks;
+
+    programs.git = {
+      enable = true;
+      settings.user = lib.mkIf (cfg.gitIdentity != null) {inherit (cfg.gitIdentity) name email;};
+    };
 
     home.packages = with pkgs; [
       alt-tab-macos

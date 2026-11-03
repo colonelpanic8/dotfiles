@@ -47,6 +47,8 @@ in
     "t3code-managed-access-token.age".publicKeys = keys.agenixKeys;
     "t3code-fleet-enrollment.age".publicKeys = keys.agenixKeys ++ keys.t3codeFleetEnrollmentRecipients;
     "t3code-mobile-settings.age".publicKeys = keys.agenixKeys ++ keys.t3codeFleetEnrollmentRecipients;
+    "t3code-fleet-enrollment.alex.age".publicKeys = keys.sshClientKeys ++ keys.alexKeys ++ keys.alexT3codeFleetEnrollmentRecipients;
+    "t3code-fleet-enrollment-key.alex.age".publicKeys = keys.sshClientKeys ++ keys.alexKeys;
     "paseo-password-alexanders-macbook-air.age".publicKeys = keys.agenixKeys ++ keys.alexKeys ++ [keys.alexandersMacbookAirHostKey];
     "hermes-environment.age".publicKeys = keys.agenixKeys;
     "google-messages-bridge-api-token.age".publicKeys = keys.agenixKeys;
