@@ -47,6 +47,9 @@ DesktopExtras plugin. DesktopBrightness and DesktopSwap show brightness and swap
 as their own pills and hide on machines without a controllable display or swap;
 upstream's control center button would show a placeholder icon instead. AI
 quotas use upstream DankAIUsage with remaining usage and both providers visible.
+The media widget keeps the title and artist visible and shows synced lyrics
+beside them (the fork's "Keep title and artist" option); when the bar runs
+short, the lyrics go first.
 
 The tray orders icons by the priorities in the existing
 `~/.config/taffybar/sni-priorities.yaml`, decreasing away from the screen edge.

@@ -46,7 +46,11 @@
           "workspaceColorMode": "s",
           "workspaceFocusedBorderThickness": 3
         },
-        "music"
+        {
+          "id": "music",
+          "enabled": true,
+          "mediaLyricsBesideTrack": true
+        }
       ],
       "centerWidgets": [
         "clock"
