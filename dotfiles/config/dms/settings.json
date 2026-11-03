@@ -33,7 +33,7 @@
           "showWorkspaceName": false,
           "showWorkspaceApps": true,
           "showOccupiedWorkspacesOnly": true,
-          "showSpecialWorkspaces": false,
+          "showSpecialWorkspaces": true,
           "groupWorkspaceApps": false,
           "maxWorkspaceIcons": 30,
           "workspaceActiveAppHighlightEnabled": true,
