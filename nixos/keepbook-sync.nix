@@ -59,6 +59,7 @@
           Requires = ["tray.target"];
         };
         Service = {
+          ExecStartPre = "${import ./wait-for-tray-host.nix pkgs}";
           ExecStart = keepbookDioxusExec;
           WorkingDirectory = builtins.dirOf cfg.configPath;
           Restart = "on-failure";

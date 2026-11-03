@@ -294,6 +294,8 @@
         package = rlruDioxusDesktop;
         startInTray = true;
       };
+
+      systemd.user.services.rlru.Service.ExecStartPre = "${import ./wait-for-tray-host.nix pkgs}";
     };
 
     home-manager.extraSpecialArgs.cuaDriverSkill = builtins.path {
