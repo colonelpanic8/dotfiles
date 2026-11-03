@@ -4,6 +4,9 @@
 #
 #   mova_agenda today [--habits]   JSON list of today's entries, overdue
 #                                  included (habits only with --habits)
+#   mova_agenda habits [DAYS]      JSON {colors, habits}: every window habit
+#                                  with DAYS (default 10) days of history,
+#                                  today and two days ahead
 #   mova_agenda complete JSON      Complete an entry; JSON has id, or
 #                                  file/pos/title for headings without an ID
 #
@@ -57,6 +60,42 @@ today() {
       ])'
 }
 
+habits() {
+  local days="${1:-10}" config
+  [[ "$days" =~ ^[0-9]+$ ]] || die "habits needs a number of days"
+  config="$(request "$url/habit-config" | jq -c '.colors // {}')"
+  request "$url/all-habit-statuses?preceding=$((days - 1))&following=2" \
+    | jq -c --argjson colors "$config" '
+    {
+      colors: {
+        conforming: ($colors.conforming // "#00B0FF"),
+        notConforming: ($colors.notConforming // "#F44336")
+      },
+      habits: [.habits[]
+        | select(.status == "ok")
+        | ((.graph // []) | map(select(.status == "present"))[0] // {}) as $today
+        | {
+            id, title,
+            needed: (.currentState.completionNeededToday // false),
+            done: (($today.completionCount // 0) > 0),
+            ratio: (.currentState.conformingRatio // 0),
+            windows: [(.currentState.windowSpecsStatus // [])[] | {
+              done: .completionsInWindow,
+              target: .targetRepetitions,
+              days: ((.duration.days // 0) + 7 * (.duration.weeks // 0)
+                     + 30 * (.duration.months // 0) + 365 * (.duration.years // 0))
+            }],
+            graph: [(.graph // [])[] | {
+              date, status,
+              count: .completionCount,
+              ratio: .conformingRatioWithout,
+              ratioWith: .conformingRatioWith
+            }]
+          }]
+      | sort_by([(if .done then 2 elif .needed then 0 else 1 end), .ratio, .title])
+    }'
+}
+
 complete() {
   local body
   body="$(printf '%s' "${1:-}" | jq -c '
@@ -68,6 +107,7 @@ complete() {
 
 case "${1:-}" in
 today) shift; today "$@" ;;
+habits) shift; habits "$@" ;;
 complete) shift; complete "$@" ;;
-*) die "usage: mova_agenda today [--habits] | complete JSON" ;;
+*) die "usage: mova_agenda today [--habits] | habits [DAYS] | complete JSON" ;;
 esac

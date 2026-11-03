@@ -88,16 +88,21 @@ cached for offline use); templates with more prompts grow extra fields, and
 date prompts accept `today`, `tomorrow`, weekday names, `+N` or an ISO date,
 optionally with `HH:MM`. Enter moves to the next empty required field, then
 queues the capture through `mova_capture.sh --values`, the same retrying queue
-Hyper+T uses. The last template used is kept in the plugin's state. Habits
-are hidden unless the dash card's "Show habits" option (or `"habits": true` in
-the plugin's settings, for the other surfaces) turns them on. The view runs `mova_agenda`,
-which reads the API password from the agenix secret through
+Hyper+T uses. The last template used is kept in the plugin's state.
+
+The Habits tab (`mova_agenda habits`) lists every org-window-habit, due ones
+first, with progress in each window and a strip of the last ten days, today
+(taller, split into its color now and after completing) and two days ahead,
+colored with org-agenda-api's habit colors. A dot marks a day with a
+completion. The selected tab is kept in the plugin's state. The view runs
+`mova_agenda`, which reads the API password from the agenix secret through
 `mova_api_password`.
 
 The Calendar card reads Dux Calendar (`dcal`). `nixos/dux-calendar.nix` gives
 dcal the vdirsyncer Google feeds as a read-only account and the org TODOs as a
 task list through org-agenda-api's `org-agenda-dcal` provider, so dated TODOs
-show as dots on their scheduled or deadline day.
+show on their scheduled or deadline day as boxes (checked once done), each
+marker kind with its count.
 
 ## Checks
 

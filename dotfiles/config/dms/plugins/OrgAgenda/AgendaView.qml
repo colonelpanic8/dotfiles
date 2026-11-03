@@ -4,7 +4,8 @@ import qs.Widgets
 import qs.DCommon.Widgets
 import qs.Modules.DDash
 
-// Agenda list plus capture through any org-agenda-api capture template.
+// Agenda and habit lists plus capture through any org-agenda-api capture
+// template.
 Item {
     id: root
 
@@ -25,11 +26,36 @@ Item {
             "required": true
         }
     ]
+    property string tab: pluginService?.loadPluginState(pluginId, "tab", "agenda") ?? "agenda"
+    readonly property bool showingHabits: tab === "habits"
+    readonly property color habitGood: agenda.habitColors.conforming
+    readonly property color habitBad: agenda.habitColors.notConforming
+    readonly property int habitCell: Theme.spacingS + Theme.spacingXXS
     property bool picking: false
     property string formError: ""
 
     function focusCapture() {
         captureInput.forceActiveFocus();
+    }
+
+    function chooseTab(key) {
+        tab = key;
+        picking = false;
+        pluginService?.savePluginState(pluginId, "tab", key);
+    }
+
+    function habitColor(ratio) {
+        const t = Math.max(0, Math.min(1, ratio));
+        return Qt.rgba(habitBad.r + (habitGood.r - habitBad.r) * t, habitBad.g + (habitGood.g - habitBad.g) * t, habitBad.b + (habitGood.b - habitBad.b) * t, 1);
+    }
+
+    function habitSubtitle(habit) {
+        const parts = (habit.windows ?? []).map(w => I18n.trFor("orgAgenda", "%1/%2 in %3d").arg(w.done).arg(w.target).arg(w.days));
+        if (habit.done)
+            parts.unshift(I18n.trFor("orgAgenda", "Done today"));
+        else if (!habit.needed)
+            parts.unshift(I18n.trFor("orgAgenda", "Optional today"));
+        return parts.join(" · ");
     }
 
     function chooseTemplate(key) {
@@ -157,16 +183,53 @@ Item {
         anchors.top: parent.top
         height: Theme.buttonHeightXS
 
-        StyledText {
+        Row {
             anchors.left: parent.left
-            anchors.leftMargin: Theme.spacingXS
-            anchors.right: refreshButton.left
             anchors.verticalCenter: parent.verticalCenter
-            text: root.agenda.entries.length > 0 ? I18n.trFor("orgAgenda", "Agenda · %1").arg(root.agenda.entries.length) : I18n.trFor("orgAgenda", "Agenda")
-            font.pixelSize: Theme.fontSizeSmall
-            font.weight: Theme.fontWeightMedium
-            color: root.mutedColor
-            elide: Text.ElideRight
+            height: parent.height
+            spacing: Theme.spacingXXS
+
+            Repeater {
+                model: [
+                    {
+                        "key": "agenda",
+                        "label": I18n.trFor("orgAgenda", "Agenda"),
+                        "count": root.agenda.entries.length
+                    },
+                    {
+                        "key": "habits",
+                        "label": I18n.trFor("orgAgenda", "Habits"),
+                        "count": root.agenda.habitsDue
+                    }
+                ]
+
+                StyledRect {
+                    id: tabButton
+                    required property var modelData
+                    readonly property bool selected: root.tab === modelData.key
+                    height: parent.height
+                    width: tabLabel.implicitWidth + Theme.spacingS * 2
+                    radius: Theme.cornerRadius
+                    color: selected ? Theme.chipSurface : tabMouse.containsMouse ? Theme.withAlpha(Theme.chipSurface, 0.5) : "transparent"
+
+                    StyledText {
+                        id: tabLabel
+                        anchors.centerIn: parent
+                        text: tabButton.modelData.count > 0 ? "%1 · %2".arg(tabButton.modelData.label).arg(tabButton.modelData.count) : tabButton.modelData.label
+                        font.pixelSize: Theme.fontSizeSmall
+                        font.weight: Theme.fontWeightMedium
+                        color: tabButton.selected ? root.contentColor : root.mutedColor
+                    }
+
+                    MouseArea {
+                        id: tabMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.chooseTab(tabButton.modelData.key)
+                    }
+                }
+            }
         }
 
         DActionButton {
@@ -175,7 +238,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             buttonSize: DashMetrics.eventActionSize
             iconSize: DashMetrics.eventActionIconSize
-            iconName: root.agenda.loading ? "hourglass_top" : "refresh"
+            iconName: root.agenda.loading || root.agenda.habitsLoading ? "hourglass_top" : "refresh"
             iconColor: root.mutedColor
             tooltipText: I18n.trFor("orgAgenda", "Refresh")
             onClicked: root.agenda.refresh()
@@ -286,7 +349,7 @@ Item {
         anchors.right: parent.right
         anchors.top: captureBox.bottom
         anchors.margins: Theme.spacingXS
-        readonly property string message: root.formError || root.agenda.error
+        readonly property string message: root.formError || (root.showingHabits ? root.agenda.habitsError : root.agenda.error)
         visible: message !== ""
         text: message
         font.pixelSize: Theme.fontSizeSmall
@@ -363,7 +426,7 @@ Item {
     ListView {
         id: list
         anchors.fill: templateList
-        visible: !root.picking
+        visible: !root.picking && !root.showingHabits
         clip: true
         spacing: Theme.spacingXXS
         model: root.agenda.entries
@@ -419,6 +482,120 @@ Item {
             anchors.centerIn: parent
             visible: list.count === 0 && !root.agenda.loading && root.agenda.error === ""
             text: I18n.trFor("orgAgenda", "Nothing on the agenda")
+            font.pixelSize: Theme.fontSizeSmall
+            color: root.mutedColor
+        }
+    }
+
+    ListView {
+        id: habitList
+        anchors.fill: templateList
+        visible: !root.picking && root.showingHabits
+        clip: true
+        spacing: Theme.spacingXXS
+        model: root.agenda.habits
+        boundsBehavior: Flickable.StopAtBounds
+
+        delegate: Item {
+            id: habitRow
+            required property var modelData
+            width: ListView.view.width
+            height: DashMetrics.eventRowMinHeight
+
+            DActionButton {
+                id: habitCheck
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                buttonSize: DashMetrics.eventActionSize
+                iconSize: DashMetrics.eventActionIconSize
+                iconName: habitRow.modelData.done ? "check_box" : "check_box_outline_blank"
+                iconColor: habitRow.modelData.done ? root.mutedColor : habitRow.modelData.needed ? root.accentColor : root.mutedColor
+                enabled: !habitRow.modelData.done
+                tooltipText: I18n.trFor("orgAgenda", "Complete")
+                onClicked: root.agenda.completeHabit(habitRow.modelData)
+            }
+
+            Column {
+                anchors.left: habitCheck.right
+                anchors.leftMargin: Theme.spacingS
+                anchors.right: graph.left
+                anchors.rightMargin: Theme.spacingS
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: Theme.spacingXXS
+
+                StyledText {
+                    width: parent.width
+                    text: habitRow.modelData.title
+                    font.pixelSize: Theme.fontSizeMedium
+                    font.weight: Theme.fontWeightMedium
+                    color: habitRow.modelData.done ? root.mutedColor : root.contentColor
+                    elide: Text.ElideRight
+                    maximumLineCount: 1
+                }
+
+                StyledText {
+                    width: parent.width
+                    text: root.habitSubtitle(habitRow.modelData)
+                    font.pixelSize: Theme.fontSizeSmall
+                    color: root.mutedColor
+                    elide: Text.ElideRight
+                    maximumLineCount: 1
+                }
+            }
+
+            // Right-aligned so today's cell lines up across habits of any age.
+            Row {
+                id: graph
+                anchors.right: parent.right
+                anchors.rightMargin: Theme.spacingXS
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: Theme.spacingXXS
+
+                Repeater {
+                    model: habitRow.modelData.graph
+
+                    Rectangle {
+                        id: cell
+                        required property var modelData
+                        readonly property bool future: modelData.status === "future"
+                        readonly property bool present: modelData.status === "present"
+                        width: root.habitCell
+                        height: root.habitCell * (present ? 1.5 : 1)
+                        anchors.verticalCenter: parent.verticalCenter
+                        radius: Theme.spacingXXS
+                        color: future ? "transparent" : root.habitColor(modelData.ratio)
+                        border.width: future ? 1 : 0
+                        border.color: Theme.outlineVariant
+
+                        // What completing today would bring the habit to.
+                        Rectangle {
+                            visible: cell.present && cell.modelData.count === 0 && cell.modelData.ratioWith !== cell.modelData.ratio
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.bottom: parent.bottom
+                            height: parent.height / 2
+                            bottomLeftRadius: parent.radius
+                            bottomRightRadius: parent.radius
+                            color: root.habitColor(cell.modelData.ratioWith)
+                        }
+
+                        Rectangle {
+                            visible: cell.modelData.count > 0
+                            anchors.centerIn: parent
+                            width: Math.round(root.habitCell / 3)
+                            height: width
+                            radius: width / 2
+                            color: "#FFFFFF"
+                        }
+                    }
+                }
+            }
+        }
+
+        StyledText {
+            anchors.centerIn: parent
+            visible: habitList.count === 0 && !root.agenda.habitsLoading && root.agenda.habitsError === ""
+            text: I18n.trFor("orgAgenda", "No habits")
             font.pixelSize: Theme.fontSizeSmall
             color: root.mutedColor
         }

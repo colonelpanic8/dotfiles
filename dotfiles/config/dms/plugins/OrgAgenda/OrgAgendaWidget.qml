@@ -13,7 +13,6 @@ PluginComponent {
 
     AgendaData {
         id: agendaData
-        showHabits: root.pluginData.habits === true
     }
 
     horizontalBarPill: Component {

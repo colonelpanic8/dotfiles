@@ -14,7 +14,6 @@ DesktopPluginComponent {
 
     AgendaData {
         id: agendaData
-        showHabits: root.pluginData.habits === true
     }
 
     Rectangle {

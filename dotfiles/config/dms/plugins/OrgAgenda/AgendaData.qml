@@ -2,12 +2,12 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// Today's org agenda (overdue included) through mova_agenda, which talks to
-// org-agenda-api. Captures go through mova_capture.sh's retrying queue.
+// Today's org agenda (overdue included) and window habits through
+// mova_agenda, which talks to org-agenda-api. Captures go through
+// mova_capture.sh's retrying queue.
 Item {
     id: root
 
-    property bool showHabits: false
     // Refresh periodically while true, and on becoming true if stale.
     property bool active: true
 
@@ -31,14 +31,21 @@ Item {
     property double loadedAt: 0
     property var templates: fallbackTemplates
     property var pendingCompletions: []
+    property var habits: []
+    property var habitColors: ({
+            "conforming": "#00B0FF",
+            "notConforming": "#F44336"
+        })
+    property string habitsError: ""
+    property bool habitsLoading: false
 
     readonly property int overdueCount: entries.filter(e => e.overdue).length
+    readonly property int habitsDue: habits.filter(h => h.needed && !h.done).length
 
     onActiveChanged: {
         if (active && Date.now() - loadedAt > staleMs)
             refresh();
     }
-    onShowHabitsChanged: refresh()
     Component.onCompleted: {
         refresh();
         templatesProc.running = true;
@@ -50,8 +57,17 @@ Item {
             return;
         }
         loading = true;
-        agendaProc.command = showHabits ? ["mova_agenda", "today", "--habits"] : ["mova_agenda", "today"];
         agendaProc.running = true;
+        refreshHabits();
+    }
+
+    function refreshHabits() {
+        if (habitsProc.running) {
+            habitsProc.again = true;
+            return;
+        }
+        habitsLoading = true;
+        habitsProc.running = true;
     }
 
     function parse(text) {
@@ -67,6 +83,21 @@ Item {
     function complete(entry) {
         entries = entries.filter(e => e !== entry);
         pendingCompletions = pendingCompletions.concat([JSON.stringify(entry)]);
+        runNextCompletion();
+    }
+
+    function completeHabit(habit) {
+        habits = habits.map(h => h.id !== habit.id ? h : Object.assign({}, h, {
+                "done": true,
+                "graph": h.graph.map(g => g.status !== "present" ? g : Object.assign({}, g, {
+                            "count": g.count + 1,
+                            "ratio": g.ratioWith
+                        }))
+            }));
+        pendingCompletions = pendingCompletions.concat([JSON.stringify({
+                "id": habit.id,
+                "title": habit.title
+            })]);
         runNextCompletion();
     }
 
@@ -91,6 +122,7 @@ Item {
     Process {
         id: agendaProc
         property bool again: false
+        command: ["mova_agenda", "today"]
         stdout: StdioCollector {
             onStreamFinished: {
                 const result = root.parse(text);
@@ -108,6 +140,31 @@ Item {
             if (again) {
                 again = false;
                 root.refresh();
+            }
+        }
+    }
+
+    Process {
+        id: habitsProc
+        property bool again: false
+        command: ["mova_agenda", "habits"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const result = root.parse(text);
+                if (Array.isArray(result?.habits)) {
+                    root.habits = result.habits;
+                    root.habitColors = result.colors;
+                    root.habitsError = "";
+                } else {
+                    root.habitsError = result?.error ?? "Unexpected response";
+                }
+            }
+        }
+        onExited: {
+            root.habitsLoading = false;
+            if (again) {
+                again = false;
+                root.refreshHabits();
             }
         }
     }

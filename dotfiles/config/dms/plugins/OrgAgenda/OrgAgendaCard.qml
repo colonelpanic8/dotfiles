@@ -10,7 +10,6 @@ DashCardComponent {
 
     AgendaData {
         id: agendaData
-        showHabits: root.options.habits === true
         active: root.live
     }
 
