@@ -10,29 +10,7 @@
   notificationsTrayIconPkgs = import pkgs.path {
     inherit system;
     config = pkgs.config or {};
-    overlays = [
-      inputs.notifications-tray-icon.overlays.default
-      (final: prev: {
-        haskellPackages = prev.haskellPackages.override (old: {
-          overrides =
-            final.lib.composeExtensions (old.overrides or (_: _: {}))
-            (hself: hsuper: {
-              notifications-tray-icon =
-                final.haskell.lib.overrideCabal
-                hsuper.notifications-tray-icon
-                (oldAttrs: {
-                  patches =
-                    (oldAttrs.patches or [])
-                    ++ [
-                      ./patches/notifications-tray-icon-gmail-oauth-detached-browser.patch
-                      ./patches/notifications-tray-icon-github-menu-item-id.patch
-                      ./patches/notifications-tray-icon-open-url-systemd-run.patch
-                    ];
-                });
-            });
-        });
-      })
-    ];
+    overlays = [inputs.notifications-tray-icon.overlays.default];
   };
 in
   makeEnable config "myModules.notifications-tray-icon" config.myUsers.imalison.has.dotfiles {

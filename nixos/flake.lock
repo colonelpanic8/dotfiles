@@ -2530,11 +2530,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1770783820,
-        "narHash": "sha256-vpZC7EjMpERmuFQBQibeyYj4qpE8zl4bQeS0eBhhGcs=",
+        "lastModified": 1793677945,
+        "narHash": "sha256-L17fyl72/juSY1v/k7ZxvuuZCEtaNRaH2v/Qw5mSgXI=",
         "owner": "colonelpanic8",
         "repo": "notifications-tray-icon",
-        "rev": "e7f2654513dd29006e7851e3eef9874e422e389b",
+        "rev": "2cb116d161f20bc257242175aaa9e8944b984c0c",
         "type": "github"
       },
       "original": {
