@@ -25,6 +25,7 @@
       ],
       "showOnLastDisplay": true,
       "leftWidgets": [
+        "idleCountdown",
         "launcherButton",
         {
           "id": "workspaceSwitcher",
@@ -108,7 +109,6 @@
           "trayUseInlineExpansion": true,
           "trayAutoOverflow": false
         },
-        "idleCountdown",
         "notificationButton",
         {
           "id": "battery",
