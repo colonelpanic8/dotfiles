@@ -36,6 +36,44 @@
       done
     '';
   };
+
+  wifiWatchdog = pkgs.writeShellApplication {
+    name = "wifi-watchdog";
+    runtimeInputs = with pkgs; [coreutils gawk iproute2 iputils kmod networkmanager];
+    text = ''
+      iface=wlp4s0
+      dir=/run/wifi-watchdog
+      mkdir -p "$dir"
+
+      healthy() {
+        echo 0 > "$dir/fails"
+        exit 0
+      }
+
+      nmcli -t -f DEVICE,STATE device | grep -qx "$iface:connected" || healthy
+      gw=$(ip -4 route show default dev "$iface" | awk '{print $3; exit}')
+      [ -n "$gw" ] || healthy
+      ping -q -c 3 -W 2 -I "$iface" "$gw" > /dev/null && healthy
+
+      fails=$(( $(cat "$dir/fails" 2>/dev/null || echo 0) + 1 ))
+      echo "$fails" > "$dir/fails"
+      echo "gateway $gw unreachable on $iface ($fails consecutive)"
+      [ "$fails" -ge 3 ] || exit 0
+
+      last=$(cat "$dir/last-reload" 2>/dev/null || echo 0)
+      now=$(date +%s)
+      if [ $((now - last)) -lt 600 ]; then
+        echo "reloaded mt7921e $((now - last))s ago; waiting"
+        exit 0
+      fi
+
+      echo "reloading mt7921e"
+      echo "$now" > "$dir/last-reload"
+      echo 0 > "$dir/fails"
+      modprobe -r mt7921e
+      modprobe mt7921e
+    '';
+  };
 in {
   imports = [
     ../configuration.nix
@@ -88,6 +126,22 @@ in {
   boot.extraModprobeConfig = ''
     options mt7921e disable_aspm=1
   '';
+
+  # NetworkManager does not recover from these stalls on its own.
+  systemd.services.wifi-watchdog = {
+    description = "Reload mt7921e when Wi-Fi is associated but the gateway is unreachable";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = lib.getExe wifiWatchdog;
+    };
+  };
+  systemd.timers.wifi-watchdog = {
+    wantedBy = ["timers.target"];
+    timerConfig = {
+      OnBootSec = "5min";
+      OnUnitActiveSec = "1min";
+    };
+  };
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.systemd-boot.configurationLimit = 1;
