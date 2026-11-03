@@ -72,8 +72,10 @@ in {
 
   config = {
     nixpkgs.overlays = [
-      (final: _: {
+      (final: prev: {
         playwright-cli = final.callPackage ../packages/playwright-cli {};
+        # Removed from nixpkgs; take only the workstation overlay's fork build.
+        inherit ((import ../../nix-shared/overlays) final prev) rofi-pass;
       })
       # On this nixpkgs pin, fastmcp's stateful proxy tests fail deterministically
       # (anyio cancel-scope errors), which blocks building mcp-nixos.
