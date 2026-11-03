@@ -16,7 +16,7 @@
   "systemTrayItemClickActions": {},
   "barConfigs": [
     {
-      "id": "main",
+      "id": "default",
       "name": "Desktop",
       "enabled": true,
       "position": 0,
