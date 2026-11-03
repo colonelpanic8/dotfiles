@@ -10,9 +10,9 @@
   "osdVolumeEnabled": true,
   "osdBrightnessEnabled": true,
   "osdWorkspaceEnabled": false,
-  "systemTrayLeftClickAction": "activate",
+  "systemTrayLeftClickAction": "menu",
   "systemTrayMiddleClickAction": "secondaryActivate",
-  "systemTrayRightClickAction": "menu",
+  "systemTrayRightClickAction": "activate",
   "systemTrayItemClickActions": {},
   "barConfigs": [
     {
