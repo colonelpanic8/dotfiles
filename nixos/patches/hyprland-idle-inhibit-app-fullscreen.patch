@@ -1,0 +1,67 @@
+diff --git a/src/desktop/rule/windowRule/WindowRule.cpp b/src/desktop/rule/windowRule/WindowRule.cpp
+index 805d407b..df1e65ea 100644
+--- a/src/desktop/rule/windowRule/WindowRule.cpp
++++ b/src/desktop/rule/windowRule/WindowRule.cpp
+@@ -88,6 +88,8 @@ static std::expected<int64_t, std::string> parseIdleInhibitMode(const std::strin
+         return IDLEINHIBIT_FOCUS;
+     if (raw == "fullscreen")
+         return IDLEINHIBIT_FULLSCREEN;
++    if (raw == "app_fullscreen")
++        return IDLEINHIBIT_APP_FULLSCREEN;
+ 
+     return std::unexpected(std::format("idle_inhibit rule has unknown mode \"{}\"", raw));
+ }
+diff --git a/src/desktop/rule/windowRule/WindowRuleApplicator.hpp b/src/desktop/rule/windowRule/WindowRuleApplicator.hpp
+index ed973153..0c3d1e49 100644
+--- a/src/desktop/rule/windowRule/WindowRuleApplicator.hpp
++++ b/src/desktop/rule/windowRule/WindowRuleApplicator.hpp
+@@ -19,7 +19,8 @@ namespace Desktop::Rule {
+         IDLEINHIBIT_NONE = 0,
+         IDLEINHIBIT_ALWAYS,
+         IDLEINHIBIT_FULLSCREEN,
+-        IDLEINHIBIT_FOCUS
++        IDLEINHIBIT_FOCUS,
++        IDLEINHIBIT_APP_FULLSCREEN
+     };
+ 
+     class CWindowRuleApplicator {
+diff --git a/src/managers/input/IdleInhibitor.cpp b/src/managers/input/IdleInhibitor.cpp
+index 14249077..5cbac75f 100644
+--- a/src/managers/input/IdleInhibitor.cpp
++++ b/src/managers/input/IdleInhibitor.cpp
+@@ -33,6 +33,14 @@ void CInputManager::newIdleInhibitor(std::any inhibitor) {
+     recheckIdleInhibitorStatus();
+ }
+ 
++// app_fullscreen honors the window's own inhibitors only while it is fullscreen on a visible workspace.
++static bool appInhibitAllowed(const PHLWINDOW& w) {
++    if (!w || w->m_ruleApplicator->idleInhibitMode().valueOrDefault() != Desktop::Rule::IDLEINHIBIT_APP_FULLSCREEN)
++        return true;
++
++    return Fullscreen::controller()->isFullscreen(w) && w->m_workspace && w->m_workspace->visible();
++}
++
+ void CInputManager::recheckIdleInhibitorStatus() {
+ 
+     for (auto const& ii : m_idleInhibitors) {
+@@ -46,7 +54,10 @@ void CInputManager::recheckIdleInhibitorStatus() {
+         if (!WLSurface || !WLSurface->view())
+             continue;
+ 
+-        const auto VIEW          = WLSurface->view();
++        const auto VIEW = WLSurface->view();
++        if (!appInhibitAllowed(Desktop::View::CWindow::fromView(VIEW)))
++            continue;
++
+         const auto ALPHAMODIFIER = dynamicPointerCast<Desktop::View::IAlphaModifiable>(VIEW);
+         if (VIEW->mapped() && VIEW->acceptsInput() && (!ALPHAMODIFIER || ALPHAMODIFIER->alphaNonZero())) {
+             PROTO::idle->setInhibit(true);
+@@ -76,7 +87,7 @@ bool CInputManager::isWindowInhibiting(const PHLWINDOW& w, bool onlyHl) {
+         w->m_workspace->visible())
+         return true;
+ 
+-    if (onlyHl)
++    if (onlyHl || !appInhibitAllowed(w))
+         return false;
+ 
+     for (auto const& ii : m_idleInhibitors) {

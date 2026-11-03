@@ -15,12 +15,17 @@
   hyprlandStdenv = pkgs.gcc16Stdenv;
   hyprlockPackage = inputs.hyprlock.packages.${system}.default;
   xdgDesktopPortalHyprlandPackage = inputs.xdg-desktop-portal-hyprland.packages.${system}.default;
-  baseHyprlandPackage = hyprlandInput.packages.${system}.hyprland.override {
-    stdenv = hyprlandStdenv;
-    hyprland-guiutils = hyprlandInput.inputs.hyprland-guiutils.packages.${system}.default.override {
+  baseHyprlandPackage =
+    (hyprlandInput.packages.${system}.hyprland.override {
       stdenv = hyprlandStdenv;
-    };
-  };
+      hyprland-guiutils = hyprlandInput.inputs.hyprland-guiutils.packages.${system}.default.override {
+        stdenv = hyprlandStdenv;
+      };
+    }).overrideAttrs (old: {
+      # Adds idle_inhibit = "app_fullscreen": honor a window's own idle
+      # inhibitors only while it is fullscreen on a visible workspace.
+      patches = (old.patches or []) ++ [./patches/hyprland-idle-inhibit-app-fullscreen.patch];
+    });
   hyprlandGcc16Overlay = final: prev: {
     hyprland = baseHyprlandPackage;
     hyprland-unwrapped = final.hyprland.override {wrapRuntimeDeps = false;};

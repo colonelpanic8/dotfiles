@@ -413,6 +413,14 @@ function M.setup(ctx)
       no_auto_hdr = true,
     })
 
+    -- Browsers hold idle inhibitors for background media and wake-lock tabs,
+    -- even on hidden workspaces; only honor them for fullscreen windows.
+    hl.window_rule({
+      name = "browser-idle-inhibit-fullscreen-only",
+      match = { class = "^(google-chrome|chrome-.*|chromium-browser|brave-browser|firefox)$" },
+      idle_inhibit = "app_fullscreen",
+    })
+
     hl.window_rule({ match = { class = "^()$", title = "^()$" }, float = true })
     hl.window_rule({ match = { title = "^(Picture-in-Picture)$" }, float = true })
     hl.window_rule({

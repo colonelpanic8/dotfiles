@@ -11,12 +11,14 @@
   hyprlandStdenv = pkgs.gcc16Stdenv;
   hyprlockPackage = inputs.hyprlock.packages.${system}.default;
   baseHyprlandPackage =
-    hyprlandInput.packages.${system}.hyprland.override {
+    (hyprlandInput.packages.${system}.hyprland.override {
       stdenv = hyprlandStdenv;
       hyprland-guiutils = hyprlandInput.inputs.hyprland-guiutils.packages.${system}.default.override {
         stdenv = hyprlandStdenv;
       };
-    };
+    }).overrideAttrs (old: {
+      patches = (old.patches or []) ++ [../patches/hyprland-idle-inhibit-app-fullscreen.patch];
+    });
   hyprlandPluginsForBase = pkgs.callPackage "${pkgs.path}/pkgs/applications/window-managers/hyprwm/hyprland-plugins" {
     hyprland = baseHyprlandPackage;
   };
