@@ -93,6 +93,11 @@ optionally with `HH:MM`. Enter moves to the next empty required field, then
 queues the capture through `mova_capture.sh --values`, the same retrying queue
 Hyper+T uses. The last template used is kept in the plugin's state.
 
+The Agenda tab ends with the habits still due today. The search button swaps
+the capture row for a filter over every open TODO (`mova_agenda todos`,
+fetched at startup and refreshed when a search starts on data over five
+minutes old); words match the title, state, category and tags.
+
 The Habits tab (`mova_agenda habits`) lists every org-window-habit, due ones
 first, with progress in each window and a strip of the last ten days, today
 (taller, split into its color now and after completing) and two days ahead,

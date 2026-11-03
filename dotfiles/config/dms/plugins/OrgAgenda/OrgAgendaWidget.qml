@@ -29,8 +29,8 @@ PluginComponent {
 
             StyledText {
                 anchors.verticalCenter: parent.verticalCenter
-                visible: agendaData.entries.length > 0
-                text: agendaData.entries.length
+                visible: agendaData.agendaItems.length > 0
+                text: agendaData.agendaItems.length
                 font.pixelSize: root.textSize
                 color: Theme.widgetTextColor
             }
@@ -50,8 +50,8 @@ PluginComponent {
 
             StyledText {
                 anchors.horizontalCenter: parent.horizontalCenter
-                visible: agendaData.entries.length > 0
-                text: agendaData.entries.length
+                visible: agendaData.agendaItems.length > 0
+                text: agendaData.agendaItems.length
                 font.pixelSize: root.textSize
                 color: Theme.widgetTextColor
             }

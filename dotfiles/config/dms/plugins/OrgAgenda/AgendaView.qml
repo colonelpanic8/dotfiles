@@ -4,8 +4,8 @@ import qs.Widgets
 import qs.DCommon.Widgets
 import qs.Modules.DDash
 
-// Agenda and habit lists plus capture through any org-agenda-api capture
-// template.
+// Agenda, habits and search over open TODOs, plus capture through any
+// org-agenda-api capture template.
 Item {
     id: root
 
@@ -33,14 +33,40 @@ Item {
     readonly property int habitCell: Theme.spacingS + Theme.spacingXXS
     property bool picking: false
     property string formError: ""
+    property bool searching: false
+    property string query: ""
+    readonly property var searchResults: {
+        const words = query.toLowerCase().split(/\s+/).filter(w => w !== "");
+        if (words.length === 0)
+            return agenda.todos.slice(0, 100);
+        return agenda.todos.filter(t => {
+            const text = [t.title, t.todo, t.category ?? ""].concat(t.tags ?? []).join(" ").toLowerCase();
+            return words.every(w => text.includes(w));
+        }).slice(0, 100);
+    }
+    readonly property var listModel: searching ? searchResults : showingHabits ? agenda.habits : agenda.agendaItems
 
     function focusCapture() {
         captureInput.forceActiveFocus();
     }
 
+    function setSearching(on) {
+        searching = on;
+        picking = false;
+        if (on) {
+            agenda.refreshTodos(false);
+            Qt.callLater(() => searchInput.forceActiveFocus());
+        } else {
+            searchInput.clear();
+            focusCapture();
+        }
+    }
+
     function chooseTab(key) {
         tab = key;
         picking = false;
+        if (searching)
+            setSearching(false);
         pluginService?.savePluginState(pluginId, "tab", key);
     }
 
@@ -148,11 +174,20 @@ Item {
         focusCapture();
     }
 
+    function shortDate(date) {
+        return Qt.formatDate(new Date(date + "T00:00:00"), "MMM d");
+    }
+
     function subtitle(entry) {
         const parts = [];
-        if (entry.overdue) {
+        if (entry.overdue === undefined) {
+            if (entry.deadline)
+                parts.push(I18n.trFor("orgAgenda", "Deadline %1").arg(shortDate(entry.deadline)));
+            else if (entry.scheduled)
+                parts.push(I18n.trFor("orgAgenda", "Scheduled %1").arg(shortDate(entry.scheduled)));
+        } else if (entry.overdue) {
             const date = entry.deadline && entry.deadline < (entry.scheduled ?? "9999") ? entry.deadline : entry.scheduled;
-            parts.push(I18n.trFor("orgAgenda", "Overdue since %1").arg(Qt.formatDate(new Date(date + "T00:00:00"), "MMM d")));
+            parts.push(I18n.trFor("orgAgenda", "Overdue since %1").arg(shortDate(date)));
         } else if (entry.time) {
             const t = new Date("1970-01-01T" + entry.time + ":00");
             parts.push(Qt.formatTime(t, SettingsData.use24HourClock ? "HH:mm" : "h:mm AP"));
@@ -164,12 +199,17 @@ Item {
         parts.push(entry.todo);
         if (entry.category)
             parts.push(entry.category);
+        if (entry.tags?.length)
+            parts.push(entry.tags.map(t => ":" + t).join("") + ":");
         return parts.join(" · ");
     }
 
     Keys.onEscapePressed: event => {
         if (picking) {
             picking = false;
+            event.accepted = true;
+        } else if (searching) {
+            setSearching(false);
             event.accepted = true;
         } else {
             event.accepted = false;
@@ -194,7 +234,7 @@ Item {
                     {
                         "key": "agenda",
                         "label": I18n.trFor("orgAgenda", "Agenda"),
-                        "count": root.agenda.entries.length
+                        "count": root.agenda.agendaItems.length
                     },
                     {
                         "key": "habits",
@@ -233,15 +273,30 @@ Item {
         }
 
         DActionButton {
+            anchors.right: refreshButton.left
+            anchors.verticalCenter: parent.verticalCenter
+            buttonSize: DashMetrics.eventActionSize
+            iconSize: DashMetrics.eventActionIconSize
+            iconName: root.searching ? "close" : "search"
+            iconColor: root.searching ? root.accentColor : root.mutedColor
+            tooltipText: root.searching ? I18n.trFor("orgAgenda", "Close search") : I18n.trFor("orgAgenda", "Search TODOs")
+            onClicked: root.setSearching(!root.searching)
+        }
+
+        DActionButton {
             id: refreshButton
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             buttonSize: DashMetrics.eventActionSize
             iconSize: DashMetrics.eventActionIconSize
-            iconName: root.agenda.loading || root.agenda.habitsLoading ? "hourglass_top" : "refresh"
+            iconName: root.agenda.loading || root.agenda.habitsLoading || root.agenda.todosLoading ? "hourglass_top" : "refresh"
             iconColor: root.mutedColor
             tooltipText: I18n.trFor("orgAgenda", "Refresh")
-            onClicked: root.agenda.refresh()
+            onClicked: {
+                root.agenda.refresh();
+                if (root.searching)
+                    root.agenda.refreshTodos(true);
+            }
         }
     }
 
@@ -253,7 +308,22 @@ Item {
         anchors.topMargin: Theme.spacingXS
         spacing: Theme.spacingXS
 
+        DTextField {
+            id: searchInput
+            visible: root.searching
+            width: parent.width
+            height: DashMetrics.taskInputHeight
+            cornerRadius: Theme.fullRadius(width, height)
+            font.pixelSize: Theme.fontSizeSmall
+            leftIconName: "search"
+            leftIconSize: Theme.iconSizeSmall
+            hidePlaceholderOnFocus: false
+            placeholderText: root.agenda.todos.length > 0 ? I18n.trFor("orgAgenda", "Search %1 open TODOs…").arg(root.agenda.todos.length) : I18n.trFor("orgAgenda", "Search open TODOs…")
+            onTextChanged: root.query = text
+        }
+
         Item {
+            visible: !root.searching
             width: parent.width
             height: DashMetrics.taskInputHeight
 
@@ -330,6 +400,7 @@ Item {
 
             DTextField {
                 required property var modelData
+                visible: !root.searching
                 width: captureBox.width
                 height: DashMetrics.taskInputHeight
                 cornerRadius: Theme.fullRadius(width, height)
@@ -349,7 +420,7 @@ Item {
         anchors.right: parent.right
         anchors.top: captureBox.bottom
         anchors.margins: Theme.spacingXS
-        readonly property string message: root.formError || (root.showingHabits ? root.agenda.habitsError : root.agenda.error)
+        readonly property string message: root.searching ? root.agenda.todosError : root.formError || (root.showingHabits ? root.agenda.habitsError : root.agenda.error)
         visible: message !== ""
         text: message
         font.pixelSize: Theme.fontSizeSmall
@@ -423,20 +494,12 @@ Item {
         }
     }
 
-    ListView {
-        id: list
-        anchors.fill: templateList
-        visible: !root.picking && !root.showingHabits
-        clip: true
-        spacing: Theme.spacingXXS
-        model: root.agenda.entries
-        boundsBehavior: Flickable.StopAtBounds
+    Component {
+        id: entryRow
 
-        delegate: Item {
-            id: row
-            required property var modelData
-            width: ListView.view.width
-            height: DashMetrics.eventRowMinHeight
+        Item {
+            id: entryItem
+            readonly property var entry: parent?.modelData ?? ({})
 
             DActionButton {
                 id: check
@@ -445,9 +508,9 @@ Item {
                 buttonSize: DashMetrics.eventActionSize
                 iconSize: DashMetrics.eventActionIconSize
                 iconName: "check_box_outline_blank"
-                iconColor: row.modelData.overdue ? Theme.error : root.mutedColor
+                iconColor: entryItem.entry.overdue ? Theme.error : root.mutedColor
                 tooltipText: I18n.trFor("orgAgenda", "Complete")
-                onClicked: root.agenda.complete(row.modelData)
+                onClicked: root.agenda.complete(entryItem.entry)
             }
 
             Column {
@@ -459,7 +522,7 @@ Item {
 
                 StyledText {
                     width: parent.width
-                    text: (row.modelData.priority === "A" ? "[#A] " : "") + row.modelData.title
+                    text: (entryItem.entry.priority === "A" ? "[#A] " : "") + (entryItem.entry.title ?? "")
                     font.pixelSize: Theme.fontSizeMedium
                     font.weight: Theme.fontWeightMedium
                     color: root.contentColor
@@ -469,38 +532,22 @@ Item {
 
                 StyledText {
                     width: parent.width
-                    text: root.subtitle(row.modelData)
+                    text: root.subtitle(entryItem.entry)
                     font.pixelSize: Theme.fontSizeSmall
-                    color: row.modelData.overdue ? Theme.error : root.mutedColor
+                    color: entryItem.entry.overdue ? Theme.error : root.mutedColor
                     elide: Text.ElideRight
                     maximumLineCount: 1
                 }
             }
         }
-
-        StyledText {
-            anchors.centerIn: parent
-            visible: list.count === 0 && !root.agenda.loading && root.agenda.error === ""
-            text: I18n.trFor("orgAgenda", "Nothing on the agenda")
-            font.pixelSize: Theme.fontSizeSmall
-            color: root.mutedColor
-        }
     }
 
-    ListView {
-        id: habitList
-        anchors.fill: templateList
-        visible: !root.picking && root.showingHabits
-        clip: true
-        spacing: Theme.spacingXXS
-        model: root.agenda.habits
-        boundsBehavior: Flickable.StopAtBounds
+    Component {
+        id: habitRow
 
-        delegate: Item {
-            id: habitRow
-            required property var modelData
-            width: ListView.view.width
-            height: DashMetrics.eventRowMinHeight
+        Item {
+            id: habitItem
+            readonly property var habit: parent?.modelData ?? ({})
 
             DActionButton {
                 id: habitCheck
@@ -508,11 +555,11 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 buttonSize: DashMetrics.eventActionSize
                 iconSize: DashMetrics.eventActionIconSize
-                iconName: habitRow.modelData.done ? "check_box" : "check_box_outline_blank"
-                iconColor: habitRow.modelData.done ? root.mutedColor : habitRow.modelData.needed ? root.accentColor : root.mutedColor
-                enabled: !habitRow.modelData.done
+                iconName: habitItem.habit.done ? "check_box" : "check_box_outline_blank"
+                iconColor: !habitItem.habit.done && habitItem.habit.needed ? root.accentColor : root.mutedColor
+                enabled: !habitItem.habit.done
                 tooltipText: I18n.trFor("orgAgenda", "Complete")
-                onClicked: root.agenda.completeHabit(habitRow.modelData)
+                onClicked: root.agenda.completeHabit(habitItem.habit)
             }
 
             Column {
@@ -525,17 +572,17 @@ Item {
 
                 StyledText {
                     width: parent.width
-                    text: habitRow.modelData.title
+                    text: habitItem.habit.title ?? ""
                     font.pixelSize: Theme.fontSizeMedium
                     font.weight: Theme.fontWeightMedium
-                    color: habitRow.modelData.done ? root.mutedColor : root.contentColor
+                    color: habitItem.habit.done ? root.mutedColor : root.contentColor
                     elide: Text.ElideRight
                     maximumLineCount: 1
                 }
 
                 StyledText {
                     width: parent.width
-                    text: root.habitSubtitle(habitRow.modelData)
+                    text: root.habitSubtitle(habitItem.habit)
                     font.pixelSize: Theme.fontSizeSmall
                     color: root.mutedColor
                     elide: Text.ElideRight
@@ -552,7 +599,7 @@ Item {
                 spacing: Theme.spacingXXS
 
                 Repeater {
-                    model: habitRow.modelData.graph
+                    model: habitItem.habit.graph ?? []
 
                     Rectangle {
                         id: cell
@@ -591,11 +638,29 @@ Item {
                 }
             }
         }
+    }
+
+    ListView {
+        id: list
+        anchors.fill: templateList
+        visible: !root.picking
+        clip: true
+        spacing: Theme.spacingXXS
+        model: root.listModel
+        boundsBehavior: Flickable.StopAtBounds
+
+        delegate: Loader {
+            required property var modelData
+            width: ListView.view.width
+            height: DashMetrics.eventRowMinHeight
+            sourceComponent: modelData.graph !== undefined ? habitRow : entryRow
+        }
 
         StyledText {
             anchors.centerIn: parent
-            visible: habitList.count === 0 && !root.agenda.habitsLoading && root.agenda.habitsError === ""
-            text: I18n.trFor("orgAgenda", "No habits")
+            readonly property bool busy: root.searching ? root.agenda.todosLoading : root.showingHabits ? root.agenda.habitsLoading : root.agenda.loading
+            visible: list.count === 0 && (busy || !errorText.visible)
+            text: busy ? I18n.trFor("orgAgenda", "Loading…") : root.searching ? I18n.trFor("orgAgenda", "No matching TODOs") : root.showingHabits ? I18n.trFor("orgAgenda", "No habits") : I18n.trFor("orgAgenda", "Nothing on the agenda")
             font.pixelSize: Theme.fontSizeSmall
             color: root.mutedColor
         }

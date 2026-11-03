@@ -38,9 +38,18 @@ Item {
         })
     property string habitsError: ""
     property bool habitsLoading: false
+    // Every open TODO, for search; fetched at startup and when a search
+    // starts with stale data.
+    property var todos: []
+    property string todosError: ""
+    property bool todosLoading: false
+    property double todosLoadedAt: 0
 
     readonly property int overdueCount: entries.filter(e => e.overdue).length
-    readonly property int habitsDue: habits.filter(h => h.needed && !h.done).length
+    readonly property var dueHabits: habits.filter(h => h.needed && !h.done)
+    readonly property int habitsDue: dueHabits.length
+    // Today's entries, then habits still due today.
+    readonly property var agendaItems: entries.concat(dueHabits)
 
     onActiveChanged: {
         if (active && Date.now() - loadedAt > staleMs)
@@ -49,6 +58,7 @@ Item {
     Component.onCompleted: {
         refresh();
         templatesProc.running = true;
+        refreshTodos(false);
     }
 
     function refresh() {
@@ -70,6 +80,13 @@ Item {
         habitsProc.running = true;
     }
 
+    function refreshTodos(force) {
+        if (todosProc.running || (!force && Date.now() - todosLoadedAt < staleMs * 5))
+            return;
+        todosLoading = true;
+        todosProc.running = true;
+    }
+
     function parse(text) {
         try {
             return JSON.parse(text);
@@ -80,8 +97,13 @@ Item {
         }
     }
 
+    function sameItem(a, b) {
+        return a.id ? a.id === b.id : a.file === b.file && a.pos === b.pos;
+    }
+
     function complete(entry) {
-        entries = entries.filter(e => e !== entry);
+        entries = entries.filter(e => !sameItem(e, entry));
+        todos = todos.filter(t => !sameItem(t, entry));
         pendingCompletions = pendingCompletions.concat([JSON.stringify(entry)]);
         runNextCompletion();
     }
@@ -167,6 +189,24 @@ Item {
                 root.refreshHabits();
             }
         }
+    }
+
+    Process {
+        id: todosProc
+        command: ["mova_agenda", "todos"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const result = root.parse(text);
+                if (Array.isArray(result)) {
+                    root.todos = result;
+                    root.todosError = "";
+                    root.todosLoadedAt = Date.now();
+                } else {
+                    root.todosError = result?.error ?? "Unexpected response";
+                }
+            }
+        }
+        onExited: root.todosLoading = false
     }
 
     Process {

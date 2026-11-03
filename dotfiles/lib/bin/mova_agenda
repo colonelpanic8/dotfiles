@@ -7,6 +7,7 @@
 #   mova_agenda habits [DAYS]      JSON {colors, habits}: every window habit
 #                                  with DAYS (default 10) days of history,
 #                                  today and two days ahead
+#   mova_agenda todos              JSON list of every open TODO, for search
 #   mova_agenda complete JSON      Complete an entry; JSON has id, or
 #                                  file/pos/title for headings without an ID
 #
@@ -60,6 +61,23 @@ today() {
       ])'
 }
 
+todos() {
+  local done_states
+  done_states="$(request "$url/todo-states" | jq -c '.done // []')"
+  request -m 120 "$url/get-all-todos" \
+    | jq -c --argjson doneStates "$done_states" '
+    [.todos[]
+     | select(.todo as $t | $doneStates | index($t) | not)
+     | {
+         id, file, pos, title, todo, priority,
+         tags: (.tags // []),
+         category: .effectiveCategory,
+         habit: (.isWindowHabit // false),
+         scheduled: (.scheduled.date // null),
+         deadline: (.deadline.date // null)
+       }]'
+}
+
 habits() {
   local days="${1:-10}" config
   [[ "$days" =~ ^[0-9]+$ ]] || die "habits needs a number of days"
@@ -108,6 +126,7 @@ complete() {
 case "${1:-}" in
 today) shift; today "$@" ;;
 habits) shift; habits "$@" ;;
+todos) todos ;;
 complete) shift; complete "$@" ;;
-*) die "usage: mova_agenda today [--habits] | habits [DAYS] | complete JSON" ;;
+*) die "usage: mova_agenda today [--habits] | habits [DAYS] | todos | complete JSON" ;;
 esac
