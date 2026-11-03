@@ -10,7 +10,7 @@
 in {
   imports = [./git-sync.nix];
 
-  options.myUsers.kat = (import ../lib.nix lib).mkUser "kat" [
+  options.myUsers.kat = (import ../../../nix-shared/users/lib.nix lib).mkUser "kat" [
     {options.apps.enable = lib.mkEnableOption "Kat's desktop applications";}
   ];
 

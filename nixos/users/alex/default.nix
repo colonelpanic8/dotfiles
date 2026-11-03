@@ -7,7 +7,7 @@
 }: let
   groups = import ../groups.nix pkgs;
 in {
-  options.myUsers.alex = (import ../lib.nix lib).mkUser "alex" [];
+  options.myUsers.alex = (import ../../../nix-shared/users/lib.nix lib).mkUser "alex" [];
 
   config = lib.mkIf config.myUsers.alex.enable {
     users.users.alex =

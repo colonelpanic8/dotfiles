@@ -14,7 +14,7 @@ in {
     ./git-sync.nix
   ];
 
-  options.myUsers.imalison = (import ../lib.nix lib).mkUser "imalison" [];
+  options.myUsers.imalison = (import ../../../nix-shared/users/lib.nix lib).mkUser "imalison" [];
 
   config = lib.mkIf config.myUsers.imalison.enable {
     users.users.imalison =

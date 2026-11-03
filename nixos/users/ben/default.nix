@@ -8,7 +8,7 @@
   groups = import ../groups.nix pkgs;
   cfg = config.myUsers.ben;
 in {
-  options.myUsers.ben = (import ../lib.nix lib).mkUser "ben" [];
+  options.myUsers.ben = (import ../../../nix-shared/users/lib.nix lib).mkUser "ben" [];
 
   config = lib.mkMerge [
     (lib.mkIf cfg.enable {
