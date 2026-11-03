@@ -92,9 +92,22 @@ in {
     codexCli
     inputs.claude-code-nix.packages.${system}.default
   ];
-  image.repart.name = "imalison-nixos-rescue-usb";
+  image.repart = {
+    # Nixpkgs now gates the repart image behind this. Drop once
+    # nixos-portable's usb-image.nix sets it.
+    enable = true;
+    name = "imalison-nixos-rescue-usb";
+  };
 
   nixpkgs.config.allowUnfree = true;
+  # This machine skips configuration.nix, and with it the overlay in nix.nix.
+  # Enabling myModules.desktop still makes sni.nix reach for pkgs.crosspaste,
+  # so provide just that package.
+  nixpkgs.overlays = [
+    (final: _prev: {
+      crosspaste = final.callPackage ../packages/crosspaste {};
+    })
+  ];
 
   boot.loader.systemd-boot = {
     # MemTest86 reports which DIMM slot holds a failing address; memtest86+
@@ -149,7 +162,10 @@ in {
     pkgs.emacs-pgtk
     inputs.codex-desktop-linux.packages.${system}.codex-desktop-computer-use-ui-remote-mobile-control
     (pkgs.callPackage "${inputs.claude-desktop}/nix/claude-desktop.nix" {})
-    inputs.paseo.packages.${system}.default
+    # The web bundle can exceed Node's default 2 GiB heap limit.
+    (inputs.paseo.packages.${system}.default.overrideAttrs (_: {
+      NODE_OPTIONS = "--max-old-space-size=4096";
+    }))
     inputs.paseo.packages.${system}.desktop
   ];
 
