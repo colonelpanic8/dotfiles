@@ -22,8 +22,25 @@ in {
         sort-directories-first = true;
       };
 
-      programs.git.enable = true;
-      programs.git.signing.format = "openpgp";
+      programs.git = {
+        signing.format = "openpgp";
+        settings = {
+          user = {
+            name = "Ivan Malison";
+            email = "IvanMalison@gmail.com";
+          };
+          safe.directory = ["/shared/dean/railbird"];
+        };
+        includes =
+          map (gitdir: {
+            condition = "gitdir:${gitdir}";
+            path = "~/.gitconfig.org-agenda-api";
+          }) [
+            "~/projects/org-agenda-api/"
+            "~/projects/dotfiles/org-agenda-api/"
+            "**/runtime/data/org/"
+          ];
+      };
       programs.gh = {
         enable = true;
         settings.git_protocol = "ssh";

@@ -82,10 +82,9 @@
 [merge]
 	conflictstyle = diff3
 
-[user]
-	name = Ivan Malison
-	email = IvanMalison@gmail.com
-
+# Identity and other per-person settings belong in each user's Home Manager
+# config (~/.config/git/config), not here: this file is shared by every user,
+# and git reads it last, so anything set here would override theirs.
 [include]
 	path = ~/.gitconfig.this-machine
 
@@ -116,21 +115,10 @@
 	insteadOf = https://github.com/
 [url "git@gist.github.com:"]
 	insteadOf = https://gist.github.com/
-[includeIf "gitdir:~/projects/org-agenda-api/"]
-	path = ~/.gitconfig.org-agenda-api
-[includeIf "gitdir:~/projects/dotfiles/org-agenda-api/"]
-	path = ~/.gitconfig.org-agenda-api
-[includeIf "gitdir:**/runtime/data/org/"]
-	path = ~/.gitconfig.org-agenda-api
 [safe]
-	directory = /tmp/tmp.zfvv44RquC/runtime/data/org
-	directory = /tmp/tmp.zFdvVnKk4B/runtime/data/org
-	directory = /tmp/tmp.PQTdI3UzS3/runtime/data/org
 	directory = /srv/dotfiles/dotfiles/config/taffybar/taffybar
 	directory = /srv/dotfiles
-	directory = /srv/dotfiles/.worktrees/taffybar-week-old
 	# Emacs elpaca package repos live under the root-owned /srv/dotfiles
 	# checkout, so git otherwise refuses to fetch/merge them ("dubious
 	# ownership") and `elpaca-update-all` fails on every package.
 	directory = /srv/dotfiles/dotfiles/emacs.d/straight/repos/*
-	directory = /shared/dean/railbird

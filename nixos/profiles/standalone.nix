@@ -63,6 +63,7 @@ in {
     useGlobalPkgs = true;
     useUserPackages = true;
     backupFileExtension = "before-dotfiles";
+    sharedModules = [../git-config.nix];
     users.${user} = {config, ...}: let
       link = config.lib.file.mkOutOfStoreSymlink;
     in {
@@ -77,20 +78,7 @@ in {
         ".dircolors".source = link "${worktree}/dotfiles/dircolors";
       };
       xdg.configFile."zellij/config.kdl".source = link "${worktree}/dotfiles/config/zellij/config.kdl";
-      # Do not inherit the shared gitconfig's personal identity or signing setup.
-      programs.git = {
-        enable = true;
-        settings = {
-          init.defaultBranch = "master";
-          pull.rebase = false;
-          core.excludesFile = "/home/${user}/.gitignore";
-          alias = {
-            co = "checkout";
-            s = "status -s";
-            l = "log --oneline --graph";
-          };
-        };
-      };
+      programs.git.settings.pull.rebase = false;
     };
   };
 

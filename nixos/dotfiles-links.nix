@@ -34,6 +34,8 @@
     "codex"
     # Managed by Nix directly (PATH/fpath), not meant to appear as ~/.lib.
     "lib"
+    # Linked for every user by ./git-config.nix.
+    "gitconfig"
     # Avoid colliding with HM-generated xdg.configFile entries for now.
     "config"
     # Handled as a single directory symlink below.
