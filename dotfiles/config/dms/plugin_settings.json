@@ -21,6 +21,9 @@
   "desktopSwap": {
     "enabled": true
   },
+  "asusProfile": {
+    "enabled": true
+  },
   "orgAgenda": {
     "enabled": true
   }

@@ -73,6 +73,7 @@
         "desktopSwap",
         "cpuTemp",
         "gpuTemp",
+        "asusProfile",
         "dankAIUsage",
         {
           "id": "controlCenterButton",

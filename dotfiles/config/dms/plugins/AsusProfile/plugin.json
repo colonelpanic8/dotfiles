@@ -1,0 +1,10 @@
+{
+  "id": "asusProfile",
+  "name": "ASUS Profile",
+  "description": "asusd platform profile with separate AC and battery choices, hidden without asusd",
+  "version": "1.0.0",
+  "author": "Ivan Malison",
+  "type": "widget",
+  "capabilities": ["dankbar-widget"],
+  "component": "./AsusProfile.qml"
+}

@@ -99,6 +99,10 @@ in {
               src = config.lib.file.mkOutOfStoreSymlink "${dmsConfigDir}/plugins/DesktopSwap";
               settings = {};
             };
+            asusProfile = {
+              src = config.lib.file.mkOutOfStoreSymlink "${dmsConfigDir}/plugins/AsusProfile";
+              settings = {};
+            };
             orgAgenda = {
               src = config.lib.file.mkOutOfStoreSymlink "${dmsConfigDir}/plugins/OrgAgenda";
               settings = {};

@@ -45,7 +45,12 @@ one group. CPU history with usage drawn over the graph, frequency, optional
 readable RAPL package power, and a few desktop commands live in the small
 DesktopExtras plugin. DesktopBrightness and DesktopSwap show brightness and swap
 as their own pills and hide on machines without a controllable display or swap;
-upstream's control center button would show a placeholder icon instead. AI
+upstream's control center button would show a placeholder icon instead.
+AsusProfile shows asusd's platform profile and hides where asusd isn't
+running; its popout sets the current, AC and battery profiles, and right-click
+cycles the current one. It talks to asusd directly because strixi-minaj runs
+asusd instead of power-profiles-daemon, which the upstream profile controls
+need. AI
 quotas use upstream DankAIUsage with remaining usage and both providers visible.
 The media widget keeps the title and artist visible and shows synced lyrics
 after the playback controls (the fork's "Keep title and artist" option); when
