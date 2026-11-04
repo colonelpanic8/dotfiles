@@ -295,6 +295,7 @@ function M.setup(ctx)
           app_icon_offset_y = 0,
           app_icon_backplate_col = "rgba(00000066)",
           app_icon_backplate_padding = 6,
+          show_audio_icon = 1,
           show_window_text = 1,
           window_text_font = "Sans",
           window_text_size = 14,
