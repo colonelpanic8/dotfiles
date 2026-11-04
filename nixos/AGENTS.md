@@ -26,6 +26,12 @@ Avoid dropping scripts in `~/bin` or `~/.local/bin` unless the user explicitly a
   a non-primary one, and overriding `DOTFILES_WORKTREE` to defeat that is a
   mistake: Home Manager's out-of-store symlinks would stay pointed at the
   temporary checkout after it is removed, leaving `~` full of dangling links.
+- Other sessions run `just switch` from this same checkout, so any uncommitted
+  edit here can be activated at any moment. Never leave a staged-but-unsafe
+  change (e.g. a mount over a live service's data dir) in the working tree;
+  keep it outside the repo until the moment you activate it. Hosts with
+  `system.autoUpgrade` also rebuild hourly from the GitHub flake, which
+  reverts anything activated but not pushed.
 - A rebuild may restart `paseo.service` or `t3code-headless.service` and end
   the agent session running it. That is harmless: `nixos-rebuild` activates
   through the transient system unit `nixos-rebuild-switch-to-configuration`,
