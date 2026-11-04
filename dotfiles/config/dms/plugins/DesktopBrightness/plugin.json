@@ -1,7 +1,7 @@
 {
   "id": "desktopBrightness",
   "name": "Brightness",
-  "description": "Display brightness on its own; scroll to adjust, hidden without a controllable display",
+  "description": "Display brightness on its own; click for sliders, scroll to adjust, hidden without a controllable display",
   "version": "1.0.0",
   "author": "Ivan Malison",
   "type": "widget",

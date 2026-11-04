@@ -46,6 +46,9 @@ readable RAPL package power, and a few desktop commands live in the small
 DesktopExtras plugin. DesktopBrightness and DesktopSwap show brightness and swap
 as their own pills and hide on machines without a controllable display or swap;
 upstream's control center button would show a placeholder icon instead.
+Clicking the brightness pill opens sliders for the bar's display (its pinned
+group, if any) and every other dimmable device; right-click opens the control
+center.
 AsusProfile shows asusd's platform profile and hides where asusd isn't
 running; its popout sets the current, AC and battery profiles, and right-click
 cycles the current one. It talks to asusd directly because strixi-minaj runs
