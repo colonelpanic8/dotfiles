@@ -1804,17 +1804,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1793721883,
-        "narHash": "sha256-bDIJ2UyATlUPpgOuR0YIQyTgpvFrEuvoGdHKN4BcxPM=",
+        "lastModified": 1793778201,
+        "narHash": "sha256-7KzaSi25PzTZkRr8UU1rcJqSnKOsXWko3VwdF68stQ4=",
         "owner": "colonelpanic8",
         "repo": "hyprwinview",
-        "rev": "d4f05d802a41c66627708b004dd15398326324af",
+        "rev": "be162003076c0db109cc2894de421aebf18eb89c",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
         "repo": "hyprwinview",
-        "rev": "d4f05d802a41c66627708b004dd15398326324af",
+        "rev": "be162003076c0db109cc2894de421aebf18eb89c",
         "type": "github"
       }
     },
