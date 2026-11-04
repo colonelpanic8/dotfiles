@@ -6,6 +6,7 @@
   "loginctlLockIntegration": true,
   "lockBeforeSuspend": true,
   "acMonitorTimeout": 600,
+  "idleInhibitIgnoredWindows": "/kalshi/",
   "batteryMonitorTimeout": 600,
   "osdVolumeEnabled": true,
   "osdBrightnessEnabled": true,
