@@ -184,6 +184,12 @@ in {
   boot.kernelParams = ["zfs.zfs_arc_max=6442450944"];
   services.zfs.autoScrub.enable = true;
 
+  fileSystems."/home/kat/Downloads" = {
+    device = "tank/kat-downloads";
+    fsType = "zfs";
+    options = ["nofail"];
+  };
+
   # Prefer the SN770 over the QLC Intel 660p.
   swapDevices = [
     {
