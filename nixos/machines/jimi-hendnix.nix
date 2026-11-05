@@ -175,10 +175,10 @@ in {
     fsType = "vfat";
   };
 
-  # Data-only ZFS pools; boot never needs them. tank: Intel 660p (nvme1n1p2).
-  # sata: unredundant stripe of the two Samsung SATA SSDs, for losable data.
+  # Data-only ZFS pool; boot never needs it. tank: unredundant stripe of the
+  # Intel 660p (nvme1n1p2) and the Samsung 850/840 EVO SATA SSDs.
   boot.supportedFilesystems.zfs = true;
-  boot.zfs.extraPools = ["tank" "sata"];
+  boot.zfs.extraPools = ["tank"];
   boot.zfs.package = zfsDevBuild pkgs.callPackage {configFile = "user";};
   networking.hostId = "02ad6f98";
   boot.kernelParams = ["zfs.zfs_arc_max=6442450944"];
