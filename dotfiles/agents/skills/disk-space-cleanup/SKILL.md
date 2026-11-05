@@ -376,6 +376,11 @@ Machine-specific heavy hitters seen in practice:
   - Roughly half the worktrees (14 of 26) had real uncommitted work — a much higher dirty rate than the ~1-in-8 seen on 2026-07-29. Never bulk-remove on this host.
   - Left for an interactive root session: 14 system generations, `/var/log` 4.8G, `/var/lib/rancher` 2.1G, `/var/lib/private`, other users' ~286G, and any podman/k3s image pruning.
 
+- 2026-11-04 `ryzen-shine` (`/` 82%, 332G free -> 57%, 796G free; **+464G**). Worktree removal and 12 stale Rust targets gave about 96G. Then removing 43 `/tmp` and repo result links, the standalone `home-manager-3-link`, one 105-day-old T3 `.direnv`, and 71 of 77 system generations (kept the booted one plus the newest five) let one `sudo -n nix-store --gc` delete 89,839 paths and free 295.4 GiB. The store went from 637 to 343 GiB logical.
+  - **`~/Projects` → `~/projects` rename breakage.** Worktree `.git` files, `.git/worktrees/*/gitdir` back-links, and `t3code-assembly/.git/modules/t3code/objects/info/alternates` still named `/home/imalison/Projects/...`. Plain `git -C <wt>` fails, so worktrees look orphaned. The broken alternate also hides objects, so `for-each-ref --contains` and `update-ref` reported real, tag-reachable commits as missing. Fix the alternate path first (backup kept as `alternates.bak-20261104`). Then, per worktree, run `git -C <main> worktree repair <wt>` before `git worktree remove --force <wt>`. **Never run `git worktree prune` in these repos**: every stale-path worktree counts as prunable, so prune would drop all their registrations.
+  - In fork-assembler stacks, `<assembly>/.worktrees/source` is the source clone and `.worktrees/build` is the build worktree. Keep both. The `refresh-*` worktrees under `.worktrees/` and `.worktrees/source/.worktrees/` were safe once their HEADs were reachable; detached refresh HEADs were usually in `android-assembly-*`/`t3code-assembled/*` tags.
+  - zsh does not word-split `$var`, so `nix-env --delete-generations $del` got one argument and failed with `invalid generation number '1186 1187 ...'`. Run it under `bash -c`.
+
 ## Step 5: `/nix/store` Deep Dive
 
 When `/nix/store` is still large after GC, inspect root causes instead of deleting random paths.

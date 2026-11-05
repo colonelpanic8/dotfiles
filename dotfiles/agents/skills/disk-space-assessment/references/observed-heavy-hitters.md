@@ -34,6 +34,14 @@ Use these as hypotheses, not substitutes for a current snapshot.
 - 2026-11-03: ZFS was tried for the Intel disk, but nixpkgs ZFS 2.4.4 only supports kernels up to 7.2, while this host runs `linuxPackages_latest` (7.3). The kernel module's `meta.broken` still read `false` for 7.3, and the build failed at configure. Do not trust `meta.broken` to gate a ZFS kernel pick.
 - 2026-10-22: `/var/lib/rocket-sense` is 115 GiB of live production data (podman `rocket-sense-postgres` pgdata 79.5 GiB + `storage` 35.2 GiB). Never a cleanup candidate.
 
+## Host `ryzen-shine` (1.8T single ext4 root; `/nix/store` is a same-device bind mount)
+
+- 2026-11-03: 82% used, 340G free. The store held 637 GiB logical (7.6 GiB dead). Outside the store, about 724 GiB was hardlink-aware, with `~/projects` at 266 GiB.
+- 2026-11-03: store attribution: DB graph traversal over refs + deriver + `DerivationOutputs`, because `keep-outputs`/`keep-derivations` are on. 75 system generations, all from the prior 13 days, held 164 GiB that no other root retained. No system-level `nix-gc` timer exists; the `nix.gc` in `home-manager.nix` is a Home Manager user unit. 29 `/tmp` out-links held 60 GiB unique, mostly Android SDK/emulator links (`/tmp/{mova-wear-render/wear-sdk,paseo-mouse/sdk,eva-locked-emu/sdk,paseo-locked-android/sdk}`) and nixos-family ISOs. A stale standalone `~/.local/state/nix/profiles/home-manager-3-link` (2026-06-11, predating the NixOS-module HM) held 30 GiB unique. One `.t3/worktrees/railbird-mobile/t3code-b8ea217a/.direnv`, 105 days old, held 21-24 GiB.
+- 2026-11-03: many worktree `.git` files and the `t3code-assembly` submodule's `objects/info/alternates` point at `/home/imalison/Projects/...` (capital P), which no longer exists. `git status` inside those worktrees fails, so they look orphaned, but most are still registered under the lowercase path. Check them with `git --git-dir=<lowercase gitdir> --work-tree=<dir>`, not plain `git -C`. `git worktree prune` from the main repo may drop their registrations.
+- 2026-11-03: `/var/lib/systemd/coredump` was back at 4.1 GiB: 20k `nvidia-smi` cores plus `hyprpolkitagent` (4.5k) and `hyprpaper` (1.6k) loops.
+- 2026-11-03: other recurring weight: `~/.local/share/pnpm` 36-38 GiB (half single-link), `~/.gradle/caches` 24 GiB, `~/.android/avd` 14 GiB (`mova_fold36`, `rb36`, `eva-ui-polish`), `~/.rustup` 15 GiB (8+ toolchains), `~/Backups` 63 GiB (user data), and `~/Games/Heroic` 42 GiB (live).
+
 ## Host `mac-demarco-mini` (macOS, 245 GB internal APFS container)
 
 - 2026-10-16: Data volume 165 GB + separate `Nix Store` APFS volume 51 GB share one 245 GB container; free space swung 3.8G → 0.1G → 2.8G during the scan from concurrent writers. `safe_ncdu` is not installed here and `sudo -n` needs a password, so only unprivileged `du` was possible (~30 GB unattributed, mostly other users' `~/Library` and root-only state).
