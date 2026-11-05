@@ -20,7 +20,10 @@ PluginComponent {
     readonly property real level: device ? BrightnessService.getDeviceBrightness(device) : NaN
     readonly property bool available: BrightnessService.brightnessAvailable && device !== ""
     // LED devices other than keyboard backlights are status lights, not dimmers.
-    readonly property var otherDevices: BrightnessService.devices.filter(d => !targets.includes(d.id) && (d.class !== "leds" || d.id.includes("kbd_backlight")))
+    // A string so the Repeater only rebuilds when the device set changes: the
+    // service replaces its devices array on every brightness event, which would
+    // otherwise destroy a slider mid-drag.
+    readonly property string otherDeviceIds: BrightnessService.devices.filter(d => !targets.includes(d.id) && (d.class !== "leds" || d.id.includes("kbd_backlight"))).map(d => d.id).join("\n")
     property real accumulator: 0
 
     layerNamespacePlugin: "desktop-brightness"
@@ -156,12 +159,12 @@ PluginComponent {
                 }
 
                 Repeater {
-                    model: root.otherDevices
+                    model: root.otherDeviceIds ? root.otherDeviceIds.split("\n") : []
 
                     BrightnessRow {
-                        required property var modelData
-                        ids: [modelData.id]
-                        title: root.deviceLabel(modelData.id)
+                        required property string modelData
+                        ids: [modelData]
+                        title: root.deviceLabel(modelData)
                     }
                 }
 
