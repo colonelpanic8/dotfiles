@@ -15,6 +15,10 @@ args = ["PATH=/etc/profiles/per-user/imalison/bin:/run/current-system/sw/bin:/us
 [mcp_servers.openaiDeveloperDocs]
 url = "https://developers.openai.com/mcp"
 
+[mcp_servers.claude-in-chrome]
+command = "claude"
+args = ["--claude-in-chrome-mcp"]
+
 [features]
 unified_exec = true
 apps = true

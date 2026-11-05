@@ -234,6 +234,11 @@ code never arrives.
 
 ## Browser Automation
 
+- Codex agents outside Codex desktop (including T3 Code and Paseo) use the
+  `claude-in-chrome` MCP server for Chrome access. It runs
+  `claude --claude-in-chrome-mcp` against the installed Claude in Chrome
+  extension and does not require Codex desktop to be running. Codex's bundled
+  Chrome tools require authorization supplied to desktop-managed sessions.
 - Prefer using chrome plugins and skills for tasks that can be completed
   entirely in a browser. Use computer-use tools when the task requires broader
   desktop interaction or the Chrome plugin cannot complete it.
