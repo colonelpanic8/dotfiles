@@ -185,5 +185,6 @@
   "useFahrenheit": true,
   "useAutoLocation": true,
   "currentThemeCategory": "registry",
-  "desktopWidgetInstances": []
+  "desktopWidgetInstances": [],
+  "idleRespectInhibitors": false
 }
