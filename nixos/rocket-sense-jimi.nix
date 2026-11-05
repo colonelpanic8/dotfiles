@@ -88,11 +88,27 @@ in {
     };
   };
 
+  fileSystems = {
+    "/var/lib/rocket-sense/postgres" = {
+      device = "tank/rocket-sense/postgres";
+      fsType = "zfs";
+      options = ["nofail"];
+    };
+    "/var/lib/rocket-sense/storage" = {
+      device = "tank/rocket-sense/storage";
+      fsType = "zfs";
+      options = ["nofail"];
+    };
+  };
+
   systemd.services.podman-rocket-sense-postgres = {
     requires = ["rocket-sense-network.service"];
     after = ["rocket-sense-network.service"];
     unitConfig.ConditionPathExists = "/var/lib/rocket-sense/.migration-complete";
+    unitConfig.RequiresMountsFor = ["/var/lib/rocket-sense/postgres"];
   };
+  systemd.services.podman-rocket-sense.unitConfig.RequiresMountsFor = ["/var/lib/rocket-sense/storage"];
+  systemd.services.podman-rocket-sense-worker.unitConfig.RequiresMountsFor = ["/var/lib/rocket-sense/storage"];
   systemd.services.podman-rocket-sense.unitConfig.ConditionPathExists = "/var/lib/rocket-sense/.migration-complete";
   systemd.services.podman-rocket-sense-worker.unitConfig.ConditionPathExists = "/var/lib/rocket-sense/.migration-complete";
   systemd.services.podman-rocket-sense.serviceConfig.RestartSec = "5s";
