@@ -175,41 +175,14 @@ in {
     fsType = "vfat";
   };
 
-  # ZFS pool "tank" on the Intel 660p (nvme1n1p2) holds data only; boot never needs it.
+  # Data-only ZFS pools; boot never needs them. tank: Intel 660p (nvme1n1p2).
+  # sata: unredundant stripe of the two Samsung SATA SSDs, for losable data.
   boot.supportedFilesystems.zfs = true;
+  boot.zfs.extraPools = ["tank" "sata"];
   boot.zfs.package = zfsDevBuild pkgs.callPackage {configFile = "user";};
   networking.hostId = "02ad6f98";
   boot.kernelParams = ["zfs.zfs_arc_max=6442450944"];
   services.zfs.autoScrub.enable = true;
-
-
-  fileSystems."/mnt/windows" = {
-    device = "/dev/disk/by-uuid/DEFA1F27FA1EFC09";
-    fsType = "ntfs3";
-    options = [
-      "ro"
-      "uid=1000"
-      "gid=100"
-      "umask=0022"
-      "nofail"
-      "x-systemd.automount"
-      "x-systemd.device-timeout=1s"
-      "x-systemd.mount-timeout=5s"
-    ];
-  };
-
-  fileSystems."/mnt/sata-nixos" = {
-    device = "/dev/disk/by-uuid/30583504-9530-4095-a556-da1209ef9b63";
-    fsType = "ext4";
-    options = [
-      "ro"
-      "noload"
-      "nofail"
-      "x-systemd.automount"
-      "x-systemd.device-timeout=1s"
-      "x-systemd.mount-timeout=5s"
-    ];
-  };
 
   # Prefer the SN770 over the QLC Intel 660p.
   swapDevices = [
