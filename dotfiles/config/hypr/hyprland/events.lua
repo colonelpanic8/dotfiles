@@ -46,7 +46,11 @@ function M.setup(ctx)
     apply_visual_performance_mode()
     apply_rules()
     if not dev_session then
-      hl.exec_cmd("sh -lc '/run/current-system/sw/bin/uwsm finalize HYPRLAND_INSTANCE_SIGNATURE XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE XAUTHORITY IMALISON_SESSION_TYPE=wayland IMALISON_WINDOW_MANAGER=hyprland || dbus-update-activation-environment --systemd XDG_RUNTIME_DIR WAYLAND_DISPLAY DISPLAY XAUTHORITY HYPRLAND_INSTANCE_SIGNATURE XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE IMALISON_SESSION_TYPE IMALISON_WINDOW_MANAGER; systemctl --user start hyprland-session.target'")
+      -- The remote VNC session runs its own shell and must not publish itself
+      -- to the user manager, or the physical session's units attach to it.
+      if os.getenv("IMALISON_REMOTE_HYPRLAND") ~= "1" then
+        hl.exec_cmd("sh -lc '/run/current-system/sw/bin/uwsm finalize HYPRLAND_INSTANCE_SIGNATURE XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE XAUTHORITY IMALISON_SESSION_TYPE=wayland IMALISON_WINDOW_MANAGER=hyprland || dbus-update-activation-environment --systemd XDG_RUNTIME_DIR WAYLAND_DISPLAY DISPLAY XAUTHORITY HYPRLAND_INSTANCE_SIGNATURE XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE IMALISON_SESSION_TYPE IMALISON_WINDOW_MANAGER; systemctl --user start hyprland-session.target'")
+      end
       -- DMS owns idle handling and needs the org.freedesktop.ScreenSaver name to see wake locks.
       hl.exec_cmd([[sh -c '[ "$(desktop_shell_ui current)" = dms ] || exec hypridle']])
       hl.exec_cmd("wl-paste --type text --watch cliphist store")

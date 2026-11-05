@@ -301,6 +301,7 @@
                   "HYPRLAND_NO_SD_NOTIFY=1"
                   "HYPRLAND_NO_SD_VARS=1"
                   "HYPRLAND_NO_SD_TARGET=1"
+                  "IMALISON_REMOTE_HYPRLAND=1"
                   "PATH=/run/wrappers/bin:/etc/profiles/per-user/${cfg.user}/bin:/run/current-system/sw/bin:${servicePath}"
                 ];
               }
