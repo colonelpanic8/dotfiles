@@ -40,7 +40,7 @@
       "autoHide": true,
       "smartAutoHide": false,
       "autoHideStyle": "peek",
-      "peekOpacity": 0.5,
+      "peekOpacity": 1,
       "revealDelay": 0,
       "hideDelay": 600,
       "useOverlayLayer": false,
