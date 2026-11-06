@@ -36,6 +36,8 @@
         ];
       };
       hiddenPullRequestRepositories = lib.mkDefault ["pingdotgg/t3code"];
+      # Both ends of a link need it, so every fleet member accepts links.
+      linkedEnvironmentsEnabled = true;
     };
     keybindings = builtins.fromJSON (builtins.readFile ../t3code-keybindings.json);
     fleetManifest = import ../t3code-fleet.nix;

@@ -236,6 +236,9 @@ in {
   services.xrdp.openFirewall = true;
   systemd.services.xrdp.serviceConfig.RestrictNetworkInterfaces = "lo tailscale0";
 
+  # The chief-of-staff coordinator runs here and works on every other fleet host.
+  myModules.t3codeServer.peerLinks.enable = true;
+
   system.autoUpgrade = {
     enable = true;
     dates = "hourly";
