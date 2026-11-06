@@ -79,7 +79,7 @@
     # Pin the assembled integration by revision; its flake owns packaging,
     # desktop integration, and the persistent server module.
     t3code = {
-      url = "github:colonelpanic8/t3code/f99f7b480270f853da604c39100f7e11366e8603";
+      url = "github:colonelpanic8/t3code/76f793191e161a3326d3a7f94d00514ba87fea16";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
@@ -292,6 +292,7 @@
     t3codeConfiguration = {
       user,
       tokenSecret ? "t3code-managed-access-token",
+      peerLinks ? false,
     }: {
       config,
       lib,
@@ -300,6 +301,12 @@
     }: let
       agentConfig = config.home-manager.users.${user}.launchd.agents.t3code-headless.config;
       tokenFile = config.age.secrets.${tokenSecret}.path;
+      peerLinksFile = "${homeForUser user}/.local/state/t3code/managed-peer-links.json";
+      writePeerLinks = import ../nix-shared/t3code-peer-links.nix {
+        inherit pkgs lib;
+        hosts = lib.remove config.networking.hostName (map (member: member.label) (import ../nix-shared/t3code-fleet.nix));
+        access = "full-access";
+      };
       t3codeDaemon = pkgs.writeShellScript "t3code-daemon" ''
         set -eu
 
@@ -312,15 +319,26 @@
           attempts=$((attempts + 1))
           sleep 1
         done
+        ${lib.optionalString peerLinks "${writePeerLinks config.age.secrets.t3code-fleet-enrollment.path (lib.escapeShellArg peerLinksFile)} || true"}
 
         exec ${lib.escapeShellArgs agentConfig.ProgramArguments}
       '';
     in {
-      age.secrets.${tokenSecret} = {
-        file = ../nixos/secrets + "/${tokenSecret}.age";
-        owner = user;
-        mode = "0400";
-      };
+      age.secrets =
+        {
+          ${tokenSecret} = {
+            file = ../nixos/secrets + "/${tokenSecret}.age";
+            owner = user;
+            mode = "0400";
+          };
+        }
+        // lib.optionalAttrs peerLinks {
+          t3code-fleet-enrollment = {
+            file = ../nixos/secrets/t3code-fleet-enrollment.age;
+            owner = user;
+            mode = "0400";
+          };
+        };
 
       home-manager.users.${user} = {
         services.t3code.enable = true;
@@ -342,6 +360,9 @@
               SHELL = "/bin/zsh";
               T3CODE_ENVIRONMENT_ID = "fleet:${config.networking.hostName}";
               T3CODE_MANAGED_ACCESS_TOKEN_FILE = tokenFile;
+            }
+            // lib.optionalAttrs peerLinks {
+              T3CODE_MANAGED_PEER_LINKS_FILE = peerLinksFile;
             };
           RunAtLoad = true;
           KeepAlive = true;
@@ -402,6 +423,7 @@
       homebrewCleanup ? "zap",
       extraCasks ? [],
       t3codeTokenSecret ? "t3code-managed-access-token",
+      t3codePeerLinks ? false,
     }:
       nix-darwin.lib.darwinSystem {
         specialArgs = {inherit inputs;};
@@ -437,6 +459,7 @@
           ++ nixpkgs.lib.optional (t3codeTokenSecret != null) (t3codeConfiguration {
             user = primaryUser;
             tokenSecret = t3codeTokenSecret;
+            peerLinks = t3codePeerLinks;
           });
       };
   in {
@@ -451,6 +474,7 @@
     darwinConfigurations."mac-demarco-mini" = mkDarwinSystem {
       primaryUser = "imalison";
       machineModule = ./machines/mac-demarco-mini.nix;
+      t3codePeerLinks = true;
     };
 
     darwinConfigurations."alexanders-macbook-air" = mkDarwinSystem {

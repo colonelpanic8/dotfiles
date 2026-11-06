@@ -9,26 +9,10 @@
   cfg = config.myModules.t3codeServer;
   environmentId = "fleet:${config.networking.hostName}";
   fleetHosts = map (member: member.label) (import ../nix-shared/t3code-fleet.nix);
-  # The server keeps the links this file lists (T3CODE_MANAGED_PEER_LINKS_FILE).
-  # Each peer's pairing code is its reusable credential from the fleet
-  # enrollment bundle, so the file is written at start from the decrypted bundle
-  # and never reaches the store. Without the bundle no file is written, and the
-  # server leaves its links as they are.
-  writePeerLinks = enrollment:
-    pkgs.writeShellScript "t3code-write-peer-links" ''
-      set -euo pipefail
-      out="$1/managed-peer-links.json"
-      [ -r ${lib.escapeShellArg enrollment} ] || exit 0
-      umask 077
-      ${pkgs.coreutils}/bin/mkdir -p "$1"
-      ${pkgs.jq}/bin/jq \
-        --argjson hosts ${lib.escapeShellArg (builtins.toJSON cfg.peerLinks.hosts)} \
-        --arg access ${lib.escapeShellArg cfg.peerLinks.access} \
-        '{version: 1, links: [.environments[] | select(.label as $host | $hosts | index($host))
-          | {environmentId, label, urls: [.httpBaseUrl], access: $access, pairingCode: .credential}]}' \
-        ${lib.escapeShellArg enrollment} > "$out.tmp"
-      ${pkgs.coreutils}/bin/mv "$out.tmp" "$out"
-    '';
+  writePeerLinks = import ../nix-shared/t3code-peer-links.nix {
+    inherit pkgs lib;
+    inherit (cfg.peerLinks) hosts access;
+  };
   enabledModule = makeEnable config "myModules.t3codeServer" false {
     assertions = [
       {
@@ -103,7 +87,7 @@
               "T3CODE_MANAGED_PEER_LINKS_FILE=%t/t3code/managed-peer-links.json";
           }
           // lib.optionalAttrs cfg.peerLinks.enable {
-            ExecStartPre = ["-${writePeerLinks config.age.secrets.t3code-fleet-enrollment.path} %t/t3code"];
+            ExecStartPre = ["-${writePeerLinks config.age.secrets.t3code-fleet-enrollment.path ''"$1"''} %t/t3code/managed-peer-links.json"];
           };
       };
     };
@@ -126,7 +110,11 @@ in
         };
 
         peerLinks = {
-          enable = lib.mkEnableOption "keeping linked environments to other fleet hosts, from the fleet enrollment bundle";
+          enable = lib.mkOption {
+            type = lib.types.bool;
+            default = lib.elem config.networking.hostName fleetHosts;
+            description = "Keep linked environments to other fleet hosts, from the fleet enrollment bundle.";
+          };
           hosts = lib.mkOption {
             type = lib.types.listOf (lib.types.enum fleetHosts);
             default = lib.remove config.networking.hostName fleetHosts;
