@@ -1,0 +1,10 @@
+{
+  "id": "desktopMemory",
+  "name": "Memory",
+  "description": "RAM usage with swap stacked beneath it when the machine has swap",
+  "version": "1.0.0",
+  "author": "Ivan Malison",
+  "type": "widget",
+  "capabilities": ["dankbar-widget"],
+  "component": "./DesktopMemory.qml"
+}

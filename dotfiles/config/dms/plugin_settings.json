@@ -18,7 +18,10 @@
   "desktopBrightness": {
     "enabled": true
   },
-  "desktopSwap": {
+  "desktopDisk": {
+    "enabled": true
+  },
+  "desktopMemory": {
     "enabled": true
   },
   "asusProfile": {

@@ -38,14 +38,17 @@ Chrome windows currently use application icons instead of tab favicons.
 ## Widgets and tray
 
 Clock, media controls, audio, networking, Bluetooth, CPU temperatures, GPU
-temperature, RAM, disk space, battery power, notifications, night mode, and
+temperature, battery power, notifications, night mode, and
 system controls use upstream widgets and services. Networking (with VPN and
 Bluetooth) and audio are separate control center button instances, each showing
 one group. CPU history with usage drawn over the graph, frequency, optional
 readable RAPL package power, and a few desktop commands live in the small
-DesktopExtras plugin. DesktopBrightness and DesktopSwap show brightness and swap
-as their own pills and hide on machines without a controllable display or swap;
-upstream's control center button would show a placeholder icon instead.
+DesktopExtras plugin. DesktopBrightness shows brightness as its own pill and
+hides on machines without a controllable display; upstream's control center
+button would show a placeholder icon instead. DesktopMemory and DesktopDisk
+stack two small lines beside their icon (RAM over swap, root usage over free
+space) to stay narrow on a horizontal bar; DesktopMemory shows RAM alone on
+machines without swap.
 Clicking the brightness pill opens sliders for the bar's display (its pinned
 group, if any) and every other dimmable device; right-click opens the control
 center.

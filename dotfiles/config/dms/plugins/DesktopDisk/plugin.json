@@ -1,0 +1,10 @@
+{
+  "id": "desktopDisk",
+  "name": "Disk",
+  "description": "Root filesystem usage with free space stacked beneath it",
+  "version": "1.0.0",
+  "author": "Ivan Malison",
+  "type": "widget",
+  "capabilities": ["dankbar-widget"],
+  "component": "./DesktopDisk.qml"
+}

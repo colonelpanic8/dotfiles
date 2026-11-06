@@ -95,8 +95,12 @@ in {
               src = config.lib.file.mkOutOfStoreSymlink "${dmsConfigDir}/plugins/DesktopBrightness";
               settings = {};
             };
-            desktopSwap = {
-              src = config.lib.file.mkOutOfStoreSymlink "${dmsConfigDir}/plugins/DesktopSwap";
+            desktopMemory = {
+              src = config.lib.file.mkOutOfStoreSymlink "${dmsConfigDir}/plugins/DesktopMemory";
+              settings = {};
+            };
+            desktopDisk = {
+              src = config.lib.file.mkOutOfStoreSymlink "${dmsConfigDir}/plugins/DesktopDisk";
               settings = {};
             };
             asusProfile = {

@@ -147,20 +147,18 @@
         "idleCountdown",
         "orgAgenda",
         "desktopExtras",
+        "desktopDisk",
+        "desktopMemory",
         {
-          "id": "diskUsage",
+          "id": "cpuTemp",
           "enabled": true,
-          "mountPath": "/",
-          "diskUsageMode": 4
+          "overflowPriority": -5
         },
         {
-          "id": "memUsage",
+          "id": "gpuTemp",
           "enabled": true,
-          "showSwap": false
+          "overflowPriority": -5
         },
-        "desktopSwap",
-        "cpuTemp",
-        "gpuTemp",
         "asusProfile",
         "dankAIUsage",
         {
@@ -228,7 +226,7 @@
       "island": true,
       "dot": false,
       "islandCompactThickness": 42,
-      "islandSatelliteGap": 16,
+      "islandSatelliteGap": 8,
       "islandNotch": true,
       "islandReserveThickness": 49,
       "islandRouteLauncher": "follow",
