@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Re-authenticate gws with the scopes agents rely on, then drop its token cache.
+#
+# `gws auth login` saves a new refresh token but keeps token_cache.json, whose
+# access tokens (keyed by scope set, valid ~1h) still carry the old grant and
+# keep failing with 403 "insufficient authentication scopes" until they expire.
+#
+# The OAuth redirect goes to http://localhost on this host, so the consent page
+# must be opened in a browser running on this machine.
+set -euo pipefail
+
+scopes=(
+  https://www.googleapis.com/auth/gmail.modify
+  https://www.googleapis.com/auth/gmail.settings.basic
+  https://www.googleapis.com/auth/drive.file
+  https://www.googleapis.com/auth/calendar
+)
+
+unset GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE GOOGLE_WORKSPACE_CLI_TOKEN
+config_dir="${GOOGLE_WORKSPACE_CLI_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/gws}"
+
+gws auth login --scopes "$(IFS=,; printf '%s' "${scopes[*]}")"
+rm -f "$config_dir/token_cache.json" "$config_dir/sa_token_cache.json"
+
+gws auth status 2>/dev/null | jq '{user, token_valid, scopes}'

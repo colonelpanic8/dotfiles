@@ -206,6 +206,20 @@ code never arrives.
 - `gmessages send` texts real people from the user's phone: only when asked.
   `--profile whatsapp` reaches the WhatsApp bridge (on jimi-hendnix only).
 
+## Google Workspace via `gws`
+
+- Use the `gws` CLI for Gmail, Drive and Calendar (`gws gmail …`,
+  `gws drive files create --upload …`). The OAuth client
+  (`~/.config/gws/client_secret.json`) is provisioned per host; the user grant
+  is per host too.
+- A 401/403 from `gws` (`insufficient authentication scopes`,
+  `invalid_grant`, `No credentials`) means that host needs re-auth: run
+  `gws-reauth`, open the printed URL in a browser on the same host (the
+  redirect is `localhost`), and approve as ivanmalison@gmail.com. Don't hand
+  `GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE` the client secret.
+- Without stored credentials gws silently falls back to gcloud ADC, which
+  lacks Workspace scopes, so the error still says "insufficient scopes".
+
 ## Project links (local symlink index)
 - Paths in this section are relative to this file's directory (`dotfiles/agents/`).
 - Keep a local symlink index under `./project-links/` for projects that are frequently referenced.

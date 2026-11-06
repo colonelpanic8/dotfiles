@@ -12,6 +12,7 @@ Handle password resets end-to-end. Prefer `gws gmail` for reset-email retrieval,
 ## Tool Priorities
 
 - Prefer `gws gmail` over opening Gmail in the browser.
+- If `gws` fails with a 401/403 auth or scope error, run `gws-reauth` (see the `gws` section of `AGENTS.md`) instead of falling back to the browser.
 - If `gws` is unavailable, use an installed Gmail CLI or IMAP-based mail tool if one exists locally. Inspect the environment first instead of guessing command names.
 - Prefer the Chrome browser extension for all browser interaction.
 - Use `pass find` and `pass show` before asking the user for credentials or account details.

@@ -9,9 +9,10 @@
       imports = [../../../nix-shared/home-manager/gpg-trust.nix];
       age.secrets.gpg-keys.file = ../../secrets/gpg-keys.age;
       age.secrets.gpg-passphrase.file = ../../secrets/gpg-passphrase.age;
+      # gws reads ~/.config/gws/client_secret.json (linked below) as its OAuth
+      # client. Don't point GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE at it: that
+      # variable expects user credentials and gws then fails every call with 401.
       age.secrets.gws-client-secret.file = ../../secrets/gws-client-secret.json.age;
-
-      home.sessionVariables.GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE = "${config.xdg.configHome}/gws/client_secret.json";
 
       systemd.user.services.import-gpg-key = {
         Unit = {
