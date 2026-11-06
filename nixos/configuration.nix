@@ -15,6 +15,7 @@
     ./cache.nix
     ./cargo-sweep.nix
     ./chrome-favicon-dbus.nix
+    ./nix-gcroot-sweep.nix
     ./ccusage-fleet.nix
     ./claude-mcp.nix
     ./claude-remote-control.nix
