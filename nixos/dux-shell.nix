@@ -103,6 +103,10 @@ in {
               src = config.lib.file.mkOutOfStoreSymlink "${dmsConfigDir}/plugins/DesktopDisk";
               settings = {};
             };
+            desktopTemps = {
+              src = config.lib.file.mkOutOfStoreSymlink "${dmsConfigDir}/plugins/DesktopTemps";
+              settings = {};
+            };
             asusProfile = {
               src = config.lib.file.mkOutOfStoreSymlink "${dmsConfigDir}/plugins/AsusProfile";
               settings = {};

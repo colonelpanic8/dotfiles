@@ -1,0 +1,10 @@
+{
+  "id": "desktopTemps",
+  "name": "Temperatures",
+  "description": "CPU and GPU temperatures in one pill",
+  "version": "1.0.0",
+  "author": "Ivan Malison",
+  "type": "widget",
+  "capabilities": ["dankbar-widget"],
+  "component": "./DesktopTemps.qml"
+}

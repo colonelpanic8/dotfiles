@@ -150,12 +150,7 @@
         "desktopDisk",
         "desktopMemory",
         {
-          "id": "cpuTemp",
-          "enabled": true,
-          "overflowPriority": -5
-        },
-        {
-          "id": "gpuTemp",
+          "id": "desktopTemps",
           "enabled": true,
           "overflowPriority": -5
         },

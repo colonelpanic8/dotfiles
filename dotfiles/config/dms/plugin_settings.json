@@ -29,5 +29,8 @@
   },
   "orgAgenda": {
     "enabled": true
+  },
+  "desktopTemps": {
+    "enabled": true
   }
 }
