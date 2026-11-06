@@ -102,6 +102,13 @@ in {
   };
   nix.settings.auto-optimise-store = true;
   myModules.taffybar.aiUsageMode = "both";
+  # The standing coordinator lives on this always-on host; its instructions
+  # and notes are in ~/org/agents/coordinator. Add wakeEveryMinutes to have
+  # it brief itself on a schedule.
+  myModules.t3codeServer.settings.coordinators.chief-of-staff = {
+    name = "Chief of Staff";
+    workspaceRoot = "/home/imalison/org/agents/coordinator";
+  };
   myModules.cache-server = {
     enable = true;
     port = 3090;
