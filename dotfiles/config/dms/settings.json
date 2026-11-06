@@ -206,7 +206,14 @@
           "id": "systemTray",
           "enabled": true,
           "trayUseInlineExpansion": true,
-          "trayAutoOverflow": false
+          "trayAutoOverflow": false,
+          "trayCollapseInBar": true,
+          "trayPinnedItems": [
+            "org.Github.Notifications",
+            "org.Gmail.Notifications",
+            "git-sync-rs"
+          ],
+          "trayCollapsedItemCount": 0
         },
         "notificationButton",
         {
