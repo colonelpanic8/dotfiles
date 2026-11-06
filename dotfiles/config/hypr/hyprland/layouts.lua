@@ -269,6 +269,11 @@ function M.setup(ctx)
   end
 
   focus_workspace = function(workspace_id)
+    -- binds.workspace_back_and_forth turns a re-focus of the current workspace into a jump away.
+    local active = hl.get_active_workspace()
+    if active and tostring(active.id) == tostring(workspace_id) then
+      return
+    end
     dispatch(hl.dsp.focus({ workspace = tostring(workspace_id), on_current_monitor = true }))
   end
 
