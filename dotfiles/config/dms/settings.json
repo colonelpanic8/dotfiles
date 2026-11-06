@@ -15,6 +15,7 @@
   "systemTrayMiddleClickAction": "secondaryActivate",
   "systemTrayRightClickAction": "activate",
   "systemTrayItemClickActions": {},
+  "systemTrayDefaultPlacement": "dock",
   "dockConfigs": [
     {
       "id": "tray",
@@ -81,8 +82,12 @@
           "widgetId": "systemTray",
           "showWhenCollapsed": true,
           "trayAutoOverflow": false,
-          "trayPinnedItems": [],
-          "trayCollapsedItemCount": 3,
+          "trayPinnedItems": [
+            "org.Github.Notifications",
+            "org.Gmail.Notifications",
+            "git-sync-rs"
+          ],
+          "trayCollapsedItemCount": 0,
           "enabled": true
         },
         {
@@ -199,7 +204,7 @@
         "desktopBrightness",
         {
           "id": "systemTray",
-          "enabled": false,
+          "enabled": true,
           "trayUseInlineExpansion": true,
           "trayAutoOverflow": false
         },
