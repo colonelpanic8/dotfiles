@@ -41,6 +41,7 @@
       "smartAutoHide": false,
       "autoHideStyle": "peek",
       "peekOpacity": 1,
+      "peekExpandOn": "arrowHover",
       "revealDelay": 0,
       "hideDelay": 600,
       "useOverlayLayer": false,
