@@ -15,6 +15,46 @@
   "systemTrayMiddleClickAction": "secondaryActivate",
   "systemTrayRightClickAction": "activate",
   "systemTrayItemClickActions": {},
+  "dockConfigs": [
+    {
+      "id": "tray",
+      "name": "Tray",
+      "enabled": true,
+      "position": 1,
+      "mode": "compact",
+      "align": "end",
+      "margin": 6,
+      "autoHide": true,
+      "autoHideStyle": "peek",
+      "peekOpacity": 0.5,
+      "hideDelay": 600,
+      "widgetExpansion": "inline",
+      "widgets": [
+        {
+          "id": "tray_tray",
+          "widgetId": "systemTray",
+          "showWhenCollapsed": true,
+          "trayAutoOverflow": false,
+          "trayPinnedItems": []
+        },
+        {
+          "id": "tray_launcher",
+          "widgetId": "dockLauncher",
+          "enabled": false
+        },
+        {
+          "id": "tray_apps",
+          "widgetId": "appsDock",
+          "enabled": false
+        },
+        {
+          "id": "tray_trash",
+          "widgetId": "dockTrash",
+          "enabled": false
+        }
+      ]
+    }
+  ],
   "barConfigs": [
     {
       "id": "default",
@@ -111,7 +151,7 @@
         "desktopBrightness",
         {
           "id": "systemTray",
-          "enabled": true,
+          "enabled": false,
           "trayUseInlineExpansion": true,
           "trayAutoOverflow": false
         },
