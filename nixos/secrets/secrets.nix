@@ -9,6 +9,7 @@ in
     "gpg-passphrase.age".publicKeys = keys.agenixKeys;
     "gws-client-secret.json.age".publicKeys = keys.agenixKeys;
     "google-calendar-ics-urls.age".publicKeys = keys.agenixKeys;
+    "google-drive-rclone.conf.age".publicKeys = keys.agenixKeys;
     "cache-priv-key.pem.age".publicKeys = keys.agenixKeys;
     "gitea-runner-token.biskcomp.age".publicKeys = keys.agenixKeys;
     "gitea-runner-token.ryzen-shine.age".publicKeys = keys.agenixKeys;

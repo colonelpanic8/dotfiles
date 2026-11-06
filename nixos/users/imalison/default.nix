@@ -12,6 +12,7 @@ in {
     ./secrets.nix
     ./fleet.nix
     ./git-sync.nix
+    ./google-drive.nix
   ];
 
   options.myUsers.imalison = (import ../../../nix-shared/users/lib.nix lib).mkUser "imalison" [];
