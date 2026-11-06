@@ -28,6 +28,11 @@
     tailscale_ip="$(${config.services.tailscale.package}/bin/tailscale ip -4)"
     exec ${pkgs.wayvnc}/bin/wayvnc --config="$config_file" --log-level=info "$tailscale_ip" 5900
   '';
+  diskAlertsTopic = "jimi-disk-alerts-f010db69";
+  smartdNtfy = pkgs.writeShellScript "smartd-ntfy" ''
+    exec ${pkgs.curl}/bin/curl -fsS -H "Title: $SMARTD_SUBJECT" -H "Priority: high" -H "Tags: warning" \
+      -d "$SMARTD_FULLMESSAGE" http://localhost:2586/${diskAlertsTopic}
+  '';
   # OpenZFS master, pinned: releases lag new kernels by weeks. Bump rev, hash
   # and kernelMaxSupportedMajorMinor (Linux-Maximum in the source's META) together.
   zfsDev = {
@@ -183,6 +188,18 @@ in {
   networking.hostId = "02ad6f98";
   boot.kernelParams = ["zfs.zfs_arc_max=6442450944"];
   services.zfs.autoScrub.enable = true;
+
+  # Pool faults and failing-disk warnings go to the local ntfy (myModules.ntfy).
+  services.zfs.zed.settings = {
+    ZED_NTFY_URL = "http://localhost:2586";
+    ZED_NTFY_TOPIC = diskAlertsTopic;
+    ZED_NOTIFY_VERBOSE = true;
+  };
+  services.smartd = {
+    enable = true;
+    notifications.wall.enable = false;
+    defaults.monitored = "-a -n standby -s (S/../.././02|L/../../6/03) -m <nomailer> -M exec ${smartdNtfy}";
+  };
 
   fileSystems."/home/kat/Downloads" = {
     device = "tank/kat-downloads";

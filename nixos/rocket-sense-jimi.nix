@@ -44,7 +44,8 @@ in {
     containers = {
       rocket-sense-postgres = {
         image = "docker.io/library/postgres:16-alpine";
-        cmd = ["-c" "client_connection_check_interval=10s"];
+        # ZFS is copy-on-write, so pages can't tear and full-page WAL images are waste.
+        cmd = ["-c" "client_connection_check_interval=10s" "-c" "full_page_writes=off"];
         environment = {
           POSTGRES_DB = "rocket_sense";
           POSTGRES_USER = "rocket_sense";
