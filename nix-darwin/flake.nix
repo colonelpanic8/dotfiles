@@ -79,7 +79,7 @@
     # Pin the assembled integration by revision; its flake owns packaging,
     # desktop integration, and the persistent server module.
     t3code = {
-      url = "github:colonelpanic8/t3code/95fc7a72fa11a57180f8abb40d59834da7fb96eb";
+      url = "github:colonelpanic8/t3code/ba8eaf0b9bf28bbaf0ed1b2655ea0bd8d685c5bd";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
