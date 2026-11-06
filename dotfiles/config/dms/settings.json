@@ -42,7 +42,6 @@
       "smartAutoHide": false,
       "autoHideStyle": "peek",
       "peekOpacity": 1,
-      "peekExpandOn": "arrowHover",
       "revealDelay": 0,
       "hideDelay": 600,
       "useOverlayLayer": false,
@@ -82,11 +81,6 @@
           "widgetId": "systemTray",
           "showWhenCollapsed": true,
           "trayAutoOverflow": false,
-          "trayPinnedItems": [
-            "org.Github.Notifications",
-            "org.Gmail.Notifications",
-            "git-sync-rs"
-          ],
           "trayCollapsedItemCount": 0,
           "enabled": true
         },
@@ -208,11 +202,6 @@
           "trayUseInlineExpansion": true,
           "trayAutoOverflow": false,
           "trayCollapseInBar": true,
-          "trayPinnedItems": [
-            "org.Github.Notifications",
-            "org.Gmail.Notifications",
-            "git-sync-rs"
-          ],
           "trayCollapsedItemCount": 0
         },
         "notificationButton",
