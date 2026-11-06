@@ -65,7 +65,11 @@
       imports = [../nix-shared/home-manager/t3code-server-config.nix];
 
       age.secrets = lib.mkIf cfg.peerLinks.enable {
-        t3code-fleet-enrollment.file = ./secrets/t3code-fleet-enrollment.age;
+        t3code-fleet-enrollment = {
+          file = ./secrets/t3code-fleet-enrollment.age;
+          # The default path holds an unexpanded $XDG_RUNTIME_DIR.
+          path = "${config.xdg.stateHome}/t3code/fleet-enrollment.json";
+        };
       };
 
       services.t3code = {
