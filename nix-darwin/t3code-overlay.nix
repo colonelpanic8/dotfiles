@@ -1,13 +1,5 @@
 _: prev: let
   unwrapped = prev.t3code.unwrapped.overrideAttrs (old: {
-    patches = (old.patches or []) ++ [./patches/t3code-system-resume.patch];
-    doCheck = true;
-    checkPhase = ''
-      runHook preCheck
-      (cd apps/desktop && ../../node_modules/.bin/vp test run src/app/DesktopConnectionResume.test.ts)
-      (cd packages/client-runtime && ../../node_modules/.bin/vp test run src/connection/supervisor.test.ts)
-      runHook postCheck
-    '';
     # The two application IDs collide on case-insensitive APFS volumes.
     installPhase =
       builtins.replaceStrings
