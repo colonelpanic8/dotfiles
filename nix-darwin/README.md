@@ -50,6 +50,11 @@ list for macOS and NixOS. It includes Git, ripgrep, fd, jq, just, tmux, Zellij,
 Node, formatters, and image/media tools. Both systems consume it through
 `nix-shared/system/essential.nix`; platform-specific tools stay in that module.
 
+Casks that are not in Homebrew live in the local tap
+[`homebrew-local/`](homebrew-local) (`colonelpanic8/local/<cask>`). The Mini
+installs Superlogical's Rex beta from it; Rex then updates itself through
+Sparkle, so its pinned cask version only matters for a fresh install.
+
 Codex Desktop and Claude Desktop are declared as shared Homebrew casks; their
 CLIs come from dedicated Nix flakes. The shared desktop module starts Raycast
 automatically, assigns Command-Space, disables Spotlight's conflicting shortcuts,

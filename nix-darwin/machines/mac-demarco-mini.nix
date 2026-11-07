@@ -16,6 +16,10 @@ in {
     ../tailscale.nix
   ];
 
+  # Sparkle keeps Rex updated after the cask's first install.
+  nix-homebrew.taps."colonelpanic8/homebrew-local" = "${../homebrew-local}";
+  homebrew.casks = ["colonelpanic8/local/rex"];
+
   myModules.tailscale.enrollment = "ivan";
   # Preserve this Mac's bootstrap-only authentication policy.
   myModules.tailscale.enrollmentProfiles.ivan.reauthenticateExpired = false;
