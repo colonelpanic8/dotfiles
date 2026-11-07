@@ -51,7 +51,7 @@ Node, formatters, and image/media tools. Both systems consume it through
 `nix-shared/system/essential.nix`; platform-specific tools stay in that module.
 
 Casks that are not in Homebrew live in the local tap
-[`homebrew-local/`](homebrew-local) (`colonelpanic8/local/<cask>`). The Mini
+[`homebrew-local/`](homebrew-local) (`colonelpanic8/local/<cask>`). Every Mac
 installs Superlogical's Rex beta from it; Rex then updates itself through
 Sparkle, so its pinned cask version only matters for a fresh install.
 

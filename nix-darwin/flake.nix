@@ -256,6 +256,7 @@
         taps = {
           "homebrew/homebrew-core" = inputs.homebrew-core;
           "homebrew/homebrew-cask" = inputs.homebrew-cask;
+          "colonelpanic8/homebrew-local" = "${./homebrew-local}";
         };
       };
 
@@ -275,6 +276,8 @@
             "ghostty"
             "hammerspoon"
             "raycast"
+            # Sparkle keeps Rex updated after the cask's first install.
+            "colonelpanic8/local/rex"
             "spotify"
             "vlc"
           ]
