@@ -456,12 +456,23 @@ function M.setup(ctx)
     end
 
     mark_window_as_floating_scratchpad(window, name)
-    if scratchpads[name] and scratchpads[name].dropdown then
-      apply_scratchpad_geometry(name, window, target_monitor or hl.get_active_monitor(), "above")
+    local is_dropdown = scratchpads[name] and scratchpads[name].dropdown
+    local final_geometry = is_dropdown and scratchpad_geometry(name, target_monitor or hl.get_active_monitor())
+    if final_geometry then
+      -- Focus may warp the cursor to the window center, so focus at the final
+      -- geometry before parking it above the screen for the slide-in.
+      apply_scratchpad_geometry(name, window, target_monitor or hl.get_active_monitor())
     end
     move_window_to_workspace(workspace.id, false, window)
     dispatch(hl.dsp.focus({ window = window_selector(window) }))
-    if scratchpads[name] and scratchpads[name].dropdown then
+    if final_geometry then
+      dispatch(hl.dsp.cursor.move({
+        x = final_geometry.x + math.floor(final_geometry.width / 2),
+        y = final_geometry.y + math.floor(final_geometry.height / 2),
+      }))
+    end
+    if is_dropdown then
+      apply_scratchpad_geometry(name, window, target_monitor or hl.get_active_monitor(), "above")
       animate_dropdown_scratchpad_down(name, window, target_monitor or hl.get_active_monitor())
     else
       schedule_scratchpad_geometry(name, window, target_monitor or hl.get_active_monitor(), nil, nil, {
