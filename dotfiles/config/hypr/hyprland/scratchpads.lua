@@ -449,9 +449,25 @@ function M.setup(ctx)
     return hl.get_workspace(tostring(active_workspace_id()))
   end
 
+  -- Scratchpads float centered unless tiling is requested and the definition
+  -- can tile (the dropdown cannot).
+  local function scratchpad_shows_floating(name, opts)
+    local def = scratchpads[name]
+    return not (opts and opts.tiled == true) or (def ~= nil and def.allow_tiling == false)
+  end
+
   local function show_scratchpad_window(name, window, workspace, target_monitor, opts)
     workspace = scratchpad_show_workspace(workspace)
     if not workspace then
+      return
+    end
+
+    if not scratchpad_shows_floating(name, opts) then
+      local selector = window_selector(window)
+      clear_floating_scratchpad_state(window)
+      move_window_to_workspace(workspace.id, false, window)
+      dispatch(hl.dsp.window.float({ action = "disable", window = selector }))
+      dispatch(hl.dsp.focus({ window = selector }))
       return
     end
 
@@ -540,7 +556,7 @@ function M.setup(ctx)
           local pending = scratchpad_pending[name]
           scratchpad_pending[name] = nil
           show_scratchpad_window(name, window, pending.workspace or active_workspace(), pending.monitor or hl.get_active_monitor(), {
-            force_geometry = true,
+            tiled = pending.tiled,
           })
         elseif def.autostart_hidden and not window_has_scratchpad_tag(window) then
           mark_window_as_floating_scratchpad(window, name)
@@ -552,13 +568,15 @@ function M.setup(ctx)
     end
   end
 
-  local function toggle_scratchpad(name)
+  local function toggle_scratchpad(name, opts)
     local def = scratchpads[name]
     if not def then
       return
     end
 
-    if current_layout == monocle_layout then
+    local floating = scratchpad_shows_floating(name, opts)
+    local show_opts = { tiled = not floating }
+    if floating and current_layout == monocle_layout then
       set_layout(columns_layout)
     end
 
@@ -570,20 +588,26 @@ function M.setup(ctx)
       scratchpad_pending[name] = {
         monitor = target_monitor,
         workspace = workspace,
+        tiled = not floating,
       }
       hl.exec_cmd(def.command)
       return
     end
 
+    -- Visible in the requested mode hides it; visible in the other mode
+    -- switches it between tiled and floating in place.
     local any_visible = false
+    local visible_in_requested_mode = true
     for _, window in ipairs(windows) do
       if scratchpad_is_visible(window) then
         any_visible = true
-        break
+        if (window_is_floating_scratchpad(window) == true) ~= floating then
+          visible_in_requested_mode = false
+        end
       end
     end
 
-    if any_visible then
+    if any_visible and visible_in_requested_mode then
       for _, window in ipairs(windows) do
         hide_scratchpad_window(name, window)
       end
@@ -592,7 +616,7 @@ function M.setup(ctx)
       local target_monitor = hl.get_active_monitor()
       hide_active_scratchpads(name)
       for _, window in ipairs(windows) do
-        show_scratchpad_window(name, window, workspace, target_monitor)
+        show_scratchpad_window(name, window, workspace, target_monitor, show_opts)
       end
     end
   end
@@ -621,8 +645,8 @@ function M.setup(ctx)
     return ai_scratchpad_default
   end
 
-  local function toggle_active_ai_scratchpad()
-    toggle_scratchpad(active_ai_scratchpad())
+  local function toggle_active_ai_scratchpad(opts)
+    toggle_scratchpad(active_ai_scratchpad(), opts)
   end
 
   local function backup_ai_scratchpad()
@@ -632,8 +656,8 @@ function M.setup(ctx)
     return "codex"
   end
 
-  local function toggle_backup_ai_scratchpad()
-    toggle_scratchpad(backup_ai_scratchpad())
+  local function toggle_backup_ai_scratchpad(opts)
+    toggle_scratchpad(backup_ai_scratchpad(), opts)
   end
 
   -- Used by menu_ai_scratchpad.sh after a selection: bring the chosen
@@ -689,6 +713,7 @@ function M.setup(ctx)
   ctx.refresh_active_scratchpad_geometries_later = refresh_active_scratchpad_geometries_later
   ctx.refresh_shell_workarea_and_scratchpads = refresh_shell_workarea_and_scratchpads
   ctx.adopt_matching_scratchpad_window = adopt_matching_scratchpad_window
+  ctx.scratchpad_shows_floating = scratchpad_shows_floating
   ctx.toggle_scratchpad = toggle_scratchpad
   ctx.active_ai_scratchpad = active_ai_scratchpad
   ctx.backup_ai_scratchpad = backup_ai_scratchpad
