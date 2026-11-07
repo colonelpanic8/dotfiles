@@ -447,11 +447,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794020705,
+        "lastModified": 1794020691,
         "narHash": "sha256-YY3mS6OebCQb1DMN55CGa2mGZKLzdAK/zL4PEk3DBx4=",
         "owner": "colonelpanic8",
         "repo": "dux-shell",
-        "rev": "f61b20b6aa198dda1d45cd304200a23c3259f071",
+        "rev": "98ca9953f8b3c7e24fad495e8d9e7c8a257210a9",
         "type": "github"
       },
       "original": {
@@ -2714,11 +2714,11 @@
         "nixpkgs": "nixpkgs_16"
       },
       "locked": {
-        "lastModified": 1792702398,
+        "lastModified": 1792702339,
         "narHash": "sha256-DuZ1KhXms7uSVgC9bVCUgHnQKIcw3g/ojHrxkTrqPKc=",
         "owner": "colonelpanic8",
         "repo": "paseo",
-        "rev": "b2682b786cde471bd54cb5ef9187aafc084bf9d2",
+        "rev": "8abec061b2dfdee25148c9758cf1e2a095e1d1bf",
         "type": "github"
       },
       "original": {
@@ -3361,17 +3361,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1794092858,
+        "lastModified": 1794087360,
         "narHash": "sha256-f1DYnvYmYG74sdtksNizKbpmCKwqKnqeqQ10+jWycy4=",
         "owner": "colonelpanic8",
         "repo": "t3code",
-        "rev": "4086c765b2ae42676593bf10453e2d7d5cd2bc46",
+        "rev": "920eabd12cc63239157dffe68fedab2a3b7c0ec1",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
         "repo": "t3code",
-        "rev": "4086c765b2ae42676593bf10453e2d7d5cd2bc46",
+        "rev": "920eabd12cc63239157dffe68fedab2a3b7c0ec1",
         "type": "github"
       }
     },
