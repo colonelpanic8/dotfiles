@@ -412,7 +412,8 @@
     };
 
     codex-desktop-linux = {
-      url = "github:ilysenko/codex-desktop-linux/main";
+      # Fork carrying the external-browser-access feature (openai/codex#57641).
+      url = "github:colonelpanic8/codex-desktop-linux/external-browser-access";
     };
 
     eva = {

@@ -136,7 +136,7 @@
         enable = true;
         cliPackage = pkgs.codex;
         computerUseUi.enable = true;
-        linuxFeatures = ["shallow-repository-watches"];
+        linuxFeatures = ["external-browser-access" "shallow-repository-watches"];
         remoteControl = {
           enable = true;
           package = pkgs.codex;
