@@ -201,6 +201,27 @@ timeout 30s du -xh --max-depth=1 "$HOME/.local/share" 2>/dev/null | sort -h
 
 Machine-specific heavy hitters seen in practice:
 
+- 2026-11-06 `mac-demarco-mini` (4.9 GiB free -> 13 GiB): kat's
+  `~/Library/Logs/git-sync-rs.log` was the cause again, 4.26 GB of `Authentication failed during
+  git fetch` retries on every file change until git-sync panicked on ENOSPC
+  on Oct 31. Commit `2f99245b` had already dropped git-sync from kat's
+  account, but HM left four stale `org.nix-community.home.git-sync-*.plist`
+  files in kat's `~/Library/LaunchAgents` that would reload at login. They
+  were moved to `~/Library/LaunchAgents.disabled-git-sync/`. On a recurrence,
+  check that directory first. The verified `gzip -1` archive was 54 MB.
+  `pnpm store prune` (via `nix shell nixpkgs#pnpm_11`, store
+  `~/Library/pnpm/store/v11`) freed 1.1 GB. CocoaPods and Homebrew caches
+  freed about 2.5 GiB. The store was fully rooted: dropping three old system
+  generations freed only 20 MiB. With approval, `xcrun simctl delete all` as
+  kat (imalison is now the primary account) and
+  `xcrun simctl runtime delete <iOS 18.4 UUID>` took free space from 13 to 26 GiB,
+  arriving over about a minute after the commands returned. The 18.4 source
+  asset `AssetsV2/.../6fb1e5fe...asset` (8.3G) stayed again, the same as on 2026-07-13.
+  Still open: the t3code-assembly `refresh` worktree (8.9G `ios-release` +
+  3.6G `node_modules`, active within a day).
+  Run commands as imalison with
+  `ssh kat@mac-demarco-mini 'sudo -n -u imalison -i bash -s' <<'EOF'`,
+  because nested `bash -lc '...'` quoting breaks.
 - 2026-10-08 `mac-demarco-mini`: kat's git-sync log reached 9,414,068,983
   bytes. Booting out `user/501/org.nix-community.home.git-sync-rs`, compressing
   the log on the Mac with `gzip -1`, and verifying decompressed size and SHA-256
