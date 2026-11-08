@@ -21,7 +21,9 @@ digraph unsubscribe_check {
     "Present to user for confirmation" -> "User confirms?";
     "User confirms?" -> "Actually unsubscribe" [label="yes"];
     "User confirms?" -> "Skip" [label="no"];
-    "Actually unsubscribe" -> "Mark matching emails read + archive";
+    "Actually unsubscribe" -> "Mark matching emails read + archive" [label="worked"];
+    "Actually unsubscribe" -> "Mark matching emails as spam" [label="failed/blocked"];
+    "Mark matching emails as spam" -> "Create Gmail filter";
     "Mark matching emails read + archive" -> "Create Gmail filter";
     "Create Gmail filter" -> "Retroactively clean old emails";
 }
@@ -50,6 +52,16 @@ When the user's standing preference is to keep subscriptions out of the inbox, t
 ## Unsubscribe Execution
 
 For each confirmed sender, do ALL of these:
+
+### 0. Always get the sender out of the inbox, whatever the unsubscribe outcome
+
+Unsubscribing is never the last step. Every sender you unsubscribe from (or try to) must end up with zero mail in the inbox, in the same pass:
+
+- **Unsubscribe succeeded:** archive and mark read all of its mail (step 3), then add the filter (step 2).
+- **Unsubscribe failed or is unavailable** (no link, broken page, a gate asking you to attest to something on the user's behalf, a login wall, an org portal that's closed): mark its mail as spam (`mark_thread_spam` / `batchModify` with `addLabelIds:["SPAM"]`). Spam also catches future mail without needing a filter. For senders where spam would be wrong (e.g. a real brokerage or bank sending marketing), archive it and rely on the filter instead.
+- **Filter creation blocked** (no `gws` credentials, permission denied): don't leave the mail in the inbox while waiting. Archive or spam it now, then report the filter as pending.
+
+If `gws` has no credentials, use the Gmail connector (`unlabel_thread` with `INBOX`/`UNREAD`, `mark_thread_spam`) instead.
 
 ### 1. Actually unsubscribe via browser (most important step)
 
