@@ -57,6 +57,7 @@ in {
           ExecCondition = "${haveSecret}";
           ExecStart = "${start}";
           ExecStopPost = "-${fusermount} -uz ${mountPoint}";
+          SuccessExitStatus = "143";
           Restart = "on-failure";
           RestartSec = "1min";
           TimeoutStopSec = "20s";
