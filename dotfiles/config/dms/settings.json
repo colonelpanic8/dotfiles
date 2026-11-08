@@ -1,5 +1,5 @@
 {
-  "configVersion": 42,
+  "configVersion": 43,
   "clockDateFormat": "ddd MMM d",
   "showSeconds": false,
   "runDmsMatugenTemplates": false,
@@ -15,7 +15,6 @@
   "systemTrayMiddleClickAction": "secondaryActivate",
   "systemTrayRightClickAction": "activate",
   "systemTrayItemClickActions": {},
-  "systemTrayDefaultPlacement": "dock",
   "dockConfigs": [
     {
       "id": "tray",
@@ -99,7 +98,8 @@
           "widgetId": "dockTrash",
           "enabled": false
         }
-      ]
+      ],
+      "peekExpandOn": "arrowHover"
     }
   ],
   "barConfigs": [
