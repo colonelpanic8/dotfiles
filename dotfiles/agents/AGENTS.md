@@ -246,6 +246,15 @@ code never arrives.
   - `./project-guides/t3code-assembly.md`
   - `./project-guides/paseo-assembly.md`
 
+## Don't give up when an API path is blocked
+- A broken CLI login, an unauthorized MCP connector, or a missing API does not
+  block the task. If a person could do it in a browser or desktop app, do it
+  with Chrome (claude-in-chrome) or computer-use. For example, create a
+  calendar event in the Google Calendar web UI when `gws` auth has expired.
+- Repair the broken integration too when that's cheap, but finish the
+  task first. Hand back to the user only after the browser/desktop route
+  has also failed, and say what you tried.
+
 ## Browser Automation
 
 - Codex agents outside Codex desktop (including T3 Code and Paseo) use the
