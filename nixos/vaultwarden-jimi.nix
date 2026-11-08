@@ -7,6 +7,23 @@
   backendPort = 8221;
   httpsPort = 8222;
   bitwardenCli = pkgs.callPackage ./packages/bitwarden-cli-vaultwarden {};
+  # Passkey login and PRF vault unlock (dani-garcia/vaultwarden#7784, based on 1.37.5).
+  vaultwardenPasskeys = pkgs.vaultwarden.overrideAttrs (finalAttrs: _: {
+    version = "1.37.5-pr7784";
+    src = pkgs.fetchFromGitHub {
+      owner = "akh1lb";
+      repo = "vaultwarden";
+      rev = "6e7d1984b1e6f1aafcf9e30df48f65680ace1ee0";
+      hash = "sha256-Zg6XvnAt3HaB27aNIhk7coRtL1kNe9LoEYszMIHU338=";
+    };
+    cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
+      inherit (finalAttrs) pname version src;
+      hash = "sha256-3dvbcQuBtu5DRstCE7Sux9KJYbQgwG32yu7PbyKfqo4=";
+    };
+    preCheck = ''
+      export SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
+    '';
+  });
   syncCommand = pkgs.writeShellApplication {
     name = "pass-vaultwarden-sync";
     runtimeInputs = [pkgs.pass pkgs.gnupg pkgs.git pkgs.coreutils];
@@ -29,6 +46,7 @@ in {
 
   services.vaultwarden = {
     enable = true;
+    package = vaultwardenPasskeys;
     backupDir = "/var/backup/vaultwarden";
     environmentFile = config.age.secrets.vaultwarden-environment-file.path;
     config = {
