@@ -21,6 +21,7 @@ get_all_history () {
 
 
 selected=$({ get_all_executables; get_all_aliases; get_all_functions; get_all_history; } |
+			   awk '!seen[$0]++' |
 			   desktop_dmenu -i -kb-custom-1 "Alt+c" -kb-custom-2 "Alt+t")
 
 menu_exit="$?"
