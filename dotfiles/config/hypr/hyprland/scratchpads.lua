@@ -7,7 +7,7 @@ function M.setup(ctx)
   dropdown_height_ratio = 0.5
   dropdown_animation_frames = 18
   dropdown_animation_frame_ms = 16
-  dropdown_hide_animation_frames = 16
+  dropdown_hide_animation_frames = 12
   dropdown_animation_generation = {}
   dropdown_hiding = {}
   scratchpad_pending = {}
