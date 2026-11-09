@@ -95,3 +95,11 @@ gotools
 /dotfiles/config/taffybar/sni-priorities.lock
 /dotfiles/config/hypr/hyprland.lua.backup*
 /dotfiles/emacs.d/projects.eld
+
+# Editor backups and autosaves
+\#*\#
+.#*
+*~
+*.bak
+*.save
+/.repowise/
