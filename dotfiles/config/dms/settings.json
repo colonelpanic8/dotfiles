@@ -161,24 +161,10 @@
       "order": [],
       "widgets": [
         {
-          "id": "minimized_buckets",
-          "widgetId": "windowBuckets",
+          "id": "minimized_hidden",
+          "widgetId": "hiddenWindows",
           "showWhenCollapsed": true,
-          "enabled": true,
-          "showWorkspaceApps": true,
-          "groupWorkspaceApps": false,
-          "maxWorkspaceIcons": 30,
-          "workspaceActiveAppHighlightEnabled": true,
-          "workspaceIndicatorStyle": "pills",
-          "workspaceAppIconSizeOffset": 10,
-          "workspaceIndicatorCompact": true,
-          "workspaceIndicatorRoundness": 47,
-          "workspaceUnfocusedColorMode": "sc",
-          "workspaceFocusedBorderEnabled": true,
-          "workspaceColorMode": "s",
-          "workspaceFocusedBorderThickness": 3,
-          "showWorkspaceIndex": true,
-          "showWorkspaceName": false
+          "enabled": true
         },
         {
           "id": "minimized_launcher",
@@ -217,7 +203,7 @@
           "showWorkspaceName": false,
           "showWorkspaceApps": true,
           "showOccupiedWorkspacesOnly": true,
-          "showSpecialWorkspaces": true,
+          "showSpecialWorkspaces": false,
           "groupWorkspaceApps": false,
           "maxWorkspaceIcons": 30,
           "workspaceActiveAppHighlightEnabled": true,
@@ -229,6 +215,10 @@
           "workspaceFocusedBorderEnabled": true,
           "workspaceColorMode": "s",
           "workspaceFocusedBorderThickness": 3
+        },
+        {
+          "id": "hiddenWindows",
+          "enabled": true
         },
         {
           "id": "music",
