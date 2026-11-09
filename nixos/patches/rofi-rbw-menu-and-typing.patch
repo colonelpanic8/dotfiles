@@ -14,6 +14,18 @@
          "--typing-key-delay",
          dest="key_delay",
          action="store",
+@@ -142,9 +149,9 @@
+         "--typing-start-delay",
+         dest="start_delay",
+         action="store",
+-        type=int,
++        type=float,
+         default=0,
+-        help="Set the typing start delay",
++        help="Seconds to wait before typing, e.g. for modifiers of the selector shortcut to be released",
+     )
+     parser.add_argument(
+         "--action-sequence-delay",
 --- a/src/rofi_rbw/rofi_rbw.py
 +++ b/src/rofi_rbw/rofi_rbw.py
 @@ -1,4 +1,5 @@
@@ -75,3 +87,20 @@
      def __show_target_menu(self, entry: DetailedEntry, show_help_message: bool) -> tuple[list[Target], Action | None]:
          targets, action = self.selector.select_target(
              entry, show_help_message, self.args.parsed_menu_keybindings, additional_args=self.args.selector_args
+@@ -106,6 +139,7 @@
+         return detailed_entry.default_target
+ 
+     def __type_targets(self, detailed_entry: DetailedEntry, targets: list[Target]):
++        time.sleep(self.args.start_delay)
+         for target in targets:
+             match target:
+                 case TypeTargets.DELAY:
+@@ -116,7 +150,7 @@
+                     self.typer.press_key(Key.TAB)
+                 case _:
+                     self.typer.type_characters(
+-                        detailed_entry[target], self.args.start_delay, self.args.key_delay, self.active_window
++                        detailed_entry[target], 0, self.args.key_delay, self.active_window
+                     )
+         if Targets.PASSWORD in targets and isinstance(detailed_entry, Credentials) and detailed_entry.totp != "":
+             self.clipboarder.copy_to_clipboard(detailed_entry.totp)

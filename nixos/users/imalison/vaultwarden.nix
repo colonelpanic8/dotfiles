@@ -8,7 +8,7 @@
   desktop = config.myModules.desktop.enable;
   rbw = inputs.rbw-passkey.packages.${pkgs.stdenv.hostPlatform.system}.default;
   picker = (pkgs.rofi-rbw.override {inherit rbw;}).overrideAttrs (old: {
-    patches = (old.patches or []) ++ [../../patches/rofi-rbw-action-menu.patch];
+    patches = (old.patches or []) ++ [../../patches/rofi-rbw-menu-and-typing.patch];
   });
   selector = pkgs.writeShellApplication {
     name = "rofi";
@@ -71,6 +71,7 @@ in {
           prompt=Vaultwarden
           selector-args=-disable-history
           use-notify-send=true
+          typing-start-delay=0.5
           keybindings=Alt+a:type:username:tab:password,Alt+p:type:password,Alt+u:type:username,Alt+2:copy:password,Alt+0:copy:username,Alt+t:copy:totp,Alt+1::menu,Alt+s:sync
           menu-keybindings=Alt+t:type,Alt+c:copy
         '';
