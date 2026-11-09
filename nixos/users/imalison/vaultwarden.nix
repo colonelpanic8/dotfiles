@@ -6,6 +6,35 @@
   ...
 }: let
   desktop = config.myModules.desktop.enable;
+  serverUrl = "https://jimi-hendnix.taileb3aad.ts.net:8222";
+  # The desktop app has no config file; its server lives in Electron's data.json.
+  bitwardenLauncher = pkgs.writeShellApplication {
+    name = "bitwarden";
+    runtimeInputs = [pkgs.coreutils pkgs.jq];
+    text = ''
+      dir="''${XDG_CONFIG_HOME:-$HOME/.config}/Bitwarden"
+      data="$dir/data.json"
+      want='{"region":"Self-hosted","urls":{"base":"${serverUrl}"}}'
+      umask 077
+      mkdir -p "$dir"
+      if [ ! -s "$data" ]; then
+        printf '{"global_environment_environment":%s}\n' "$want" >"$data"
+      elif ! jq -e --argjson w "$want" '.global_environment_environment == $w' "$data" >/dev/null; then
+        tmp="$(mktemp "$data.XXXXXX")"
+        jq --argjson w "$want" '.global_environment_environment = $w' "$data" >"$tmp"
+        mv "$tmp" "$data"
+      fi
+      exec ${lib.getExe pkgs.bitwarden-desktop} "$@"
+    '';
+  };
+  bitwardenDesktop = pkgs.symlinkJoin {
+    name = "bitwarden-desktop-vaultwarden";
+    paths = [pkgs.bitwarden-desktop];
+    postBuild = ''
+      rm "$out/bin/bitwarden"
+      ln -s ${lib.getExe bitwardenLauncher} "$out/bin/bitwarden"
+    '';
+  };
   rbw = inputs.rbw-passkey.packages.${pkgs.stdenv.hostPlatform.system}.default;
   picker = (pkgs.rofi-rbw.override {inherit rbw;}).overrideAttrs (old: {
     patches = (old.patches or []) ++ [../../patches/rofi-rbw-menu-and-typing.patch];
@@ -47,7 +76,7 @@ in {
         package = rbw;
         settings = {
           email = "ivanmalison@gmail.com";
-          base_url = "https://jimi-hendnix.taileb3aad.ts.net:8222";
+          base_url = serverUrl;
           login_method = "passkey";
           lock_timeout = 900;
           pinentry =
@@ -58,7 +87,7 @@ in {
       };
 
       home.file."${config.xdg.configHome}/rbw/config.json".force = true;
-      home.packages = lib.optionals desktop [menu];
+      home.packages = lib.optionals desktop [menu bitwardenDesktop];
 
       xdg.configFile."rofi-rbw.rc" = lib.mkIf desktop {
         force = true;
