@@ -7,7 +7,9 @@
 }: let
   desktop = config.myModules.desktop.enable;
   rbw = inputs.rbw-passkey.packages.${pkgs.stdenv.hostPlatform.system}.default;
-  picker = pkgs.rofi-rbw.override {inherit rbw;};
+  picker = (pkgs.rofi-rbw.override {inherit rbw;}).overrideAttrs (old: {
+    patches = (old.patches or []) ++ [../../patches/rofi-rbw-action-menu.patch];
+  });
   selector = pkgs.writeShellApplication {
     name = "rofi";
     runtimeInputs = [pkgs.bash pkgs.rofi pkgs.systemd];
@@ -64,6 +66,7 @@ in {
           selector=rofi
           action=type
           target=menu
+          action-menu=true
           clear-after=30
           prompt=Vaultwarden
           selector-args=-disable-history

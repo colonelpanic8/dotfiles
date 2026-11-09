@@ -1,0 +1,77 @@
+--- a/src/rofi_rbw/argument_parsing.py
++++ b/src/rofi_rbw/argument_parsing.py
+@@ -131,6 +131,13 @@
+         help="Define the keyboard shortcuts in the target menu in the format <shortcut>:<action> separated with a comma",
+     )
+     parser.add_argument(
++        "--action-menu",
++        dest="action_menu",
++        action="store_true",
++        help="Make the menu target choose among the keybinding actions before falling back to the field menu",
++    )
++    parser.set_defaults(action_menu=False)
++    parser.add_argument(
+         "--typing-key-delay",
+         dest="key_delay",
+         action="store",
+--- a/src/rofi_rbw/rofi_rbw.py
++++ b/src/rofi_rbw/rofi_rbw.py
+@@ -1,4 +1,5 @@
+ import time
++from subprocess import run
+ 
+ from .argument_parsing import parse_arguments
+ from .cache import Cache
+@@ -65,16 +66,48 @@
+             self.args.action = selected_action
+ 
+         if self.args.targets is not None and Targets.MENU in self.args.targets:
+-            targets, action = self.__show_target_menu(
+-                entry,
+-                self.args.show_help,
+-            )
++            if self.args.action_menu:
++                targets, action = self.__show_action_menu(entry)
++            else:
++                targets, action = self.__show_target_menu(
++                    entry,
++                    self.args.show_help,
++                )
+             self.args.targets = targets
+             if action is not None:
+                 self.args.action = action
+ 
+         self.__execute_action(entry)
+ 
++    def __show_action_menu(self, entry: DetailedEntry) -> tuple[list[Target], Action | None]:
++        has_totp = isinstance(entry, Credentials) and entry.has_totp
++        choices = [
++            keybinding
++            for keybinding in self.args.parsed_keybindings
++            if keybinding.action not in (None, Action.SYNC)
++            and keybinding.targets
++            and Targets.MENU not in keybinding.targets
++            and (has_totp or Targets.TOTP not in keybinding.targets)
++        ]
++        labels = [
++            f"{self.selector._format_action_and_targets(keybinding)}  <i>{keybinding.shortcut}</i>"
++            for keybinding in choices
++        ]
++        labels.append("Choose field…")
++        result = run(
++            ["rofi", "-dmenu", "-markup-rows", "-i", "-format", "i", "-p", entry.name, *self.args.selector_args],
++            input="\n".join(labels),
++            capture_output=True,
++            encoding="utf-8",
++        )
++        if result.returncode != 0 or not result.stdout.strip():
++            self.main()
++            exit(0)
++        index = int(result.stdout.strip())
++        if index == len(choices):
++            return self.__show_target_menu(entry, self.args.show_help)
++        return choices[index].targets, choices[index].action
++
+     def __show_target_menu(self, entry: DetailedEntry, show_help_message: bool) -> tuple[list[Target], Action | None]:
+         targets, action = self.selector.select_target(
+             entry, show_help_message, self.args.parsed_menu_keybindings, additional_args=self.args.selector_args
