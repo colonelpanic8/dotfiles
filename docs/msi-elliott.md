@@ -1,8 +1,9 @@
 # msi-elliott
 
-Alex's MSI desktop uses `nixos/machines/msi-elliott.nix`. The original installed
-configuration and hardware scan are preserved under `nixos/hardware/msi-elliott/`.
-The primary account is `alex`, and the existing disk layout is retained.
+Alex's MSI desktop uses `nixos/machines/msi-elliott.nix`, which also holds its
+hardware scan, NVIDIA driver, and the settings carried over from the original
+installed configuration. The primary account is `alex`, and the existing disk
+layout is retained.
 
 ## Build and switch
 
@@ -10,8 +11,7 @@ This machine uses the repository-root standalone flake. It pins the installed
 NixOS 26.05 revision and Home Manager's corresponding release, and builds on
 `nixos/profiles/standalone.nix` (the shared shell environment) and
 `nixos/profiles/standalone-desktop.nix` (SDDM, Hyprland with DMS, Plasma 6, and
-the desktop application set), plus the NVIDIA driver from
-`nixos/hardware/msi-elliott/nvidia.nix`. It does not evaluate the workstation
+the desktop application set). It does not evaluate the workstation
 flake's private inputs or import its personal accounts and secrets.
 
 ```sh
