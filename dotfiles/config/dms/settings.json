@@ -365,8 +365,5 @@
   "currentThemeCategory": "registry",
   "desktopWidgetInstances": [],
   "idleRespectInhibitors": false,
-  "windowBucketPlacements": {
-    "minimized": "dock",
-    "scratchpad": "bar"
-  }
+  "windowBucketPlacement": "dock"
 }
