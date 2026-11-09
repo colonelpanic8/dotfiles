@@ -161,10 +161,24 @@
       "order": [],
       "widgets": [
         {
-          "id": "minimized_windows",
-          "widgetId": "minimizedWindows",
+          "id": "minimized_buckets",
+          "widgetId": "windowBuckets",
           "showWhenCollapsed": true,
-          "enabled": true
+          "enabled": true,
+          "showWorkspaceApps": true,
+          "groupWorkspaceApps": false,
+          "maxWorkspaceIcons": 30,
+          "workspaceActiveAppHighlightEnabled": true,
+          "workspaceIndicatorStyle": "pills",
+          "workspaceAppIconSizeOffset": 10,
+          "workspaceIndicatorCompact": true,
+          "workspaceIndicatorRoundness": 47,
+          "workspaceUnfocusedColorMode": "sc",
+          "workspaceFocusedBorderEnabled": true,
+          "workspaceColorMode": "s",
+          "workspaceFocusedBorderThickness": 3,
+          "showWorkspaceIndex": true,
+          "showWorkspaceName": false
         },
         {
           "id": "minimized_launcher",
@@ -350,5 +364,9 @@
   "useAutoLocation": true,
   "currentThemeCategory": "registry",
   "desktopWidgetInstances": [],
-  "idleRespectInhibitors": false
+  "idleRespectInhibitors": false,
+  "windowBucketPlacements": {
+    "minimized": "dock",
+    "scratchpad": "bar"
+  }
 }
