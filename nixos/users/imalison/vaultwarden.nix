@@ -17,7 +17,7 @@
   };
   menu = pkgs.writeShellApplication {
     name = "vaultwarden-menu";
-    runtimeInputs = [selector rbw pkgs.wl-clipboard pkgs.wtype pkgs.xclip pkgs.xdotool];
+    runtimeInputs = [selector rbw pkgs.libnotify pkgs.wl-clipboard pkgs.wtype pkgs.xclip pkgs.xdotool];
     text = ''
       exec ${lib.getExe picker} "$@"
     '';
@@ -62,11 +62,14 @@ in {
         force = true;
         text = ''
           selector=rofi
-          action=copy
-          target=password
+          action=type
+          target=menu
           clear-after=30
           prompt=Vaultwarden
           selector-args=-disable-history
+          use-notify-send=true
+          keybindings=Alt+a:type:username:tab:password,Alt+p:type:password,Alt+u:type:username,Alt+2:copy:password,Alt+0:copy:username,Alt+t:copy:totp,Alt+1::menu,Alt+s:sync
+          menu-keybindings=Alt+t:type,Alt+c:copy
         '';
       };
 
