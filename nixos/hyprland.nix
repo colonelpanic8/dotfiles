@@ -509,6 +509,12 @@
       Hyprland.source = lib.mkForce "${baseHyprlandPackage}/bin/.Hyprland-wrapped";
     };
 
+    # Hyprland arms RLIMIT_RTTIME at rtkit's max (default 200ms) before taking
+    # SCHED_RR via rtkit. NVIDIA DPMS-off modesets can keep the main thread in
+    # the kernel past that, where its SIGXCPU demotion handler cannot run, so the
+    # kernel SIGKILLs the compositor every time the monitors blank.
+    security.rtkit.args = ["--rttime-usec-max=5000000"];
+
     programs.hyprland = {
       enable = true;
       # Keep Hyprland and plugins on a matched flake input for ABI compatibility.
