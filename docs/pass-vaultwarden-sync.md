@@ -6,12 +6,26 @@ updates the personal vault on jimi-hendnix using the master password in
 
 The sync copies passwords, usernames, URLs, TOTP URIs, and metadata from
 `~/.password-store`, including multiline YAML literal fields. Existing matching
-logins keep their IDs, folders,
+items keep their IDs, names, folders, archive state,
 attachments, passkeys, and unrelated fields and notes. A `pass-sync-path`
 custom field identifies each managed entry on subsequent runs. Ambiguous
 matches stop the run before writes. Temporary entries ending in `-tmp` are
-excluded. Entries missing from pass and organization-owned items are not
-deleted or updated.
+excluded. Entries missing from pass are not deleted.
+
+An item carrying the marker matches whether it is live, archived, trashed, or
+in an organization. Archived personal items are updated in place and stay
+archived. Trashed and organization items are left untouched and are not
+recreated. Unmarked items are matched by name only while they are live,
+personal logins.
+
+Matched items are updated according to their type. The first line of the pass
+entry becomes a login's password, a card's number (with `expiration` or
+`Expiration Date`, `security-code`, and a brand derived from the number), an
+identity's SSN, passport, or license number (chosen by pass path in
+`IDENTITY_FIELDS`), or a secure note's hidden `value` field. Other keys become
+custom fields and notes metadata. Items of other types, and identities without
+a path mapping, are skipped. New entries are created as logins, except those
+under `cards/`, which become cards.
 
 When copying structured metadata would overflow the CLI's notes limit, large
 values remain complete in custom fields and are omitted from the notes copy.

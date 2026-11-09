@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Refresh personal Vaultwarden logins from pass without deleting vault items."""
+"""Refresh personal Vaultwarden items from pass without deleting vault items."""
 
 import argparse
 import base64
@@ -29,6 +29,40 @@ NOTES_START = "\n\n--- pass metadata ---\n"
 # AES-CBC padding and base64 framing keep 7400 UTF-8 bytes below 10000 encrypted characters.
 NOTES_BYTES = 7400
 BW_COMMAND = "bw"
+
+LOGIN, SECURE_NOTE, CARD, IDENTITY = 1, 2, 3, 4
+TYPE_KEYS = {
+    LOGIN: "login",
+    SECURE_NOTE: "secureNote",
+    CARD: "card",
+    IDENTITY: "identity",
+}
+# New items under these pass prefixes are created with this type instead of a login.
+NEW_ITEM_TYPES = {"cards/": CARD}
+# The first line of these pass entries fills this field of a matched identity item.
+IDENTITY_FIELDS = {
+    "social-security-number": "ssn",
+    "documents/passport": "passportNumber",
+    "documents/drivers-license": "licenseNumber",
+}
+LOGIN_KEYS = {
+    "user",
+    "username",
+    "login",
+    "email",
+    "url",
+    "uri",
+    "website",
+    "totp",
+    "otpauth",
+}
+EXPIRATION_KEYS = ("expiration", "expiration date")
+CARD_BRANDS = (
+    ("Visa", ((4, 4),)),
+    ("Amex", ((34, 34), (37, 37))),
+    ("Mastercard", ((51, 55), (2221, 2720))),
+    ("Discover", ((6011, 6011), (644, 649), (65, 65), (622126, 622925))),
+)
 
 
 def run(command, *, env=None, stdin=None):
@@ -128,23 +162,50 @@ def legacy_names(path):
     return pairs
 
 
+def markers(item):
+    return [f.get("value") for f in item.get("fields") or [] if f.get("name") == MARKER]
+
+
+def skip_reason(item, path):
+    """Why a matched item is left untouched, or None when it is synced."""
+    if item.get("deletedDate"):
+        return "in trash"
+    if item.get("organizationId"):
+        return "organization item"
+    if item["type"] not in TYPE_KEYS:
+        return f"unsupported item type {item['type']}"
+    if item["type"] == IDENTITY and path not in IDENTITY_FIELDS:
+        return "identity without an IDENTITY_FIELDS mapping"
+    return None
+
+
 def normalized_name(name):
     name = re.sub(r"\.(com|net|org|io|ai|co|dev)$", "", name.lower())
     return re.sub(r"[^a-z0-9]", "", name)
 
 
 def match_entries(sources, items, folders):
-    personal = [i for i in items if not i.get("organizationId")]
+    """Map pass paths to vault items.
+
+    Marked items match in any state (archived, trashed, organization); legacy
+    matching only considers live personal logins without a marker.
+    """
     by_marker = collections.defaultdict(list)
     by_name = collections.defaultdict(list)
     by_alias = collections.defaultdict(list)
     by_password = collections.defaultdict(list)
     source_passwords = collections.Counter(s["password"] for s in sources)
-    for item in personal:
-        markers = [f["value"] for f in item.get("fields") or [] if f["name"] == MARKER]
-        for marker in markers:
+    for item in items:
+        item_markers = markers(item)
+        for marker in item_markers:
             by_marker[marker].append(item)
-        if not markers:
+        if (
+            not item_markers
+            and item["type"] == LOGIN
+            and not any(
+                item.get(k) for k in ("organizationId", "deletedDate", "archivedDate")
+            )
+        ):
             by_name[(item["name"], folders.get(item.get("folderId"), ""))].append(item)
             by_alias[normalized_name(item["name"])].append(item)
             if (item.get("login") or {}).get("password"):
@@ -154,6 +215,13 @@ def match_entries(sources, items, folders):
     for source in sources:
         path = source["path"]
         candidates = by_marker[path]
+        if len(candidates) > 1:
+            # Prefer the one personal, non-trashed copy over trashed/org copies.
+            candidates = [
+                i
+                for i in candidates
+                if not i.get("organizationId") and not i.get("deletedDate")
+            ] or sorted(candidates, key=lambda i: i["id"])[:1]
         if candidates:
             if len(candidates) != 1:
                 raise RuntimeError(f"Duplicate sync markers for {path}")
@@ -236,8 +304,6 @@ def match_entries(sources, items, folders):
                     f"{path} and {previous[1]} match one vault item equally"
                 )
         else:
-            if item["type"] != 1:
-                raise RuntimeError(f"Existing item for {path} is not a login")
             claimed[item["id"]] = (score, path)
             matches[path] = item
     if problems:
@@ -245,30 +311,40 @@ def match_entries(sources, items, folders):
     return matches
 
 
-def desired_item(source, existing=None):
-    item = (
-        copy.deepcopy(existing)
-        if existing
-        else {
-            "type": 1,
-            "name": source["path"],
-            "login": {},
-            "fields": [],
-            "notes": None,
-            "favorite": False,
-            "reprompt": 0,
-        }
-    )
-    login = item.setdefault("login", {})
-    if source["password"]:
-        login["password"] = source["password"]
+def card_brand(number):
+    for brand, ranges in CARD_BRANDS:
+        for low, high in ranges:
+            prefix = number[: len(str(low))]
+            if (
+                len(prefix) == len(str(low))
+                and prefix.isdigit()
+                and low <= int(prefix) <= high
+            ):
+                return brand
+    return "Other"
+
+
+def parse_expiration(value):
+    """Return (month, four-digit year) from MM/YY or MM/YYYY, else None."""
+    match = re.fullmatch(r"\s*(\d{1,2})\s*/\s*(\d{2}|\d{4})\s*", value or "")
+    if not match or not 1 <= int(match[1]) <= 12:
+        return None
+    year = match[2] if len(match[2]) == 4 else "20" + match[2]
+    return str(int(match[1])), year
+
+
+def set_or_pop(mapping, key, value):
+    if value:
+        mapping[key] = value
     else:
-        login.pop("password", None)
+        mapping.pop(key, None)
+
+
+def update_login(item, source):
+    login = item.setdefault("login", {})
+    set_or_pop(login, "password", source["password"])
     if source["username"] is not None:
-        if source["username"]:
-            login["username"] = source["username"]
-        else:
-            login.pop("username", None)
+        set_or_pop(login, "username", source["username"])
     uris = login.get("uris") or []
     for uri in source["uris"]:
         if not any(u["uri"] == uri for u in uris):
@@ -277,21 +353,75 @@ def desired_item(source, existing=None):
         login["uris"] = uris
     if source["totp"]:
         login["totp"] = source["totp"]
-    fields = [f for f in item.get("fields") or [] if f["name"] != MARKER]
-    for name, value in source["fields"].items():
-        if name in {
-            "user",
-            "username",
-            "login",
-            "email",
-            "url",
-            "uri",
-            "website",
-            "totp",
-            "otpauth",
-        }:
-            continue
-        existing_field = next((f for f in fields if f["name"].lower() == name), None)
+    return LOGIN_KEYS, set(), {}
+
+
+def update_card(item, source):
+    card = item.setdefault("card", {})
+    fields = source["fields"]
+    number = re.sub(r"\s", "", source["password"])
+    set_or_pop(card, "number", number)
+    card["brand"] = card_brand(number)
+    consumed = {"card number"}
+    for key in EXPIRATION_KEYS:
+        expiration = parse_expiration(fields.get(key))
+        if expiration:
+            card["expMonth"], card["expYear"] = expiration
+            consumed.add(key)
+            break
+    if "security-code" in fields:
+        set_or_pop(card, "code", fields["security-code"])
+        consumed.add("security-code")
+    return consumed, consumed, {}
+
+
+def update_identity(item, source):
+    identity = item.setdefault("identity", {})
+    set_or_pop(identity, IDENTITY_FIELDS[source["path"]], source["password"])
+    return set(), set(), {}
+
+
+def update_secure_note(item, source):
+    item.setdefault("secureNote", {"type": 0})
+    return {"value"}, {"value"}, {"value": source["password"]}
+
+
+UPDATERS = {
+    LOGIN: update_login,
+    SECURE_NOTE: update_secure_note,
+    CARD: update_card,
+    IDENTITY: update_identity,
+}
+
+
+def desired_item(source, existing=None):
+    if existing:
+        item = copy.deepcopy(existing)
+    else:
+        item_type = next(
+            (
+                t
+                for prefix, t in NEW_ITEM_TYPES.items()
+                if source["path"].startswith(prefix)
+            ),
+            LOGIN,
+        )
+        item = {
+            "type": item_type,
+            "name": source["path"],
+            TYPE_KEYS[item_type]: {},
+            "fields": [],
+            "notes": None,
+            "favorite": False,
+            "reprompt": 0,
+        }
+    skipped_fields, skipped_notes, hidden_fields = UPDATERS[item["type"]](item, source)
+    fields = [f for f in item.get("fields") or [] if f.get("name") != MARKER]
+    values = {k: v for k, v in source["fields"].items() if k not in skipped_fields}
+    for name, value in {**values, **hidden_fields}.items():
+        existing_field = next(
+            (f for f in fields if (f.get("name") or "").lower() == name), None
+        )
         if existing_field is None:
             fields.append({"name": name, "value": value, "type": 1})
         else:
@@ -300,10 +430,13 @@ def desired_item(source, existing=None):
     item["fields"] = fields
     notes = (item.get("notes") or "").split(NOTES_START, 1)[0]
     metadata_lines = source["metadata"].splitlines()
+    for start, end, key, _ in source["field_spans"]:
+        if key in skipped_notes:
+            metadata_lines[start:end] = [None] * (end - start)
     structured = [
         (sum(len(line) for line in metadata_lines[start:end]), start, end)
         for start, end, key, value in source["field_spans"]
-        if source["fields"].get(key) == value
+        if key not in skipped_notes and source["fields"].get(key) == value
     ]
     for _, start, end in sorted(structured, reverse=True):
         if (
@@ -368,8 +501,13 @@ class Vault:
             self.env.pop("PASS_SYNC_MASTER_PASSWORD", None)
 
     def items(self):
+        """Live, archived, and trashed items; `list items` alone omits the latter two."""
         self.call("sync")
-        return json.loads(self.call("list", "items"))
+        items = {}
+        for flags in ((), ("--archived",), ("--trash",)):
+            for item in json.loads(self.call("list", "items", *flags)):
+                items[item["id"]] = item
+        return list(items.values())
 
 
 def apply_changes(vault, changes, jobs, runtime):
@@ -504,16 +642,23 @@ def main():
                             )
                     return
                 changes = []
+                skipped = []
                 for source in sources:
                     old = matches.get(source["path"])
+                    reason = old and skip_reason(old, source["path"])
+                    if reason:
+                        skipped.append((source["path"], reason))
+                        continue
                     new = desired_item(source, old)
                     if new != old:
                         changes.append((source["path"], old, new))
                 created = sum(old is None for _, old, _ in changes)
                 print(
-                    f"Source: {len(sources)}; create: {created}; update: {len(changes) - created}; unchanged: {len(sources) - len(changes)}",
+                    f"Source: {len(sources)}; create: {created}; update: {len(changes) - created}; skip: {len(skipped)}; unchanged: {len(sources) - len(changes) - len(skipped)}",
                     flush=True,
                 )
+                for path, reason in skipped:
+                    print(f"skip: {path} ({reason})")
                 if not args.apply:
                     for path, old, _ in changes:
                         print(f"{'update' if old else 'create'}: {path}")
@@ -540,7 +685,10 @@ def main():
                 verified = match_entries(sources, actual, folders)
                 for source in sources:
                     item = verified.get(source["path"])
-                    if item is None or desired_item(source, item) != item:
+                    if item is None or (
+                        not skip_reason(item, source["path"])
+                        and desired_item(source, item) != item
+                    ):
                         raise RuntimeError(f"Verification failed for {source['path']}")
                 print(
                     f"Verified all {len(sources)} entries against production; repeat sync would make no changes.",

@@ -168,6 +168,98 @@ class SyncTest(unittest.TestCase):
         )
         self.assertEqual(matches["devices/new-device-name"]["id"], "one")
 
+    def test_marked_items_match_in_any_state_but_only_archived_ones_sync(self):
+        def marked(identifier, path, **changes):
+            fields = [{"name": "pass-sync-path", "value": path, "type": 0}]
+            return item(identifier, fields=fields, **changes)
+
+        sources = [source(f"example.com/{n}") for n in ("a", "b", "c")]
+        items = [
+            marked("archived", "example.com/a", archivedDate="2026-01-01"),
+            marked("trashed", "example.com/b", deletedDate="2026-01-01"),
+            marked("org", "example.com/c", organizationId="organization"),
+        ]
+        matches = SYNC["match_entries"](sources, items, {})
+        reasons = {
+            path: SYNC["skip_reason"](found, path) for path, found in matches.items()
+        }
+        self.assertEqual(
+            reasons,
+            {
+                "example.com/a": None,
+                "example.com/b": "in trash",
+                "example.com/c": "organization item",
+            },
+        )
+
+    def test_duplicate_marker_prefers_the_live_personal_copy(self):
+        fields = [{"name": "pass-sync-path", "value": "example.com/alice", "type": 0}]
+        items = [
+            item("trashed", fields=fields, deletedDate="2026-01-01"),
+            item("live", fields=copy.deepcopy(fields)),
+        ]
+        matches = SYNC["match_entries"]([source()], items, {})
+        self.assertEqual(matches["example.com/alice"]["id"], "live")
+
+    def test_legacy_matching_ignores_archived_items(self):
+        archived = item(name="airbnb", archivedDate="2026-01-01")
+        matches = SYNC["match_entries"]([source("airbnb.com/alice")], [archived], {})
+        self.assertEqual(matches, {})
+
+    def test_card_fields_come_from_the_entry(self):
+        src = source(
+            "cards/visa",
+            "4111 1111 1111 1111\nexpiration: 03/29\nsecurity-code: 123\n"
+            "Card number: 4111111111111111\nzipcode: 94117\n",
+        )
+        old = item(type=3, card={"cardholderName": "Alice", "brand": None}, login=None)
+        new = SYNC["desired_item"](src, old)
+        self.assertEqual(
+            new["card"],
+            {
+                "cardholderName": "Alice",
+                "brand": "Visa",
+                "number": "4111111111111111",
+                "expMonth": "3",
+                "expYear": "2029",
+                "code": "123",
+            },
+        )
+        self.assertEqual(
+            [f["name"] for f in new["fields"]], ["zipcode", "pass-sync-path"]
+        )
+        self.assertNotIn("security-code", new["notes"])
+        self.assertIn("zipcode: 94117", new["notes"])
+        self.assertEqual(SYNC["desired_item"](src, new), new)
+
+    def test_card_expiration_and_brand_parsing(self):
+        self.assertEqual(SYNC["parse_expiration"]("1/2031"), ("1", "2031"))
+        self.assertIsNone(SYNC["parse_expiration"]("13/29"))
+        self.assertEqual(SYNC["card_brand"]("378282246310005"), "Amex")
+        self.assertEqual(SYNC["card_brand"]("2221000000000009"), "Mastercard")
+        self.assertEqual(SYNC["card_brand"]("6011111111111117"), "Discover")
+        self.assertEqual(SYNC["card_brand"]("3530111333300000"), "Other")
+
+    def test_new_card_paths_create_card_items(self):
+        new = SYNC["desired_item"](source("cards/visa", "4111111111111111\n"))
+        self.assertEqual((new["type"], new["name"]), (3, "cards/visa"))
+
+    def test_identity_number_is_chosen_by_path(self):
+        src = source("documents/passport", "X123\nexpiration: 2030\n")
+        old = item(type=4, identity={"firstName": "Alice"}, login=None)
+        new = SYNC["desired_item"](src, old)
+        self.assertEqual(
+            new["identity"], {"firstName": "Alice", "passportNumber": "X123"}
+        )
+        self.assertIn({"name": "expiration", "value": "2030", "type": 1}, new["fields"])
+        self.assertIsNotNone(SYNC["skip_reason"](old, "documents/other"))
+
+    def test_secure_note_secret_goes_to_a_hidden_value_field(self):
+        src = source("documents/medical", "secret\ncase: 7\n")
+        new = SYNC["desired_item"](src, item(type=2, secureNote={"type": 0}))
+        self.assertIn({"name": "value", "value": "secret", "type": 1}, new["fields"])
+        self.assertEqual(SYNC["desired_item"](src, new), new)
+
 
 if __name__ == "__main__":
     unittest.main()
