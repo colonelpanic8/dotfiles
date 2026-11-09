@@ -103,7 +103,7 @@ function M.setup(ctx)
 
     bind(main_mod .. " + X", exec("menu_command.sh"), desc("Open command menu"))
     bind(hyper .. " + V", exec("menu_clipboard.sh"), desc("Open clipboard history"))
-    bind(hyper .. " + P", exec("rofi-pass"), desc("Open password menu"))
+    bind(hyper .. " + P", exec("menu_passwords"), desc("Open password menu"))
     bind(hyper .. " + N", exec("menu_codex_desktop_project.sh"), desc("Start Codex Desktop thread from project"))
     bind(hyper .. " + T", exec("mova_capture.sh"), desc("Quick-capture task/note into mova (Enter: Today/NEXT, Alt+i: Inbox)"))
     bind(hyper .. " + SHIFT + T", exec("mova_capture.sh --pick"), desc("Quick-capture into mova, picking a capture template"))

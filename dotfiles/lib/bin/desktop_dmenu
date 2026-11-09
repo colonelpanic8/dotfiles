@@ -65,7 +65,7 @@ run_dms() {
   while (($#)); do
     arg="$(normalize_flag "$1")"
     case "$arg" in
-      -dmenu|-i|-show-icons|-normal-window|-no-fixed-num-lines|-auto-select|-no-auto-select|-no-sort) ;;
+      -dmenu|-i|-show-icons|-normal-window|-no-fixed-num-lines|-auto-select|-no-auto-select|-no-sort|-sort) ;;
       -theme|-theme-str|-matching|-font|-filter|-window-title|-monitor|-location|-width)
         shift
         ;;

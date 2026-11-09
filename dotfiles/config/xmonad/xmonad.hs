@@ -1071,7 +1071,7 @@ addKeys conf@XConfig { modMask = modm } =
 
     , ((modm, xK_v), spawn "xclip -o | xdotool type --file -")
     , ((hyper, xK_v), spawn "menu_clipboard.sh")
-    , ((hyper, xK_p), spawn "rofi-pass")
+    , ((hyper, xK_p), spawn "menu_passwords")
     , ((0, xK_Print), spawn "maim -s | xclip -selection clipboard -t image/png")
     , ((hyper, xK_h), spawn "maim -s | xclip -selection clipboard -t image/png")
     , ((hyper, xK_n), spawn "menu_codex_desktop_project.sh")

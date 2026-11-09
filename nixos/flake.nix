@@ -124,6 +124,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    rbw-passkey.url = "github:colonelpanic8/rbw/passkey-login";
+
     gocryptfs-tray = {
       url = "github:colonelpanic8/gocryptfs-tray";
       inputs = {
