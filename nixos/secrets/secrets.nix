@@ -3,8 +3,6 @@ let
 in
   {
     "rocket-sense.env.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
-    "dawarich-secret-key-base.age".publicKeys = keys.agenixKeys;
-    "google-places-api-key.age".publicKeys = keys.agenixKeys;
     "gpg-keys.age".publicKeys = keys.agenixKeys;
     "gpg-passphrase.age".publicKeys = keys.agenixKeys;
     "gws-client-secret.json.age".publicKeys = keys.agenixKeys;
