@@ -7,6 +7,9 @@ function M.setup(ctx)
   dropdown_height_ratio = 0.5
   dropdown_animation_frames = 18
   dropdown_animation_frame_ms = 16
+  dropdown_hide_animation_frames = 16
+  dropdown_animation_generation = {}
+  dropdown_hiding = {}
   scratchpad_pending = {}
   scratchpad_mode_tag = "scratchpad"
   monitor_reserved_cache_path = (os.getenv("XDG_RUNTIME_DIR") or "/tmp") .. "/hyprland-monitor-reserved.tsv"
@@ -403,8 +406,26 @@ function M.setup(ctx)
     end
   end
 
+  local function next_dropdown_generation(window)
+    local key = window and window.address
+    if not key then
+      return nil
+    end
+    dropdown_hiding[key] = nil
+    local generation = (dropdown_animation_generation[key] or 0) + 1
+    dropdown_animation_generation[key] = generation
+    return generation
+  end
+
+  local function dropdown_generation_is_current(window, generation)
+    return generation == nil or dropdown_animation_generation[window and window.address] == generation
+  end
+
   local function schedule_scratchpad_geometry(name, window, target_monitor, position, timeout, opts)
     hl.timer(function()
+      if not dropdown_generation_is_current(window, opts and opts.generation) then
+        return
+      end
       local current_window = refreshed_window(window)
       if should_apply_scratchpad_geometry(name, current_window, opts) then
         apply_scratchpad_geometry(name, current_window, target_monitor, position)
@@ -427,17 +448,69 @@ function M.setup(ctx)
       return
     end
 
+    local generation = next_dropdown_generation(window)
     for frame = 1, dropdown_animation_frames do
       local progress = frame / dropdown_animation_frames
       local eased = dropdown_spring_progress(progress)
       local y = math.floor(from.y + ((to.y - from.y) * eased) + 0.5)
-      schedule_scratchpad_geometry(name, window, target_monitor, y, frame * dropdown_animation_frame_ms)
+      schedule_scratchpad_geometry(name, window, target_monitor, y, frame * dropdown_animation_frame_ms, {
+        generation = generation,
+      })
     end
+  end
+
+  local function animate_dropdown_scratchpad_up(name, window, target_monitor, on_done)
+    local docked = scratchpad_geometry(name, target_monitor)
+    local to = scratchpad_geometry(name, target_monitor, "above")
+    local generation = next_dropdown_generation(window)
+    if not docked or not to or not generation then
+      on_done()
+      return
+    end
+
+    -- Start from wherever a still-running slide-in left the window.
+    local current_window = refreshed_window(window)
+    local from_y = current_window and current_window.at and numeric_component(current_window.at, "y", 2) or docked.y
+    dropdown_hiding[window.address] = generation
+    for frame = 1, dropdown_hide_animation_frames do
+      local progress = frame / dropdown_hide_animation_frames
+      local eased = progress * progress
+      local y = math.floor(from_y + ((to.y - from_y) * eased) + 0.5)
+      schedule_scratchpad_geometry(name, window, target_monitor, y, frame * dropdown_animation_frame_ms, {
+        generation = generation,
+      })
+    end
+    hl.timer(function()
+      if dropdown_generation_is_current(window, generation) then
+        dropdown_hiding[window.address] = nil
+        on_done()
+      end
+    end, { timeout = (dropdown_hide_animation_frames + 1) * dropdown_animation_frame_ms, type = "oneshot" })
+  end
+
+  local function scratchpad_is_visible(window)
+    local workspace = active_workspace()
+    return workspace
+      and window
+      and not dropdown_hiding[window.address]
+      and same_workspace(window.workspace, workspace)
   end
 
   local function hide_scratchpad_window(name, window)
     name = name or matching_scratchpad_name(window)
-    move_window_to_workspace(name and scratchpad_workspace(name) or "special:NSP", false, window)
+    local function move_to_hidden_workspace()
+      move_window_to_workspace(name and scratchpad_workspace(name) or "special:NSP", false, window)
+    end
+
+    local def = name and scratchpads[name]
+    if def and def.dropdown and scratchpad_is_visible(window) and window_is_floating_scratchpad(window) then
+      animate_dropdown_scratchpad_up(name, window, hl.get_active_monitor(), move_to_hidden_workspace)
+      return
+    end
+    if def and def.dropdown then
+      next_dropdown_generation(window)
+    end
+    move_to_hidden_workspace()
   end
 
   local function scratchpad_show_workspace(workspace)
@@ -495,11 +568,6 @@ function M.setup(ctx)
         force_geometry = true,
       })
     end
-  end
-
-  local function scratchpad_is_visible(window)
-    local workspace = active_workspace()
-    return workspace and window and same_workspace(window.workspace, workspace)
   end
 
   -- Scratchpad exclusivity belongs to a window's current presentation state,
@@ -703,6 +771,7 @@ function M.setup(ctx)
   ctx.schedule_scratchpad_geometry = schedule_scratchpad_geometry
   ctx.dropdown_spring_progress = dropdown_spring_progress
   ctx.animate_dropdown_scratchpad_down = animate_dropdown_scratchpad_down
+  ctx.animate_dropdown_scratchpad_up = animate_dropdown_scratchpad_up
   ctx.hide_scratchpad_window = hide_scratchpad_window
   ctx.scratchpad_show_workspace = scratchpad_show_workspace
   ctx.show_scratchpad_window = show_scratchpad_window
