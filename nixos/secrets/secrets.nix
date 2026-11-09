@@ -8,6 +8,7 @@ in
     "gpg-keys.age".publicKeys = keys.agenixKeys;
     "gpg-passphrase.age".publicKeys = keys.agenixKeys;
     "gws-client-secret.json.age".publicKeys = keys.agenixKeys;
+    "roborock-session.json.age".publicKeys = keys.agenixKeys;
     "google-calendar-ics-urls.age".publicKeys = keys.agenixKeys;
     "google-drive-rclone.conf.age".publicKeys = keys.agenixKeys;
     "cache-priv-key.pem.age".publicKeys = keys.agenixKeys;

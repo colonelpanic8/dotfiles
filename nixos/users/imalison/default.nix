@@ -13,6 +13,7 @@ in {
     ./fleet.nix
     ./git-sync.nix
     ./google-drive.nix
+    ./roborock.nix
     ./vaultwarden.nix
   ];
 

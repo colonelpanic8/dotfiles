@@ -27,6 +27,9 @@ COMMON_COMMANDS = {
 }
 
 
+UPSTREAM_STATE_PATH = Path.home() / ".roborock"
+
+
 def load_config():
     if not CONFIG_PATH.exists():
         return {}
@@ -35,7 +38,40 @@ def load_config():
 
 def save_config(config):
     CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
-    CONFIG_PATH.write_text(json.dumps(config, indent=2, sort_keys=True) + "\n")
+    try:
+        CONFIG_PATH.write_text(json.dumps(config, indent=2, sort_keys=True) + "\n")
+    except OSError as error:
+        raise SystemExit(f"Cannot write {CONFIG_PATH} ({error}); it is managed declaratively.")
+
+
+def sync_session(config):
+    """Seed the upstream CLI's state from the sealed session file, if configured.
+
+    The session carries the device list too: the web API token expires, but the
+    device keys keep working, and the CLI only calls the web API when it has no
+    cached device list. The upstream CLI rewrites ~/.roborock, so the session is
+    copied in rather than linked, and the local cache is kept while the login matches.
+    """
+    session_path = os.getenv("ROBOROCK_SESSION_FILE") or config.get("session_file")
+    if not session_path:
+        return
+    session_file = Path(os.path.expandvars(session_path))
+    if not session_file.is_file():
+        return
+    session = json.loads(session_file.read_text())
+    state = {}
+    if UPSTREAM_STATE_PATH.is_file():
+        state = json.loads(UPSTREAM_STATE_PATH.read_text() or "{}")
+    if state.get("userData") == session["userData"] and state.get("email") == session["email"]:
+        return
+    new_state = dict(session)
+    if state.get("userData", {}).get("rruid") == session["userData"].get("rruid") and state.get("cacheData"):
+        new_state["cacheData"] = state["cacheData"]
+    tmp = UPSTREAM_STATE_PATH.with_name(".roborock.tmp")
+    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w") as f:
+        json.dump(new_state, f, indent=4)
+    os.replace(tmp, UPSTREAM_STATE_PATH)
 
 
 def roborock_args(*args):
@@ -126,6 +162,17 @@ def handle_login(args):
         password = subprocess.check_output(args.password_command, shell=True, text=True).strip()
         cli_args.extend(["--password", password])
     run_roborock(*cli_args)
+
+
+def handle_export_session(args):
+    state = json.loads(UPSTREAM_STATE_PATH.read_text())
+    config = load_config()
+    session = {
+        "email": state.get("email") or config.get("email", ""),
+        "userData": state["userData"],
+        "cacheData": {"homeData": state["cacheData"]["homeData"]},
+    }
+    print(json.dumps(session, indent=2))
 
 
 def handle_devices(args):
@@ -282,6 +329,11 @@ def build_parser():
     )
     login_parser.set_defaults(func=handle_login)
 
+    subparsers.add_parser(
+        "export-session",
+        help="Print the login and device list from ~/.roborock for sealing with agenix",
+    ).set_defaults(func=handle_export_session)
+
     devices_parser = subparsers.add_parser("devices", help="List cached devices")
     devices_parser.add_argument("--refresh", action="store_true", help="Refresh discovery first")
     devices_parser.set_defaults(func=handle_devices)
@@ -328,6 +380,8 @@ def build_parser():
 def main():
     parser = build_parser()
     args = parser.parse_args()
+    if args.subcommand not in ("config", "login", "export-session"):
+        sync_session(load_config())
     try:
         args.func(args)
     except subprocess.CalledProcessError as error:
