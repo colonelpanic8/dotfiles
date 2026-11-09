@@ -15,68 +15,79 @@ PluginComponent {
     readonly property real frequency: DgopService.cpuFrequency
     readonly property var watts: DotfilesService.state.cpuWatts
     readonly property string powerText: watts === null || watts === undefined ? "" : "  " + watts.toFixed(1) + " W"
+    readonly property real rowPitch: Math.max(6, Math.floor((widgetThickness - 2) / 2))
+    readonly property real stackTextSize: Math.max(7, Math.min(Theme.fontSizeMedium, Math.round(rowPitch * 0.8)))
 
     Component.onCompleted: DgopService.addRef(["cpu"])
     Component.onDestruction: DgopService.removeRef(["cpu"])
 
     horizontalBarPill: Component {
-        Row {
-            spacing: Theme.spacingS
-            height: root.widgetThickness
+        Item {
+            implicitWidth: Math.max(root.iconSize * 2.5, readout.implicitWidth + Theme.spacingXS * 2)
+            implicitHeight: root.widgetThickness
 
-            Item {
-                width: root.iconSize * 2.5
-                height: root.widgetThickness
-
-                Canvas {
-                    id: graph
-                    anchors.fill: parent
-                    readonly property var samples: root.history
-                    readonly property color graphColor: Theme.primary
-                    onSamplesChanged: requestPaint()
-                    onGraphColorChanged: requestPaint()
-                    onPaint: {
-                        const ctx = getContext("2d");
-                        ctx.reset();
-                        if (samples.length < 2)
-                            return;
-                        const yAt = sample => height - 2 - Math.min(100, sample) * (height - 4) / 100;
-                        ctx.beginPath();
-                        ctx.moveTo(0, height);
-                        for (let i = 0; i < samples.length; i++)
-                            ctx.lineTo(i * width / (samples.length - 1), yAt(samples[i]));
-                        ctx.lineTo(width, height);
-                        ctx.closePath();
-                        ctx.fillStyle = Theme.withAlpha(graphColor, 0.25);
-                        ctx.fill();
-                        ctx.strokeStyle = Theme.withAlpha(graphColor, 0.7);
-                        ctx.lineWidth = 2;
-                        ctx.beginPath();
-                        for (let i = 0; i < samples.length; i++) {
-                            const x = i * width / (samples.length - 1);
-                            if (i === 0)
-                                ctx.moveTo(x, yAt(samples[i]));
-                            else
-                                ctx.lineTo(x, yAt(samples[i]));
-                        }
-                        ctx.stroke();
+            Canvas {
+                id: graph
+                anchors.fill: parent
+                readonly property var samples: root.history
+                readonly property color graphColor: Theme.primary
+                onSamplesChanged: requestPaint()
+                onGraphColorChanged: requestPaint()
+                onWidthChanged: requestPaint()
+                onPaint: {
+                    const ctx = getContext("2d");
+                    ctx.reset();
+                    if (samples.length < 2)
+                        return;
+                    const yAt = sample => height - 2 - Math.min(100, sample) * (height - 4) / 100;
+                    ctx.beginPath();
+                    ctx.moveTo(0, height);
+                    for (let i = 0; i < samples.length; i++)
+                        ctx.lineTo(i * width / (samples.length - 1), yAt(samples[i]));
+                    ctx.lineTo(width, height);
+                    ctx.closePath();
+                    ctx.fillStyle = Theme.withAlpha(graphColor, 0.25);
+                    ctx.fill();
+                    ctx.strokeStyle = Theme.withAlpha(graphColor, 0.7);
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    for (let i = 0; i < samples.length; i++) {
+                        const x = i * width / (samples.length - 1);
+                        if (i === 0)
+                            ctx.moveTo(x, yAt(samples[i]));
+                        else
+                            ctx.lineTo(x, yAt(samples[i]));
                     }
-                }
-
-                StyledText {
-                    anchors.centerIn: parent
-                    text: root.usage.toFixed(0) + "%"
-                    font.pixelSize: root.textSize
-                    font.weight: Font.Bold
-                    color: root.usageColor
+                    ctx.stroke();
                 }
             }
 
-            StyledText {
-                anchors.verticalCenter: parent.verticalCenter
-                text: (root.frequency / 1000).toFixed(1) + " GHz" + root.powerText
-                font.pixelSize: root.textSize
-                color: Theme.widgetTextColor
+            Column {
+                id: readout
+                anchors.centerIn: parent
+
+                NumericText {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    height: root.rowPitch
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
+                    text: root.usage.toFixed(0) + "%"
+                    reserveText: "88%"
+                    font.pixelSize: root.stackTextSize
+                    font.weight: Font.Bold
+                    color: root.usageColor
+                }
+
+                NumericText {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    height: root.rowPitch
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
+                    text: (root.frequency / 1000).toFixed(1) + " GHz"
+                    reserveText: "8.8 GHz"
+                    font.pixelSize: root.stackTextSize
+                    color: Theme.widgetTextColor
+                }
             }
         }
     }
