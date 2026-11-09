@@ -7,6 +7,7 @@
 }: let
   desktop = config.myModules.desktop.enable;
   serverUrl = "https://jimi-hendnix.taileb3aad.ts.net:8222";
+  bitwardenPasskey = pkgs.callPackage ../../packages/bitwarden-desktop-passkey {};
   # The desktop app has no config file; its server lives in Electron's data.json.
   bitwardenLauncher = pkgs.writeShellApplication {
     name = "bitwarden";
@@ -24,12 +25,12 @@
         jq --argjson w "$want" '.global_environment_environment = $w' "$data" >"$tmp"
         mv "$tmp" "$data"
       fi
-      exec ${lib.getExe pkgs.bitwarden-desktop} "$@"
+      exec ${lib.getExe bitwardenPasskey} "$@"
     '';
   };
   bitwardenDesktop = pkgs.symlinkJoin {
     name = "bitwarden-desktop-vaultwarden";
-    paths = [pkgs.bitwarden-desktop];
+    paths = [bitwardenPasskey];
     postBuild = ''
       rm "$out/bin/bitwarden"
       ln -s ${lib.getExe bitwardenLauncher} "$out/bin/bitwarden"
