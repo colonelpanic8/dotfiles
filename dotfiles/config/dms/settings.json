@@ -100,6 +100,88 @@
         }
       ],
       "peekExpandOn": "arrowHover"
+    },
+    {
+      "id": "minimized",
+      "name": "Minimized",
+      "enabled": true,
+      "screenPreferences": [
+        "all"
+      ],
+      "showOnLastDisplay": true,
+      "position": 1,
+      "mode": "compact",
+      "middleClickAction": "close",
+      "align": "start",
+      "alignOffset": 0,
+      "widgetExpansion": "inline",
+      "iconSize": 26,
+      "spacing": 2,
+      "itemSpacing": 10,
+      "margin": 9,
+      "bottomGap": 0,
+      "transparency": 1,
+      "followInterfaceStyle": true,
+      "autoHide": true,
+      "smartAutoHide": false,
+      "autoHideStyle": "peek",
+      "peekOpacity": 1,
+      "revealDelay": 0,
+      "hideDelay": 600,
+      "useOverlayLayer": false,
+      "editOnRightClick": false,
+      "showOnFullscreen": false,
+      "openOnOverview": false,
+      "groupByApp": false,
+      "separatePinnedAndRunningApps": false,
+      "restoreSpecialWorkspaceOnClick": false,
+      "isolateDisplays": false,
+      "indicatorStyle": "circle",
+      "borderEnabled": false,
+      "borderColor": "surfaceText",
+      "borderOpacity": 1,
+      "borderThickness": 1,
+      "launcherEnabled": true,
+      "launcherLogoMode": "os",
+      "launcherLogoCustomPath": "",
+      "launcherLogoColorOverride": "",
+      "launcherLogoSizeOffset": 0,
+      "launcherLogoBrightness": 0.5,
+      "launcherLogoContrast": 1,
+      "maxVisibleApps": 0,
+      "maxVisibleRunningApps": 0,
+      "showOverflowBadge": true,
+      "showTrash": false,
+      "trashFileManager": "default",
+      "trashCustomCommand": "",
+      "magnification": false,
+      "magnificationScale": 130,
+      "magnificationProfile": "parabolic",
+      "magnificationExpand": false,
+      "order": [],
+      "widgets": [
+        {
+          "id": "minimized_hidden",
+          "widgetId": "hiddenWindows",
+          "showWhenCollapsed": true,
+          "enabled": true
+        },
+        {
+          "id": "minimized_launcher",
+          "widgetId": "dockLauncher",
+          "enabled": false
+        },
+        {
+          "id": "minimized_apps",
+          "widgetId": "appsDock",
+          "enabled": false
+        },
+        {
+          "id": "minimized_trash",
+          "widgetId": "dockTrash",
+          "enabled": false
+        }
+      ]
     }
   ],
   "barConfigs": [
