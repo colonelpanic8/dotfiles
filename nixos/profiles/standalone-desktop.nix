@@ -61,7 +61,7 @@ in {
       })
     ../claude-mcp.nix
     ../computer-use-linux.nix
-    ../dux-shell.nix
+    ../dux/shell.nix
     ../fonts.nix
     ../electron.nix
     ../remote-hyprland.nix

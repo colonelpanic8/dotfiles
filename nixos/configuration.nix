@@ -23,8 +23,8 @@
     ./computer-use-linux.nix
     ./cua.nix
     ./desktop.nix
-    ./dux-calendar.nix
-    ./dux-shell.nix
+    ./dux/calendar.nix
+    ./dux/shell.nix
     ./electron.nix
     ./environment.nix
     ../nix-shared/system/essential.nix
@@ -33,7 +33,7 @@
     ./scrobble-scrubber.nix
     ./gitea-runner.nix
     ./gitea.nix
-    ./google-calendar.nix
+    ./dux/google-calendar.nix
     ./google-messages.nix
     ./gnome.nix
     ./home-assistant.nix

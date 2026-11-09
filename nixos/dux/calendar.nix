@@ -29,7 +29,7 @@ in {
       dcal = config.programs.dank-calendar.package;
       googleCalendars = "${config.xdg.dataHome}/calendars/google";
     in {
-      age.secrets.org-api-auth-password.file = ./secrets/org-api-auth-password.age;
+      age.secrets.org-api-auth-password.file = ../secrets/org-api-auth-password.age;
 
       programs.dank-calendar = {
         enable = true;

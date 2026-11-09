@@ -19,7 +19,7 @@
     name = "dms-dotfiles-state";
     runtimeInputs = [python pkgs.systemd];
     text = ''
-      exec python3 ${../dotfiles/config/dms/integration.py} "$@"
+      exec python3 ${../../dotfiles/config/dms/integration.py} "$@"
     '';
   };
   nvidiaSmi = pkgs.writeShellScriptBin "nvidia-smi" ''
@@ -127,16 +127,16 @@ in {
         home.activation.seedDms = lib.hm.dag.entryAfter ["linkGeneration"] ''
           mkdir -p "$HOME/.local/state/dms"
           if [ ! -e "$HOME/.local/state/dms/session.json" ]; then
-            install -m600 ${../dotfiles/config/dms/session.json} "$HOME/.local/state/dms/session.json"
+            install -m600 ${../../dotfiles/config/dms/session.json} "$HOME/.local/state/dms/session.json"
           fi
         '';
 
         home.packages = [integration aiUsage];
-        systemd.user.services.wlsunset.Service.ExecCondition = "${pkgs.bash}/bin/bash ${../dotfiles/lib/bin/desktop_shell_ui} exec-condition taffybar";
+        systemd.user.services.wlsunset.Service.ExecCondition = "${pkgs.bash}/bin/bash ${../../dotfiles/lib/bin/desktop_shell_ui} exec-condition taffybar";
         systemd.user.services.dms = {
           Unit.After = ["status-notifier-watcher.service"];
           Service = {
-            ExecCondition = "${pkgs.bash}/bin/bash ${../dotfiles/lib/bin/desktop_shell_ui} exec-condition dms";
+            ExecCondition = "${pkgs.bash}/bin/bash ${../../dotfiles/lib/bin/desktop_shell_ui} exec-condition dms";
             Environment = ["PATH=${lib.makeBinPath runtimePackages}:/run/current-system/sw/bin:/etc/profiles/per-user/%u/bin"];
             RestartSec = 3;
           };

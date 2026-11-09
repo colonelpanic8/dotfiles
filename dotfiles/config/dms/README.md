@@ -117,7 +117,7 @@ completion. The selected tab is kept in the plugin's state. The view runs
 `mova_agenda`, which reads the API password from the agenix secret through
 `mova_api_password`.
 
-The Calendar card reads Dux Calendar (`dcal`). `nixos/dux-calendar.nix` gives
+The Calendar card reads Dux Calendar (`dcal`). `nixos/dux/calendar.nix` gives
 dcal the vdirsyncer Google feeds as a read-only account and the org TODOs as a
 task list through org-agenda-api's `org-agenda-dcal` provider, so dated TODOs
 show on their scheduled or deadline day as boxes (checked once done), each

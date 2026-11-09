@@ -18,7 +18,7 @@ in {
         exec ${pkgs.gawk}/bin/awk -v name="$1" '$1 == name { print $2 }' "${urlsFile}"
       '';
     in {
-      age.secrets.google-calendar-ics-urls.file = ./secrets/google-calendar-ics-urls.age;
+      age.secrets.google-calendar-ics-urls.file = ../secrets/google-calendar-ics-urls.age;
 
       accounts.calendar.basePath = basePath;
       accounts.calendar.accounts = lib.genAttrs calendars (name: {
