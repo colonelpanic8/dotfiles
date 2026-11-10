@@ -2981,11 +2981,11 @@
         "nixpkgs": "nixpkgs_17"
       },
       "locked": {
-        "lastModified": 1794209292,
-        "narHash": "sha256-2wurs4U2kobdF1N4iOh8Z1jnZ6M2cG1gCK1WfpOTGmQ=",
+        "lastModified": 1794294271,
+        "narHash": "sha256-lrLh+jvBPEeLP3YGbFojNHSHkThM3VyAxG96Rn3u32Y=",
         "owner": "colonelpanic8",
         "repo": "rbw",
-        "rev": "f7d2e399b82d9810ca453a0686b9c7be67868948",
+        "rev": "7f50686372590a65fdd3a01d0b7471710a2e3ccf",
         "type": "github"
       },
       "original": {
