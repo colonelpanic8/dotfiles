@@ -14,8 +14,82 @@ from collections.abc import Mapping
 from urllib.parse import unquote
 
 from fido2.client import DefaultClientDataCollector, Fido2Client, UserInteraction
+from fido2.ctap2 import AssertionResponse, Ctap2
+from fido2.ctap2.base import args
 from fido2.hid import CtapHidDevice
 from fido2.utils import websafe_encode
+
+
+def get_assertion(
+    self,
+    rp_id,
+    client_data_hash,
+    allow_list=None,
+    extensions=None,
+    options=None,
+    pin_uv_param=None,
+    pin_uv_protocol=None,
+    *,
+    event=None,
+    on_keepalive=None,
+):
+    """Like Ctap2.get_assertion, but accepts a response that omits the credential.
+
+    CTAP allows that when the allow list names exactly one credential (WearAuthn
+    does so), and python-fido2 would otherwise fail to parse the response.
+    """
+    response = self.send_cbor(
+        Ctap2.CMD.GET_ASSERTION,
+        args(
+            rp_id,
+            client_data_hash,
+            allow_list,
+            extensions,
+            options,
+            pin_uv_param,
+            pin_uv_protocol,
+        ),
+        event=event,
+        on_keepalive=on_keepalive,
+    )
+    if allow_list and len(allow_list) == 1:
+        response = {1: allow_list[0], **response}
+    return AssertionResponse.from_dict(response)
+
+
+Ctap2.get_assertion = get_assertion
+
+
+class OwnChannel:
+    """Drops HID reports addressed to other CTAPHID channels.
+
+    Every client of a hidraw device sees every report, and CTAPHID clients must
+    ignore channels they don't own; python-fido2 instead fails with "Wrong
+    channel" when another client or a late reply to an aborted request is
+    active.
+    """
+
+    def __init__(self, device, connection):
+        self.device = device
+        self.connection = connection
+
+    def read_packet(self):
+        while True:
+            packet = self.connection.read_packet()
+            if int.from_bytes(packet[:4], "big") == self.device._channel_id:
+                return packet
+
+    def write_packet(self, packet):
+        self.connection.write_packet(packet)
+
+    def close(self):
+        self.connection.close()
+
+
+class HidDevice(CtapHidDevice):
+    def __init__(self, descriptor, connection):
+        self._channel_id = 0xFFFFFFFF
+        super().__init__(descriptor, OwnChannel(self, connection))
 
 
 def assuan_escape(text):
@@ -89,7 +163,7 @@ def encode(value):
 
 
 def assert_credential(request, pinentry):
-    devices = list(CtapHidDevice.list_devices())
+    devices = list(HidDevice.list_devices())
     try:
         if not devices:
             raise ValueError("No security key found. Connect one and try again.")

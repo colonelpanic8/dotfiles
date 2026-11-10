@@ -2,8 +2,10 @@
   bitwarden-desktop,
   fetchFromGitHub,
   lib,
+  makeWrapper,
   pinentry-qt,
   python3,
+  symlinkJoin,
   writeShellApplication,
   clientsSrc ?
     fetchFromGitHub {
@@ -20,19 +22,24 @@
       exec ${python}/bin/python3 -I ${./passkey-helper.py} --pinentry ${lib.getExe' pinentry-qt "pinentry"} "$@"
     '';
   };
-in
-  bitwarden-desktop.overrideAttrs (old: {
+  app = bitwarden-desktop.overrideAttrs (old: {
     version = "${old.version}-passkey";
     src = clientsSrc;
-    postInstall =
-      (old.postInstall or "")
-      + ''
-        wrapProgram "$out/bin/bitwarden" --set BITWARDEN_PASSKEY_HELPER ${lib.getExe helper}
-      '';
-    passthru = old.passthru // {inherit helper;};
     meta =
       old.meta
       // {
         changelog = "https://github.com/colonelpanic8/clients/commits/desktop-passkey-login";
       };
-  })
+  });
+in
+  # Wrapped outside the app's own build so helper changes don't rebuild Electron.
+  symlinkJoin {
+    name = "bitwarden-desktop-${app.version}";
+    inherit (app) version meta;
+    paths = [app];
+    nativeBuildInputs = [makeWrapper];
+    postBuild = ''
+      wrapProgram "$out/bin/bitwarden" --set BITWARDEN_PASSKEY_HELPER ${lib.getExe helper}
+    '';
+    passthru = {inherit app helper;};
+  }
