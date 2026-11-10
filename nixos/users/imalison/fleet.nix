@@ -19,7 +19,10 @@ in {
           inputs.agenix.homeManagerModules.default
           ../../../nix-shared/home-manager/paseo-managed-hosts.nix
         ]
-        ++ lib.optional t3codeEnabled ../../../nix-shared/home-manager/t3code-managed-connections.nix;
+        ++ lib.optionals t3codeEnabled [
+          ../../../nix-shared/home-manager/t3code-managed-connections.nix
+          ../../../nix-shared/home-manager/t3code-antigravity-token.nix
+        ];
       age.identityPaths = ["${config.home.homeDirectory}/.ssh/id_ed25519"];
       home.packages = [
         inputs.agenix.packages."${pkgs.stdenv.hostPlatform.system}".default

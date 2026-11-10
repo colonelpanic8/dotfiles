@@ -1,6 +1,10 @@
 # Server declarations shared by every T3 Code fleet member, NixOS and macOS
 # alike. Values are managed: clients show them as fixed by system configuration.
-{lib, ...}: {
+{
+  lib,
+  pkgs,
+  ...
+}: {
   services.t3code = {
     settings = {
       favorites = [
@@ -24,6 +28,14 @@
       providerInstances.claudeAgent = lib.mkDefault {
         driver = "claudeAgent";
         config.launchArgs = "--chrome";
+      };
+      # Gemini, now served through Antigravity. Pinning the runtime keeps T3
+      # from downloading its own ~1 GB copy into ~/.t3/tools on every host.
+      providerInstances.antigravity = lib.mkIf (lib.meta.availableOn pkgs.stdenv.hostPlatform pkgs.antigravity-acp) {
+        driver = "antigravity";
+        displayName = "Antigravity";
+        enabled = true;
+        config.binaryPath = "${pkgs.antigravity-acp}/bin/agy_acp_server.par";
       };
       textGenerationModelSelection = lib.mkDefault {
         instanceId = "claudeAgent";

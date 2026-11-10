@@ -57,6 +57,7 @@ in {
     inputs.agenix.homeManagerModules.default
     ../../../nix-shared/home-manager/codex-generated-skills.nix
     ../../../nix-shared/home-manager/t3code-managed-connections.nix
+    ../../../nix-shared/home-manager/t3code-antigravity-token.nix
     ./git-sync.nix
   ];
 
