@@ -76,9 +76,10 @@ for host in "${hosts[@]}"; do
   jq -e --arg h "$host" 'any(.label == $h)' <<<"$manifest" >/dev/null ||
     { echo "$host is not in nix-shared/$manifest_file" >&2; exit 1; }
   environment_id=$(jq -r --arg h "$host" '.[] | select(.label == $h) | .environmentId' <<<"$manifest")
+  ssh_host=$(jq -r --arg h "$host" '.[] | select(.label == $h) | .httpBaseUrl | capture("^[a-z]+://(?<h>[^:/]+)").h' <<<"$manifest")
   echo "minting on $host" >&2
   { printf '%s\n' "$ephemeral"; jq -c '{version: 1, environments: .}' <<<"$manifest"; } |
-    ssh -o BatchMode=yes "$ssh_user@$host" \
+    ssh -o BatchMode=yes "$ssh_user@$ssh_host" \
       "ENVIRONMENT_ID=$(printf %q "$environment_id") LABEL=$(printf %q "$label") TTL=$(printf %q "$ttl") bash -c $(printf %q "$remote")" \
       >"$work/$host.age"
   # Older servers still export a single-anchor v1 document.
