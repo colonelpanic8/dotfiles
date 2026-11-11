@@ -445,7 +445,7 @@
     # Pin by REV, never by branch: generated assembly branches move on rebuild.
     # Each rebuild also pushes a dated tag, so older revs stay fetchable.
     t3code = {
-      url = "github:colonelpanic8/t3code/4367cb2b1c3b2d60f76dbec0adeb4ec33c92520d";
+      url = "github:colonelpanic8/t3code/d132942719027a8c4aadd5488de69251faaa0b82";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
