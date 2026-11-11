@@ -1,17 +1,16 @@
 # Agentic Session Preferences
 
-## Paseo
-Paseo is an agentic development environment and its currently my daily driver
-for running agents.
+## T3 Code
+T3 Code is an agentic development environment and it's currently my daily
+driver for running agents.
 
 - Unless the user or task explicitly says otherwise, start every agent session
-  or worker created by Paseo in the provider's full-permissions mode (Codex:
-  `full-access`).
-- VERY IMPORTANT: when delegating, ALWAYS spawn subagents through the Paseo MCP
-  tools (e.g. `create_agent`) instead of native subagents whenever they are
-  available.
-- Give every Paseo-managed subagent a self-contained initial prompt. It does not
-  inherit the parent's full conversation automatically.
+  or worker created through T3 Code in the provider's full-permissions mode
+  (Codex: `full-access`).
+- When delegating, follow T3 Code's orchestration guidance for choosing between
+  native subagents and its `delegate_task` MCP tool.
+- Give every T3 Code-delegated agent a self-contained initial prompt. It does
+  not inherit the parent's full conversation automatically.
 - Before choosing a provider/model/account for a subagent, run
   `~/.lib/bin/agent-delegation`. It prints any active override and remaining
   usage for each provider.
@@ -257,7 +256,7 @@ code never arrives.
 
 ## Browser Automation
 
-- Codex agents outside Codex desktop (including T3 Code and Paseo) use the
+- Codex agents outside Codex desktop (including T3 Code) use the
   `claude-in-chrome` MCP server for Chrome access. It runs
   `claude --claude-in-chrome-mcp` against the installed Claude in Chrome
   extension and does not require Codex desktop to be running. Codex's bundled
