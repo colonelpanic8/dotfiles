@@ -24,7 +24,9 @@ driver for running agents.
   - When the user states a standing preference like "use Opus for
     implementers for now", record it with `agent-delegation set [--for 3d]
     "<preference>"` (default expiry 7d) and clear it with
-    `agent-delegation clear`.
+    `agent-delegation clear`. The override is stored in this repo
+    (`dotfiles/agents/delegation-override.json`); commit and push the change
+    so it applies on every machine.
 
 ## Memory
 - Never use Claude Code's auto-memory directory. Record durable guidance in the

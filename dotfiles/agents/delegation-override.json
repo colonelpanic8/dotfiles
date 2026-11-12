@@ -1,0 +1,5 @@
+{
+  "text": "Always use Claude (claude provider: native Agent tool or delegate_task with a Claude model) for all subagents and delegated work. Do not pick OpenAI/Codex models on headroom, cross-provider pairing advice, skill defaults, or second-opinion conventions; use OpenAI/Codex only when the user explicitly asks for it in the current request.",
+  "set_at": "2026-11-12T12:47:24-08:00",
+  "expires_at": "2026-11-26T12:47:24-08:00"
+}
