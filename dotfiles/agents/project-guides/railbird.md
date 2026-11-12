@@ -26,3 +26,11 @@
 ## Read-first docs
 - `./project-links/railbird/README.md`
 - `./project-links/railbird-mobile/README.md` (if present)
+
+## GKE access
+- Use the `ivan@railbird.ai` gcloud account for railbird GKE. The active
+  gcloud account (`ivanmalison@gmail.com`) has no RBAC in `railbird-dev-api`,
+  so `just kube ...` fails with Forbidden.
+- Don't switch gcloud's global account (other sessions share it). Pass a token:
+  `kubectl --kubeconfig "$RB_SECRET_KUBECONFIG_YAML" --context railbird-gke -n railbird-dev-api --token "$(gcloud auth print-access-token --account=ivan@railbird.ai)" ...`
+  inside `direnv exec` in the railbird repo.
