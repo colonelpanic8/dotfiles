@@ -61,7 +61,7 @@ enabled = true
 enabled = true
 
 [plugins."pstack@pstack-claude"]
-enabled = true
+enabled = false
 
 [marketplaces.pstack-claude]
 source_type = "git"

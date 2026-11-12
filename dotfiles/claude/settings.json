@@ -31,6 +31,6 @@
     }
   },
   "enabledPlugins": {
-    "pstack@pstack-claude": true
+    "pstack@pstack-claude": false
   }
 }
