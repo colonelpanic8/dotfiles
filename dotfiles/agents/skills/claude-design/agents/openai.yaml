@@ -1,0 +1,4 @@
+interface:
+  display_name: "Claude Design"
+  short_description: "High-fidelity HTML design artifacts"
+  default_prompt: "Use $claude-design to design this as an HTML artifact: gather context, declare a visual system, and present variations."

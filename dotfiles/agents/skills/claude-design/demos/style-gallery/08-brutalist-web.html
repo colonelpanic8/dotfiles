@@ -1,0 +1,260 @@
+<!doctype html>
+<!--
+  08 · Brutalist Web — Are.na / Drudge / Bloomberg Terminal / early web lineage
+  System:
+    Type    IBM Plex Mono / Courier / system-ui · deliberately unstyled
+    Color   black on white, one saturated link blue · no gradients, no shadows, no radii
+    Grid    dense text, horizontal rules, tables, long scrolling, NO hero apparatus
+    Moves   raw <table> and <pre>, visible borders, small link lists, server-rendered feel
+  Discipline: no animations, no polish, no skeuomorphism.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>claude-design-skill — a design skill for Claude</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=IBM+Plex+Serif:wght@400;700&display=swap">
+<style>
+  :root { --ink:#000; --paper:#fff; --link:#0000ee; --visited:#551a8b; --mute:#555; --bg:#f6f6f6; }
+  * { box-sizing: border-box; }
+  html { background: var(--paper); }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: 'IBM Plex Mono', Menlo, Courier, monospace;
+    font-size: 15px; line-height: 1.6;
+    max-width: 960px;
+    padding: 24px 24px 96px;
+    margin: 0 auto;
+  }
+  a { color: var(--link); text-decoration: underline; }
+  a:visited { color: var(--visited); }
+  a:hover { background: var(--ink); color: var(--paper); text-decoration: none; }
+
+  hr { border: none; border-top: 1px solid var(--ink); margin: 12px 0; }
+  hr.thick { border-top: 2px solid var(--ink); margin: 20px 0; }
+
+  h1, h2, h3 { font-family: 'IBM Plex Mono', monospace; font-weight: 700; margin: 0; }
+  h1 { font-size: 28px; letter-spacing: -0.01em; line-height: 1.2; }
+  h2 { font-size: 18px; letter-spacing: 0.02em; text-transform: uppercase; margin: 28px 0 8px; }
+  h3 { font-size: 15px; font-weight: 700; margin: 18px 0 6px; }
+  p { margin: 0 0 10px; max-width: 68ch; }
+  ul, ol { margin: 0 0 12px; padding-left: 22px; }
+  li { margin: 3px 0; }
+
+  .top {
+    display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: baseline;
+    font-size: 13px; color: var(--mute);
+    padding-bottom: 8px; border-bottom: 2px solid var(--ink);
+    margin-bottom: 0;
+  }
+  .top b { color: var(--ink); }
+  .top nav { font-size: 13px; }
+  .top nav a { margin-left: 12px; }
+
+  .path {
+    font-size: 12px; color: var(--mute); margin-top: 8px; margin-bottom: 16px;
+  }
+
+  /* "Hero" is just a big dense heading + prose, per the brutalist rule: no hero apparatus */
+  .head-block { margin: 20px 0 8px; }
+  .head-block h1 {
+    font-size: 36px; line-height: 1.1; max-width: 20ch;
+  }
+  .head-block .sub { font-size: 14px; color: var(--mute); margin-top: 6px; }
+  .head-block .meta { margin-top: 12px; font-size: 13px; }
+  .head-block .meta b { background: var(--ink); color: var(--paper); padding: 0 6px; }
+
+  /* Tables everywhere */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 8px 0 16px;
+  }
+  table th, table td {
+    border: 1px solid var(--ink);
+    padding: 6px 10px;
+    vertical-align: top;
+    text-align: left;
+  }
+  table th { background: var(--ink); color: var(--paper); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+  table.ascii { border: 2px solid var(--ink); }
+  table.ascii tr:nth-child(even) td { background: var(--bg); }
+
+  /* pre blocks */
+  pre {
+    background: var(--ink); color: var(--paper);
+    padding: 12px 16px;
+    font-size: 13px; line-height: 1.55;
+    margin: 8px 0 16px;
+    overflow-x: auto;
+    border: 2px solid var(--ink);
+  }
+  pre.light {
+    background: var(--bg); color: var(--ink);
+  }
+  pre b { color: #ff6b35; font-weight: 400; }
+  code { font-family: inherit; background: var(--bg); padding: 0 4px; border: 1px solid var(--mute); }
+  pre code { background: transparent; padding: 0; border: 0; }
+
+  /* a "box" is just a thick border, no radius */
+  .box {
+    border: 2px solid var(--ink); padding: 12px 16px;
+    margin: 10px 0 14px;
+    background: var(--bg);
+  }
+  .box b { text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* nav footer */
+  .fnav { font-size: 13px; color: var(--mute); border-top: 2px solid var(--ink); padding-top: 10px; margin-top: 40px; }
+  .fnav a { margin-right: 12px; }
+
+  /* small, direct, information-dense footer */
+  footer { font-size: 12px; color: var(--mute); margin-top: 20px; }
+  footer b { color: var(--ink); }
+
+  @media (max-width: 600px) {
+    body { padding: 16px; }
+    .head-block h1 { font-size: 28px; }
+    table { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div><b>claude-design-skill</b> &nbsp;|&nbsp; 08/10 · Brutalist Web</div>
+  <nav>
+    <a href="#what">what</a>
+    <a href="#rules">rules</a>
+    <a href="#install">install</a>
+    <a href="index.html">← index</a>
+  </nav>
+</header>
+<div class="path">/ home / docs / styles / 08-brutalist-web.html &nbsp; — &nbsp; last edited: 2026-04-21</div>
+
+<section class="head-block">
+  <h1>claude-design-skill: a design skill for Claude.</h1>
+  <p class="sub">A portable Claude skill that turns the model into a senior designer. Grounded in real context. Committed to a visual system. Refuses AI-slop. That is the entire pitch.</p>
+  <p class="meta"><b>&nbsp;rev 01&nbsp;</b> &nbsp; 2026-04-21 &nbsp; · &nbsp; MIT &nbsp; · &nbsp; <a href="https://github.com/jiji262/claude-design-skill">github.com/jiji262/claude-design-skill</a></p>
+</section>
+
+<hr class="thick">
+
+<section id="what">
+  <h2>01. What it installs</h2>
+  <p>
+    SKILL.md plus a handful of on-demand references. Claude loads the skill when
+    your request sounds like design — "make a deck", "design a landing page",
+    "prototype this flow", "animate this concept". Once loaded, it rewires Claude's
+    defaults.
+  </p>
+  <table>
+    <thead>
+      <tr><th>Component</th><th>Purpose</th><th>Loaded</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>SKILL.md</td><td>Entry point · workflow · priority rules · routing</td><td>always</td></tr>
+      <tr><td>references/fact-verification.md</td><td>Priority Zero rule — WebSearch before assumption</td><td>on-demand</td></tr>
+      <tr><td>references/brand-context.md</td><td>Core Asset Protocol — 5-step hard flow</td><td>on-demand</td></tr>
+      <tr><td>references/design-styles.md</td><td>10 philosophies across 5 schools</td><td>on-demand</td></tr>
+      <tr><td>references/design-principles.md</td><td>Anti-slop checklist · craft rules</td><td>on-demand</td></tr>
+      <tr><td>references/output-formats.md</td><td>Deck / canvas / prototype / animation skeletons</td><td>on-demand</td></tr>
+      <tr><td>assets/*</td><td>Starter templates: deck-stage, prototype-shell, etc.</td><td>copy-paste</td></tr>
+      <tr><td>demos/*</td><td>Three real sample artifacts</td><td>reference</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="rules">
+  <h2>02. Three rules, in order of priority</h2>
+
+  <h3>[01] Priority Zero — verify facts before designing</h3>
+  <p>When the brief names a specific product, company, version, or recent event, the first action is <b>not</b> a clarifying question and <b>not</b> design exploration. The first action is WebSearch. A 10-second search beats 1–2 hours of rework on a wrong premise.</p>
+  <pre>WebSearch <b>→</b> read 1-3 authoritative results <b>→</b> write findings to product-facts.md <b>→</b> only then design.</pre>
+
+  <h3>[02] The Core Asset Protocol</h3>
+  <p>For any task that names a specific brand, follow the five-step hard flow. Logo, product shots, and UI screenshots are <b>first-class citizens</b>. Colors and fonts are auxiliary.</p>
+  <table class="ascii">
+    <thead><tr><th>Step</th><th>Action</th><th>Output</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Ask</td><td>full six-asset checklist requested from user</td></tr>
+      <tr><td>2</td><td>Search</td><td>official channels probed — brand site, press kit, docs</td></tr>
+      <tr><td>3</td><td>Download</td><td>three-path fallbacks · 5-10-2-8 quality rule</td></tr>
+      <tr><td>4</td><td>Verify</td><td>each asset real, hi-res, current, uncontaminated</td></tr>
+      <tr><td>5</td><td>Freeze</td><td>brand-spec.md written with paths, colors, fonts, gaps</td></tr>
+    </tbody>
+  </table>
+
+  <h3>[03] The Design Direction Advisor</h3>
+  <p>When the brief is too vague to execute, do not improvise. Switch into Advisor mode: propose <b>three</b> directions drawn from <b>different</b> schools among the library of ten. Build a small preview. Ask the user to pick. Then commit fully.</p>
+  <div class="box">
+    <b>The ten:</b> 01 Swiss Editorial · 02 Bauhaus Geometric · 03 Kenya Hara · 04 Dieter Rams · 05 Magazine Editorial · 06 Zine/Riso · 07 Field.io · 08 Brutalist Web · 09 Sagmeister · 10 Y2K Futurist
+  </div>
+</section>
+
+<section id="install">
+  <h2>03. Install</h2>
+  <p>Works across 40+ coding agents (Claude Code, Codex, Cursor, OpenCode, Gemini CLI, Cline, ...). Four install paths, pick one:</p>
+
+  <table>
+    <thead><tr><th>Path</th><th>Command</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>A. npx</b></td>
+        <td><code>npx skills add jiji262/claude-design-skill -g</code></td>
+        <td>recommended; works across all agents</td>
+      </tr>
+      <tr>
+        <td><b>B. clone+symlink</b></td>
+        <td><code>ln -s ~/code/claude-design-skill ~/.claude/skills/claude-design</code></td>
+        <td>dev mode; git pull auto-updates</td>
+      </tr>
+      <tr>
+        <td><b>C. plugin</b></td>
+        <td>bundle inside a Claude Code plugin</td>
+        <td>standard plugin skill layout</td>
+      </tr>
+      <tr>
+        <td><b>D. manual</b></td>
+        <td>point Claude at SKILL.md directly</td>
+        <td>no install; testing only</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <pre class="light">$ npx skills add jiji262/claude-design-skill -g
+&gt; Cloning repository...
+&gt; Found 1 skill
+&gt; Installing → ~/.claude/skills/claude-design
+&gt; Done.</pre>
+</section>
+
+<section id="spec">
+  <h2>04. Spec</h2>
+  <table>
+    <tbody>
+      <tr><td>Author</td><td>see github repo</td></tr>
+      <tr><td>License</td><td>MIT</td></tr>
+      <tr><td>Requires</td><td>a Claude skill host (Claude Code, Agent SDK, etc.)</td></tr>
+      <tr><td>Output format</td><td>HTML design artifacts</td></tr>
+      <tr><td>Does NOT</td><td>generate binary assets · recreate copyrighted UIs · replace a designer</td></tr>
+      <tr><td>Does</td><td>enforce discipline · remove AI-slop defaults · gather real context before design</td></tr>
+      <tr><td>Repo</td><td><a href="https://github.com/jiji262/claude-design-skill">github.com/jiji262/claude-design-skill</a></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="fnav">
+  <a href="index.html">← ten-style index</a>
+  <a href="07-field-io.html">← prev: Field.io</a>
+  <a href="09-sagmeister.html">next: Sagmeister →</a>
+</div>
+
+<footer>
+  <p><b>08 · Brutalist Web</b>  —  Are.na / Drudge / Bloomberg Terminal lineage  —  deliberately unstyled, information-dense, monospaced.</p>
+  <p>no javascript · no tracking · 1 external font file · served at speed.</p>
+</footer>
+
+</body>
+</html>

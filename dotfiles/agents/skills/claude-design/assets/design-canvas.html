@@ -1,0 +1,105 @@
+<!doctype html>
+<!--
+  Design-canvas scaffold — for presenting multiple static variants side-by-side.
+
+  Usage: duplicate the .cell blocks inside .canvas. Each cell gets:
+  - A short variant label ("Variant A · Editorial")
+  - A one-line description of what's being explored
+  - The actual variant content inside .cell-body
+
+  Rules:
+  - Keep cells the same size so variants are directly comparable.
+  - Use a neutral canvas background (cream / light grey) so variant colors read correctly.
+  - 2–3 columns is usually right; 4+ gets too small to evaluate.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Design canvas</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; font-family: system-ui, sans-serif; background: #f4f1ec; }
+    .canvas {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 40px;
+      padding: 48px;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+    .cell {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.04);
+    }
+    .cell-label {
+      padding: 16px 20px;
+      border-bottom: 1px solid #eee;
+    }
+    .cell-label h3 {
+      margin: 0;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #555;
+      font-weight: 600;
+    }
+    .cell-label p {
+      margin: 6px 0 0;
+      font-size: 13px;
+      color: #888;
+      line-height: 1.4;
+    }
+    .cell-body {
+      aspect-ratio: 16 / 10;
+      display: grid;
+      place-items: center;
+      padding: 40px;
+      background: #fafafa;
+    }
+    .placeholder {
+      text-align: center;
+      color: #aaa;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <main class="canvas">
+
+    <section class="cell">
+      <header class="cell-label">
+        <h3>Variant A · Editorial</h3>
+        <p>Serif headline, generous negative space, full-width photo</p>
+      </header>
+      <div class="cell-body">
+        <div class="placeholder">[ Variant A content ]</div>
+      </div>
+    </section>
+
+    <section class="cell">
+      <header class="cell-label">
+        <h3>Variant B · Product-forward</h3>
+        <p>Mono headline, product screenshot, tight rhythm</p>
+      </header>
+      <div class="cell-body">
+        <div class="placeholder">[ Variant B content ]</div>
+      </div>
+    </section>
+
+    <section class="cell">
+      <header class="cell-label">
+        <h3>Variant C · Remix</h3>
+        <p>Headline as diagram; product interaction as the hero</p>
+      </header>
+      <div class="cell-body">
+        <div class="placeholder">[ Variant C content ]</div>
+      </div>
+    </section>
+
+    <!-- Add more .cell blocks as needed -->
+
+  </main>
+</body>
+</html>

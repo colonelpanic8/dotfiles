@@ -1,0 +1,226 @@
+<!doctype html>
+<!--
+  02 · Bauhaus Geometric — Müller-Brockmann / Paula Scher / Herbert Bayer lineage
+  System:
+    Type    Futura-like geometric sans, heavy weight, large scale, occasional rotation
+    Color   primary red #ff3c00 / blue #0019ff / yellow #f5e100 on black or white
+    Grid    shapes as composition (circle, square, triangle), bold diagonals
+    Moves   type-as-shape, giant circular anchors, color-blocking
+  Discipline: flat only, no photography, no gradients, no decoration.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>02 · Bauhaus Geometric — Claude Design</title>
+<style>
+  :root { --red:#ff3c00; --blue:#0019ff; --yellow:#f5e100; --ink:#000; --paper:#fff; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: 'Futura', 'Avenir Next', 'Century Gothic', 'Trebuchet MS', system-ui, sans-serif;
+    font-weight: 700;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  header {
+    display: grid; grid-template-columns: 1fr auto; align-items: center;
+    padding: 24px 48px; background: var(--ink); color: var(--paper);
+    font-size: 14px; letter-spacing: 0.2em; text-transform: uppercase;
+  }
+  header .mark { display: flex; gap: 12px; align-items: center; font-weight: 800; }
+  header .mark .sq { width: 14px; height: 14px; background: var(--yellow); }
+  header .mark .ci { width: 14px; height: 14px; border-radius: 50%; background: var(--red); }
+  header .mark .tri { width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 14px solid var(--blue); }
+
+  /* HERO — black canvas, giant type, a red circle anchor */
+  .hero {
+    background: var(--ink); color: var(--paper);
+    padding: 96px 48px 120px;
+    position: relative; overflow: hidden;
+  }
+  .hero .eyebrow {
+    font-size: 14px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--yellow);
+    margin-bottom: 48px;
+  }
+  .hero h1 {
+    font-size: clamp(80px, 14vw, 220px);
+    font-weight: 800; letter-spacing: -0.06em; line-height: 0.82;
+    margin: 0; text-transform: uppercase;
+    max-width: 1400px;
+    position: relative; z-index: 2;
+  }
+  .hero h1 .r { color: var(--red); }
+  .hero h1 .b { color: var(--blue); }
+  .hero h1 .y { color: var(--yellow); }
+  .hero .circle {
+    position: absolute; right: -160px; top: 50%; transform: translateY(-50%);
+    width: 640px; height: 640px; border-radius: 50%; background: var(--red);
+    z-index: 1;
+  }
+  .hero .triangle {
+    position: absolute; bottom: 60px; right: 48px;
+    width: 0; height: 0;
+    border-left: 48px solid transparent; border-right: 48px solid transparent;
+    border-bottom: 80px solid var(--yellow);
+    z-index: 2;
+  }
+
+  /* Thesis band */
+  .thesis {
+    background: var(--yellow); color: var(--ink);
+    padding: 64px 48px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+    border-top: 8px solid var(--ink); border-bottom: 8px solid var(--ink);
+  }
+  .thesis p { font-size: 24px; line-height: 1.35; margin: 0; font-weight: 500; max-width: 640px; }
+  .thesis .meta { font-size: 13px; line-height: 1.8; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; }
+  .thesis .meta b { display: block; font-size: 11px; letter-spacing: 0.2em; }
+
+  /* Module WHAT */
+  .what {
+    padding: 96px 48px;
+    display: grid; grid-template-columns: 1fr 2fr; gap: 96px;
+    align-items: start;
+  }
+  .what h2 {
+    margin: 0; text-transform: uppercase;
+    font-size: 80px; letter-spacing: -0.04em; line-height: 0.88; font-weight: 800;
+  }
+  .what h2 .b { color: var(--blue); display: block; }
+  .what .body p {
+    font-size: 22px; line-height: 1.4; font-weight: 500;
+    margin: 0 0 18px; max-width: 680px;
+  }
+
+  /* Module THREE RULES — three giant color blocks */
+  .rules {
+    background: var(--ink);
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    color: var(--paper);
+  }
+  .rule {
+    padding: 72px 40px 80px;
+    min-height: 520px;
+    position: relative;
+    display: flex; flex-direction: column; justify-content: space-between; gap: 32px;
+  }
+  .rule.r1 { background: var(--red); color: var(--ink); }
+  .rule.r2 { background: var(--blue); color: var(--paper); }
+  .rule.r3 { background: var(--yellow); color: var(--ink); }
+  .rule .n {
+    font-size: 180px; font-weight: 800; line-height: 0.8; letter-spacing: -0.08em;
+    font-variant-numeric: tabular-nums;
+  }
+  .rule h3 {
+    margin: 0; font-size: 36px; text-transform: uppercase; letter-spacing: -0.02em;
+    line-height: 1; font-weight: 800;
+  }
+  .rule p { margin: 0; font-size: 16px; line-height: 1.5; font-weight: 500; max-width: 360px; }
+
+  /* Install band */
+  .install {
+    background: var(--paper); padding: 80px 48px; border-top: 8px solid var(--ink);
+    display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 48px;
+  }
+  .install h2 { margin: 0; font-size: 64px; letter-spacing: -0.04em; font-weight: 800; text-transform: uppercase; line-height: 0.9; }
+  .install h2 .r { color: var(--red); }
+  .install code {
+    font-family: 'Courier New', monospace;
+    background: var(--ink); color: var(--yellow);
+    padding: 20px 28px; font-size: 20px; font-weight: 700;
+    display: inline-block;
+  }
+
+  footer {
+    background: var(--ink); color: var(--paper);
+    padding: 32px 48px;
+    display: grid; grid-template-columns: 1fr auto auto; gap: 32px; align-items: center;
+    font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700;
+  }
+  footer a { color: var(--yellow); border-bottom: 1px solid var(--yellow); }
+
+  @media (max-width: 820px) {
+    .thesis, .what, .install { grid-template-columns: 1fr; padding: 48px 24px; }
+    .rules { grid-template-columns: 1fr; }
+    .rule { min-height: auto; padding: 48px 28px; }
+    .hero { padding: 64px 24px 96px; }
+    .hero h1 { font-size: 72px; }
+    .hero .circle { width: 320px; height: 320px; right: -100px; }
+    .what h2 { font-size: 56px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="mark"><span class="sq"></span><span class="ci"></span><span class="tri"></span>&nbsp;Claude / Design</div>
+  <div>02 · Bauhaus · 2026</div>
+</header>
+
+<section class="hero">
+  <div class="circle"></div>
+  <div class="eyebrow">02 / Structural modernism / Bauhaus Geometric</div>
+  <h1>CLAUDE<br><span class="r">AS A</span><br><span class="y">DESIGN</span><br>ER.</h1>
+  <div class="triangle"></div>
+</section>
+
+<section class="thesis">
+  <p>
+    A portable Claude skill that turns the model into a senior designer — grounded in real
+    context, committed to a visual system, refusing to make AI-slop.
+  </p>
+  <div class="meta">
+    <b>Style</b>Bauhaus Geometric<br>
+    <b>School</b>Structural modernism<br>
+    <b>Feeling</b>primary · architectural · confident<br>
+    <b>Right for</b>posters · cultural · bold stances
+  </div>
+</section>
+
+<section class="what">
+  <h2>WHAT<br>IT<br><span class="b">INSTALLS.</span></h2>
+  <div class="body">
+    <p>
+      Claude Design ships a SKILL.md and a handful of on-demand references that Claude
+      loads when your request sounds like design — a deck, a landing page, a prototype.
+    </p>
+    <p>
+      Once loaded, it rewires Claude's defaults. It forces fact verification. It pushes
+      for real brand assets. It proposes differentiated directions when the brief is vague.
+    </p>
+  </div>
+</section>
+
+<section class="rules">
+  <div class="rule r1">
+    <div class="n">01</div>
+    <h3>Verify facts first.</h3>
+    <p>When a specific product is named, WebSearch comes before design. 10 seconds of search beats 1–2 hours of rework.</p>
+  </div>
+  <div class="rule r2">
+    <div class="n">02</div>
+    <h3>The Asset Protocol.</h3>
+    <p>Ask → search → download → verify → freeze. Logo, product shots, UI screenshots are first-class. Colors and fonts are auxiliary.</p>
+  </div>
+  <div class="rule r3">
+    <div class="n">03</div>
+    <h3>Direction Advisor.</h3>
+    <p>When the brief is vague, propose three directions from ten philosophies across five schools. Let the user pick before committing.</p>
+  </div>
+</section>
+
+<section class="install">
+  <h2>ONE LINE.<br><span class="r">FORTY AGENTS.</span></h2>
+  <code>npx skills add jiji262/claude-design-skill -g</code>
+</section>
+
+<footer>
+  <span>02 · Bauhaus Geometric · Müller-Brockmann lineage</span>
+  <a href="https://github.com/jiji262/claude-design-skill">GitHub</a>
+  <a href="index.html">← Index</a>
+</footer>
+
+</body>
+</html>

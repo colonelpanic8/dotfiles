@@ -1,0 +1,361 @@
+<!doctype html>
+<!--
+  09 · Sagmeister / expressive · Stefan Sagmeister / Paula Scher (expressive mode)
+  System:
+    Type    display faces used as image · hand-drawn feel · huge weight + scale shifts
+    Color   saturated, deliberately clashing pairs · pink + navy + acid yellow
+    Grid    concept drives everything · grid serves the idea, not the reverse
+    Moves   type-as-image, extreme scale shifts, deliberate "mistakes", unusual framing
+  Discipline: no restraint — this style requires commitment. Hedging = confusion.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>09 · Sagmeister Expressive — Claude Design</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,700;1,9..144,900&family=Inter:wght@400;600;800&display=swap">
+<style>
+  :root { --pink:#ff6b9d; --navy:#0d1b3e; --gold:#f3c04c; --lime:#b8ff5c; --paper:#fdf0e2; --ink:#0a0a0a; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--navy);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 500;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Masthead — ransom-note style */
+  header {
+    padding: 20px 40px;
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    background: var(--navy); color: var(--paper);
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 16px; font-style: italic; font-weight: 700;
+  }
+  header .left { text-align: left; }
+  header .c { text-align: center; font-size: 22px; font-weight: 900; color: var(--gold); font-style: normal; letter-spacing: -0.02em; }
+  header .c em { color: var(--pink); font-style: italic; }
+  header .right { text-align: right; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--paper); font-style: normal; font-family: 'Inter', sans-serif; font-weight: 600; }
+
+  /* HERO — huge rotated display type, concept-driven */
+  .hero {
+    position: relative;
+    padding: 80px 40px 120px;
+    background: var(--pink);
+    color: var(--navy);
+    overflow: hidden;
+    min-height: 700px;
+  }
+  .hero .sticker {
+    position: absolute; top: 32px; right: 40px;
+    background: var(--gold); color: var(--navy);
+    padding: 14px 22px;
+    transform: rotate(8deg);
+    font-family: 'Fraunces', serif; font-weight: 900; font-style: italic;
+    font-size: 22px;
+    border: 3px solid var(--navy);
+  }
+  .hero h1 {
+    margin: 80px 0 0;
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 900; font-style: italic;
+    font-size: clamp(100px, 18vw, 280px);
+    letter-spacing: -0.06em; line-height: 0.82;
+    color: var(--navy);
+    text-transform: uppercase;
+    max-width: 1400px;
+    position: relative;
+    z-index: 2;
+  }
+  .hero h1 .gold-word {
+    color: var(--gold);
+    -webkit-text-stroke: 3px var(--navy);
+    display: inline-block;
+    transform: rotate(-2deg);
+    padding: 0 0.1em;
+  }
+  .hero h1 .underlined {
+    text-decoration: underline wavy var(--paper);
+    text-decoration-thickness: 8px;
+    text-underline-offset: 14px;
+  }
+  .hero h1 .box-word {
+    background: var(--navy); color: var(--pink);
+    padding: 0 0.08em;
+    display: inline-block;
+    transform: rotate(2deg);
+  }
+  .hero h1 em {
+    font-style: italic; color: var(--paper);
+  }
+  .hero .squiggle {
+    position: absolute; left: 40px; bottom: 40px;
+    font-family: 'Fraunces', serif; font-weight: 900;
+    font-size: 180px; color: var(--gold);
+    line-height: 0.8;
+    transform: rotate(-12deg);
+    z-index: 1;
+    opacity: 0.5;
+  }
+  .hero .caption {
+    position: relative; z-index: 2;
+    margin-top: 56px;
+    max-width: 520px;
+    font-family: 'Fraunces', serif; font-size: 22px; line-height: 1.35;
+    font-style: italic; color: var(--navy);
+  }
+  .hero .caption b {
+    background: var(--paper);
+    padding: 2px 10px;
+    color: var(--navy);
+  }
+
+  /* THESIS — handwritten-feel note flipped over */
+  .thesis {
+    background: var(--navy); color: var(--paper);
+    padding: 72px 40px 80px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 64px;
+    position: relative;
+  }
+  .thesis::before {
+    content: '•'; position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+    font-size: 32px; color: var(--pink);
+  }
+  .thesis h2 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: clamp(56px, 8vw, 112px); font-weight: 900; font-style: italic;
+    line-height: 0.88; letter-spacing: -0.03em;
+    margin: 0;
+    color: var(--gold);
+  }
+  .thesis h2 em { color: var(--pink); font-style: italic; }
+  .thesis h2 .bitten { display: inline-block; transform: rotate(-3deg); }
+  .thesis p {
+    font-size: 20px; line-height: 1.5;
+    max-width: 560px; color: var(--paper); margin: 0;
+    align-self: end;
+  }
+  .thesis p mark { background: var(--lime); color: var(--navy); padding: 0 4px; }
+
+  /* WHAT — a concept panel: big word + small explanation */
+  .what {
+    padding: 96px 40px;
+    background: var(--paper);
+    display: grid; grid-template-columns: 1.5fr 1fr; gap: 64px;
+    align-items: center;
+  }
+  .what .big {
+    font-family: 'Fraunces', serif; font-weight: 900; font-style: italic;
+    font-size: clamp(80px, 12vw, 200px);
+    line-height: 0.82; letter-spacing: -0.05em;
+    color: var(--navy);
+    text-transform: uppercase;
+  }
+  .what .big .p { color: var(--pink); }
+  .what .big .g { color: var(--gold); -webkit-text-stroke: 2px var(--navy); }
+  .what .body p {
+    font-size: 17px; line-height: 1.6; color: var(--navy); margin: 0 0 14px;
+  }
+  .what .body p b {
+    background: var(--pink); color: var(--navy); padding: 0 4px;
+    font-weight: 500;
+  }
+
+  /* RULES — three scrappy panels, deliberately uneven */
+  .rules {
+    background: var(--gold);
+    padding: 80px 40px 96px;
+    border-top: 6px solid var(--navy);
+    border-bottom: 6px solid var(--navy);
+  }
+  .rules h2 {
+    margin: 0 0 56px;
+    font-family: 'Fraunces', serif; font-weight: 900; font-style: italic;
+    font-size: clamp(56px, 9vw, 128px);
+    line-height: 0.9; letter-spacing: -0.04em;
+    color: var(--navy);
+    text-transform: uppercase;
+  }
+  .rules h2 .u { text-decoration: underline wavy var(--pink); text-decoration-thickness: 6px; text-underline-offset: 10px; }
+  .rules .grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px;
+  }
+  .rules .rule {
+    background: var(--paper);
+    padding: 32px 28px 36px;
+    border: 3px solid var(--navy);
+    min-height: 340px;
+    display: flex; flex-direction: column; gap: 20px;
+    position: relative;
+  }
+  .rules .rule:nth-child(1) { transform: rotate(-1.2deg); }
+  .rules .rule:nth-child(2) { transform: rotate(0.6deg) translateY(20px); background: var(--pink); color: var(--navy); }
+  .rules .rule:nth-child(3) { transform: rotate(-0.4deg); background: var(--lime); }
+  .rules .rule .n {
+    font-family: 'Fraunces', serif; font-weight: 900; font-style: italic;
+    font-size: 80px; line-height: 0.85; letter-spacing: -0.04em;
+    color: var(--navy);
+  }
+  .rules .rule:nth-child(2) .n { color: var(--paper); -webkit-text-stroke: 2px var(--navy); }
+  .rules .rule h3 {
+    margin: 0;
+    font-family: 'Fraunces', serif; font-weight: 900; font-style: italic;
+    font-size: 24px; line-height: 1.1;
+    color: var(--navy);
+  }
+  .rules .rule p {
+    font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.55; color: var(--navy); margin: 0;
+  }
+
+  /* INSTALL — a billboard sticker */
+  .install {
+    background: var(--pink); color: var(--navy);
+    padding: 64px 40px;
+    position: relative; overflow: hidden;
+  }
+  .install::before {
+    content: ''; position: absolute; top: -20%; right: -10%; width: 540px; height: 540px;
+    background: var(--gold); border-radius: 50%;
+    border: 6px solid var(--navy);
+    z-index: 1;
+  }
+  .install-inner {
+    position: relative; z-index: 2;
+    display: grid; grid-template-columns: 1fr auto; gap: 48px; align-items: center;
+  }
+  .install h2 {
+    margin: 0;
+    font-family: 'Fraunces', serif; font-weight: 900; font-style: italic;
+    font-size: clamp(48px, 7vw, 96px); line-height: 0.9; letter-spacing: -0.03em;
+    color: var(--navy);
+    text-transform: uppercase;
+  }
+  .install h2 em { color: var(--paper); font-style: italic; }
+  .install code {
+    font-family: 'Courier New', monospace;
+    background: var(--navy); color: var(--gold);
+    padding: 18px 24px;
+    font-size: 18px; font-weight: 700;
+    display: inline-block;
+    transform: rotate(-1deg);
+    border: 4px solid var(--paper);
+  }
+
+  footer {
+    background: var(--navy); color: var(--paper);
+    padding: 28px 40px;
+    display: grid; grid-template-columns: 1fr auto; gap: 24px;
+    font-family: 'Fraunces', serif; font-size: 15px; font-style: italic; font-weight: 700;
+  }
+  footer a { color: var(--gold); border-bottom: 2px solid var(--gold); padding-bottom: 2px; font-style: normal; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  @media (max-width: 820px) {
+    .hero h1 { font-size: 72px; }
+    .hero { padding: 48px 24px 72px; }
+    .thesis, .what, .install-inner { grid-template-columns: 1fr; gap: 32px; padding: 48px 24px; }
+    .thesis { padding: 56px 24px; }
+    .what { padding: 56px 24px; }
+    .rules { padding: 56px 24px 72px; }
+    .rules .grid { grid-template-columns: 1fr; }
+    .rules .rule { transform: none !important; }
+    .install { padding: 48px 24px; }
+    .install::before { width: 280px; height: 280px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="left">09/10</span>
+  <span class="c">Claude <em>&amp;</em> Design</span>
+  <span class="right">SAGMEISTER MODE · MIT</span>
+</header>
+
+<section class="hero">
+  <div class="sticker">fully<br>committed!</div>
+  <div class="squiggle">?!</div>
+  <h1>
+    <span class="underlined">Make</span><br>
+    <span class="gold-word">IT</span><br>
+    <span class="box-word">Weird.</span><br>
+    Make it <em>good.</em>
+  </h1>
+  <p class="caption">
+    A portable Claude skill that <b>turns the model into a senior designer</b> — grounded
+    in real context, committed to a visual system, refusing to make AI-slop.
+  </p>
+</section>
+
+<section class="thesis">
+  <h2>
+    Every<br>
+    <span class="bitten">choice</span><br>
+    is a <em>decision.</em>
+  </h2>
+  <p>
+    The skill's entire premise: a <mark>committed system</mark> beats restrained guesswork
+    every time. Hedging reads as confusion. Half-committing to a style produces something
+    worse than the most basic Swiss grid. When you go, go.
+  </p>
+</section>
+
+<section class="what">
+  <div class="big">
+    <span class="g">A</span><br>
+    <span class="p">SKILL,</span><br>
+    plus<br>
+    some<br>
+    <em>rules.</em>
+  </div>
+  <div class="body">
+    <p>
+      Claude Design is a SKILL.md plus a handful of on-demand references that
+      Claude loads when your request sounds like design. It does not add features.
+      It <b>removes unhelpful defaults</b>.
+    </p>
+    <p>
+      Instead of reaching for a gradient, the skill asks Claude to gather what is real.
+      Instead of guessing at a brand, it hunts down actual assets. Instead of
+      improvising when the brief is vague, it offers three directions and waits.
+    </p>
+  </div>
+</section>
+
+<section class="rules">
+  <h2>Three <span class="u">rules,</span><br>no hedging.</h2>
+  <div class="grid">
+    <div class="rule">
+      <div class="n">01.</div>
+      <h3>Verify first. Always.</h3>
+      <p>When a product is named, search before assuming. 10-second search beats 1–2 hours of rework. Hard rule. Not a preference.</p>
+    </div>
+    <div class="rule">
+      <div class="n">02.</div>
+      <h3>Grab the real stuff.</h3>
+      <p>Ask → search → download → verify → freeze. Logo, product shots, UI screenshots FIRST. Colors and fonts second. Not the other way around.</p>
+    </div>
+    <div class="rule">
+      <div class="n">03.</div>
+      <h3>Three, then commit.</h3>
+      <p>Brief too vague? Three differentiated directions, rendered as preview sketches. User picks. Then — and this is the important part — commit <em>fully</em>.</p>
+    </div>
+  </div>
+</section>
+
+<section class="install">
+  <div class="install-inner">
+    <h2>One line.<br><em>Go wild.</em></h2>
+    <code>npx skills add jiji262/claude-design-skill -g</code>
+  </div>
+</section>
+
+<footer>
+  <span>09 · Sagmeister / Expressive · nothing restrained about it.</span>
+  <a href="index.html">← Index</a>
+</footer>
+
+</body>
+</html>

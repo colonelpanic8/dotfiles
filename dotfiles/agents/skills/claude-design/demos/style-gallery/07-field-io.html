@@ -1,0 +1,362 @@
+<!doctype html>
+<!--
+  07 · Field.io / motion poetics — Field.io / Active Theory / Universal Everything
+  System:
+    Type    restrained geometric sans · single weight · small type · motion is the hero
+    Color   dark indigo→electric gradients OR monochrome with one light-based accent
+    Grid    full-bleed, motion occupies entire canvas, UI delicate & semi-transparent
+    Moves   particle fields, shader-driven gradients, slow continuous motion, type emerges from motion
+  Discipline: no traditional web layouts, no static hero imagery as focal.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>07 · Field.io / motion poetics — Claude Design</title>
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<style>
+  :root { --ink:#0a0416; --haze:#1a0d3a; --glow:#a7c8ff; --aurora:#e2d4ff; --coral:#ffb8d4; --mint:#7ff5e4; --paper:#f5efe7; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--ink); color: var(--paper);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 300; font-feature-settings: 'ss01','tnum';
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Full-bleed generative canvas */
+  .stage {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 20%, rgba(167,200,255,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 70% 50% at 80% 30%, rgba(226,212,255,0.16) 0%, transparent 55%),
+      radial-gradient(ellipse 60% 70% at 50% 85%, rgba(127,245,228,0.12) 0%, transparent 60%),
+      linear-gradient(180deg, #0a0416 0%, #1a0d3a 45%, #0a0416 100%);
+    overflow: hidden;
+  }
+  .stage::before {
+    content: ''; position: absolute; inset: -10%;
+    background-image:
+      radial-gradient(1px 1px at 12% 18%, var(--glow) 50%, transparent 50%),
+      radial-gradient(1px 1px at 28% 56%, var(--aurora) 50%, transparent 50%),
+      radial-gradient(1px 1px at 44% 24%, var(--coral) 50%, transparent 50%),
+      radial-gradient(1px 1px at 63% 72%, var(--mint) 50%, transparent 50%),
+      radial-gradient(1px 1px at 76% 36%, var(--glow) 50%, transparent 50%),
+      radial-gradient(1px 1px at 88% 68%, var(--aurora) 50%, transparent 50%),
+      radial-gradient(1px 1px at 18% 82%, var(--coral) 50%, transparent 50%),
+      radial-gradient(2px 2px at 52% 16%, var(--aurora) 50%, transparent 50%),
+      radial-gradient(1px 1px at 8% 44%, var(--mint) 50%, transparent 50%),
+      radial-gradient(1px 1px at 95% 12%, var(--glow) 50%, transparent 50%),
+      radial-gradient(1px 1px at 34% 90%, var(--aurora) 50%, transparent 50%),
+      radial-gradient(1px 1px at 68% 6%, var(--coral) 50%, transparent 50%);
+    animation: drift 38s linear infinite;
+    opacity: 0.9;
+  }
+  .stage::after {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 120% 80% at 50% 50%, transparent 20%, var(--ink) 90%);
+  }
+  @keyframes drift {
+    0%   { transform: translate3d(0,0,0) scale(1); }
+    50%  { transform: translate3d(-2%, -3%, 0) scale(1.03); }
+    100% { transform: translate3d(0,0,0) scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .stage::before { animation: none; }
+  }
+
+  /* Sentinel orb — slow drifting light source */
+  .orb {
+    position: fixed; z-index: 1; pointer-events: none;
+    width: 540px; height: 540px;
+    left: 55%; top: 35%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 40%, rgba(167,200,255,0.35) 0%, rgba(167,200,255,0.08) 40%, transparent 65%);
+    filter: blur(20px);
+    animation: orb-drift 24s ease-in-out infinite alternate;
+  }
+  @keyframes orb-drift {
+    0%   { transform: translate(-10%, 0); }
+    100% { transform: translate(15%, 10%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .orb { animation: none; }
+  }
+
+  /* Content */
+  .page { position: relative; z-index: 2; max-width: 1440px; margin: 0 auto; padding: 40px 48px 96px; min-height: 100vh; }
+
+  header {
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase;
+    color: rgba(245,239,231,0.6);
+    font-variant-numeric: tabular-nums;
+  }
+  header .c { text-align: center; color: var(--aurora); }
+  header .r { text-align: right; }
+
+  .hero {
+    padding: 160px 0 180px;
+    position: relative;
+  }
+  .hero .eyebrow {
+    font-size: 11px; letter-spacing: 0.4em; text-transform: uppercase;
+    color: var(--aurora); margin-bottom: 32px;
+  }
+  .hero .eyebrow::before { content: '◉ '; color: var(--mint); }
+  .hero h1 {
+    margin: 0;
+    font-size: clamp(72px, 11vw, 180px);
+    font-weight: 200; letter-spacing: -0.04em; line-height: 0.95;
+    color: var(--paper);
+    max-width: 1400px;
+  }
+  .hero h1 .ghost { color: transparent; -webkit-text-stroke: 1px var(--glow); }
+  .hero h1 .soft { color: var(--glow); font-style: italic; font-weight: 300; }
+  .hero h1 .x { color: var(--mint); font-weight: 400; }
+
+  .hero .footline {
+    margin-top: 80px;
+    display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: end;
+  }
+  .hero .footline p {
+    font-size: 19px; line-height: 1.55; max-width: 640px;
+    color: rgba(245,239,231,0.75); font-weight: 300; margin: 0;
+  }
+  .hero .footline .ticker {
+    font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--coral);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    line-height: 1.9;
+  }
+  .hero .footline .ticker b { color: var(--paper); font-weight: 400; display: block; font-size: 13px; letter-spacing: 0.12em; }
+
+  /* Thin glass divider */
+  .divide {
+    height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    margin: 0;
+  }
+
+  /* WHAT — two-col, thin text over the particle field */
+  .what {
+    padding: 120px 0;
+    display: grid; grid-template-columns: 1fr 1.6fr; gap: 96px;
+    align-items: start;
+  }
+  .what .label {
+    font-size: 11px; letter-spacing: 0.4em; text-transform: uppercase; color: var(--aurora);
+    font-weight: 400;
+  }
+  .what .label::before { content: '◯ '; color: var(--coral); font-size: 14px; vertical-align: -1px; }
+  .what .label + .sub {
+    margin-top: 12px; font-size: 13px; color: rgba(245,239,231,0.5); letter-spacing: 0.1em;
+    font-variant-numeric: tabular-nums;
+  }
+  .what h2 {
+    font-size: clamp(36px, 5vw, 64px); font-weight: 200; letter-spacing: -0.025em; line-height: 1.05;
+    margin: 0 0 28px; color: var(--paper);
+  }
+  .what h2 em { font-style: normal; color: var(--glow); }
+  .what p {
+    font-size: 18px; line-height: 1.55; color: rgba(245,239,231,0.75); font-weight: 300;
+    margin: 0 0 16px; max-width: 780px;
+  }
+  .what p + p { color: rgba(245,239,231,0.55); }
+
+  /* RULES — three nodes */
+  .rules {
+    padding: 80px 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .rules .head {
+    display: grid; grid-template-columns: 1fr auto; align-items: end; margin-bottom: 56px;
+  }
+  .rules h2 {
+    font-size: clamp(40px, 5vw, 72px); font-weight: 200; letter-spacing: -0.025em; line-height: 1;
+    margin: 0; color: var(--paper);
+  }
+  .rules h2 em { color: var(--mint); font-style: normal; font-weight: 300; }
+  .rules .chap {
+    font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--coral);
+    font-variant-numeric: tabular-nums;
+  }
+  .rules .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+  .rule {
+    position: relative;
+    padding: 32px 28px 36px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(10,4,22,0.3);
+    backdrop-filter: blur(10px);
+    min-height: 300px;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .rule::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 6px; height: 6px;
+    background: var(--mint); border-radius: 50%;
+    box-shadow: 0 0 16px var(--mint);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  .rule:nth-child(2)::before { background: var(--glow); box-shadow: 0 0 16px var(--glow); animation-delay: 0.8s; }
+  .rule:nth-child(3)::before { background: var(--coral); box-shadow: 0 0 16px var(--coral); animation-delay: 1.6s; }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.4; transform: scale(0.6); }
+  }
+  .rule .n {
+    font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--aurora);
+    font-variant-numeric: tabular-nums;
+  }
+  .rule h3 {
+    margin: 0; font-size: 22px; font-weight: 300; letter-spacing: -0.01em; line-height: 1.2;
+    color: var(--paper);
+  }
+  .rule h3 em { color: var(--glow); font-style: normal; }
+  .rule p {
+    margin: 0; font-size: 14px; line-height: 1.6; color: rgba(245,239,231,0.65); font-weight: 300;
+  }
+
+  /* INSTALL — thin transparent bar */
+  .install {
+    margin-top: 80px;
+    padding: 28px 32px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(10,4,22,0.4);
+    backdrop-filter: blur(12px);
+    display: grid; grid-template-columns: auto 1fr auto; gap: 32px; align-items: center;
+  }
+  .install .label { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--aurora); }
+  .install code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 16px; color: var(--paper);
+    font-weight: 400;
+  }
+  .install code::before { content: '$ '; color: var(--mint); }
+  .install .go {
+    font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--coral);
+    border-bottom: 1px solid var(--coral); padding-bottom: 2px;
+  }
+
+  footer {
+    margin-top: 64px;
+    padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.08);
+    display: grid; grid-template-columns: 1fr auto;
+    font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(245,239,231,0.45);
+    font-variant-numeric: tabular-nums;
+  }
+  footer a { color: var(--aurora); border-bottom: 1px solid var(--aurora); padding-bottom: 2px; }
+
+  @media (max-width: 900px) {
+    .page { padding: 24px 20px 48px; }
+    .what { grid-template-columns: 1fr; gap: 24px; padding: 64px 0; }
+    .rules .grid { grid-template-columns: 1fr; }
+    .install { grid-template-columns: 1fr; gap: 12px; }
+    .hero { padding: 80px 0 96px; }
+    .hero .footline { grid-template-columns: 1fr; }
+    .hero .footline .ticker { text-align: left; }
+    .orb { width: 320px; height: 320px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage"></div>
+<div class="orb"></div>
+
+<div class="page">
+  <header>
+    <span>◉ Claude / Design / 07</span>
+    <span class="c">Rev 01 · Transmitting</span>
+    <span class="r">42.13° N · 46.8° W · 2026</span>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">07 · Motion / digital-native · Field.io</div>
+    <h1>
+      Claude <span class="ghost">×</span><br>
+      <span class="soft">design,</span> as<br>
+      <span class="x">an emergent</span><br>
+      behaviour.
+    </h1>
+    <div class="footline">
+      <p>
+        A portable Claude skill that turns the model into a senior designer — grounded
+        in real context, committed to a visual system, refusing to make AI-slop.
+      </p>
+      <div class="ticker">
+        <b>TX_STATUS</b>
+        01 · skill.loaded<br>
+        02 · defaults.rewired<br>
+        03 · slop.blocked
+      </div>
+    </div>
+  </section>
+
+  <hr class="divide">
+
+  <section class="what">
+    <div>
+      <span class="label">What / Installs</span>
+      <div class="sub">01 / 04 · 0.28s</div>
+    </div>
+    <div>
+      <h2>A small file, a very <em>different default.</em></h2>
+      <p>
+        Claude Design is a SKILL.md plus a handful of on-demand references. Claude
+        loads it when your request sounds like design — a deck, a landing page, a
+        prototype, a poster, a motion explainer.
+      </p>
+      <p>
+        Once loaded, the skill rewires Claude's instincts. Fact verification before
+        assumption. Real brand assets before colours and fonts. Three directions
+        before committing. Not a bigger model — a different set of defaults.
+      </p>
+    </div>
+  </section>
+
+  <section class="rules">
+    <div class="head">
+      <h2>Three <em>operating</em> principles.</h2>
+      <span class="chap">02 / 04 · Priorities</span>
+    </div>
+    <div class="grid">
+      <div class="rule">
+        <span class="n">01 · Priority Zero</span>
+        <h3>Verify facts <em>before</em> assuming.</h3>
+        <p>When a product is named, WebSearch comes before design. 10 seconds of search beats 1–2 hours of rework. Non-negotiable.</p>
+      </div>
+      <div class="rule">
+        <span class="n">02 · Core Asset Protocol</span>
+        <h3>Gather the <em>real</em> stuff.</h3>
+        <p>Ask → search → download → verify → freeze. Logos, product shots, UI screenshots are first-class. Colours and fonts are auxiliary.</p>
+      </div>
+      <div class="rule">
+        <span class="n">03 · Direction Advisor</span>
+        <h3>Offer <em>three,</em> then commit.</h3>
+        <p>When the brief is vague, propose three directions from ten philosophies across five schools. Build a preview. Wait for the user.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="install">
+    <span class="label">03 / 04 · Install</span>
+    <code>npx skills add jiji262/claude-design-skill -g</code>
+    <a href="https://github.com/jiji262/claude-design-skill" class="go">GitHub →</a>
+  </div>
+
+  <footer>
+    <span>07 · Field.io / motion poetics · Active Theory · Universal Everything</span>
+    <a href="index.html">← Index</a>
+  </footer>
+</div>
+
+</body>
+</html>

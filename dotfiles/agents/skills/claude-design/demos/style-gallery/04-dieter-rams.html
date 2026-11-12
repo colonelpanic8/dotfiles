@@ -1,0 +1,289 @@
+<!doctype html>
+<!--
+  04 · Dieter Rams Industrial — Braun / early Apple / Vitsœ lineage
+  System:
+    Type    Helvetica / Söhne, medium weight, 2 sizes max
+    Color   grey scales #f0efeb / #c4c3bd / #2a2a2a · one functional accent #d6302b
+    Grid    product-first · hero object · hairline specifications · tabular tables
+    Moves   isometric line drawings, spec tables, disciplined caption structures
+  Discipline: no flourish, no marketing bombast, no colored backgrounds, no shadows.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>04 · Dieter Rams — Claude Design</title>
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<style>
+  :root { --paper:#f0efeb; --ink:#2a2a2a; --mute:#7a7875; --line:#c4c3bd; --acc:#d6302b; --card:#e5e4df; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: 'Inter', 'Helvetica Neue', Helvetica, system-ui, sans-serif;
+    font-weight: 400; font-feature-settings: 'tnum','cv11';
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 40px 48px 64px; }
+
+  header {
+    display: grid; grid-template-columns: auto 1fr auto auto;
+    gap: 32px; align-items: center;
+    font-size: 11px; letter-spacing: 0.1em; color: var(--mute);
+    padding-bottom: 16px; border-bottom: 1px solid var(--line);
+    font-variant-numeric: tabular-nums;
+  }
+  header .n { color: var(--ink); font-weight: 500; }
+  header .title { font-weight: 500; color: var(--ink); letter-spacing: 0.08em; }
+  header .dot { width: 8px; height: 8px; background: var(--acc); border-radius: 50%; display: inline-block; margin-right: 8px; vertical-align: 1px; }
+
+  /* HERO — a product card with the skill as the object */
+  .hero {
+    margin: 56px 0 0;
+    display: grid; grid-template-columns: 1.3fr 1fr;
+    border: 1px solid var(--line);
+    background: var(--card);
+  }
+  .hero .visual {
+    padding: 80px 60px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    min-height: 560px;
+    border-right: 1px solid var(--line);
+    position: relative;
+  }
+  .hero .visual .top {
+    display: flex; justify-content: space-between; font-size: 11px; letter-spacing: 0.1em; color: var(--mute);
+  }
+  /* Isometric-ish schematic of the skill (a file with a hairline tab) */
+  .hero .schematic {
+    align-self: center; width: 320px; aspect-ratio: 1 / 1.1;
+    position: relative; margin: 32px 0;
+    background: var(--paper);
+    border: 1px solid var(--ink);
+  }
+  .hero .schematic::before {
+    content: ''; position: absolute; top: -1px; left: -1px;
+    width: 48%; height: 14px; background: var(--ink);
+  }
+  .hero .schematic::after {
+    content: 'SKILL.md'; position: absolute; top: -14px; left: 16px;
+    font-size: 10px; color: var(--paper); letter-spacing: 0.15em; line-height: 14px; font-weight: 500;
+  }
+  .hero .schematic .inner {
+    position: absolute; inset: 40px 24px 24px; display: flex; flex-direction: column; gap: 14px;
+  }
+  .hero .schematic .inner .ln { height: 4px; background: var(--line); border-radius: 2px; }
+  .hero .schematic .inner .ln.short { width: 40%; }
+  .hero .schematic .inner .ln.acc { background: var(--acc); width: 25%; }
+  .hero .schematic .cap {
+    position: absolute; left: -80px; top: 48%; font-size: 10px; color: var(--mute); letter-spacing: 0.1em;
+  }
+  .hero .visual .bottom {
+    display: flex; justify-content: space-between; font-size: 11px; letter-spacing: 0.1em; color: var(--mute);
+  }
+
+  .hero .info {
+    padding: 56px 48px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .hero .info .eyebrow {
+    font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mute);
+    margin-bottom: 24px;
+  }
+  .hero .info h1 {
+    margin: 0 0 32px;
+    font-size: 56px; font-weight: 500; letter-spacing: -0.025em; line-height: 1; color: var(--ink);
+  }
+  .hero .info p { font-size: 16px; line-height: 1.55; color: var(--ink); margin: 0 0 40px; max-width: 440px; }
+
+  .specs { border-top: 1px solid var(--line); padding-top: 20px; }
+  .specs dl {
+    margin: 0; display: grid; grid-template-columns: 120px 1fr; gap: 10px 16px;
+    font-size: 12px; letter-spacing: 0.04em;
+  }
+  .specs dt { color: var(--mute); text-transform: uppercase; letter-spacing: 0.12em; font-size: 10px; }
+  .specs dd { margin: 0; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  /* WHAT — spec-sheet paragraph */
+  .what {
+    margin-top: 56px;
+    display: grid; grid-template-columns: 200px 1fr; gap: 48px;
+    padding: 40px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  }
+  .what .label {
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mute);
+    font-weight: 500;
+  }
+  .what p { margin: 0 0 14px; font-size: 17px; line-height: 1.55; max-width: 820px; }
+  .what p + p { color: var(--mute); font-size: 15px; }
+
+  /* RULES — three spec rows */
+  .rules {
+    margin-top: 64px;
+  }
+  .rules .head {
+    display: grid; grid-template-columns: 200px 1fr; gap: 48px;
+    padding-bottom: 18px; border-bottom: 1px solid var(--ink);
+  }
+  .rules .head .label { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mute); font-weight: 500; }
+  .rules .head h2 { margin: 0; font-size: 28px; font-weight: 500; letter-spacing: -0.015em; }
+  .rules ol { list-style: none; margin: 0; padding: 0; }
+  .rules li {
+    display: grid; grid-template-columns: 200px 240px 1fr auto; gap: 48px;
+    align-items: baseline;
+    padding: 26px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .rules li .n { font-size: 12px; letter-spacing: 0.15em; color: var(--mute); font-variant-numeric: tabular-nums; }
+  .rules li h3 { margin: 0; font-size: 18px; font-weight: 500; letter-spacing: -0.005em; line-height: 1.25; }
+  .rules li p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--ink); max-width: 520px; }
+  .rules li .tag { font-size: 11px; color: var(--acc); letter-spacing: 0.08em; text-transform: uppercase; }
+  .rules li .tag::before { content: ''; width: 6px; height: 6px; background: var(--acc); border-radius: 50%; display: inline-block; margin-right: 6px; vertical-align: 1px; }
+
+  /* INSTALL — a spec line */
+  .install {
+    margin-top: 48px;
+    display: grid; grid-template-columns: 200px 1fr auto; gap: 48px; align-items: center;
+    padding: 24px 0;
+    border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink);
+  }
+  .install .label { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mute); font-weight: 500; }
+  .install code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 15px; color: var(--ink); letter-spacing: -0.005em;
+    background: transparent;
+  }
+  .install code::before { content: '$  '; color: var(--acc); }
+  .install .go {
+    font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mute);
+    border-bottom: 1px solid var(--mute); padding-bottom: 3px;
+  }
+
+  footer {
+    margin-top: 40px;
+    display: flex; justify-content: space-between; font-size: 10px; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--mute); font-variant-numeric: tabular-nums;
+  }
+  footer a { border-bottom: 1px solid var(--mute); padding-bottom: 2px; }
+  footer .mark { color: var(--ink); font-weight: 500; }
+
+  @media (max-width: 860px) {
+    .wrap { padding: 24px 20px 48px; }
+    .hero { grid-template-columns: 1fr; }
+    .hero .visual { border-right: none; border-bottom: 1px solid var(--line); min-height: 360px; padding: 48px 32px; }
+    .hero .info { padding: 32px 24px; }
+    .what, .rules .head { grid-template-columns: 1fr; gap: 12px; }
+    .rules li { grid-template-columns: 1fr; gap: 8px; }
+    .install { grid-template-columns: 1fr; gap: 12px; }
+    .specs dl { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="n">04 / 10</span>
+    <span class="title"><span class="dot"></span>Claude / Design</span>
+    <span>Rev 01 · 2026</span>
+    <span>MIT</span>
+  </header>
+
+  <section class="hero">
+    <div class="visual">
+      <div class="top"><span>Item CD·01 / SKILL</span><span>A Claude skill</span></div>
+      <div class="schematic">
+        <span class="cap">Fig. 1 — the artifact, at scale.</span>
+        <div class="inner">
+          <div class="ln acc"></div>
+          <div class="ln"></div>
+          <div class="ln short"></div>
+          <div class="ln"></div>
+          <div class="ln short"></div>
+          <div class="ln"></div>
+          <div class="ln short"></div>
+        </div>
+      </div>
+      <div class="bottom"><span>H 1 : 1.1 / W 1 : 1</span><span>— fn.01</span></div>
+    </div>
+
+    <div class="info">
+      <div>
+        <div class="eyebrow">04 / Quiet minimalism / Dieter Rams</div>
+        <h1>Claude Design.<br>A skill, in use.</h1>
+        <p>
+          A portable Claude skill that turns the model into a senior designer — grounded
+          in real context, committed to a visual system, refusing to make AI-slop.
+        </p>
+      </div>
+      <div class="specs">
+        <dl>
+          <dt>Item no.</dt><dd>CD · 01 · SKILL</dd>
+          <dt>Class</dt><dd>Portable skill</dd>
+          <dt>Host</dt><dd>Claude Code / Agent SDK</dd>
+          <dt>Output</dt><dd>HTML design artifacts</dd>
+          <dt>Weight</dt><dd>1 SKILL.md + 9 refs + 6 assets</dd>
+          <dt>Status</dt><dd>MIT · Rev 01 / 2026</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="what">
+    <span class="label">01 / What it installs</span>
+    <div>
+      <p>
+        Claude Design is a SKILL.md plus a handful of on-demand references. Claude
+        loads it when your request sounds like a design task — "make a deck", "mock up
+        a Linear-style dashboard", "design me something nice".
+      </p>
+      <p>
+        Once loaded, it rewires Claude's defaults. Fact verification before assumption.
+        Real brand assets before colours and fonts. Differentiated directions before
+        commitment.
+      </p>
+    </div>
+  </section>
+
+  <section class="rules">
+    <div class="head">
+      <span class="label">02 / Operating principles</span>
+      <h2>Three rules, in order of priority.</h2>
+    </div>
+    <ol>
+      <li>
+        <span class="n">01 / Priority Zero</span>
+        <h3>Verify facts before assuming.</h3>
+        <p>When a specific product is named, WebSearch comes before design. A 10-second search beats 1–2 hours of rework on a wrong premise.</p>
+        <span class="tag">Non-negotiable</span>
+      </li>
+      <li>
+        <span class="n">02 / Asset Protocol</span>
+        <h3>Ask · search · download · verify · freeze.</h3>
+        <p>Logo, product shots, UI screenshots are first-class citizens. Colors and fonts are auxiliary. Skipping the first three is how agents produce generic tech design.</p>
+        <span class="tag">For branded work</span>
+      </li>
+      <li>
+        <span class="n">03 / Direction Advisor</span>
+        <h3>Three directions, then commit.</h3>
+        <p>When the brief is too vague to execute, propose three directions from ten philosophies across five schools. Wait for the user to choose. Then commit fully.</p>
+        <span class="tag">For vague briefs</span>
+      </li>
+    </ol>
+  </section>
+
+  <section class="install">
+    <span class="label">03 / Install</span>
+    <code>npx skills add jiji262/claude-design-skill -g</code>
+    <a href="https://github.com/jiji262/claude-design-skill" class="go">GitHub →</a>
+  </section>
+
+  <footer>
+    <span class="mark">04 · Dieter Rams Industrial</span>
+    <span>Braun · early Apple · Vitsœ</span>
+    <span><a href="index.html">← Index</a></span>
+  </footer>
+</div>
+</body>
+</html>

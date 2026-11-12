@@ -1,0 +1,326 @@
+<!doctype html>
+<!--
+  05 · Magazine Editorial — Bloomberg Businessweek / NY Mag / California Sunday lineage
+  System:
+    Type    dramatic serif display (Playfair / Tiempos) + humanist sans body
+    Color   rich photo-driven colour, color-blocked sidebars, pull-quote accents
+    Grid    magazine: drop caps, pull quotes, bylines, sidebars, rich hierarchy
+    Moves   oversized display serif, 2× pull quotes, monospace captions, color sidebars
+  Discipline: no generic stock, no icons as decoration, no over-centered layouts.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>05 · Magazine Editorial — Claude Design</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<style>
+  :root { --paper:#f3ebd8; --ink:#111; --mute:#555; --acc:#c94b2b; --sidebar:#1a2b4f; --pull:#c94b2b; --quote:#0d1b3e; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Masthead */
+  header {
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    align-items: baseline; padding: 32px 48px 20px;
+    border-bottom: 3px solid var(--ink);
+    font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--mute);
+  }
+  header .left, header .right { font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+  header .right { text-align: right; }
+  header .masthead {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 48px; font-weight: 900; letter-spacing: -0.015em;
+    font-style: italic; color: var(--ink); line-height: 1;
+    text-align: center;
+    letter-spacing: -0.03em;
+  }
+  header .masthead span { color: var(--acc); }
+  .subbar {
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    padding: 10px 48px; border-bottom: 1px solid var(--ink);
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--mute);
+  }
+  .subbar .c { text-align: center; }
+  .subbar .r { text-align: right; }
+
+  /* HERO spread */
+  .hero {
+    display: grid; grid-template-columns: 2fr 1fr;
+    border-bottom: 1px solid var(--ink);
+  }
+  .hero .lede {
+    padding: 80px 56px 64px;
+    position: relative;
+  }
+  .hero .kicker {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--acc); margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(56px, 9vw, 132px);
+    font-weight: 900; letter-spacing: -0.025em; line-height: 0.92;
+    margin: 0; color: var(--ink);
+  }
+  .hero h1 em { font-style: italic; color: var(--acc); }
+  .hero .byline {
+    margin-top: 32px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.15em;
+    color: var(--mute); text-transform: uppercase;
+  }
+  .hero .byline b { color: var(--ink); font-weight: 500; }
+
+  .hero .sidebar {
+    background: var(--sidebar); color: var(--paper);
+    padding: 80px 48px 56px;
+    border-left: 1px solid var(--ink);
+    position: relative;
+  }
+  .hero .sidebar .label {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.25em;
+    color: #f3c04c; text-transform: uppercase; margin-bottom: 24px;
+  }
+  .hero .sidebar .stat {
+    font-family: 'Playfair Display', serif; font-size: 112px; font-weight: 400; font-style: italic;
+    line-height: 0.85; letter-spacing: -0.04em; color: #f3c04c;
+    margin-bottom: 20px;
+  }
+  .hero .sidebar p { font-size: 15px; line-height: 1.55; margin: 0; color: var(--paper); }
+  .hero .sidebar hr { border: none; border-top: 1px solid rgba(255,255,255,0.25); margin: 28px 0; }
+  .hero .sidebar .spec {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; line-height: 1.9; letter-spacing: 0.08em; color: #d9d1bc;
+  }
+  .hero .sidebar .spec b { color: #f3c04c; font-weight: 500; }
+
+  /* Body with drop cap + pull quote */
+  .article {
+    padding: 80px 48px;
+    display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 48px;
+    border-bottom: 1px solid var(--ink);
+  }
+  .article .chapter {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--acc);
+  }
+  .article .body {
+    font-size: 20px; line-height: 1.55;
+    column-count: 1;
+    max-width: 720px;
+  }
+  .article .body p { margin: 0 0 18px; }
+  .article .body p:first-child::first-letter {
+    font-family: 'Playfair Display', serif; font-weight: 900;
+    float: left; font-size: 92px; line-height: 0.8; padding: 8px 12px 0 0;
+    color: var(--acc);
+  }
+  .article .pull {
+    align-self: start;
+    padding-top: 80px;
+    font-family: 'Playfair Display', serif;
+    font-size: 34px; font-weight: 400; font-style: italic;
+    line-height: 1.15; color: var(--quote);
+    letter-spacing: -0.015em;
+    border-top: 3px solid var(--acc);
+  }
+  .article .pull cite {
+    display: block; margin-top: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--mute); font-style: normal;
+  }
+
+  /* THREE RULES as a feature spread */
+  .rules {
+    padding: 80px 48px;
+    background: var(--ink); color: var(--paper);
+  }
+  .rules .head { display: grid; grid-template-columns: 1fr auto; align-items: end; margin-bottom: 56px; }
+  .rules h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(40px, 5vw, 80px); font-weight: 900; font-style: italic;
+    margin: 0; letter-spacing: -0.02em; line-height: 0.95;
+    color: var(--paper);
+  }
+  .rules h2 em { font-style: normal; color: #f3c04c; }
+  .rules .chap {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase;
+    color: #f3c04c;
+  }
+  .rules .grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px;
+  }
+  .rules .rule {
+    border-top: 1px solid rgba(255,255,255,0.25); padding-top: 28px;
+  }
+  .rules .rule .n {
+    font-family: 'Playfair Display', serif; font-size: 72px; font-weight: 400; font-style: italic;
+    line-height: 0.9; color: #f3c04c; margin-bottom: 18px;
+  }
+  .rules .rule h3 {
+    font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700;
+    line-height: 1.15; margin: 0 0 16px;
+  }
+  .rules .rule p { font-size: 15px; line-height: 1.55; color: #d9d1bc; margin: 0; }
+
+  /* Install — a quiet bottom tab */
+  .install {
+    padding: 48px;
+    display: grid; grid-template-columns: auto 1fr auto; gap: 32px;
+    align-items: center;
+    border-bottom: 1px solid var(--ink);
+  }
+  .install .label {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--acc);
+  }
+  .install code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 17px; color: var(--ink);
+    background: transparent; border-bottom: 2px solid var(--ink);
+    padding-bottom: 6px;
+  }
+  .install .go {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px; font-style: italic; color: var(--acc);
+  }
+  .install .go::after { content: ' →'; }
+
+  footer {
+    padding: 24px 48px 40px;
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em;
+    color: var(--mute); text-transform: uppercase;
+  }
+  footer .c { text-align: center; }
+  footer .r { text-align: right; }
+  footer a { border-bottom: 1px solid var(--mute); padding-bottom: 2px; }
+
+  @media (max-width: 900px) {
+    header, .subbar, .article, .rules, .install, footer { padding-left: 24px; padding-right: 24px; }
+    .hero { grid-template-columns: 1fr; }
+    .hero .lede { padding: 48px 24px 32px; }
+    .hero .sidebar { padding: 48px 24px; }
+    .hero .sidebar .stat { font-size: 80px; }
+    .article { grid-template-columns: 1fr; gap: 32px; padding: 48px 24px; }
+    .article .pull { padding-top: 0; }
+    .rules .grid { grid-template-columns: 1fr; }
+    .install { grid-template-columns: 1fr; gap: 12px; }
+    footer { grid-template-columns: 1fr; gap: 8px; text-align: left; }
+    footer .c, footer .r { text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="left">Vol. 01 · Essay no. 05</div>
+  <div class="masthead">The Pica<span>.</span></div>
+  <div class="right">Fri. Apr 21, 2026</div>
+</header>
+<div class="subbar">
+  <div class="l">An essay in ten systems</div>
+  <div class="c">— 05 / Editorial and narrative / Magazine editorial —</div>
+  <div class="r">USD $0.00</div>
+</div>
+
+<section class="hero">
+  <div class="lede">
+    <div class="kicker">Feature · Industry · AI · 4,200 words</div>
+    <h1>
+      The End of<br>
+      <em>AI-slop,</em><br>
+      One Skill at a Time.
+    </h1>
+    <div class="byline">
+      <b>By Claude Design</b> · illustrated with real brand context · Rev 01 / 2026
+    </div>
+  </div>
+  <aside class="sidebar">
+    <div class="label">By the numbers</div>
+    <div class="stat">10<small style="font-size:32px;letter-spacing:0;">·</small>5</div>
+    <p>Design philosophies spanning five schools — proposed, not prescribed, when the brief turns vague.</p>
+    <hr>
+    <div class="spec">
+      <b>Role</b> Portable Claude skill<br>
+      <b>Output</b> HTML design artifacts<br>
+      <b>Host</b> Claude Code · Agent SDK<br>
+      <b>License</b> MIT<br>
+      <b>Revision</b> 01 / 2026
+    </div>
+  </aside>
+</section>
+
+<article class="article">
+  <div class="chapter">Chapter I — The Brief</div>
+  <div class="body">
+    <p>
+      Claude Design is a portable Claude skill — a SKILL.md plus a handful of
+      on-demand references — that turns the model into a senior designer the
+      moment your request sounds like design. Not a bigger model, not a new
+      tool. A different set of defaults.
+    </p>
+    <p>
+      Once loaded, the skill rewires Claude's instincts. Before assuming
+      anything about a named product it runs a search. Before reaching for
+      colour and font it gathers logos, product shots, and UI screenshots.
+      Before committing to a style it proposes three directions and waits.
+    </p>
+    <p>
+      The output is not prettier, exactly. It is <em>more committed</em>. Every
+      choice cites a system; every variation holds to that system's rules.
+    </p>
+  </div>
+  <blockquote class="pull">
+    "The default failure mode of AI design is not ugliness — it is sameness."
+    <cite>— Rev 01 · 2026</cite>
+  </blockquote>
+</article>
+
+<section class="rules">
+  <div class="head">
+    <h2>Three <em>rules,</em><br>in order.</h2>
+    <div class="chap">Chapter II · Operating principles</div>
+  </div>
+  <div class="grid">
+    <div class="rule">
+      <div class="n">I.</div>
+      <h3>Verify facts before assuming.</h3>
+      <p>When a specific product, version, or event is named, <b>WebSearch</b> comes before design. A 10-second search beats 1–2 hours of rework on a wrong premise. Non-negotiable.</p>
+    </div>
+    <div class="rule">
+      <div class="n">II.</div>
+      <h3>The Core Asset Protocol.</h3>
+      <p>Ask → search → download → verify → freeze. Logo, product shots, UI screenshots are first-class citizens; colors and fonts are auxiliary. Skipping the first three is how agents produce generic tech design.</p>
+    </div>
+    <div class="rule">
+      <div class="n">III.</div>
+      <h3>The Direction Advisor.</h3>
+      <p>When the brief is too vague to execute, propose three directions from ten philosophies across five schools. Build a small preview. Ask the user to pick — then commit fully.</p>
+    </div>
+  </div>
+</section>
+
+<section class="install">
+  <span class="label">Install · 1 line</span>
+  <code>npx skills add jiji262/claude-design-skill -g</code>
+  <a href="https://github.com/jiji262/claude-design-skill" class="go">Read more on GitHub</a>
+</section>
+
+<footer>
+  <span>05 · Magazine editorial · Bloomberg Businessweek / NY Mag</span>
+  <span class="c"><a href="index.html">← Ten-style index</a></span>
+  <span class="r">MIT · github.com/jiji262</span>
+</footer>
+
+</body>
+</html>

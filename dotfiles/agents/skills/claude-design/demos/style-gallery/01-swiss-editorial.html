@@ -1,0 +1,197 @@
+<!doctype html>
+<!--
+  01 · Swiss Editorial — Pentagram / Vignelli lineage
+  System:
+    Type    Inter, 3 sizes: 14 / 22 / 120 · weight contrast via 400 / 500
+    Color   #111 ink on #f4f0ea cream · single accent #d93a1c
+    Grid    12-col, hairline rules, left-flush, oversized folios
+    Moves   numbered sections, single accent word, em-dash leads, tabular nums
+  Discipline: no emoji, no gradient, no rounded cards, no icons.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>01 · Swiss Editorial — Claude Design</title>
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<style>
+  :root { --cream:#f4f0ea; --ink:#111; --mute:#6b6359; --acc:#d93a1c; --rule:rgba(17,17,17,.18); }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--cream); color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-feature-settings: 'ss01','ss03','cv11','tnum';
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  .page { max-width: 1440px; margin: 0 auto; padding: 40px 48px 96px; }
+
+  header {
+    display: grid; grid-template-columns: 1fr auto; align-items: baseline;
+    padding-bottom: 24px; border-bottom: 1px solid var(--rule);
+    font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mute);
+  }
+  header b { color: var(--ink); font-weight: 600; }
+  header b::before { content: ''; width: 9px; height: 9px; background: var(--acc); display: inline-block; margin-right: 9px; vertical-align: 1px; }
+
+  .hero { padding: 96px 0 80px; border-bottom: 1px solid var(--rule); }
+  .hero .eyebrow { display: grid; grid-template-columns: 80px 1fr auto; gap: 32px; align-items: baseline; margin-bottom: 48px; font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mute); }
+  .hero h1 {
+    font-size: clamp(72px, 11vw, 160px);
+    font-weight: 400; letter-spacing: -0.045em; line-height: 0.92;
+    margin: 0;
+  }
+  .hero h1 em { font-style: normal; color: var(--acc); }
+  .hero .thesis {
+    margin-top: 56px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 96px;
+    padding-top: 32px; border-top: 1px solid var(--rule);
+  }
+  .hero .thesis p { font-size: 22px; line-height: 1.45; margin: 0; max-width: 660px; }
+  .hero .thesis .meta { font-size: 14px; line-height: 1.7; color: var(--mute); display: grid; grid-template-columns: auto 1fr; gap: 4px 24px; align-content: start; }
+  .hero .thesis .meta dt { text-transform: uppercase; letter-spacing: 0.15em; font-size: 11px; padding-top: 3px; }
+  .hero .thesis .meta dd { margin: 0; color: var(--ink); font-size: 14px; }
+
+  section.mod { padding: 80px 0; border-bottom: 1px solid var(--rule); }
+  section.mod .head { display: grid; grid-template-columns: 80px 1fr auto; gap: 32px; align-items: baseline; margin-bottom: 56px; }
+  section.mod .head .n { font-size: 13px; letter-spacing: 0.2em; font-weight: 500; color: var(--mute); padding-top: 18px; font-variant-numeric: tabular-nums; }
+  section.mod .head h2 { margin: 0; font-size: clamp(36px, 5vw, 64px); font-weight: 400; letter-spacing: -0.025em; line-height: 1.02; }
+  section.mod .head .tag { font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mute); }
+
+  .mod-what p { font-size: 22px; line-height: 1.5; max-width: 900px; margin: 0 0 20px; }
+  .mod-what p + p { color: var(--mute); }
+
+  .rules ol { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
+  .rules li {
+    border-bottom: 1px solid var(--rule);
+    padding: 32px 0;
+    display: grid; grid-template-columns: 80px 280px 1fr; gap: 32px; align-items: baseline;
+  }
+  .rules li .n { font-size: 13px; letter-spacing: 0.15em; color: var(--mute); padding-top: 8px; font-variant-numeric: tabular-nums; }
+  .rules li h3 { margin: 0; font-size: 28px; font-weight: 500; letter-spacing: -0.01em; line-height: 1.15; }
+  .rules li h3 em { color: var(--acc); font-style: normal; }
+  .rules li p { margin: 0; font-size: 17px; line-height: 1.5; color: var(--ink); max-width: 640px; }
+
+  .install {
+    display: grid; grid-template-columns: auto 1fr auto; gap: 32px; align-items: center;
+    padding: 24px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .install .label { font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--mute); }
+  .install code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    background: var(--ink); color: var(--cream);
+    padding: 14px 20px; font-size: 18px; letter-spacing: -0.005em;
+  }
+  .install code::before { content: '$ '; color: var(--acc); }
+  .install .repo { font-size: 13px; color: var(--mute); letter-spacing: 0.05em; }
+  .install .repo a { border-bottom: 1px solid var(--mute); }
+
+  footer {
+    display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: baseline;
+    padding-top: 28px; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mute);
+  }
+  footer .mark { color: var(--ink); font-weight: 500; }
+  footer a { border-bottom: 1px solid var(--mute); }
+
+  @media (max-width: 820px) {
+    .page { padding: 24px 20px 48px; }
+    .hero .thesis, section.mod .head { grid-template-columns: 1fr; gap: 20px; }
+    .rules li { grid-template-columns: 40px 1fr; }
+    .rules li h3 { grid-column: 2; }
+    .rules li p { grid-column: 1 / -1; }
+    .install { grid-template-columns: 1fr; gap: 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <b>Claude / Design</b>
+    <span>01 · Swiss Editorial · Rev 2026</span>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">
+      <span>01</span>
+      <span>Structural modernism</span>
+      <span>Pentagram · Vignelli · MIT Press</span>
+    </div>
+    <h1>Claude,<br>as an <em>expert</em><br>designer.</h1>
+    <div class="thesis">
+      <p>
+        A portable Claude skill that turns the model into a senior designer — grounded
+        in real context, committed to a visual system, refusing to make AI-slop.
+      </p>
+      <dl class="meta">
+        <dt>Style</dt><dd>Swiss Editorial</dd>
+        <dt>School</dt><dd>Structural modernism</dd>
+        <dt>Feeling</dt><dd>precision · authority · editorial gravity</dd>
+        <dt>Right for</dt><dd>editorial, B2B, serious products</dd>
+      </dl>
+    </div>
+  </section>
+
+  <section class="mod mod-what">
+    <div class="head">
+      <span class="n">02</span>
+      <h2>What it installs.</h2>
+      <span class="tag">SKILL.md + references + assets</span>
+    </div>
+    <p>
+      Claude Design ships a <b>SKILL.md</b> and a handful of on-demand references that
+      Claude loads when your request sounds like design — "make a deck", "mock up a
+      Linear-style dashboard", "design me something nice".
+    </p>
+    <p>
+      Once loaded, it rewires Claude's defaults. It forces fact verification before
+      assumptions. It pushes for real brand assets — logo, product shots, UI screenshots.
+      It proposes differentiated directions when the brief is vague.
+    </p>
+  </section>
+
+  <section class="mod rules">
+    <div class="head">
+      <span class="n">03</span>
+      <h2>Three rules, in order.</h2>
+      <span class="tag">The shape of the workflow</span>
+    </div>
+    <ol>
+      <li>
+        <span class="n">01</span>
+        <h3>Priority Zero — <em>verify facts</em> before designing.</h3>
+        <p>When a specific product, version, or recent event is named, <b>WebSearch</b> comes first. A 10-second search beats 1–2 hours of rework on a wrong premise. Non-negotiable.</p>
+      </li>
+      <li>
+        <span class="n">02</span>
+        <h3>The Core <em>Asset Protocol.</em></h3>
+        <p>For branded work: ask → search → download → verify → freeze. Logo, product shots, and UI screenshots are first-class citizens. Colors and fonts are auxiliary — skipping the first three is how agents produce generic tech design.</p>
+      </li>
+      <li>
+        <span class="n">03</span>
+        <h3>The Design <em>Direction Advisor.</em></h3>
+        <p>When the brief is too vague to execute, propose three directions from a library of ten philosophies across five schools. Build a small preview. Ask the user to pick — then commit.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section class="mod">
+    <div class="head">
+      <span class="n">04</span>
+      <h2>Install.</h2>
+      <span class="tag">One line · forty agents</span>
+    </div>
+    <div class="install">
+      <span class="label">One line</span>
+      <code>npx skills add jiji262/claude-design-skill -g</code>
+      <span class="repo"><a href="https://github.com/jiji262/claude-design-skill">github.com / jiji262 / claude-design-skill</a></span>
+    </div>
+  </section>
+
+  <footer>
+    <span><span class="mark">01 · Swiss Editorial</span> — Pentagram / Vignelli lineage</span>
+    <span><a href="index.html">← Ten-style index</a></span>
+  </footer>
+</div>
+</body>
+</html>

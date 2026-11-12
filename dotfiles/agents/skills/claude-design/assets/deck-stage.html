@@ -1,0 +1,147 @@
+<!doctype html>
+<!--
+  Minimal slide-deck scaffold.
+  - Fixed 1920×1080 canvas that scales to fit any viewport
+  - Letterboxed on black background
+  - Arrow keys, click targets, and visible prev/next
+  - 1-indexed slide counter
+  - localStorage persistence of slide index
+  - Speaker-notes sync via postMessage (if present)
+  - Print-to-PDF: each slide becomes one page
+
+  Usage:
+  1. Replace <section> contents with your slides. Keep data-screen-label 1-indexed.
+  2. Optional: add a <script type="application/json" id="speaker-notes"> block
+     with one string per slide for speaker notes.
+  3. Customize the styles inside .slide to taste. Body text ≥ 24px, headers ≥ 64px.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Deck</title>
+  <style>
+    :root { --stage-bg: #0a0a0a; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: var(--stage-bg); font-family: system-ui, sans-serif; }
+
+    .stage {
+      position: fixed; inset: 0; display: grid; place-items: center;
+    }
+    .canvas {
+      width: 1920px; height: 1080px;
+      transform-origin: center center;
+      position: relative;
+      background: white;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+    }
+    .slide {
+      position: absolute; inset: 0;
+      display: none;
+      padding: 120px 160px;
+    }
+    .slide.active { display: block; }
+
+    .chrome {
+      position: fixed; z-index: 10;
+      display: flex; gap: 12px; align-items: center;
+      color: white; font-size: 14px;
+    }
+    .chrome.bottom { bottom: 20px; left: 50%; transform: translateX(-50%); }
+    .chrome button {
+      background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);
+      padding: 10px 16px; border-radius: 6px; font: inherit; cursor: pointer;
+    }
+    .chrome button:hover { background: rgba(255,255,255,0.2); }
+    .counter { opacity: 0.6; min-width: 60px; text-align: center; }
+
+    @media print {
+      @page { size: 1920px 1080px; margin: 0; }
+      html, body { background: white; }
+      .stage { position: static; display: block; height: auto; }
+      .canvas { transform: none !important; width: 1920px; height: 1080px; box-shadow: none; page-break-after: always; }
+      .slide { display: block !important; }
+      .chrome { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="canvas" id="canvas">
+
+      <!-- SLIDE 1 -->
+      <section class="slide active" data-screen-label="01 Title">
+        <h1 style="font-size: 120px; font-weight: 700; margin: 0;">Your Deck Title</h1>
+        <p style="font-size: 32px; opacity: 0.6; margin-top: 24px;">Subtitle or author</p>
+      </section>
+
+      <!-- SLIDE 2 -->
+      <section class="slide" data-screen-label="02 Content">
+        <h2 style="font-size: 72px; font-weight: 600; margin: 0 0 48px;">Section heading</h2>
+        <p style="font-size: 32px; line-height: 1.4; max-width: 1200px;">
+          Body copy here. Keep text ≥ 24px on 1920×1080 slides. Prefer fewer words, bigger visuals.
+        </p>
+      </section>
+
+      <!-- Add more <section class="slide"> elements here -->
+
+    </div>
+  </div>
+
+  <nav class="chrome bottom">
+    <button id="prev">← Prev</button>
+    <span class="counter" id="counter">1/1</span>
+    <button id="next">Next →</button>
+  </nav>
+
+  <!-- Optional: speaker notes. One string per slide, in order. Delete if unused. -->
+  <script type="application/json" id="speaker-notes">
+    []
+  </script>
+
+  <script>
+    (() => {
+      const canvas = document.getElementById('canvas');
+      const slides = [...document.querySelectorAll('.slide')];
+      const counter = document.getElementById('counter');
+      const prev = document.getElementById('prev');
+      const next = document.getElementById('next');
+
+      const notesEl = document.getElementById('speaker-notes');
+      const notes = notesEl ? JSON.parse(notesEl.textContent || '[]') : [];
+
+      const STORAGE_KEY = 'deck-slide-index';
+      let idx = Number(localStorage.getItem(STORAGE_KEY)) || 0;
+      if (idx < 0 || idx >= slides.length) idx = 0;
+
+      function go(to) {
+        idx = Math.max(0, Math.min(slides.length - 1, to));
+        slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+        counter.textContent = `${idx + 1}/${slides.length}`;
+        localStorage.setItem(STORAGE_KEY, String(idx));
+        // Sync speaker notes / let host know the slide changed
+        try { window.parent.postMessage({ slideIndexChanged: idx, note: notes[idx] ?? '' }, '*'); } catch {}
+      }
+
+      function fit() {
+        const sx = window.innerWidth / 1920;
+        const sy = window.innerHeight / 1080;
+        const scale = Math.min(sx, sy);
+        canvas.style.transform = `scale(${scale})`;
+      }
+
+      prev.addEventListener('click', () => go(idx - 1));
+      next.addEventListener('click', () => go(idx + 1));
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft' || e.key === 'PageUp') go(idx - 1);
+        if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') go(idx + 1);
+        if (e.key === 'Home') go(0);
+        if (e.key === 'End') go(slides.length - 1);
+      });
+      window.addEventListener('resize', fit);
+
+      fit();
+      go(idx);
+    })();
+  </script>
+</body>
+</html>

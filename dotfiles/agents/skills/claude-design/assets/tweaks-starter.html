@@ -1,0 +1,167 @@
+<!doctype html>
+<!--
+  Tweaks starter — standalone (localStorage-backed, no host integration).
+
+  This is the fallback shape when you don't have a host-provided Tweaks toolbar.
+  If the host does support it (e.g., Claude.ai artifact viewer), switch from
+  localStorage persistence to `postMessage({type: '__edit_mode_set_keys', ...})`
+  and gate visibility on `__activate_edit_mode` / `__deactivate_edit_mode`.
+  See references/variations-and-tweaks.md.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Prototype with Tweaks</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: var(--bg, #fafafa);
+      color: var(--fg, #111);
+      transition: background 0.2s, color 0.2s;
+    }
+    body[data-dark="true"] {
+      --bg: #0a0a0a;
+      --fg: #f5f5f5;
+    }
+    .hero {
+      padding: 120px 64px;
+      max-width: var(--container, 960px);
+      margin: 0 auto;
+    }
+    .hero h1 {
+      font-size: var(--h1, 72px);
+      line-height: 1.05;
+      margin: 0 0 24px;
+      color: var(--primary, #d97757);
+    }
+    .hero p {
+      font-size: 20px;
+      line-height: 1.5;
+      max-width: 640px;
+      opacity: 0.75;
+    }
+
+    /* Tweaks panel */
+    .tweaks-panel {
+      position: fixed; bottom: 20px; right: 20px;
+      background: white; color: #111;
+      border-radius: 10px; padding: 16px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+      font-size: 13px; font-family: system-ui, sans-serif;
+      width: 260px;
+      z-index: 100;
+      display: none;  /* toggled by the button below */
+    }
+    .tweaks-panel.open { display: block; }
+    .tweaks-panel h2 {
+      margin: 0 0 12px; font-size: 13px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: #555;
+    }
+    .tweak-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 0; border-top: 1px solid #eee;
+    }
+    .tweak-row:first-of-type { border-top: none; }
+    .tweak-row label { color: #555; }
+    .tweak-row input[type="color"] { width: 36px; height: 24px; border: 1px solid #ddd; border-radius: 4px; padding: 0; }
+    .tweak-row input[type="range"] { width: 120px; }
+    .tweak-row select { font-size: 13px; padding: 4px 6px; }
+
+    .tweaks-toggle {
+      position: fixed; bottom: 20px; right: 20px;
+      background: #111; color: white;
+      border: none; border-radius: 999px; padding: 10px 16px;
+      font: 600 12px/1 system-ui, sans-serif; text-transform: uppercase; letter-spacing: 0.08em;
+      cursor: pointer;
+      z-index: 101;
+    }
+  </style>
+</head>
+<body>
+
+  <section class="hero">
+    <h1>Tweakable hero headline</h1>
+    <p>This prototype exposes a small set of design parameters. Open Tweaks (bottom-right) to cycle the primary color, typography scale, container width, and dark mode. Use this pattern when the user asks "show me a few options" — cheaper than separate files.</p>
+  </section>
+
+  <!-- Tweaks controls (hidden by default) -->
+  <div class="tweaks-panel" id="tweaks">
+    <h2>Tweaks</h2>
+    <div class="tweak-row">
+      <label for="tweak-primary">Primary color</label>
+      <input type="color" id="tweak-primary">
+    </div>
+    <div class="tweak-row">
+      <label for="tweak-h1">Headline size</label>
+      <input type="range" id="tweak-h1" min="40" max="120" step="2">
+    </div>
+    <div class="tweak-row">
+      <label for="tweak-container">Container</label>
+      <select id="tweak-container">
+        <option value="720">Tight</option>
+        <option value="960">Standard</option>
+        <option value="1280">Wide</option>
+      </select>
+    </div>
+    <div class="tweak-row">
+      <label for="tweak-dark">Dark mode</label>
+      <input type="checkbox" id="tweak-dark">
+    </div>
+  </div>
+
+  <button class="tweaks-toggle" id="tweaks-toggle">Tweaks</button>
+
+  <script>
+    // Default values — wrap in EDITMODE markers so a host with edit-mode support
+    // can rewrite them on disk. Even in standalone mode the marker is harmless.
+    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+      "primaryColor": "#D97757",
+      "headlineSize": 72,
+      "container": 960,
+      "dark": false
+    }/*EDITMODE-END*/;
+
+    const STORAGE_KEY = 'tweaks-v1';
+    const state = { ...TWEAK_DEFAULTS, ...(JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || {}) };
+
+    const $ = (id) => document.getElementById(id);
+    const apply = () => {
+      document.documentElement.style.setProperty('--primary', state.primaryColor);
+      document.documentElement.style.setProperty('--h1', `${state.headlineSize}px`);
+      document.documentElement.style.setProperty('--container', `${state.container}px`);
+      document.body.dataset.dark = String(state.dark);
+    };
+    const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+
+    // Wire controls to state
+    $('tweak-primary').value = state.primaryColor;
+    $('tweak-h1').value = state.headlineSize;
+    $('tweak-container').value = state.container;
+    $('tweak-dark').checked = state.dark;
+
+    $('tweak-primary').addEventListener('input', (e) => { state.primaryColor = e.target.value; apply(); save(); });
+    $('tweak-h1').addEventListener('input', (e) => { state.headlineSize = Number(e.target.value); apply(); save(); });
+    $('tweak-container').addEventListener('change', (e) => { state.container = Number(e.target.value); apply(); save(); });
+    $('tweak-dark').addEventListener('change', (e) => { state.dark = e.target.checked; apply(); save(); });
+
+    // Open/close panel
+    $('tweaks-toggle').addEventListener('click', () => {
+      $('tweaks').classList.toggle('open');
+    });
+
+    apply();
+
+    // --- Host integration (optional) ---
+    // If a host provides an edit-mode toolbar, it will send activate/deactivate messages.
+    // Register the listener FIRST, then announce availability.
+    window.addEventListener('message', (e) => {
+      if (e.data?.type === '__activate_edit_mode') $('tweaks').classList.add('open');
+      if (e.data?.type === '__deactivate_edit_mode') $('tweaks').classList.remove('open');
+    });
+    try { window.parent.postMessage({ type: '__edit_mode_available' }, '*'); } catch {}
+  </script>
+</body>
+</html>
