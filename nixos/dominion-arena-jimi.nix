@@ -28,6 +28,11 @@ in {
       # nginx is the only client: it names the real one in X-Forwarded-For.
       trust_proxy = true;
     };
+    # Registered players seat Claude and Codex agents, played with imalison's logins.
+    agents = {
+      enable = true;
+      user = "imalison";
+    };
   };
 
   services.nginx.virtualHosts.${domain} = {
