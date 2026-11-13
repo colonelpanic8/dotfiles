@@ -84,6 +84,7 @@ in {
     ../vaultwarden-jimi.nix
     ../simlock-jimi.nix
     ../rocket-sense-jimi.nix
+    ../dominion-arena-jimi.nix
   ];
 
   myModules.tailscale.enrollment = "ivan";
