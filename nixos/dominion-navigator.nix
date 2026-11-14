@@ -6,10 +6,10 @@
 }: let
   home = config.users.users.imalison.home;
   # Starts the Dominion Navigator launcher (its own Chrome, with the extension and the agent
-  # launcher) as a user unit, or opens another dominion.games tab in it when it is already up.
+  # launcher) as a user unit, or brings its dominion.games tab to the front when it is already up.
   dominion = pkgs.writeShellApplication {
     name = "dominion";
-    runtimeInputs = [pkgs.nodejs pkgs.systemd];
+    runtimeInputs = [pkgs.nodejs pkgs.procps pkgs.systemd];
     text = ''
       repo="''${DOMINION_NAVIGATOR_REPO:-$HOME/projects/dominion-navigator}"
       unit=dominion-navigator
@@ -19,7 +19,14 @@
       fi
       cd "$repo"
       if systemctl --user --quiet is-active "$unit.service"; then
-        exec node --import tsx scripts/launch-debug-chrome.mjs
+        node --import tsx scripts/launch-debug-chrome.mjs
+        # Chrome on Wayland can't raise its own window, so focus it here.
+        pid_file="''${XDG_STATE_HOME:-$HOME/.local/state}/dominion-navigator/chrome-profile/launcher.pid"
+        if [ -n "''${HYPRLAND_INSTANCE_SIGNATURE:-}" ] && command -v hyprctl >/dev/null && [ -r "$pid_file" ]; then
+          chrome_pid="$(pgrep -P "$(cat "$pid_file")" -x chrome | head -n1 || true)"
+          if [ -n "$chrome_pid" ]; then hyprctl dispatch focuswindow "pid:$chrome_pid" >/dev/null; fi
+        fi
+        exit 0
       fi
       npm run --silent build >/dev/null
       systemctl --user reset-failed "$unit.service" 2>/dev/null || true
