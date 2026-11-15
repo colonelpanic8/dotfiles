@@ -55,7 +55,7 @@ For each confirmed sender, do ALL of these:
 
 ### 0. Always get the sender out of the inbox, whatever the unsubscribe outcome
 
-Unsubscribing is never the last step. Every sender you unsubscribe from (or try to) must end up with zero mail in the inbox, in the same pass:
+Unsubscribing is never the last step. Every sender you unsubscribe from (or try to) must end up with zero mail in the inbox, in the same pass. Clean up each sender as soon as you've handled it, before moving to the next; don't batch the archiving until the end of the run:
 
 - **Unsubscribe succeeded:** archive and mark read all of its mail (step 3), then add the filter (step 2).
 - **Unsubscribe failed or is unavailable** (no link, broken page, a gate asking you to attest to something on the user's behalf, a login wall, an org portal that's closed): mark its mail as spam (`mark_thread_spam` / `batchModify` with `addLabelIds:["SPAM"]`). Spam also catches future mail without needing a filter. For senders where spam would be wrong (e.g. a real brokerage or bank sending marketing), archive it and rely on the filter instead.
