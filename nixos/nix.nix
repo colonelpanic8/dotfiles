@@ -170,6 +170,7 @@
           simlock = final.callPackage ./packages/simlock {};
           menu-roborock = final.callPackage ./packages/menu-roborock {};
         })
+        (import ./packages/antigravity.nix)
       ]
       ++ (
         if config.imalison.nixOverlay.enable

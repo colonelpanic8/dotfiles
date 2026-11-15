@@ -161,6 +161,10 @@
     environment.systemPackages = with pkgs;
       [
         # LLM Tools
+        antigravity-acp
+        antigravity-cli
+        antigravity-hub
+        antigravity-ide
         claude-code
         codex
         inputs.gmcli.packages.${pkgs.stdenv.hostPlatform.system}.default
