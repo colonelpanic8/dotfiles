@@ -37,4 +37,12 @@ case "$menu_exit" in
 		urxvt --hold -e "$selected"
 		;;
 esac
+
+# History entries can name commands that have since been renamed or removed.
+selected_words=(${(z)selected})
+command_name=$selected_words[1]
+if [[ -n "$command_name" && "$command_name" != *=* ]] && ! whence "$command_name" >/dev/null; then
+	notify-send "Command menu" "Command not found: $command_name"
+	exit 127
+fi
 eval "$selected $args"
