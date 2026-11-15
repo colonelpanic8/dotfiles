@@ -21,6 +21,17 @@
       "model": "gpt-6.1-terra"
     }
   ],
+  "projectScriptOverrides": {
+    "mcp:87c0125f-60cb-4a45-a54b-7b17254446fe": [
+      {
+        "id": "check",
+        "name": "Check",
+        "command": "direnv exec . just check",
+        "icon": "test",
+        "runOnWorktreeCreate": false
+      }
+    ]
+  },
   "defaultModelSelection": {
     "instanceId": "claudeAgent",
     "model": "claude-opus-5-5",
@@ -30,5 +41,19 @@
         "value": "high"
       }
     ]
-  }
+  },
+  "projectSettingsOverrides": {
+    "mcp:87c0125f-60cb-4a45-a54b-7b17254446fe": {
+      "defaultProjectScripts": [
+        {
+          "id": "check",
+          "name": "Check",
+          "command": "direnv exec . just check",
+          "icon": "test",
+          "runOnWorktreeCreate": false
+        }
+      ]
+    }
+  },
+  "projectSettingsFolded": true
 }
