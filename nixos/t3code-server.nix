@@ -116,7 +116,7 @@ in
 
         settingsFile = lib.mkOption {
           type = lib.types.nullOr lib.types.str;
-          default = null;
+          default = "${config.dotfiles-worktree}/nix-shared/t3code-settings/global.json";
           description = "Writable settings.json linked into the server's legacy data directory. Home Manager manages the link; T3 Code edits its target.";
         };
 
