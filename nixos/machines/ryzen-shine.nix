@@ -22,6 +22,7 @@
   myModules.nvidia.enable = true;
   myModules.agentThreadBackup.enable = true;
   myModules.paseo.enable = true;
+  myModules.t3codeServer.settingsFile = "${config.dotfiles-worktree}/nix-shared/t3code-settings/ryzen-shine.json";
   myModules.t3codeServer.settings.providerInstances = {
     claudeAgent_dean = {
       driver = "claudeAgent";

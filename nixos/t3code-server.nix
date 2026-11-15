@@ -71,6 +71,11 @@
         inherit (cfg) settings;
       };
 
+      home.file.t3code-settings = lib.mkIf (cfg.settingsFile != null) {
+        target = "${config.services.t3code.dataDirectory}/userdata/settings.json";
+        source = config.lib.file.mkOutOfStoreSymlink cfg.settingsFile;
+      };
+
       systemd.user.services.t3code-headless = {
         Unit = {
           After = ["agenix.service"];
@@ -107,6 +112,12 @@ in
           type = lib.types.attrsOf lib.types.anything;
           default = {};
           description = "Server settings this host fixes for T3 Code; see services.t3code.settings.";
+        };
+
+        settingsFile = lib.mkOption {
+          type = lib.types.nullOr lib.types.str;
+          default = null;
+          description = "Writable settings.json linked into the server's legacy data directory. Home Manager manages the link; T3 Code edits its target.";
         };
 
         peerLinks = {
