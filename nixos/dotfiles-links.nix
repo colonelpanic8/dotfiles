@@ -102,6 +102,7 @@ in {
       ".cua-driver/skills/cua-driver"
       ".agents/skills/cua-driver"
       ".config/opencode/skills/cua-driver"
+      ".gemini/antigravity-cli/skills/cua-driver"
     ] (_: {source = cuaDriverSkill;}));
 
   home.activation.linkClaudeCuaDriverSkill = lib.mkIf cuaDriverEnabled (

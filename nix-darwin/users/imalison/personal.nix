@@ -83,6 +83,19 @@ in {
   myModules.codexGeneratedSkills.enable = true;
   myModules.codexGeneratedSkills.worktreeCodexDir = "${config.dotfiles.worktreeDotfilesDir}/codex";
 
+  home.file = let
+    outOfStore = config.lib.file.mkOutOfStoreSymlink;
+  in {
+    ".gemini/config/skills" = {
+      force = true;
+      source = outOfStore "${config.dotfiles.worktreeDotfilesDir}/gemini/config/skills";
+    };
+    ".gemini/skills" = {
+      force = true;
+      source = outOfStore "${config.dotfiles.worktreeDotfilesDir}/gemini/skills";
+    };
+  };
+
   home.packages = [
     (pkgs.pass.withExtensions (ext: [ext.pass-otp]))
     pkgs.gnupg

@@ -28,6 +28,9 @@
     [
       "codex"
       "config"
+      # Managed per-link in users/imalison/personal.nix so ~/.gemini keeps
+      # machine-local Antigravity auth, sessions, and logs.
+      "gemini"
     ]
     ++ lib.optionals (!cfg.personal) personalTopLevelEntries;
 
