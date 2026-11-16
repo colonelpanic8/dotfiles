@@ -397,21 +397,38 @@
     },
     "dominion-arena": {
       "inputs": {
+        "dominion-playbook": "dominion-playbook",
         "fenix": "fenix",
         "flake-utils": "flake-utils_3",
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "lastModified": 1794864962,
-        "narHash": "sha256-XoGVgKPH81A/GVOARyzWbGEHFyFUtUABzsoYig2Lww4=",
+        "lastModified": 1794865861,
+        "narHash": "sha256-5gngeHlRUwF/V06XbqDVFDYQJGuXm92i4L5pbWRggUg=",
         "owner": "colonelpanic8",
         "repo": "dominion-arena",
-        "rev": "cfc748e5ef4ec294ee0565a5081d0be64f2aadaa",
+        "rev": "b802f9d64a36f9192e3556546933995377fd61b0",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
         "repo": "dominion-arena",
+        "type": "github"
+      }
+    },
+    "dominion-playbook": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794864487,
+        "narHash": "sha256-ObOsN+Hnc/l5FSHK0EkBPkMy8k2wcvL8mhbJDOc1zHI=",
+        "owner": "colonelpanic8",
+        "repo": "dominion-playbook",
+        "rev": "554924c2086a02fea04fbf89fb546e84cf81fe77",
+        "type": "github"
+      },
+      "original": {
+        "owner": "colonelpanic8",
+        "repo": "dominion-playbook",
         "type": "github"
       }
     },

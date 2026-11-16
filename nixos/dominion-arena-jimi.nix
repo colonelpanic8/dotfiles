@@ -10,21 +10,6 @@
   backendPort = 47317;
   # Where rocket-sense-jimi.nix's SNI map sends this name.
   tlsPort = 45445;
-  playbook = builtins.fetchGit {
-    url = "https://github.com/colonelpanic8/dominion-playbook.git";
-    rev = "de18791c9c8db309d84ff6cf10790537b8eba7b7";
-  };
-  playbookInstructions = lib.concatMapStringsSep "\n\n" (path:
-    "# ${path}\n${builtins.readFile (playbook + "/${path}")}") [
-    "context/rules.md"
-    "context/strategy.md"
-    "context/card-power.md"
-    "context/card-ratings.md"
-    "context/combos.md"
-    "skills/kingdom-analysis/SKILL.md"
-    "skills/play-turn/SKILL.md"
-    "skills/play-game/SKILL.md"
-  ];
 in {
   imports = [inputs.dominion-arena.nixosModules.default];
 
@@ -58,43 +43,10 @@ in {
     agents = {
       enable = true;
       user = "imalison";
-      settings.agents_at_once = 4;
-      settings.agents = [
-        {
-          name = "Opus High";
-          program = "claude";
-          model = "claude-opus-5-5";
-          effort = "high";
-          instructions = playbookInstructions;
-        }
-        {
-          name = "Sol High";
-          program = "codex";
-          model = "gpt-6.1-sol";
-          effort = "high";
-          instructions = playbookInstructions;
-        }
-        {
-          name = "Terra";
-          program = "codex";
-          model = "gpt-6.1-terra";
-          effort = "high";
-        }
-        {
-          name = "Argon High";
-          program = "antigravity";
-          model = "gemini-4-argon-high";
-          command = lib.getExe pkgs.antigravity-cli;
-          auth_dir = "/home/imalison/.gemini";
-        }
-        {
-          name = "Sonnet High";
-          program = "antigravity";
-          model = "claude-sonnet-5-5-high";
-          command = lib.getExe pkgs.antigravity-cli;
-          auth_dir = "/home/imalison/.gemini";
-        }
-      ];
+      atOnce = 4;
+      claude = pkgs.claude-code;
+      codex = pkgs.codex;
+      antigravity = pkgs.antigravity-cli;
     };
   };
 
