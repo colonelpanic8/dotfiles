@@ -58,7 +58,6 @@ in {
           name = "Sonnet via Gemini";
           program = "antigravity";
           model = "claude-sonnet-5-5-high";
-          instructions = "Game actions are JSON reply formats, not native function calls. Never invoke a native tool, including finish. Return exactly one game-action JSON object as plain assistant text.";
           command = lib.getExe pkgs.antigravity-cli;
           auth_dir = "/home/imalison/.gemini";
         }
