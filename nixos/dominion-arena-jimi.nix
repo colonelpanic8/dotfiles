@@ -29,7 +29,7 @@ in {
       public_url = "https://${domain}";
       # nginx is the only client: it names the real one in X-Forwarded-For.
       trust_proxy = true;
-      agent_seats_per_day = 8;
+      agent_seats_per_day = 10;
     };
     agents = {
       enable = true;
@@ -40,6 +40,13 @@ in {
           program = "codex";
           model = "gpt-6.1-terra";
           effort = "high";
+        }
+        {
+          name = "Argon High";
+          program = "antigravity";
+          model = "gemini-4-argon-high";
+          command = lib.getExe pkgs.antigravity-cli;
+          auth_dir = "/home/imalison/.gemini";
         }
         {
           name = "Sonnet High";
