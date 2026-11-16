@@ -23,6 +23,7 @@ in {
   services.dominion = {
     enable = true;
     syncAssets = true;
+    onlinePasswordCredential = "/var/lib/private/dominion-online-password.cred";
     settings = {
       listen = "127.0.0.1";
       port = backendPort;
@@ -30,6 +31,11 @@ in {
       # nginx is the only client: it names the real one in X-Forwarded-For.
       trust_proxy = true;
       agent_seats_per_day = 10;
+      online_enabled = true;
+      online_owner = "Arena Matches";
+      online_account = "colonelpanic8";
+      online_exclusive = true;
+      online_resume = true;
     };
     agents = {
       enable = true;
