@@ -29,42 +29,22 @@ in {
       public_url = "https://${domain}";
       # nginx is the only client: it names the real one in X-Forwarded-For.
       trust_proxy = true;
+      agent_seats_per_day = 6;
     };
     agents = {
-      enable = false;
+      enable = true;
       user = "imalison";
       settings.agents = [
         {
-          name = "Claude Opus";
-          program = "claude";
-          model = "opus";
-        }
-        {
-          name = "Claude Sonnet";
-          program = "claude";
-          model = "sonnet";
-        }
-        {
-          name = "Codex";
+          name = "Terra";
           program = "codex";
+          model = "gpt-6.1-terra";
+          effort = "medium";
         }
         {
-          name = "Sol 6.1";
-          program = "codex";
-          model = "gpt-6.1-sol";
-          effort = "high";
-        }
-        {
-          name = "Sonnet via Gemini";
+          name = "Sonnet Low";
           program = "antigravity";
-          model = "claude-sonnet-5-5-high";
-          command = lib.getExe pkgs.antigravity-cli;
-          auth_dir = "/home/imalison/.gemini";
-        }
-        {
-          name = "Gemini Hydrogen";
-          program = "antigravity";
-          model = "gemini-4-hydrogen-high";
+          model = "claude-sonnet-5-5-low";
           command = lib.getExe pkgs.antigravity-cli;
           auth_dir = "/home/imalison/.gemini";
         }
