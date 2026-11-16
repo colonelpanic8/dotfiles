@@ -76,6 +76,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    rex = {
+      url = "https://pkgs.superlogical.com/rex/nix/preview.tar.gz";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nixos-hardware = {url = "github:colonelpanic8/nixos-hardware/my-master";};
 
     nixos-wsl = {

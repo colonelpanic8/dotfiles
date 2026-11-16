@@ -57,6 +57,7 @@
     ./primary-user-home.nix
     ./rabbitmq.nix
     ./remote-hyprland.nix
+    ./rex.nix
     ./river-xmonad.nix
     ./ssh.nix
     ./sni.nix
