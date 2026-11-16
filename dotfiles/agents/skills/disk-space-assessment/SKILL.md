@@ -125,7 +125,7 @@ python /srv/dotfiles/dotfiles/agents/skills/disk-space-assessment/scripts/direnv
 
 This separates collectively direnv-only paths from paths retained by non-direnv roots and estimates each project's marginal uniquely retained footprint. Read `references/direnv-gc-roots.md` before interpreting or acting on the result.
 
-When `safe_ncdu top` refuses a large snapshot, stream it with `scripts/ncdu_dir_sizes.py` (usage in its docstring) to get a hardlink-aware `<bytes>\t<path>` table, then slice it with `awk`/`sort`. Raw ncdu `dsize` sums count every hardlink, which inflated pnpm trees by about 2x in a 2026-11-03 check.
+When `safe_ncdu top` refuses a large snapshot, stream it with `scripts/ncdu_dir_sizes.py` (usage in its docstring) to get a hardlink-aware `<bytes>\t<path>` table, then slice it with `awk`/`sort`. To price Nix cleanup, run `scripts/nix_root_attribution.py`: it walks references, `deriver`, and `DerivationOutputs` from the DB (`keep-outputs`/`keep-derivations` are on), prints per-group unique bytes, and gives exact GC reclaim for dropping old system generations plus project roots older than 7/14/30 days. Raw ncdu `dsize` sums count every hardlink, which inflated pnpm trees by about 2x in a 2026-11-03 check.
 
 For very large `/nix/store` exports, use `safe_ncdu open` for read-only navigation and the Nix audit tools for noninteractive attribution. `safe_ncdu top` refuses snapshots over 128 MiB compressed by default because its jq parser may exhaust memory. Do not estimate physical store usage by summing raw ncdu JSON `dsize` fields; use `du -sx --block-size=1 /nix/store` when a hardlink-aware physical total is necessary.
 
