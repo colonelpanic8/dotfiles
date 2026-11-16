@@ -24,6 +24,13 @@ in {
     enable = true;
     syncAssets = true;
     onlinePasswordCredential = "/var/lib/private/dominion-online-password.cred";
+    onlineAccounts.sol = {
+      account = "SolDominion";
+      owner = "Arena Matches";
+      exclusive = true;
+      encryptedCredential = "/var/lib/private/dominion-online-sol-password.cred";
+      settings.resume = true;
+    };
     settings = {
       listen = "127.0.0.1";
       port = backendPort;
