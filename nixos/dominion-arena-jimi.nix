@@ -10,6 +10,21 @@
   backendPort = 47317;
   # Where rocket-sense-jimi.nix's SNI map sends this name.
   tlsPort = 45445;
+  playbook = builtins.fetchGit {
+    url = "https://github.com/colonelpanic8/dominion-playbook.git";
+    rev = "de18791c9c8db309d84ff6cf10790537b8eba7b7";
+  };
+  playbookInstructions = lib.concatMapStringsSep "\n\n" (path:
+    "# ${path}\n${builtins.readFile (playbook + "/${path}")}") [
+    "context/rules.md"
+    "context/strategy.md"
+    "context/card-power.md"
+    "context/card-ratings.md"
+    "context/combos.md"
+    "skills/kingdom-analysis/SKILL.md"
+    "skills/play-turn/SKILL.md"
+    "skills/play-game/SKILL.md"
+  ];
 in {
   imports = [inputs.dominion-arena.nixosModules.default];
 
@@ -41,6 +56,13 @@ in {
       enable = true;
       user = "imalison";
       settings.agents = [
+        {
+          name = "Sol High";
+          program = "codex";
+          model = "gpt-6.1-sol";
+          effort = "high";
+          instructions = playbookInstructions;
+        }
         {
           name = "Terra";
           program = "codex";
