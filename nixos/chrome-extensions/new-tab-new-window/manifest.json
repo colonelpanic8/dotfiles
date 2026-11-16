@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "New Tab, New Window (agent-aware)",
+  "version": "1.0.0",
+  "description": "Opens every new tab in its own window, except tabs created by Claude in Chrome.",
+  "permissions": ["storage", "tabs", "tabGroups"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "New Tab, New Window: on (click to toggle)"
+  }
+}

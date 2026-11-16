@@ -14,6 +14,7 @@
     ./cache-server.nix
     ./cache.nix
     ./cargo-sweep.nix
+    ./chrome-extensions.nix
     ./chrome-favicon-dbus.nix
     ./nix-gcroot-sweep.nix
     ./ccusage-fleet.nix

@@ -36,13 +36,9 @@
       exec ${../dotfiles/lib/bin/desktop_dmenu} "$@"
     '';
   };
-  chromeCommandLineFlags =
-    [
-      "--disable-features=WaylandFractionalScaleV1"
-    ]
-    ++ lib.optionals config.myModules.chrome-favicon-dbus.enable [
-      "--load-extension=${inputs.chrome-favicon-dbus}/extension"
-    ];
+  chromeCommandLineFlags = [
+    "--disable-features=WaylandFractionalScaleV1"
+  ];
   googleChromeWrapperArgs = lib.concatMapStringsSep " " (flag: "--add-flags ${lib.escapeShellArg flag}") chromeCommandLineFlags;
   googleChromeCommandWrappers = pkgs.runCommand "google-chrome-command-wrappers" {nativeBuildInputs = [pkgs.makeWrapper];} ''
     mkdir -p "$out/bin"
@@ -274,6 +270,12 @@
       mkdir -p /opt/google/chrome
       ln -sfn ${googleChromeCommandWrappers}/bin/google-chrome-stable /opt/google/chrome/chrome
     '';
+
+    myModules.chromeExtensions.forceInstalled.new-tab-new-window = lib.mkIf (lib.meta.availableOn pkgs.stdenv.hostPlatform pkgs.google-chrome) {
+      id = "nnmopaacidhjihlhbjchdbjhhhdefbim";
+      src = ./chrome-extensions/new-tab-new-window;
+      key = ./chrome-extensions/keys/new-tab-new-window.pem;
+    };
 
     services.gnome.at-spi2-core.enable = true;
 

@@ -9,9 +9,6 @@
   system = pkgs.stdenv.hostPlatform.system;
   bridgePackage = inputs.chrome-favicon-dbus.packages.${system}.default;
   extensionSource = "${inputs.chrome-favicon-dbus}/extension";
-  extensionManifest = builtins.fromJSON (builtins.readFile "${extensionSource}/manifest.json");
-  extensionVersion = extensionManifest.version;
-  extensionId = "odlameecjipmbmbejkplpemijjgpljce";
   extensionKey = pkgs.writeText "chrome-favicon-dbus-extension.pem" ''
     -----BEGIN PRIVATE KEY-----
     MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDF0IL1wJ4JyaYc
@@ -42,19 +39,6 @@
     apyjjEZEct41A23iQkkbytQ=
     -----END PRIVATE KEY-----
   '';
-  extensionPackage =
-    pkgs.runCommand "chrome-favicon-dbus-extension-${extensionVersion}" {
-      nativeBuildInputs = [pkgs.google-chrome];
-    } ''
-      export HOME="$TMPDIR/home"
-      mkdir -p "$HOME" "$out"
-      cp -R --no-preserve=mode "${extensionSource}" extension
-      google-chrome-stable \
-        --pack-extension="$PWD/extension" \
-        --pack-extension-key="${extensionKey}"
-      cp extension.crx "$out/chrome-favicon-dbus.crx"
-      cp -R extension "$out/unpacked"
-    '';
   runtimePath = lib.makeBinPath [
     pkgs.coreutils
     pkgs.hyprland
@@ -63,25 +47,15 @@
   ];
 in
   makeEnable config "myModules.chrome-favicon-dbus" false {
+    myModules.chromeExtensions.forceInstalled.chrome-favicon-dbus = {
+      id = "lidilckiohndlmcnhndjcjpicnhfhfmh";
+      src = extensionSource;
+      key = extensionKey;
+    };
+
     home-manager.sharedModules = [
       {
         home.packages = [bridgePackage];
-
-        xdg.configFile."google-chrome-unpacked-extensions/chrome-favicon-dbus" = {
-          source = extensionSource;
-          recursive = true;
-        };
-
-        home.file."chrome-favicon-dbus-extension" = {
-          source = extensionSource;
-          recursive = true;
-          force = true;
-        };
-
-        xdg.configFile."google-chrome/External Extensions/${extensionId}.json".text = builtins.toJSON {
-          external_crx = "${extensionPackage}/chrome-favicon-dbus.crx";
-          external_version = extensionVersion;
-        };
 
         systemd.user.services.chrome-favicon-dbus = {
           Unit = {
