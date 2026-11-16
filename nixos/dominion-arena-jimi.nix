@@ -49,6 +49,19 @@ in {
           program = "codex";
         }
         {
+          name = "Sol 6.1";
+          program = "codex";
+          model = "gpt-6.1-sol";
+          effort = "high";
+        }
+        {
+          name = "Sonnet via Gemini";
+          program = "antigravity";
+          model = "claude-sonnet-5-5-high";
+          command = lib.getExe pkgs.antigravity-cli;
+          auth_dir = "/home/imalison/.gemini";
+        }
+        {
           name = "Gemini Hydrogen";
           program = "antigravity";
           model = "gemini-4-hydrogen-high";
