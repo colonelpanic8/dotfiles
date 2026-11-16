@@ -45,7 +45,7 @@ in {
       public_url = "https://${domain}";
       # nginx is the only client: it names the real one in X-Forwarded-For.
       trust_proxy = true;
-      agent_seats_per_day = 10;
+      agent_seats_per_day = 40;
       online_enabled = true;
       online_owner = "Arena Matches";
       online_account = "colonelpanic8";
@@ -55,7 +55,15 @@ in {
     agents = {
       enable = true;
       user = "imalison";
+      settings.agents_at_once = 4;
       settings.agents = [
+        {
+          name = "Opus High";
+          program = "claude";
+          model = "claude-opus-5-5";
+          effort = "high";
+          instructions = playbookInstructions;
+        }
         {
           name = "Sol High";
           program = "codex";
