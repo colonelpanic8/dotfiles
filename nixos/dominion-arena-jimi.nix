@@ -46,6 +46,8 @@ in {
       # nginx is the only client: it names the real one in X-Forwarded-For.
       trust_proxy = true;
       agent_seats_per_day = 40;
+      registration = false;
+      guests = false;
       online_enabled = true;
       online_owner = "Arena Matches";
       online_account = "colonelpanic8";
