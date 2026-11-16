@@ -46,6 +46,7 @@ in {
       # nginx is the only client: it names the real one in X-Forwarded-For.
       trust_proxy = true;
       agent_seats_per_day = 0;
+      keep_finished_days = 0;
       registration = false;
       guests = false;
       online_enabled = true;
