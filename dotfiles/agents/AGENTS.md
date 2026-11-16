@@ -263,6 +263,13 @@ code never arrives.
   `claude --claude-in-chrome-mcp` against the installed Claude in Chrome
   extension and does not require Codex desktop to be running. Codex's bundled
   Chrome tools require authorization supplied to desktop-managed sessions.
+- The Claude in Chrome extension lives only in a dedicated Chrome profile
+  (directory `~/.config/google-chrome/Claude`; launch it with
+  `google-chrome-stable --profile-directory=Claude`). That keeps it clear of
+  the Default profile's "New Tab, New Window" extension, which would pull
+  agent tabs out of their tab group. The profile carries only the sign-ins
+  made in it. When a site needs a login the profile lacks, have Ivan sign in
+  there; don't move the extension to another profile.
 - Prefer using chrome plugins and skills for tasks that can be completed
   entirely in a browser. Use computer-use tools when the task requires broader
   desktop interaction or the Chrome plugin cannot complete it.
