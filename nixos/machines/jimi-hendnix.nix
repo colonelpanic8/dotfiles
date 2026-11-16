@@ -208,6 +208,19 @@ in {
     options = ["nofail"];
   };
 
+  # Regenerable build caches live on tank (sync=disabled) to spare the root SSD.
+  fileSystems."/home/imalison/.cargo/build" = {
+    device = "tank/cache/cargo-build";
+    fsType = "zfs";
+    options = ["nofail"];
+  };
+
+  fileSystems."/home/imalison/.gradle" = {
+    device = "tank/cache/gradle";
+    fsType = "zfs";
+    options = ["nofail"];
+  };
+
   # Prefer the SN770 over the QLC Intel 660p.
   swapDevices = [
     {
