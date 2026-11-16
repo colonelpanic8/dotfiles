@@ -403,11 +403,11 @@
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "lastModified": 1794867083,
-        "narHash": "sha256-ZuFVyMfvpsIELDCAC7qq94iCBpGR+KpFLfZKiboDwwc=",
+        "lastModified": 1794869327,
+        "narHash": "sha256-R8OnKcw9h/l4pe1h4+iQCDTc1KfWP6tcxJ8xYZBRaec=",
         "owner": "colonelpanic8",
         "repo": "dominion-arena",
-        "rev": "d63aceb6dae33b95e83a54b793eb0404f8d48c69",
+        "rev": "5deda6373ccbfbada52504aba916324654a4fea6",
         "type": "github"
       },
       "original": {
@@ -419,11 +419,11 @@
     "dominion-playbook": {
       "flake": false,
       "locked": {
-        "lastModified": 1794864487,
-        "narHash": "sha256-ObOsN+Hnc/l5FSHK0EkBPkMy8k2wcvL8mhbJDOc1zHI=",
+        "lastModified": 1794869313,
+        "narHash": "sha256-GUFGXvgyD9xA+tPz0I9uJ/o8yZKy7kgaKgL9OeuQh0g=",
         "owner": "colonelpanic8",
         "repo": "dominion-playbook",
-        "rev": "554924c2086a02fea04fbf89fb546e84cf81fe77",
+        "rev": "e565fe81df45aa53e17fda541b489d653c5acd14",
         "type": "github"
       },
       "original": {
