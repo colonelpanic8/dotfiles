@@ -31,7 +31,7 @@ in {
       trust_proxy = true;
     };
     agents = {
-      enable = true;
+      enable = false;
       user = "imalison";
       settings.agents = [
         {
