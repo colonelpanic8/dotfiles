@@ -1,6 +1,8 @@
 {
   config,
   inputs,
+  lib,
+  pkgs,
   ...
 }: let
   domain = "dominion-arena.duckdns.org";
@@ -28,10 +30,32 @@ in {
       # nginx is the only client: it names the real one in X-Forwarded-For.
       trust_proxy = true;
     };
-    # Registered players seat Claude and Codex agents, played with imalison's logins.
     agents = {
       enable = true;
       user = "imalison";
+      settings.agents = [
+        {
+          name = "Claude Opus";
+          program = "claude";
+          model = "opus";
+        }
+        {
+          name = "Claude Sonnet";
+          program = "claude";
+          model = "sonnet";
+        }
+        {
+          name = "Codex";
+          program = "codex";
+        }
+        {
+          name = "Gemini Hydrogen";
+          program = "antigravity";
+          model = "gemini-4-hydrogen-high";
+          command = lib.getExe pkgs.antigravity-cli;
+          auth_dir = "/home/imalison/.gemini";
+        }
+      ];
     };
   };
 
