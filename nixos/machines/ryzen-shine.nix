@@ -40,6 +40,12 @@
       enabled = true;
       config.homePath = "~/.codex-colonelpanic8";
     };
+    codex_alex = {
+      driver = "codex";
+      displayName = "Alex";
+      enabled = true;
+      config.homePath = "~/.codex-alex";
+    };
   };
   # Needed for now because monitors have different refresh rates
   myModules.xmonad.picom.vSync.enable = false;

@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+function codex-alex {
+    CODEX_HOME="${CODEX_ALEX_HOME:-$HOME/.codex-alex}" codex "$@"
+}
+
+codex-alex "$@"
