@@ -34,12 +34,6 @@
       enabled = true;
       config.homePath = "~/.claude-dean";
     };
-    codex_colonel = {
-      driver = "codex";
-      displayName = "Colonel";
-      enabled = true;
-      config.homePath = "~/.codex-colonelpanic8";
-    };
     codex_alex = {
       driver = "codex";
       displayName = "Alex";
