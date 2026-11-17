@@ -695,17 +695,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1794402956,
-        "narHash": "sha256-M49RP9b2BaB/lPydhmQWtO8lyJ+QP5Tco9fRo5pCBeo=",
+        "lastModified": 1794879768,
+        "narHash": "sha256-0TcqJZ30Rjnx/EQeVtyL5XgEZnAP8OZXDj87Y7hyMzU=",
         "owner": "colonelpanic8",
         "repo": "t3code",
-        "rev": "98be23dccd199c290aec0206b8eeaf3d08b800ef",
+        "rev": "ee9135e5e0291b3cc538b23979ed18a72730da13",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
         "repo": "t3code",
-        "rev": "98be23dccd199c290aec0206b8eeaf3d08b800ef",
+        "rev": "ee9135e5e0291b3cc538b23979ed18a72730da13",
         "type": "github"
       }
     },
