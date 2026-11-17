@@ -240,6 +240,14 @@ in {
     priority = 100;
   };
 
+  # A leaking agent test once spilled past T3 Code's RAM cap into all 44G of
+  # swap and froze the machine without a single OOM kill. Cap the agents'
+  # swap so the kernel kills the leak, and let oomd kill the heaviest swap
+  # user if anything else fills swap.
+  systemd.user.slices.app-t3code-agents.sliceConfig.MemorySwapMax = "8G";
+  systemd.oomd.enableRootSlice = true;
+  systemd.slices."-".sliceConfig.ManagedOOMSwap = "kill";
+
   networking.useDHCP = lib.mkDefault true;
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
