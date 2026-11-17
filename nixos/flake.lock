@@ -3616,16 +3616,16 @@
       },
       "locked": {
         "lastModified": 1794879768,
-        "narHash": "sha256-0TcqJZ30Rjnx/EQeVtyL5XgEZnAP8OZXDj87Y7hyMzU=",
+        "narHash": "sha256-hx7f5kknwdfth4EDex7La2lKL3ixvYzlm318uCcab0A=",
         "owner": "colonelpanic8",
         "repo": "t3code",
-        "rev": "ee9135e5e0291b3cc538b23979ed18a72730da13",
+        "rev": "e4e6492b88ed03142aeb8cd61f609e8d7a626586",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
         "repo": "t3code",
-        "rev": "ee9135e5e0291b3cc538b23979ed18a72730da13",
+        "rev": "e4e6492b88ed03142aeb8cd61f609e8d7a626586",
         "type": "github"
       }
     },
