@@ -3341,11 +3341,11 @@
         "rmk": "rmk"
       },
       "locked": {
-        "lastModified": 1794877515,
-        "narHash": "sha256-yqKHqp81aa9eIjqzz2H48y8S9CAiKxGO8oF7ItJ2uqU=",
+        "lastModified": 1794877787,
+        "narHash": "sha256-VyY1JGO4jujIDAiRz2mfK93+rOnqf6NH7+AmSV6a4aY=",
         "owner": "colonelpanic8",
         "repo": "rynkbench",
-        "rev": "b879d4216cc7fefc4476ea532b8da3e8c5c4b11b",
+        "rev": "8fc1f063c13d17da7268796823b806b9149c2a78",
         "type": "github"
       },
       "original": {
