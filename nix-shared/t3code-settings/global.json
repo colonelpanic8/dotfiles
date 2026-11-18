@@ -56,15 +56,6 @@
         "icon": "test",
         "runOnWorktreeCreate": false
       }
-    ],
-    "mcp:87c0125f-60cb-4a45-a54b-7b17254446fe": [
-      {
-        "id": "check",
-        "name": "Check",
-        "command": "direnv exec . just check",
-        "icon": "test",
-        "runOnWorktreeCreate": false
-      }
     ]
   },
   "defaultModelSelection": {
@@ -110,20 +101,10 @@
           "runOnWorktreeCreate": false
         }
       ]
-    },
-    "mcp:87c0125f-60cb-4a45-a54b-7b17254446fe": {
-      "defaultProjectScripts": [
-        {
-          "id": "check",
-          "name": "Check",
-          "command": "direnv exec . just check",
-          "icon": "test",
-          "runOnWorktreeCreate": false
-        }
-      ]
     }
   },
   "projectSettingsFolded": true,
   "sidebarAutoSettleAfterDays": null,
-  "sidebarAutoSettleOnMerge": false
+  "sidebarAutoSettleOnMerge": false,
+  "addProjectBaseDirectory": "~/projects"
 }
