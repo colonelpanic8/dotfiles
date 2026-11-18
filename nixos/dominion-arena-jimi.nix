@@ -59,7 +59,7 @@ in {
     agents = {
       enable = true;
       user = "imalison";
-      atOnce = 4;
+      atOnce = 24;
       claude = pkgs.claude-code;
       codex = pkgs.codex;
       antigravity = pkgs.antigravity-cli;
