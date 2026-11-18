@@ -403,15 +403,16 @@
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "lastModified": 1794965635,
-        "narHash": "sha256-XXATH+LLqev9cLDO9tVz/BSsqJqFLvsKF6gPIfKbRr0=",
+        "lastModified": 1794971673,
+        "narHash": "sha256-F0TjVNPcXVIrNgCqQhGaPxx/AX1iJQunMkd+rdXaURk=",
         "owner": "colonelpanic8",
         "repo": "dominion-arena",
-        "rev": "9fc1879f1cf7dc2941c72b0a4113df48f1c44832",
+        "rev": "92ad1525b3e9a849ee634266cd2444aaeffce9ab",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
+        "ref": "game-events",
         "repo": "dominion-arena",
         "type": "github"
       }
@@ -419,11 +420,11 @@
     "dominion-playbook": {
       "flake": false,
       "locked": {
-        "lastModified": 1794954730,
-        "narHash": "sha256-5PVTJgqCuAwW0I+yXUu/TfU3kK2xuxd9WcJdp92an84=",
+        "lastModified": 1794869313,
+        "narHash": "sha256-GUFGXvgyD9xA+tPz0I9uJ/o8yZKy7kgaKgL9OeuQh0g=",
         "owner": "colonelpanic8",
         "repo": "dominion-playbook",
-        "rev": "664bbc1e0e616ee4c2f97f9f48a7173cddb2a7c1",
+        "rev": "e565fe81df45aa53e17fda541b489d653c5acd14",
         "type": "github"
       },
       "original": {

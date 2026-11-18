@@ -169,7 +169,8 @@
 
     # Its own nixpkgs and fenix: the web client builds with the dioxus-cli and
     # wasm-bindgen its lock pins.
-    dominion-arena.url = "github:colonelpanic8/dominion-arena";
+    # game-events until #42 merges: the History tab is stacked on it.
+    dominion-arena.url = "github:colonelpanic8/dominion-arena/game-events";
 
     org-agenda-api = {
       url = "github:colonelpanic8/org-agenda-api";
