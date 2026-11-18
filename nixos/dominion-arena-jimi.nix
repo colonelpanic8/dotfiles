@@ -54,6 +54,27 @@ in {
       claude = pkgs.claude-code;
       codex = pkgs.codex;
       antigravity = pkgs.antigravity-cli;
+      # The Ultra plan's monthly API credits, in Railbird's Console organization.
+      anthropic = {
+        apiKeyCredential = "/var/lib/private/dominion-anthropic-api-key.cred";
+        workspace = "wrkspc_015TZphZF8bVV6GtDbuHUzpK";
+      };
+      profiles =
+        import "${inputs.dominion-arena}/nix/agents.nix"
+        ++ [
+          {
+            name = "Opus API High";
+            program = "anthropic";
+            model = "claude-opus-5-5";
+            effort = "high";
+          }
+          {
+            name = "Fable API High";
+            program = "anthropic";
+            model = "claude-fable-5-2";
+            effort = "high";
+          }
+        ];
     };
   };
 
