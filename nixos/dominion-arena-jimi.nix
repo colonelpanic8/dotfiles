@@ -83,6 +83,11 @@ in {
             model = "claude-fable-5-2";
             effort = "high";
           }
+          {
+            name = "Hydrogen High";
+            program = "antigravity";
+            model = "gemini-4-hydrogen-high";
+          }
         ];
     };
   };
