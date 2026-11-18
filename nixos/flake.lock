@@ -403,16 +403,15 @@
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "lastModified": 1794975347,
-        "narHash": "sha256-bys27yOn9eKYdq8ghnkQupcyX5mKUP2g9NqEHYZQm1g=",
+        "lastModified": 1794977192,
+        "narHash": "sha256-cnssb9yElZPfC0uV6xA4ymJMMYQPGG5bK5iuI8iIDV8=",
         "owner": "colonelpanic8",
         "repo": "dominion-arena",
-        "rev": "4fa62eb0953f703d6270139d684251e28f56d0b3",
+        "rev": "79b3ed67435f14a79ea715db790cc872a8e0d63f",
         "type": "github"
       },
       "original": {
         "owner": "colonelpanic8",
-        "ref": "game-events",
         "repo": "dominion-arena",
         "type": "github"
       }
