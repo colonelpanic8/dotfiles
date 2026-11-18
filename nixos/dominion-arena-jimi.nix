@@ -47,6 +47,8 @@ in {
       # nginx is the only client: it names the real one in X-Forwarded-For.
       trust_proxy = true;
       agent_seats_per_day = 0;
+      # No forfeit for a slow decision: an agent whose provider is down waits instead.
+      decision_minutes = 0;
       keep_finished_days = 0;
       registration = false;
       guests = false;
