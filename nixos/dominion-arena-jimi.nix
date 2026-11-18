@@ -20,10 +20,19 @@ in {
     }
   ];
 
+  age.secrets.dominion-online-astra-password.file = ./secrets/dominion-online-astra-password.age;
+
   services.dominion = {
     enable = true;
     syncAssets = true;
     onlinePasswordCredential = "/var/lib/private/dominion-online-password.cred";
+    onlineAccounts.astra = {
+      account = "AstraDominion";
+      owner = "Arena Matches";
+      exclusive = true;
+      passwordFile = config.age.secrets.dominion-online-astra-password.path;
+      settings.resume = true;
+    };
     onlineAccounts.sol = {
       account = "SolDominion";
       owner = "Arena Matches";

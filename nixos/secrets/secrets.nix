@@ -2,6 +2,7 @@ let
   keys = import ../../nix-shared/keys.nix;
 in
   {
+    "dominion-online-astra-password.age".publicKeys = [keys.jimiHendnixHostKey];
     "rocket-sense.env.age".publicKeys = keys.agenixKeys ++ keys.railbird-sf;
     "gpg-keys.age".publicKeys = keys.agenixKeys;
     "gpg-passphrase.age".publicKeys = keys.agenixKeys;
