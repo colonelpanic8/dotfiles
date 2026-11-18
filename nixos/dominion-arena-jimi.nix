@@ -28,14 +28,14 @@ in {
     onlinePasswordCredential = "/var/lib/private/dominion-online-password.cred";
     onlineAccounts.astra = {
       account = "AstraDominion";
-      owner = "Arena Matches";
+      owner = "colonelpanic8";
       exclusive = true;
       passwordFile = config.age.secrets.dominion-online-astra-password.path;
       settings.resume = true;
     };
     onlineAccounts.sol = {
       account = "SolDominion";
-      owner = "Arena Matches";
+      owner = "colonelpanic8";
       exclusive = true;
       encryptedCredential = "/var/lib/private/dominion-online-sol-password.cred";
       settings.resume = true;
@@ -53,7 +53,7 @@ in {
       registration = false;
       guests = false;
       online_enabled = true;
-      online_owner = "Arena Matches";
+      online_owner = "colonelpanic8";
       online_account = "colonelpanic8";
       online_exclusive = true;
       online_resume = true;
