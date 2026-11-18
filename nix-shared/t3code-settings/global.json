@@ -1,14 +1,6 @@
 {
   "favorites": [
     {
-      "provider": "codex",
-      "model": "gpt-6.1-sol"
-    },
-    {
-      "provider": "codex",
-      "model": "gpt-6-astra"
-    },
-    {
       "provider": "claudeAgent",
       "model": "claude-fable-5-2"
     },
@@ -19,18 +11,25 @@
     {
       "provider": "codex",
       "model": "gpt-6.1-terra"
+    },
+    {
+      "provider": "codex",
+      "model": "gpt-6.2-sol"
+    },
+    {
+      "provider": "codex",
+      "model": "gpt-6.2-astra"
+    },
+    {
+      "provider": "antigravity",
+      "model": "gemini-4-argon"
+    },
+    {
+      "provider": "antigravity",
+      "model": "gemini-4-hydrogen"
     }
   ],
   "projectScriptOverrides": {
-    "mcp:87c0125f-60cb-4a45-a54b-7b17254446fe": [
-      {
-        "id": "check",
-        "name": "Check",
-        "command": "direnv exec . just check",
-        "icon": "test",
-        "runOnWorktreeCreate": false
-      }
-    ],
     "mcp:7a3917ba-4685-422c-9dfa-08117a99e320": [
       {
         "id": "check",
@@ -57,6 +56,15 @@
         "icon": "test",
         "runOnWorktreeCreate": false
       }
+    ],
+    "mcp:87c0125f-60cb-4a45-a54b-7b17254446fe": [
+      {
+        "id": "check",
+        "name": "Check",
+        "command": "direnv exec . just check",
+        "icon": "test",
+        "runOnWorktreeCreate": false
+      }
     ]
   },
   "defaultModelSelection": {
@@ -70,17 +78,6 @@
     ]
   },
   "projectSettingsOverrides": {
-    "mcp:87c0125f-60cb-4a45-a54b-7b17254446fe": {
-      "defaultProjectScripts": [
-        {
-          "id": "check",
-          "name": "Check",
-          "command": "direnv exec . just check",
-          "icon": "test",
-          "runOnWorktreeCreate": false
-        }
-      ]
-    },
     "mcp:7a3917ba-4685-422c-9dfa-08117a99e320": {
       "defaultProjectScripts": [
         {
@@ -113,7 +110,20 @@
           "runOnWorktreeCreate": false
         }
       ]
+    },
+    "mcp:87c0125f-60cb-4a45-a54b-7b17254446fe": {
+      "defaultProjectScripts": [
+        {
+          "id": "check",
+          "name": "Check",
+          "command": "direnv exec . just check",
+          "icon": "test",
+          "runOnWorktreeCreate": false
+        }
+      ]
     }
   },
-  "projectSettingsFolded": true
+  "projectSettingsFolded": true,
+  "sidebarAutoSettleAfterDays": null,
+  "sidebarAutoSettleOnMerge": false
 }
