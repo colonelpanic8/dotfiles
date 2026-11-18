@@ -70,7 +70,12 @@ in {
         apiKeyCredential = "/var/lib/private/dominion-anthropic-api-key.cred";
         workspace = "wrkspc_015TZphZF8bVV6GtDbuHUzpK";
       };
-      profiles =
+      # Antigravity seats sign in from their own copy of the token: `agy` run on the host
+      # moves ~/.gemini's token file into the keyring, which would sign them all out.
+      profiles = map (p:
+        if p.program == "antigravity"
+        then p // {auth_dir = "/home/imalison/.local/state/dominion/antigravity-auth";}
+        else p) (
         import "${inputs.dominion-arena}/nix/agents.nix"
         ++ [
           {
@@ -90,7 +95,8 @@ in {
             program = "antigravity";
             model = "gemini-4-hydrogen-high";
           }
-        ];
+        ]
+      );
     };
   };
 
