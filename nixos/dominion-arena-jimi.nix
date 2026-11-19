@@ -72,9 +72,15 @@ in {
       };
       # Antigravity seats sign in from their own copy of the token: `agy` run on the host
       # moves ~/.gemini's token file into the keyring, which would sign them all out.
+      # Their conversations go in ~/.gemini all the same, where T3 Code counts usage.
       profiles = map (p:
         if p.program == "antigravity"
-        then p // {auth_dir = "/home/imalison/.local/state/dominion/antigravity-auth";}
+        then
+          p
+          // {
+            auth_dir = "/home/imalison/.local/state/dominion/antigravity-auth";
+            conversations_dir = "/home/imalison/.gemini/antigravity-cli/conversations/dominion-arena";
+          }
         else p) (
         import "${inputs.dominion-arena}/nix/agents.nix"
         ++ [
