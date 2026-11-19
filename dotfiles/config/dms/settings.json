@@ -1,5 +1,5 @@
 {
-  "configVersion": 43,
+  "configVersion": 46,
   "clockDateFormat": "ddd MMM d",
   "showSeconds": false,
   "runDmsMatugenTemplates": false,
@@ -45,10 +45,12 @@
       "hideDelay": 600,
       "useOverlayLayer": false,
       "editOnRightClick": false,
+      "showEditWidgetsInContextMenu": true,
       "showOnFullscreen": false,
       "openOnOverview": false,
       "groupByApp": false,
       "separatePinnedAndRunningApps": false,
+      "showRunningApps": true,
       "restoreSpecialWorkspaceOnClick": false,
       "isolateDisplays": false,
       "indicatorStyle": "circle",
@@ -130,10 +132,12 @@
       "hideDelay": 600,
       "useOverlayLayer": false,
       "editOnRightClick": false,
+      "showEditWidgetsInContextMenu": true,
       "showOnFullscreen": false,
       "openOnOverview": false,
       "groupByApp": false,
       "separatePinnedAndRunningApps": false,
+      "showRunningApps": true,
       "restoreSpecialWorkspaceOnClick": false,
       "isolateDisplays": false,
       "indicatorStyle": "circle",
@@ -355,5 +359,6 @@
   "currentThemeCategory": "registry",
   "desktopWidgetInstances": [],
   "idleRespectInhibitors": false,
-  "windowBucketPlacement": "dock"
+  "windowBucketPlacement": "dock",
+  "motionDuration": 0
 }
