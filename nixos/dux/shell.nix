@@ -35,7 +35,8 @@
     fi
     exec ${config.hardware.nvidia.package.bin}/bin/nvidia-smi "$@"
   '';
-  runtimePackages = [quickshellPackage aiUsage integration] ++ lib.optional (config.myModules.nvidia.enable or false) nvidiaSmi;
+  # secret-tool reads the Antigravity sign-in for the AI usage Gemini quota.
+  runtimePackages = [quickshellPackage aiUsage integration pkgs.libsecret] ++ lib.optional (config.myModules.nvidia.enable or false) nvidiaSmi;
   forkShell = inputs.dux-shell.lib.mkDmsShell pkgs;
   shellPackage = pkgs.symlinkJoin {
     name = "dms-shell-dotfiles-${forkShell.version}";

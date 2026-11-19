@@ -4,6 +4,7 @@
     "showUsed": false,
     "showCodex": true,
     "showClaude": true,
+    "showGemini": true,
     "refreshInterval": 900,
     "compactPill": false,
     "barLabelRight": "percent",

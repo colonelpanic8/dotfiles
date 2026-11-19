@@ -57,7 +57,9 @@ running; its popout sets the current, AC and battery profiles, and right-click
 cycles the current one. It talks to asusd directly because strixi-minaj runs
 asusd instead of power-profiles-daemon, which the upstream profile controls
 need. AI
-quotas use upstream DankAIUsage with remaining usage and both providers visible.
+quotas use DankAIUsage from the fork's `feat/bar-text-layout` branch (upstream
+plus the text-pill options and a Gemini provider read from the Antigravity CLI
+sign-in), with remaining usage and all three providers visible.
 The media widget keeps the title and artist visible and shows synced lyrics
 after the playback controls (the fork's "Keep title and artist" option); when
 the bar runs short, the lyrics go first.

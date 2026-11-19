@@ -310,11 +310,11 @@
     "dank-ai-usage": {
       "flake": false,
       "locked": {
-        "lastModified": 1793518589,
-        "narHash": "sha256-VjzjzBHk+VfuyJX69xTbnDGEblt4dGPgxRyT+inlKoo=",
+        "lastModified": 1795120846,
+        "narHash": "sha256-lCpwhzWV1n6ILjBq72PUHHQfJ/v8unGvVAebVM8Iza0=",
         "owner": "colonelpanic8",
         "repo": "DankAIUsage",
-        "rev": "34b3585a7f6129c54a8b65dd5a6e03e495ebf378",
+        "rev": "ebdb336e1eba4246d7524468d1fa7d668da54ce0",
         "type": "github"
       },
       "original": {
