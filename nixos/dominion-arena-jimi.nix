@@ -95,6 +95,11 @@ in {
             program = "antigravity";
             model = "gemini-4-hydrogen-high";
           }
+          {
+            name = "Neon High";
+            program = "antigravity";
+            model = "gemini-4-neon-high";
+          }
         ]
       );
     };
