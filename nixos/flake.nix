@@ -43,6 +43,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
       # Month grid task markers, needed by the calendar-task-markers topic.
       inputs.dank-qml-common.url = "github:colonelpanic8/dux-qml-common/month-grid-task-markers";
+      # The embedded Quickshell runtime with the tray patches (watcherAddress,
+      # contextMenu, icon fixes), assembled by ~/projects/dux-qt-base-assembly.
+      inputs.dux-qt-base.url = "github:colonelpanic8/dux-qt-base/assembled";
     };
 
     # Topic branch adding external providers and declarative external accounts.

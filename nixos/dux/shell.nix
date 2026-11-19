@@ -10,7 +10,6 @@
   # Local plugins call repo scripts (e.g. mova_agenda) like the plugins
   # themselves, out of the store so edits apply on a shell restart.
   dotfilesBin = "${config.dotfiles-worktree}/dotfiles/lib/bin";
-  quickshellPackage = inputs.quickshell-tray.packages.${pkgs.stdenv.hostPlatform.system}.default;
   aiUsage = pkgs.callPackage "${inputs.dank-ai-usage}/default.nix" {
     revision = inputs.dank-ai-usage.rev;
   };
@@ -36,7 +35,7 @@
     exec ${config.hardware.nvidia.package.bin}/bin/nvidia-smi "$@"
   '';
   # secret-tool reads the Antigravity sign-in for the AI usage Gemini quota.
-  runtimePackages = [quickshellPackage aiUsage integration pkgs.libsecret] ++ lib.optional (config.myModules.nvidia.enable or false) nvidiaSmi;
+  runtimePackages = [aiUsage integration pkgs.libsecret] ++ lib.optional (config.myModules.nvidia.enable or false) nvidiaSmi;
   forkShell = inputs.dux-shell.lib.mkDmsShell pkgs;
   shellPackage = pkgs.symlinkJoin {
     name = "dms-shell-dotfiles-${forkShell.version}";
@@ -45,7 +44,6 @@
     postBuild = ''
       rm "$out/bin/dms"
       makeWrapper ${forkShell}/bin/dms "$out/bin/dms" \
-        --add-flags "-c ${forkShell}/share/quickshell/dms" \
         --prefix PATH : ${lib.makeBinPath runtimePackages} \
         --suffix PATH : ${dotfilesBin}
     '';
@@ -61,9 +59,8 @@ in {
   config = lib.mkIf cfg.enable {
     myModules.desktop.shellUi = lib.mkDefault "dms";
     environment.sessionVariables.IM_HYPRLAND_SHELL_UI = lib.mkDefault config.myModules.desktop.shellUi;
-    environment.systemPackages = [shellPackage quickshellPackage integration aiUsage];
+    environment.systemPackages = [shellPackage integration aiUsage];
     system.build.dms = shellPackage;
-    system.build.quickshell-tray = quickshellPackage;
     # Without a system service the lock screen falls back to a user PAM file
     # that pins store paths.
     security.pam.services.dankshell = {};
@@ -78,7 +75,6 @@ in {
         programs.dank-material-shell = {
           enable = true;
           package = shellPackage;
-          quickshell.package = quickshellPackage;
           systemd.enable = true;
           enableAudioWavelength = false;
           enableCalendarEvents = false;

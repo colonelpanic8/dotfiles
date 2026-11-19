@@ -1,8 +1,9 @@
 # Dank Material Shell
 
 The NixOS module installs DMS (now Dux Shell) from the `assembled` branch of
-`colonelpanic8/dux-shell`, the `colonelpanic8/quickshell` tray build assembled
-by `~/projects/quickshell-assembly`, and the upstream DankAIUsage plugin. The
+`colonelpanic8/dux-shell`, embedding the `colonelpanic8/dux-qt-base` Quickshell
+runtime with the tray patches (assembled by `~/projects/dux-qt-base-assembly`),
+and the DankAIUsage plugin. The
 workspace and tray changes below are topic branches carried on upstream by the
 fork-assembler stack in `~/projects/dux-shell-assembly`; its `BUILDING.md`
 covers changing topics and releasing.
