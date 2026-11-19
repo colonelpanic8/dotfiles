@@ -31,7 +31,10 @@ in {
       owner = "colonelpanic8";
       exclusive = true;
       passwordFile = config.age.secrets.dominion-online-astra-password.path;
-      settings.resume = true;
+      settings = {
+        resume = true;
+        min_opponent_level = 46;
+      };
     };
     onlineAccounts.sol = {
       account = "SolDominion";
