@@ -54,6 +54,8 @@ in {
       decision_minutes = 0;
       keep_finished_days = 0;
       registration = false;
+      # They make invite codes in the Account tab; a code registers someone despite registration = false.
+      admins = ["colonelpanic8"];
       guests = false;
       online_enabled = true;
       online_owner = "colonelpanic8";
