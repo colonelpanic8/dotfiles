@@ -56,6 +56,15 @@
         "icon": "test",
         "runOnWorktreeCreate": false
       }
+    ],
+    "mcp:87c0125f-60cb-4a45-a54b-7b17254446fe": [
+      {
+        "id": "check",
+        "name": "Check",
+        "command": "direnv exec . just check",
+        "icon": "test",
+        "runOnWorktreeCreate": false
+      }
     ]
   },
   "defaultModelSelection": {
@@ -92,6 +101,17 @@
       ]
     },
     "mcp:bcde2241-e0c9-4c5d-9f41-88a6a980da9b": {
+      "defaultProjectScripts": [
+        {
+          "id": "check",
+          "name": "Check",
+          "command": "direnv exec . just check",
+          "icon": "test",
+          "runOnWorktreeCreate": false
+        }
+      ]
+    },
+    "mcp:87c0125f-60cb-4a45-a54b-7b17254446fe": {
       "defaultProjectScripts": [
         {
           "id": "check",
