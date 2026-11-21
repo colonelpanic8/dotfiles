@@ -122,13 +122,8 @@ in {
     mode = "0400";
   };
 
-  # Dynamic-DNS updater: keep rocket-sense.duckdns.org (and dominion-arena, in the same
-  # account) pointed at this node's
-  # current public IP. The residential WAN IP changes (e.g. after an ISP
-  # outage/failover), and without this the public hostname goes stale and the
-  # site becomes unreachable until manually re-pointed. Leaving ip= blank tells
-  # DuckDNS to detect the source IP of this request, so it always reflects
-  # whatever connection the node is currently egressing through.
+  # Keep all public DuckDNS names on the ingress's current WAN IP. An empty
+  # ip parameter tells DuckDNS to use the source IP of the request.
   systemd.services.duckdns = {
     description = "DuckDNS updater for rocket-sense.duckdns.org";
     after = ["network-online.target"];
@@ -141,7 +136,7 @@ in {
     script = ''
       token="$(cat "$CREDENTIALS_DIRECTORY/token")"
       resp="$(${pkgs.curl}/bin/curl -fsS --retry 3 --max-time 30 \
-        "https://www.duckdns.org/update?domains=rocket-sense,dominion-arena&token=$token&ip=")"
+        "https://www.duckdns.org/update?domains=rocket-sense,dominion-arena,org-agenda-api&token=$token&ip=")"
       echo "DuckDNS response: $resp"
       [ "$resp" = "OK" ] || { echo "DuckDNS update failed"; exit 1; }
     '';
