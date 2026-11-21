@@ -138,7 +138,13 @@ in {
       RemainAfterExit = true;
       TimeoutStartSec = "60s";
       ExecStartPre = "${config.services.tailscale.package}/bin/tailscale wait --timeout=45s";
-      ExecStart = "${pkgs.util-linux}/bin/flock /run/tailscale-serve.lock ${config.services.tailscale.package}/bin/tailscale serve --bg --https=8443 --set-path=/ https+insecure://glkvm.taileb3aad.ts.net";
+      ExecStart = pkgs.writeShellScript "glkvm-serve" ''
+        set -e
+        hosts="$(${pkgs.glibc.getent}/bin/getent ahostsv4 glkvm.local)"
+        read -r address _ <<< "$hosts"
+        exec ${pkgs.util-linux}/bin/flock /run/tailscale-serve.lock \
+          ${config.services.tailscale.package}/bin/tailscale serve --bg --https=8443 --set-path=/ "https+insecure://$address"
+      '';
       Restart = "on-failure";
       RestartSec = "5s";
     };
