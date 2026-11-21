@@ -138,7 +138,7 @@ in {
       RemainAfterExit = true;
       TimeoutStartSec = "60s";
       ExecStartPre = "${config.services.tailscale.package}/bin/tailscale wait --timeout=45s";
-      ExecStart = "${pkgs.util-linux}/bin/flock /run/tailscale-serve.lock ${config.services.tailscale.package}/bin/tailscale serve --bg --https=8443 --set-path=/ https+insecure://192.168.0.6";
+      ExecStart = "${pkgs.util-linux}/bin/flock /run/tailscale-serve.lock ${config.services.tailscale.package}/bin/tailscale serve --bg --https=8443 --set-path=/ https+insecure://glkvm.taileb3aad.ts.net";
       Restart = "on-failure";
       RestartSec = "5s";
     };
