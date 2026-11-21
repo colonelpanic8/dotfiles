@@ -89,6 +89,15 @@
         menu-roborock
       ];
       system.autoUpgrade.flake = "github:colonelpanic8/dotfiles?dir=nixos#${config.networking.hostName}";
+      # When GitHub is unreachable (e.g. a captive portal hijacking TLS), Nix
+      # builds its cached, possibly stale, revision and reverts newer switches.
+      systemd.services.nixos-upgrade.preStart = lib.mkIf config.system.autoUpgrade.enable ''
+        if ! ${pkgs.curl}/bin/curl -fsS --max-time 30 -o /dev/null \
+          https://api.github.com/repos/colonelpanic8/dotfiles/commits/HEAD; then
+          echo "GitHub unreachable; skipping upgrade instead of building a cached revision" >&2
+          exit 1
+        fi
+      '';
       myUsers =
         {imalison.enable = lib.mkDefault true;}
         // lib.genAttrs ["kat" "dean" "alex" "loewy" "ben"] (_: {
