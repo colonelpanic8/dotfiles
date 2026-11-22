@@ -16,13 +16,13 @@ in {
         driver = "claudeAgent";
         config.launchArgs = "--chrome";
       };
-      # Gemini, now served through Antigravity. Pinning the runtime keeps T3
-      # from downloading its own ~1 GB copy into ~/.t3/tools on every host.
-      providerInstances.antigravity = lib.mkIf (lib.meta.availableOn pkgs.stdenv.hostPlatform pkgs.antigravity-acp) {
+      # Gemini, served through the Antigravity CLI (`agy acp`). Pinning it keeps
+      # T3 from downloading its own copy into ~/.t3/tools on every host.
+      providerInstances.antigravity = lib.mkIf (lib.meta.availableOn pkgs.stdenv.hostPlatform pkgs.antigravity-cli) {
         driver = "antigravity";
         displayName = "Antigravity";
         enabled = true;
-        config.binaryPath = "${pkgs.antigravity-acp}/bin/agy_acp_server.par";
+        config.binaryPath = "${pkgs.antigravity-cli}/bin/agy";
       };
     };
     keybindings = builtins.fromJSON (builtins.readFile ../t3code-keybindings.json);
