@@ -1,7 +1,5 @@
-# Ivan's Google sign-in for T3 Code's Antigravity provider. T3 keeps one
-# profile per provider instance, keyed by the SHA-256 of the instance id. The
-# runtime rewrites the token in place with the same bytes, and agenix relinks
-# it on its next run.
+# Ivan's Google sign-in for T3 Code's Antigravity provider, which runs agy
+# with file-backed credentials in a separate profile per provider instance.
 {
   config,
   lib,
@@ -14,6 +12,6 @@ in
   lib.mkIf (config.home.username == "imalison") {
     age.secrets.t3code-antigravity-token = {
       file = ../../nixos/secrets/t3code-antigravity-token.age;
-      path = "${profile}/antigravity-acp/acp_token.json";
+      path = "${profile}/antigravity-acp/antigravity-oauth-token";
     };
   }
