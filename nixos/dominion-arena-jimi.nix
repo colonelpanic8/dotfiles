@@ -67,6 +67,11 @@ in {
       enable = true;
       user = "imalison";
       atOnce = 40;
+      settings.clock_aware = {
+        analyst = "Neon High";
+        target_seconds = 45;
+        background = true;
+      };
       claude = pkgs.claude-code;
       codex = pkgs.codex;
       antigravity = pkgs.antigravity-cli;
