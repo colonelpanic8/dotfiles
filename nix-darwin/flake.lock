@@ -349,11 +349,11 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1795560841,
-        "narHash": "sha256-jlLfNjZWigUBzuy1XBSgefS2Trz1J+oMim131N6++d0=",
+        "lastModified": 1795560970,
+        "narHash": "sha256-UhACu2a/PxQ1ilcRO3H0TdBron8UT/BVoSEUCVTBFak=",
         "owner": "colonelpanic8",
         "repo": "lastfm-edit",
-        "rev": "ec9053e6120ec764d1b562d044f456d53991036d",
+        "rev": "5a3efc7cb2c0af9c3cec7f85cd76cc3ac4453d45",
         "type": "github"
       },
       "original": {
