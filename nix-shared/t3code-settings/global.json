@@ -22,11 +22,11 @@
     },
     {
       "provider": "antigravity",
-      "model": "gemini-4-argon"
+      "model": "gemini-4-hydrogen"
     },
     {
       "provider": "antigravity",
-      "model": "gemini-4-hydrogen"
+      "model": "gemini-4-neon"
     }
   ],
   "projectScriptOverrides": {
