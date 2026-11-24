@@ -114,7 +114,7 @@ in {
   myModules.ntfy.enable = true;
   myModules.nvidia.enable = true;
   myModules.hyprland.ultrawideRefreshRate = 99.98;
-  environment.systemPackages = [pkgs.wayvnc];
+  environment.systemPackages = [pkgs.telegram-desktop pkgs.wayvnc];
   security.pam.services.wayvnc = {};
 
   # Share the active Hyprland desktop only on this host's Tailscale address.
