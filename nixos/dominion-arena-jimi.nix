@@ -10,6 +10,18 @@
   backendPort = 47317;
   # Where rocket-sense-jimi.nix's SNI map sends this name.
   tlsPort = 45445;
+  # Antigravity seats sign in from their own copy of the token: `agy` run on the host
+  # moves ~/.gemini's token file into the keyring, which would sign them all out.
+  # Their conversations go in ~/.gemini all the same, where T3 Code counts usage.
+  withSeatDirectories = p:
+    if p.program == "antigravity"
+    then
+      p
+      // {
+        auth_dir = "/home/imalison/.local/state/dominion/antigravity-auth";
+        conversations_dir = "/home/imalison/.gemini/antigravity-cli/conversations/dominion-arena";
+      }
+    else p;
 in {
   imports = [inputs.dominion-arena.nixosModules.default];
 
@@ -80,18 +92,8 @@ in {
         apiKeyCredential = "/var/lib/private/dominion-anthropic-api-key.cred";
         workspace = "wrkspc_015TZphZF8bVV6GtDbuHUzpK";
       };
-      # Antigravity seats sign in from their own copy of the token: `agy` run on the host
-      # moves ~/.gemini's token file into the keyring, which would sign them all out.
-      # Their conversations go in ~/.gemini all the same, where T3 Code counts usage.
-      profiles = map (p:
-        if p.program == "antigravity"
-        then
-          p
-          // {
-            auth_dir = "/home/imalison/.local/state/dominion/antigravity-auth";
-            conversations_dir = "/home/imalison/.gemini/antigravity-cli/conversations/dominion-arena";
-          }
-        else p) (
+      catalogs = map withSeatDirectories (import "${inputs.dominion-arena}/nix/catalogs.nix");
+      profiles = map withSeatDirectories (
         import "${inputs.dominion-arena}/nix/agents.nix"
         ++ [
           {
