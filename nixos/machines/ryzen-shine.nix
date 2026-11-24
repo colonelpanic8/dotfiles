@@ -114,6 +114,7 @@
   environment.systemPackages = [
     inputs.nixpkgs-stable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.inkscape
     pkgs.perf
+    pkgs.telegram-desktop
     pkgs.wayvnc
   ];
 
