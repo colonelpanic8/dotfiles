@@ -96,16 +96,16 @@
       # must be gated the same way; mkIf alone still references the option.
       imports = lib.optionals t3codeEnabled [
         inputs.t3code.homeManagerModules.t3code-client
-        {
+        (hm: {
+          # Writable: the desktop resolves the link and writes its UI changes
+          # into the dotfiles copy.
+          home.file.".t3/userdata/client-settings.json".source =
+            hm.config.lib.file.mkOutOfStoreSymlink "${config.dotfiles-worktree}/nix-shared/t3code-settings/client.json";
           programs.t3code-client = {
             enable = true;
             # The overlaid client already passes --backend-mode=client-only.
             package = pkgs.t3code;
             managedConnectionsFile = "/home/imalison/.config/t3code/managed-connections.json";
-            settings.sidebarV2LargeIcons = true;
-            settings.composerShortcutHints = "alt";
-            settings.followUpBehavior = "steer";
-            settings.chatWidth = "wide";
             settings.environmentGroups = import ../nix-shared/t3code-environment-groups.nix;
             # A client-only desktop has no primary environment to take
             # keybindings from, so it needs its own copy of the managed set.
@@ -124,7 +124,7 @@
               Categories=Development;IDE;
             '';
           };
-        }
+        })
       ];
 
       programs.codex = {

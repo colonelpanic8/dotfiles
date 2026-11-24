@@ -22,8 +22,9 @@ Avoid dropping scripts in `~/bin` or `~/.local/bin` unless the user explicitly a
   `code.nix`) override the file and lock those keys in the UI. Keep them for
   values derived from the build (store paths, provider binaries); do not add
   ordinary preferences there.
-- Desktop client settings (sidebar, composer, appearance) have no dotfiles file
-  yet; change them in the app (`~/.t3/userdata/client-settings.json`).
+- Desktop client settings (sidebar, composer, appearance) work the same way:
+  `~/.t3/userdata/client-settings.json` links to
+  `../nix-shared/t3code-settings/client.json`, shared by every desktop host.
 
 ## Carrying Nixpkgs / Home Manager PRs
 
