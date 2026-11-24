@@ -14,10 +14,6 @@
     },
     {
       "provider": "codex",
-      "model": "gpt-6.2-sol"
-    },
-    {
-      "provider": "codex",
       "model": "gpt-6.2-astra"
     },
     {
@@ -27,6 +23,10 @@
     {
       "provider": "antigravity",
       "model": "gemini-4-neon"
+    },
+    {
+      "provider": "codex",
+      "model": "gpt-6.2-sol"
     }
   ],
   "projectScriptOverrides": {
