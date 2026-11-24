@@ -194,18 +194,12 @@ MFA, one-time, login, or phone-verification code, trigger it and read it
 yourself, then carry on. Ask the user only if the bridge is unavailable or the
 code never arrives.
 
-- Texts to 301-244-8534 are readable on every NixOS host through the Google
-  Messages Multi-Device Bridge: the `gmessages` CLI (preconfigured;
-  `gmessages help`) or the read-only `gmessages` MCP server.
+- Use the preconfigured `gmessages` CLI or the read-only `gmessages` MCP server
+  to read Ivan's SMS and RCS texts. See the [gmessages skill](skills/gmessages/SKILL.md)
+  for CLI examples, including how to wait for a code.
 - When a site lets you choose where to send the code, pick text message.
-- Right after triggering the code, `gmessages wait --timeout 3m` (MCP:
-  `wait_for_message`) returns the next incoming message; narrow it with
-  `--query` or `--conversation <sender>`, and add `--since 5m` if the code may
-  already have arrived. `gmessages search --since 15m` lists recent messages.
 - Read only messages relevant to the current attempt, and never print tokens or
   codes in logs or replies beyond what the task needs.
-- `gmessages send` texts real people from the user's phone: only when asked.
-  `--profile whatsapp` reaches the WhatsApp bridge (on jimi-hendnix only).
 
 ## Google Workspace via `gws`
 
