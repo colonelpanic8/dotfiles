@@ -11,6 +11,20 @@ scripts and shell functions live outside of it.
 
 Avoid dropping scripts in `~/bin` or `~/.local/bin` unless the user explicitly asks.
 
+## T3 Code Settings
+
+- T3 Code preferences live in writable JSON, not Nix, so changing one never
+  needs `just switch`. `~/.t3/userdata/settings.json` is an out-of-store link
+  to `../nix-shared/t3code-settings/global.json`; the app writes it directly,
+  and hand edits there take effect without a rebuild.
+- Nix-managed settings (`services.t3code.settings`,
+  `myModules.t3codeServer.settings`, `programs.t3code-client.settings` in
+  `code.nix`) override the file and lock those keys in the UI. Keep them for
+  values derived from the build (store paths, provider binaries); do not add
+  ordinary preferences there.
+- Desktop client settings (sidebar, composer, appearance) have no dotfiles file
+  yet; change them in the app (`~/.t3/userdata/client-settings.json`).
+
 ## Carrying Nixpkgs / Home Manager PRs
 
 - Apply an unmerged nixpkgs or Home Manager PR by adding `{ pr = N; hash = …; }`
