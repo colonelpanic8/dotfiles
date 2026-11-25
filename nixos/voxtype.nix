@@ -8,6 +8,13 @@
   cfg = config.myModules.voxtype;
   system = pkgs.stdenv.hostPlatform.system;
   voxtypePackages = inputs.voxtype.packages.${system};
+  withSqlite = package:
+    package.overrideAttrs (old: {
+      buildInputs = (old.buildInputs or []) ++ [pkgs.sqlite];
+    });
+  voxtypeVulkan = voxtypePackages.vulkan.overrideAttrs (_: {
+    paths = [(withSqlite voxtypePackages.voxtype-vulkan-unwrapped)];
+  });
   agentVoicePreviewModel = pkgs.fetchurl {
     url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin";
     hash = "sha256-oDd5yG3zMjB19eeWyyzlAp8A7Ihp7uP9+4l6/jbG0AI=";
@@ -43,7 +50,7 @@ in {
       imports = [inputs.voxtype.homeManagerModules.default];
 
       home.packages = [
-        voxtypePackages.osd-gtk4
+        (withSqlite voxtypePackages.osd-gtk4)
         # The voice-task launcher uses whisper-server for local, incremental
         # previews while keeping Codex authentication on the ChatGPT plan.
         pkgs.whisper-cpp-vulkan
@@ -54,7 +61,7 @@ in {
 
       programs.voxtype = {
         enable = true;
-        package = voxtypePackages.vulkan;
+        package = voxtypeVulkan;
         engine = "whisper";
         model.name = "large-v3-turbo";
         service.enable = true;

@@ -168,7 +168,7 @@
         claude-code
         codex
         inputs.gmcli.packages.${pkgs.stdenv.hostPlatform.system}.default
-        inputs.lastfm-edit.packages.${pkgs.stdenv.hostPlatform.system}.scrobble-scrubber-app
+        (import ./packages/scrobble-scrubber.nix {inherit pkgs inputs;}).app
         opencode
         inputs.paseo.packages.${pkgs.stdenv.hostPlatform.system}.desktop
       ]

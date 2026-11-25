@@ -12,6 +12,9 @@
     version = heroicAccountSwitchingVersion;
     src = inputs.heroic-games-launcher;
     patches = [./patches/heroic-fix-non-steam-shortcuts.patch];
+    # The pinned fork predates the build script in upstream package.json.
+    buildPhase = builtins.replaceStrings ["pnpm --offline build"] ["pnpm --offline electron-vite build"] oldAttrs.buildPhase;
+    nativeCheckInputs = (oldAttrs.nativeCheckInputs or []) ++ [pkgs.which];
     # The fork's lockfile diverges from the nixpkgs release, so fetch its own
     # dependency store instead of reusing oldAttrs.pnpmDeps.
     pnpmDeps = pkgs.fetchPnpmDeps {

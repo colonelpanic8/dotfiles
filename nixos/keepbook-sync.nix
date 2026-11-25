@@ -7,8 +7,8 @@
   ...
 }: let
   cfg = config.myModules."keepbook-sync";
-  keepbookPackages = inputs.keepbook.packages.${pkgs.stdenv.hostPlatform.system};
-  keepbookDioxusDesktopBase = keepbookPackages.keepbook-dioxus-desktop;
+  keepbookPackages = import ../nix-shared/packages/keepbook.nix {inherit pkgs inputs;};
+  keepbookDioxusDesktopBase = keepbookPackages.desktop;
   keepbookDioxusDesktop = pkgs.symlinkJoin {
     name = "${keepbookDioxusDesktopBase.name}-single-desktop-entry";
     paths = [keepbookDioxusDesktopBase];
@@ -26,10 +26,7 @@
     meta = keepbookDioxusDesktopBase.meta;
   };
   keepbookDioxusExec = "${keepbookDioxusDesktop}/bin/keepbook-dioxus";
-  # Same override as nix-shared/system/essential.nix: upstream checks depend on
-  # TS artifacts that are not built in Nix.
-  keepbookCli = keepbookPackages.keepbook.overrideAttrs (_: {doCheck = false;});
-  keepbookExec = "${keepbookCli}/bin/keepbook";
+  keepbookExec = "${keepbookPackages.cli}/bin/keepbook";
 
   enabledModule = makeEnable config "myModules.keepbook-sync" false {
     environment.systemPackages = [keepbookDioxusDesktop];

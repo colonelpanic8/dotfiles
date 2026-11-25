@@ -23,6 +23,7 @@
     else systemPackages.${packageName} or null;
 
   git-blame-rank = inputs.git-blame-rank.packages.${system}.default.overrideAttrs (old: {
+    buildInputs = (old.buildInputs or []) ++ [pkgs.libgit2];
     env =
       (old.env or {})
       // {
@@ -33,10 +34,7 @@
     src = inputs.ccusage-fleet;
   };
   gmcli = inputPackageOrNull "gmcli" "default";
-  keepbook = inputs.keepbook.packages.${system}.keepbook.overrideAttrs (_: {
-    # Upstream checks currently depend on TS artifacts that are not built in Nix.
-    doCheck = false;
-  });
+  keepbook = (import ../packages/keepbook.nix {inherit pkgs inputs;}).cli;
   repowise = pkgs.callPackage ../packages/repowise.nix {inherit inputs;};
 
   commonPkgs = lib.filter (pkg: lib.meta.availableOn pkgs.stdenv.hostPlatform pkg) (

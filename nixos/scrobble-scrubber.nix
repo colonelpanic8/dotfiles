@@ -11,6 +11,7 @@
   inputs,
   config,
   lib,
+  pkgs,
   ...
 }: {
   home-manager.users.imalison = lib.mkIf config.myUsers.imalison.has.full {
@@ -18,6 +19,7 @@
 
     services.scrobble-scrubber = lib.mkIf (config.networking.hostName == "ryzen-shine") {
       enable = true;
+      package = (import ./packages/scrobble-scrubber.nix {inherit pkgs inputs;}).cli;
       username = "IvanMalison";
       interval = 300;
     };

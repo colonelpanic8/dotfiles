@@ -209,8 +209,7 @@
     '';
   };
   rlruPackages = inputs.rlru.packages.${pkgs.stdenv.hostPlatform.system};
-  scrobbleScrubber = inputs.lastfm-edit.packages.${pkgs.stdenv.hostPlatform.system}.scrobble-scrubber;
-  scrobbleScrubberApp = inputs.lastfm-edit.packages.${pkgs.stdenv.hostPlatform.system}.scrobble-scrubber-app;
+  scrobbleScrubber = import ./packages/scrobble-scrubber.nix {inherit pkgs inputs;};
   movaDesktop = inputs.mova.packages.${pkgs.stdenv.hostPlatform.system}.desktop;
   rlruDioxusDesktopBase = rlruPackages.rlru-dioxus-desktop.overrideAttrs (_: {
     # Rust 1.95 can otherwise ICE/SEGV while compiling rlru's desktop dependency
@@ -460,8 +459,8 @@
         remmina
         rustdesk-flutter
         rofi-pass
-        scrobbleScrubberApp
-        scrobbleScrubber
+        scrobbleScrubber.app
+        scrobbleScrubber.cli
         skippy-xd
         transmission_4-gtk
         vlc4

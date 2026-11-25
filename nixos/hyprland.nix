@@ -40,6 +40,9 @@
         hash = "sha256-gJSBj4Pd4e9nERAKo/qiHqDMpS2hBfyOI0uGCbbiML4=";
       };
     });
+    hyprpaper = prev.hyprpaper.overrideAttrs (old: {
+      buildInputs = (old.buildInputs or []) ++ [final.aquamarine final.hyprutils final.wayland];
+    });
     hyprlock = hyprlockPackage;
     xdg-desktop-portal-hyprland = xdgDesktopPortalHyprlandPackage;
   };

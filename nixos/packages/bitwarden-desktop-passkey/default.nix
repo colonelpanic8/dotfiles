@@ -1,10 +1,12 @@
 {
   bitwarden-desktop,
   fetchFromGitHub,
+  fetchNpmDeps,
   lib,
   makeWrapper,
   pinentry-qt,
   python3,
+  rustPlatform,
   symlinkJoin,
   writeShellApplication,
   clientsSrc ?
@@ -15,6 +17,7 @@
       hash = "sha256-9aYadzjwnvh9dHVE+p6Sq+wyxB5LCK6iqTvw694nShk=";
     },
 }: let
+  version = "2026.10.0";
   python = python3.withPackages (p: [p.fido2]);
   helper = writeShellApplication {
     name = "bitwarden-passkey-helper";
@@ -22,9 +25,19 @@
       exec ${python}/bin/python3 -I ${./passkey-helper.py} --pinentry ${lib.getExe' pinentry-qt "pinentry"} "$@"
     '';
   };
-  app = bitwarden-desktop.overrideAttrs (old: {
-    version = "${old.version}-passkey";
+  app = bitwarden-desktop.overrideAttrs (final: old: {
+    version = "${version}-passkey";
     src = clientsSrc;
+    npmDeps = fetchNpmDeps {
+      inherit (final) src;
+      name = "bitwarden-desktop-${version}-npm-deps";
+      fetcherVersion = 2;
+      hash = "sha256-Ygom2n78W7voqar+i+l7dOjDIfrWMvR++oC8SiGOAS8=";
+    };
+    cargoDeps = rustPlatform.fetchCargoVendor {
+      inherit (final) pname version src cargoRoot patches;
+      hash = "sha256-IYDZOIt0hT+8+CTfnq09PSpETmAUsiqlj7mMamcr5DY=";
+    };
     meta =
       old.meta
       // {
