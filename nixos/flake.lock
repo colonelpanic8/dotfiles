@@ -403,11 +403,11 @@
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "lastModified": 1795558040,
-        "narHash": "sha256-pEfI5b7pWIXf6tD4wPToLDG6CgnIMtXKoS8KFE8PcLU=",
+        "lastModified": 1795571459,
+        "narHash": "sha256-hA05gh4L0pChdMS3tVZkHgMnHzFckjR8luFmY3M1iIs=",
         "owner": "colonelpanic8",
         "repo": "dominion-arena",
-        "rev": "79199b85e8b0b11081165af7aebbbb3107e20dd4",
+        "rev": "4b33fa21dc159639fb7e475d500479510f66adf4",
         "type": "github"
       },
       "original": {
