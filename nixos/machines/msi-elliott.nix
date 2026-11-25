@@ -84,7 +84,7 @@
     tmux.background = "#6d28d9";
   };
   networking.hostName = lib.mkForce "msi-elliott";
-  users.users.alex.openssh.authorizedKeys.keys = keys.userKeys.alex;
+  users.users.alex.openssh.authorizedKeys.keys = keys.userKeys.alex ++ [keys.malisonLaptopSshKey];
   home-manager.users.alex.programs.git.settings.user = {
     name = "Alexander Malison";
     email = "alexmalison@gmail.com";

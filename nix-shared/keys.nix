@@ -46,6 +46,7 @@ rec {
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMzEQf/e7YhaAtY43+5u8RSdfPzTR9B77lXYRrrDWRv/ alex@alexanders-macbook-air"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEOGz/k84zmZoBbdWz+Pu0nRPJeP7mO1+Qabl1Hv5tfD alex@msi-elliott"
   ];
+  malisonLaptopSshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKHJRLIJ4xLlxQIBYrI0O6HeOYjIfSATONxECYTQIb5r alex-fleet@MALISONLAPTOP";
   mikeKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPnXd6c9xwr1yxBmxauj/FF3gnY8G11ospoM8i11mD2n countablecloud.com"
   ];

@@ -8,6 +8,7 @@
   system.stateVersion = 7;
   environment.systemPackages = [pkgs.bitwarden-desktop];
   age.identityPaths = ["/etc/ssh/ssh_host_ed25519_key"];
+  users.users.alex.openssh.authorizedKeys.keys = [(import ../../nix-shared/keys.nix).malisonLaptopSshKey];
 
   home-manager.users.alex = {
     services.t3code = {
