@@ -30,33 +30,6 @@
     }
   ],
   "projectScriptOverrides": {
-    "mcp:7a3917ba-4685-422c-9dfa-08117a99e320": [
-      {
-        "id": "check",
-        "name": "Check",
-        "command": "direnv exec . just check",
-        "icon": "test",
-        "runOnWorktreeCreate": false
-      }
-    ],
-    "mcp:5a157e2e-7ef5-456c-8e3c-bad01792ab6e": [
-      {
-        "id": "check",
-        "name": "Check",
-        "command": "direnv exec . just check",
-        "icon": "test",
-        "runOnWorktreeCreate": false
-      }
-    ],
-    "mcp:bcde2241-e0c9-4c5d-9f41-88a6a980da9b": [
-      {
-        "id": "check",
-        "name": "Check",
-        "command": "direnv exec . just check",
-        "icon": "test",
-        "runOnWorktreeCreate": false
-      }
-    ],
     "mcp:87c0125f-60cb-4a45-a54b-7b17254446fe": [
       {
         "id": "check",
@@ -78,39 +51,6 @@
     ]
   },
   "projectSettingsOverrides": {
-    "mcp:7a3917ba-4685-422c-9dfa-08117a99e320": {
-      "defaultProjectScripts": [
-        {
-          "id": "check",
-          "name": "Check",
-          "command": "direnv exec . just check",
-          "icon": "test",
-          "runOnWorktreeCreate": false
-        }
-      ]
-    },
-    "mcp:5a157e2e-7ef5-456c-8e3c-bad01792ab6e": {
-      "defaultProjectScripts": [
-        {
-          "id": "check",
-          "name": "Check",
-          "command": "direnv exec . just check",
-          "icon": "test",
-          "runOnWorktreeCreate": false
-        }
-      ]
-    },
-    "mcp:bcde2241-e0c9-4c5d-9f41-88a6a980da9b": {
-      "defaultProjectScripts": [
-        {
-          "id": "check",
-          "name": "Check",
-          "command": "direnv exec . just check",
-          "icon": "test",
-          "runOnWorktreeCreate": false
-        }
-      ]
-    },
     "mcp:87c0125f-60cb-4a45-a54b-7b17254446fe": {
       "defaultProjectScripts": [
         {
