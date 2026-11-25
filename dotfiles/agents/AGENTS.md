@@ -105,7 +105,8 @@ driver for running agents.
 - Known stacks: `~/projects/paseo-assembly` (see `./project-guides/paseo-assembly.md`),
   `~/projects/t3code-assembly` (see `./project-guides/t3code-assembly.md`),
   `~/projects/dux-shell-assembly` (Dux Shell / DMS; see its `BUILDING.md`),
-  `~/projects/rmk-assembly`.
+  `~/projects/rmk-assembly`,
+  `~/projects/victory-fork-assembly` (fxceless/victory-fork; see its `BUILDING.md`).
 
 ## GitHub pull requests
 - Default to creating pull requests as ready for review, not drafts.
