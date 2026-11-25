@@ -17,6 +17,7 @@ in {
       imports =
         [
           inputs.agenix.homeManagerModules.default
+          ../../../nix-shared/home-manager/google-workspace-mcp.nix
           ../../../nix-shared/home-manager/paseo-managed-hosts.nix
         ]
         ++ lib.optionals t3codeEnabled [

@@ -138,6 +138,7 @@ in {
 
   networking.hostName = "jimi-hendnix";
   myUsers.imalison.level = "full";
+  home-manager.users.imalison.myModules.googleWorkspaceMcp.hostServer = true;
   networking.networkmanager.wifi.powersave = false;
   myModules.hostIdentity = {
     emoticon = "🐩";

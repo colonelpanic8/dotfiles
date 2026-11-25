@@ -26,6 +26,11 @@
       command = "${lib.getExe' cfg.gmessagesPackage "gmessages"}"
       args = ["mcp"]
     ''}
+    ${lib.optionalString (cfg.googleWorkspaceMcpCommand != null) ''
+      [mcp_servers.google-workspace]
+      command = "${cfg.googleWorkspaceMcpCommand}"
+      startup_timeout_sec = 30
+    ''}
   '';
 in {
   options.myModules.codexGeneratedSkills = {
@@ -69,6 +74,12 @@ in {
       type = lib.types.str;
       default = "${cfg.codexHome}/config.local-state.toml";
       description = "Codex-owned host-local config sections harvested from config.toml.";
+    };
+
+    googleWorkspaceMcpCommand = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      description = "Command for the shared Google Workspace MCP server.";
     };
 
     skillsDir = lib.mkOption {

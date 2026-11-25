@@ -215,6 +215,16 @@ code never arrives.
 - Without stored credentials gws silently falls back to gcloud ADC, which
   lacks Workspace scopes, so the error still says "insufficient scopes".
 
+### Google Workspace MCP
+
+- The `google-workspace` MCP server runs on `jimi-hendnix`. Fleet clients use
+  SSH over Tailscale to reach it once its Google OAuth grant is set up.
+- For initial setup on `jimi-hendnix`, pipe the Google desktop OAuth client
+  JSON into `google-workspace-mcp-import-client`, then run
+  `systemctl --user start google-workspace-mcp`.
+- Call `start_google_auth`, complete consent in a browser on `jimi-hendnix`,
+  then run `google-workspace-mcp-save-grant` there to persist the encrypted grant.
+
 ## Project links (local symlink index)
 - Paths in this section are relative to this file's directory (`dotfiles/agents/`).
 - Keep a local symlink index under `./project-links/` for projects that are frequently referenced.
