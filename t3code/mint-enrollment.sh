@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Mints a reusable enrollment on every host of a fleet and writes one bundle,
+# Collects reusable enrollments for a fleet and writes one bundle,
 # sealed to the phone and agenix recipients, at
 # nixos/secrets/t3code-fleet-enrollment[.<fleet>].age. Each host exports its
 # entry to a throwaway age key, so credentials are only ever plaintext in this
@@ -7,6 +7,8 @@
 #
 # usage: mint-enrollment.sh [--fleet ivan|alex] [--ttl 36500d] [host...]
 #        (default: Ivan's fleet, every host in it)
+# Hosts with reuseEnrollment keep their entry from the current encrypted bundle.
+# Set T3CODE_FLEET_IDENTITY_FILE if the recipient key is not ~/.ssh/id_ed25519.
 set -euo pipefail
 
 if ! command -v age >/dev/null || ! command -v jq >/dev/null; then
@@ -41,6 +43,24 @@ else
   mapfile -t hosts < <(jq -r '.[].label' <<<"$manifest")
 fi
 recipients=$(nix eval --json -f "$root/nixos/secrets/secrets.nix" "\"$secret\".publicKeys" | jq -r '.[]')
+wire_manifest=$(jq -c '{version: 1, environments: map(del(.reuseEnrollment))}' <<<"$manifest")
+
+declare -A retained=()
+for host in "${hosts[@]}"; do
+  member=$(jq -ce --arg h "$host" '.[] | select(.label == $h)' <<<"$manifest") ||
+    { echo "$host is not in nix-shared/$manifest_file" >&2; exit 1; }
+  if jq -e '.reuseEnrollment == true' <<<"$member" >/dev/null; then
+    identity=${T3CODE_FLEET_IDENTITY_FILE:-"$HOME/.ssh/id_ed25519"}
+    retained[$host]=$(age -d -i "$identity" "$output" | jq -ce --argjson member "$member" '
+      [.environments[] | select(
+        .environmentId == $member.environmentId and
+        .httpBaseUrl == $member.httpBaseUrl and .wsBaseUrl == $member.wsBaseUrl and
+        (.expiresAt | sub("\\.[0-9]+Z$"; "Z") | fromdateiso8601) > now
+      )]
+      | if length == 1 then . else error("Expected one unexpired enrollment for " + $member.label) end') ||
+      { echo "A new encrypted export from $host is required" >&2; exit 1; }
+  fi
+done
 
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
@@ -73,12 +93,14 @@ EOF
 
 entries=()
 for host in "${hosts[@]}"; do
-  jq -e --arg h "$host" 'any(.label == $h)' <<<"$manifest" >/dev/null ||
-    { echo "$host is not in nix-shared/$manifest_file" >&2; exit 1; }
+  if [[ -v retained[$host] ]]; then
+    entries+=("${retained[$host]}")
+    continue
+  fi
   environment_id=$(jq -r --arg h "$host" '.[] | select(.label == $h) | .environmentId' <<<"$manifest")
   ssh_host=$(jq -r --arg h "$host" '.[] | select(.label == $h) | .httpBaseUrl | capture("^[a-z]+://(?<h>[^:/]+)").h' <<<"$manifest")
   echo "minting on $host" >&2
-  { printf '%s\n' "$ephemeral"; jq -c '{version: 1, environments: .}' <<<"$manifest"; } |
+  printf '%s\n%s\n' "$ephemeral" "$wire_manifest" |
     ssh -o BatchMode=yes "$ssh_user@$ssh_host" \
       "ENVIRONMENT_ID=$(printf %q "$environment_id") LABEL=$(printf %q "$label") TTL=$(printf %q "$ttl") bash -c $(printf %q "$remote")" \
       >"$work/$host.age"
