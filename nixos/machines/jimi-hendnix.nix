@@ -242,6 +242,8 @@ in {
     algorithm = "zstd";
     priority = 100;
   };
+  # A fault on compressed swap wants the one page, not eight read ahead.
+  boot.kernel.sysctl."vm.page-cluster" = 0;
 
   # A leaking agent test once spilled past T3 Code's RAM cap into all 44G of
   # swap and froze the machine without a single OOM kill. Cap the agents'
