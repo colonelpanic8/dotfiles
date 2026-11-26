@@ -30,7 +30,7 @@ while [ $# -gt 0 ]; do
 done
 
 case $fleet in
-  ivan) manifest_file=t3code-fleet.nix secret=t3code-fleet-enrollment.age ssh_user=imalison ;;
+  ivan) manifest_file=t3code-fleet-enrollment.nix secret=t3code-fleet-enrollment.age ssh_user=imalison ;;
   alex) manifest_file=t3code-fleet.alex.nix secret=t3code-fleet-enrollment.alex.age ssh_user=alex ;;
   *) echo "unknown fleet: $fleet" >&2; exit 1 ;;
 esac
