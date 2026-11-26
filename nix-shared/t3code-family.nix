@@ -20,6 +20,11 @@ in {
         url = alexFleet.msi-elliott.httpBaseUrl;
         inherit (alexFleet.msi-elliott) environmentId;
       };
+      malisonlaptop = {
+        label = "MalisonLaptop";
+        url = "https://jimi-hendnix.taileb3aad.ts.net:8445/";
+        inherit (alexFleet.malisonlaptop) environmentId;
+      };
     };
   };
   kat = {

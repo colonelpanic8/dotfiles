@@ -94,7 +94,7 @@ in
           map (member: member // {token."$file" = credentialPath;}) environments
           ++ lib.mapAttrsToList (_: host: {
             environmentId = host.environmentId or "fleet:${host.hostName}";
-            label = host.hostName;
+            label = host.label or host.hostName;
             httpBaseUrl = url host;
             wsBaseUrl = "ws" + lib.removePrefix "http" (url host);
             token."$file" = config.age.secrets.${familySecret host}.path;

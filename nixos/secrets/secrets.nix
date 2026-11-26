@@ -44,6 +44,7 @@ in
     "t3code-managed-access-token.kats-macbook-neo.age".publicKeys = keys.sshClientKeys ++ keys.katKeys ++ [keys.katsMacbookNeoHostKey];
     "t3code-managed-access-token.alexanders-macbook-air.age".publicKeys = keys.sshClientKeys ++ keys.alexKeys ++ [keys.alexandersMacbookAirHostKey];
     "t3code-managed-access-token.msi-elliott.age".publicKeys = keys.sshClientKeys;
+    "t3code-managed-access-token.malisonlaptop.age".publicKeys = keys.sshClientKeys;
     "paseo-password-environment.age".publicKeys = keys.agenixKeys;
     "t3code-managed-access-token.age".publicKeys = keys.agenixKeys;
     "t3code-antigravity-token.age".publicKeys = keys.agenixKeys;

@@ -82,6 +82,7 @@ in {
   imports = [
     ../configuration.nix
     ../vaultwarden-jimi.nix
+    ../t3code-malisonlaptop-jimi.nix
     ../simlock-jimi.nix
     ../rocket-sense-jimi.nix
     ../dominion-arena-jimi.nix
