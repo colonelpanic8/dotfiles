@@ -163,7 +163,8 @@ in {
   });
   boot.initrd.availableKernelModules = ["xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sd_mod"];
   boot.initrd.kernelModules = [];
-  boot.kernelModules = ["kvm-intel"];
+  # ntsync: Wine 11 handles NT sync objects in the kernel instead of wineserver.
+  boot.kernelModules = ["kvm-intel" "ntsync"];
   boot.extraModulePackages = [];
   boot.loader.systemd-boot.enable = true;
 
