@@ -71,7 +71,7 @@ function M.setup(ctx)
     dispatch(hl.dsp.window.float({ action = "enable", window = selector }))
     dispatch(hl.dsp.window.center({ window = selector }))
     dispatch(hl.dsp.focus({ window = selector }))
-    dispatch(hl.dsp.window.bring_to_top({ window = selector }))
+    dispatch(hl.dsp.window.bring_to_top())
   end
 
   local function raise_file_chooser_window_later(window, timeout)
