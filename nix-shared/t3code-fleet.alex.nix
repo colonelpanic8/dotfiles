@@ -17,4 +17,12 @@
     httpBaseUrl = "http://alexanders-macbook-air.tail40f15e.ts.net:3774/";
     wsBaseUrl = "ws://alexanders-macbook-air.tail40f15e.ts.net:3774/";
   }
+  {
+    environmentId = "937c3197-50ed-4379-b382-5110cc2d7a73";
+    label = "malisonlaptop";
+    httpBaseUrl = "http://malisonlaptop.tail40f15e.ts.net:3773/";
+    wsBaseUrl = "ws://malisonlaptop.tail40f15e.ts.net:3773/";
+    # Exported from Windows and retained when the SSH hosts are refreshed.
+    reuseEnrollment = true;
+  }
 ]
