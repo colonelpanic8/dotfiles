@@ -139,6 +139,23 @@ in {
 
   networking.hostName = "jimi-hendnix";
   myUsers.imalison.level = "full";
+
+  # Let Wine threads launched by imalison's user manager or login sessions raise priority.
+  systemd.packages = [
+    (pkgs.writeTextDir "lib/systemd/system/user@1000.service.d/50-nice.conf" ''
+      [Service]
+      LimitNICE=-10
+    '')
+  ];
+  security.pam.loginLimits = [
+    {
+      domain = "imalison";
+      type = "-";
+      item = "nice";
+      value = "-10";
+    }
+  ];
+
   home-manager.users.imalison.myModules.googleWorkspaceMcp.hostServer = true;
   networking.networkmanager.wifi.powersave = false;
   myModules.hostIdentity = {
